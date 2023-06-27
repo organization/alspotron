@@ -1,19 +1,35 @@
 import icon from '../assets/IconMusic.png';
 
-const LyricProgressBar = () => {
+interface LyricProgressBarProps {
+  percent: number;
+  title: string;
+  artist: string;
+  status: string;
+}
+
+const LyricProgressBar = (props: LyricProgressBarProps) => {
   return (
     <div
+      style={`--percent: ${props.percent * 100}%; opacity: ${props.status === 'stopped' ? 0.5 : 1}`}
       class={`
-        bg-gray-900/50 px-2 py-3 text-gray-50 rounded
-        flex flex-row justify-start items-center gap-2
+        relative p-3 transition-all duration-[225ms] ease-out
+        bg-gray-900/50 text-gray-50 rounded-md overflow-hidden
       `}
     >
-      <img src={icon} class={'w-6 h-6 object-contain'} />
-      테스트 제목임 ㅇㅇ
-      -
-      test
+      <div class={'flex flex-row justify-start items-center gap-2'}>
+        <img src={icon} class={'w-6 h-6 object-contain'} />
+        {props.title}
+        <div class={'mx-1'}>
+          -
+        </div>
+        {props.artist}
+      </div>
+      <div class={'absolute inset-0 bg-gray-900 z-[-1] scale-x-[--percent] origin-left'} />
     </div>
   )
 };
 
 export default LyricProgressBar;
+// spotify
+// alspotify
+// alspotron

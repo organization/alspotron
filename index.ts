@@ -8,6 +8,7 @@ const application = new Application();
   await app.whenReady();
 
   application.initTray();
+  application.initServer();
   application.initMainWindow();
 
   console.log('[Alspotron] App is ready');

@@ -1,0 +1,24 @@
+diff --git a/node_modules/alsong/src/resolvers/v2/index.js b/node_modules/alsong/src/resolvers/v2/index.js
+index 3762f9b..0c61994 100644
+--- a/node_modules/alsong/src/resolvers/v2/index.js
++++ b/node_modules/alsong/src/resolvers/v2/index.js
+@@ -1,4 +1,5 @@
+ const axios = require('axios');
++const https = require('https');
+ 
+ const AlsongResolver = require('../AlsongResolver');
+ const AlsongV2Converter = require('./converter');
+@@ -31,9 +32,11 @@ const AlsongV2 = {
+ 		headers: {
+ 			'Accept-Charset': 'utf-8',
+ 			'Connection': 'close',
+-			'Content-Type': 'application/x-www-form-urlencoded'
++			'Content-Type': 'application/x-www-form-urlencoded',
++			'User-Agent': 'android'
+ 		},
+-		responseType: 'json'
++		responseType: 'json',
++		httpsAgent: new https.Agent({ rejectUnauthorized: false })
+ 	}),
+ 	
+ 	converter: AlsongV2Converter,
