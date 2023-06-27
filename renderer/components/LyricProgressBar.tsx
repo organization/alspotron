@@ -1,10 +1,10 @@
-import icon from '../assets/IconMusic.png';
+import icon from '../../assets/IconMusic.png';
 
 interface LyricProgressBarProps {
   percent: number;
   title: string;
   artist: string;
-  status: string;
+  status?: string;
 }
 
 const LyricProgressBar = (props: LyricProgressBarProps) => {
@@ -18,11 +18,11 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     >
       <div class={'flex flex-row justify-start items-center gap-2'}>
         <img src={icon} class={'w-6 h-6 object-contain'} />
-        {props.title}
+        {props.artist}
         <div class={'mx-1'}>
           -
         </div>
-        {props.artist}
+        {props.title}
       </div>
       <div class={'absolute inset-0 bg-gray-900 z-[-1] scale-x-[--percent] origin-left'} />
     </div>
@@ -30,6 +30,3 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
 };
 
 export default LyricProgressBar;
-// spotify
-// alspotify
-// alspotron

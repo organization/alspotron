@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'fs';
 
 import { app, BrowserWindow, Tray, Menu } from 'electron';
+import { ipcMain } from 'electron/main';
 import cors from '@koa/cors';
 import alsong from 'alsong';
 import Koa from 'koa';
@@ -34,9 +35,19 @@ class Application {
       {
         type: 'normal',
         label: 'quit',
-        click() {
+        click: () => {
           app.quit();
         }
+      },
+      {
+        type: 'separator',
+      },
+      {
+        type: 'normal',
+        label: 'devtools',
+        click: () => {
+          this.mainWindow.webContents.openDevTools();
+        },
       },
     ]);
 
@@ -74,6 +85,20 @@ class Application {
     this.app.use(router.routes()).use(router.allowedMethods());
 
     this.app.listen(1608, '127.0.0.1');
+
+    ipcMain.handle('get-lyric', async (event, data: RequestBody['data']) => {
+      if (!Array.isArray(data.artists) || !data.title) return {};
+
+      const artist = data?.artists?.join(', ') ?? '';
+      const title = data?.title ?? '';
+
+      const metadata = await alsong(artist, title, {}).catch(() => []);
+      if (metadata.length <= 0) return {};
+
+      const lyric = await alsong.getLyricById(metadata[0].lyricId).catch(() => ({ lyric: data.lyrics }));
+
+      return lyric;
+    });
   }
 
   initMainWindow() {
@@ -106,7 +131,6 @@ class Application {
       const url = `http://localhost:5173`;
   
       this.mainWindow.loadURL(url);
-      this.mainWindow.webContents.openDevTools();
   
       console.log('load from url', url);
     }
