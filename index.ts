@@ -1,29 +1,14 @@
-import path from 'node:path';
+import { app } from 'electron';
 
-import { app, BrowserWindow } from 'electron';
+import Application from './src/Application';
 
-const createWindow = () => {
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-  });
-
-  if (app.isPackaged) {
-    win.loadFile(path.join(__dirname, '../renderer/index.html'))
-  } else {
-    // 🚧 Use ['ENV_NAME'] avoid vite:define plugin
-    const url = `http://localhost:5173`;
-
-    win.loadURL(url);
-    win.webContents.openDevTools();
-
-    console.log('load from url', url);
-  }
-};
-
+const application = new Application();
 
 (async () => {
   await app.whenReady();
 
-  createWindow();
+  application.initTray();
+  application.initMainWindow();
+
+  console.log('[Alspotron] App is ready');
 })();
