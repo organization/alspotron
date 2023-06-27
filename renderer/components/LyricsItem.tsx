@@ -21,7 +21,7 @@ const LyricsItem = (props: LyricsItemProps) => {
       left: ${rect().x}px;
       top: ${rect().y}px;
       transition-delay: ${props.delay * 75}ms;
-      transform: ${props.status === 'stopped' ? 'scale(0.95)' : 'scale(1)'};
+      scale: ${props.status === 'stopped' ? '0.95' : '1'};
     `;
   };
 
