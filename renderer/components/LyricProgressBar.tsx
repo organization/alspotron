@@ -5,6 +5,7 @@ interface LyricProgressBarProps {
   title: string;
   artist: string;
   status?: string;
+  coverUrl?: string;
 }
 
 const LyricProgressBar = (props: LyricProgressBarProps) => {
@@ -17,14 +18,21 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
       `}
     >
       <div class={'flex flex-row justify-start items-center gap-2'}>
-        <img src={icon} class={'w-6 h-6 object-contain'} />
+        <img
+          src={props.coverUrl ?? icon}
+          class={`
+            w-6 h-6 object-contain transition-all duration-[225ms] ease-out
+            ${props.status === 'stopped' ? 'grayscale' : ''}
+            ${props.status === 'stopped' ? 'scale-95' : ''}
+          `}
+        />
         {props.artist}
         <div class={'mx-1'}>
           -
         </div>
         {props.title}
       </div>
-      <div class={'absolute inset-0 bg-gray-900 z-[-1] scale-x-[--percent] origin-left'} />
+      <div class={'absolute inset-0 bg-gray-500 z-[-1] scale-x-[--percent] origin-left transition-all duration-225 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]'} />
     </div>
   )
 };

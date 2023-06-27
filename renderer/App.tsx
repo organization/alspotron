@@ -1,5 +1,5 @@
 import { Accessor, For, createMemo, createSignal } from 'solid-js';
-import alsong from 'alsong';
+import { TransitionGroup } from 'solid-transition-group';
 
 import LyricProgressBar from './components/LyricProgressBar';
 import LyricsItem from './components/LyricsItem';
@@ -11,6 +11,7 @@ const App = () => {
   const [title, setTitle] = createSignal('Not Playing');
   const [artist, setArtist] = createSignal('N/A');
   const [status, setStatus] = createSignal('idle');
+  const [coverUrl, setCoverUrl] = createSignal<string>();
   const [lyrics, setLyrics] = createSignal<Record<string, string[]>>({});
 
   const lyricIndex = createMemo(() => {
@@ -24,7 +25,6 @@ const App = () => {
     }
 
     return timestamp[index];
-    // return result;
   });
 
   window.ipcRenderer.on('update', async (event, message) => {
@@ -32,7 +32,9 @@ const App = () => {
 
     if (title() !== data.title) {
       const lyric = await window.ipcRenderer.invoke('get-lyric', data);
+
       if (lyric?.lyric) setLyrics(lyric.lyric);
+      // else setLyrics({});
     }
 
     setStatus(data.status);
@@ -40,6 +42,7 @@ const App = () => {
     setArtist(data.artists.join(', '));
     setProgress(data.progress);
     setDuration(data.duration);
+    setCoverUrl(data.cover_url);
   });
 
   return (
@@ -49,15 +52,18 @@ const App = () => {
         flex flex-col justify-start items-end gap-4
       `}
     >
-      <For each={lyrics()[lyricIndex()]}>
-        {(item) => (
-          <LyricsItem status={status()}>
-            {item}
-          </LyricsItem>
-        )}
-      </For>
+      <TransitionGroup name={'lyric'}>
+        <For each={lyrics()[lyricIndex()]}>
+          {(item, index) => (
+            <LyricsItem status={status()} delay={index()}>
+              {item}
+            </LyricsItem>
+          )}
+        </For>
+      </TransitionGroup>
       <div />
       <LyricProgressBar
+        coverUrl={coverUrl()}
         title={title()}
         artist={artist()}
         percent={progress() / duration()}
