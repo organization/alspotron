@@ -8,7 +8,7 @@ const Card = (props: CardProps) => {
       {...props}
       class={cx(
         `
-          relative w-full p-3
+          relative w-full px-4 py-3
           rounded shadow-sm bg-white/[7.5%] hover:bg-white/10 active:bg-white/5
           select-none
         `,

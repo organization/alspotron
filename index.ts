@@ -9,6 +9,7 @@ const application = new Application();
 
   application.initTray();
   application.initServer();
+  application.initHook();
 
   application.initMainWindow();
 

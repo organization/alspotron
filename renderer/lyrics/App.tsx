@@ -6,23 +6,33 @@ import SideBar from './SideBar';
 
 import { UpdateData } from '../types';
 import type alsong from 'alsong';
-import { Transition, TransitionGroup } from 'solid-transition-group';
+import useLyricMapper from '../hooks/useLyricMapper';
+
+type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>[number];
 
 const App = () => {
   const [title, setTitle] = createSignal('Not Playing');
   const [artist, setArtist] = createSignal('N/A');
+  const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
 
   const [loading, setLoading] = createSignal(false);
-  const [lyricMetadata, setLyricMetadata] = createSignal<Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>>([]);
+  const [lyricMetadata, setLyricMetadata] = createSignal<LyricMetadata[]>([]);
 
-  window.ipcRenderer.once('update', async (_, message) => {
+  const [_, setLyricMapper] = useLyricMapper();
+
+  window.ipcRenderer.on('update', async (_, message) => {
     const data: UpdateData = message.data;
 
-    setTitle(data.title);
-    setArtist(data.artists.join(', '));
+    if (originalData()?.title !== data.title) {
+      setTitle(data.title);
+      setArtist(data.artists.join(', '));
+      setOriginalData(data);
+      
+      onSearch();
+    }
   });
 
-  const searchLyric = async () => {
+  const onSearch = async () => {
     setLoading(true);
     const result = await window.ipcRenderer.invoke('search-lyric', {
       title: title(),
@@ -31,7 +41,35 @@ const App = () => {
 
     setLyricMetadata(result);
     setLoading(false);
-  }
+  };
+
+  const onSelect = async (metadata: LyricMetadata) => {
+    const data = originalData();
+    if (!data.title || !data.cover_url) return;
+
+    setLoading(true);
+
+    const newMapper = {
+      [`${data.title}:${data.cover_url}`]: metadata.lyricId,
+    };
+
+    setLyricMapper(newMapper);
+    setLoading(false);
+  };
+
+  const getTime = (ms: number) => {
+    const seconds = ~~(ms / 1000);
+    const minutes = ~~(seconds / 60);
+    const hours = ~~(minutes / 60);
+
+    return `${
+      hours.toString().padStart(2, '0')
+    }:${
+      (minutes % 60).toString().padStart(2, '0')
+    }:${
+      (seconds % 60).toString().padStart(2, '0')
+    }`;
+  };
 
   return (
     <div
@@ -56,7 +94,7 @@ const App = () => {
             value={title()}
             onChange={() => setTitle((event.target as HTMLInputElement).value)}
           />
-          <button class={'btn-text btn-icon'} onClick={searchLyric}>
+          <button class={'btn-text btn-icon'} onClick={onSearch}>
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" fill="#ffffff" />
             </svg>
@@ -73,8 +111,11 @@ const App = () => {
           </Show>
           <For each={lyricMetadata()}>
             {(metadata) => (
-              <Card class={'flex flex-row justify-start items-start gap-1'}>
+              <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onSelect(metadata)}>
                 <div class={'flex flex-col justify-center items-start'}>
+                  <div class={'h-fit text-xs text-white/50'}>
+                    ID: {metadata.lyricId}
+                  </div>
                   <div class={''}>
                     {metadata.title}
                   </div>
@@ -82,12 +123,22 @@ const App = () => {
                     {metadata.artist}
                   </div>
                 </div>
-                <Show when={metadata.playtime >= 0}>
-                  <div class={'h-fit text-sm'}>
-                    {metadata.playtime}
-                  </div>
-                </Show>
                 <div class={'flex-1'} />
+                <div class={'flex flex-col justify-end items-end mr-3 self-center'}>
+                  <div class={'w-[140px] text-sm text-right text-white/50'}>
+                    {metadata.registerDate ? new Date(metadata.registerDate).toLocaleString(undefined, {
+                      timeZone: 'Asia/Seoul',
+                      hour12: false,
+                      dateStyle: 'medium',
+                      timeStyle: 'medium',
+                    }) : 'sibal'}
+                  </div>
+                  <Show when={metadata.playtime >= 0}>
+                    <div class={'h-fit text-sm text-right text-white/50'}>
+                      재생시간: {getTime(metadata.playtime)}
+                    </div>
+                  </Show>
+                </div>
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class={'self-center'}>
                   <path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff"/>
                 </svg>

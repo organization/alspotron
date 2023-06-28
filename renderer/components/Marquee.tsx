@@ -58,7 +58,7 @@ const Marquee = (props: MarqueeProps) => {
         'overflow-hidden': useMarquee(),
       }}
     >
-      <div class={`${useMarquee() ? 'marquee ignore' : ''}`} style={`padding-right: ${local.gap}px`}>
+      <div class={`${useMarquee() ? 'marquee ignore' : ''}`} style={`padding-right: ${useMarquee() ? local.gap : 0}px`}>
         {child1()}
       </div>
       <Show when={useMarquee()}>
@@ -67,7 +67,7 @@ const Marquee = (props: MarqueeProps) => {
         </div>
       </Show>
     </div>
-  )
+  );
 };
 
 export default Marquee;

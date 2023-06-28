@@ -21,7 +21,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
       style={`--percent: ${local.percent * 100}%; opacity: ${local.status === 'stopped' ? 0.5 : 1}; ${leftProps.style}`}
       class={cx(
         `
-          w-[320px]
+          max-w-[320px]
           relative p-3 transition-all duration-[225ms] ease-out
           bg-gray-900/50 text-gray-50 rounded-md overflow-hidden
         `,

@@ -1,9 +1,10 @@
-import { Accessor, For, createMemo, createSignal } from 'solid-js';
+import { Accessor, For, createEffect, createMemo, createSignal, on, untrack } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
 import LyricProgressBar from './components/LyricProgressBar';
 import LyricsItem from './components/LyricsItem';
 import { UpdateData } from '../types';
+import useLyricMapper from '../hooks/useLyricMapper';
 
 const App = () => {
   const [progress, setProgress] = createSignal(0);
@@ -12,9 +13,14 @@ const App = () => {
   const [artist, setArtist] = createSignal('N/A');
   const [status, setStatus] = createSignal('idle');
   const [coverUrl, setCoverUrl] = createSignal<string>();
-  const [lyrics, setLyrics] = createSignal<Record<string, string[]>>({});
+  const [lyrics, setLyrics] = createSignal<Record<string, string[]> | null>({});
+  const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
+
+  const [lyricMapper] = useLyricMapper();
 
   const lyricIndex = createMemo(() => {
+    if (lyrics() === null) return 0;
+
     const timestamp = Object.keys(lyrics());
 
     let index = 0;
@@ -27,15 +33,10 @@ const App = () => {
     return timestamp[index];
   });
 
-  window.ipcRenderer.on('update', async (event, message) => {
+  window.ipcRenderer.on('update', async (_, message) => {
     const data: UpdateData = message.data;
 
-    if (title() !== data.title) {
-      const lyric = await window.ipcRenderer.invoke('get-lyric', data);
-
-      if (lyric?.lyric) setLyrics(lyric.lyric);
-      // else setLyrics({});
-    }
+    setOriginalData(data);
 
     setStatus(data.status);
     setTitle(data.title);
@@ -45,6 +46,23 @@ const App = () => {
     setCoverUrl(data.cover_url);
   });
 
+  createEffect(on([title, coverUrl, lyricMapper], async () => {
+    const data = originalData();
+    const mapper = lyricMapper();
+    
+    if (!data) return;
+    const id: number | undefined = mapper[`${data.title}:${data.cover_url}`];
+
+    const lyric = (
+      typeof id === 'number'
+        ? (await window.ipcRenderer.invoke('get-lyric-by-id', id) ?? data)
+        : await window.ipcRenderer.invoke('get-lyric', data)
+    );
+
+    if (lyric?.lyric) setLyrics(lyric.lyric);
+    else setLyrics(null);
+  }));
+
   return (
     <div
       class={`
@@ -53,7 +71,7 @@ const App = () => {
       `}
     >
       <TransitionGroup name={'lyric'}>
-        <For each={lyrics()[lyricIndex()]}>
+        <For each={lyrics()?.[lyricIndex()] ?? []}>
           {(item, index) => (
             <LyricsItem status={status()} delay={index()}>
               {item}
