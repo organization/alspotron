@@ -7,7 +7,7 @@ const useLyricMapper = () => {
   (async () => {
     const result = await window.ipcRenderer.invoke('get-lyric-mapper');
 
-    setLyricMapper(result);
+    setLyricMapper(result || {});
   })();
 
   window.ipcRenderer.on('lyric-mapper', (_, data: LyricMapper) => {
