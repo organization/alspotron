@@ -1,3 +1,4 @@
+import Marquee from '../../components/Marquee';
 import icon from '../../../assets/IconMusic.png';
 
 interface LyricProgressBarProps {
@@ -13,11 +14,16 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     <div
       style={`--percent: ${props.percent * 100}%; opacity: ${props.status === 'stopped' ? 0.5 : 1}`}
       class={`
+        w-[320px]
         relative p-3 transition-all duration-[225ms] ease-out
         bg-gray-900/50 text-gray-50 rounded-md overflow-hidden
       `}
     >
-      <div class={'flex flex-row justify-start items-center gap-2'}>
+      <div
+        class={`
+          flex flex-row justify-start items-center gap-2
+        `}
+      >
         <img
           src={props.coverUrl ?? icon}
           class={`
@@ -26,11 +32,15 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
             ${props.status === 'stopped' ? 'scale-95' : ''}
           `}
         />
-        {props.artist}
-        <div class={'mx-1'}>
-          -
-        </div>
-        {props.title}
+        <Marquee gap={32}>
+          <div class={'w-fit flex flex-row justify-start items-center gap-2'}>
+            {props.artist}
+            <div class={'mx-1'}>
+              -
+            </div>
+            {props.title}
+          </div>
+        </Marquee>
       </div>
       <div class={'absolute inset-0 bg-gray-500 z-[-1] scale-x-[--percent] origin-left transition-all duration-225 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]'} />
     </div>
