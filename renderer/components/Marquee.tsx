@@ -13,20 +13,29 @@ const Marquee = (props: MarqueeProps) => {
   const child2 = children(() => props.children);
 
   let dom: HTMLDivElement;
+  let ignore = false;
   const [useMarquee, setUseMarquee] = createSignal(false);
 
   const updateOverflow = () => {
     const { scrollWidth, clientWidth } = dom;
 
     const offset = useMarquee() ? 2 : 1;
-    const newValue = (scrollWidth - local.gap) / offset > clientWidth;
-    if (newValue !== useMarquee()) {
-      setUseMarquee(newValue);
+    const gap = useMarquee() ? local.gap : 0;
+    const newValue = (scrollWidth - gap) / offset > clientWidth;
+
+    const shouldChange = !ignore;
+    ignore = false;
+
+    if (newValue !== useMarquee() && shouldChange) {
+      setUseMarquee(!!newValue);
+
+      ignore = true;
     }
   }
   const observer = new MutationObserver(updateOverflow);
   onMount(() => {
     updateOverflow();
+    ignore = false;
 
     observer.observe(dom, {
       characterData: true,
@@ -43,7 +52,7 @@ const Marquee = (props: MarqueeProps) => {
     <div
       {...leftProps}
       ref={dom}
-      class={cx('relative whitespace-nowrap overflow-auto flex flex-row justify-start items-center', props.class)}
+      class={cx('relative whitespace-nowrap overflow-auto flex flex-row justify-start items-center remove-scrollbar', props.class)}
       classList={{
         ...leftProps.classList,
         'overflow-hidden': useMarquee(),
