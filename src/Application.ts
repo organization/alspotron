@@ -2,6 +2,7 @@ import path from 'node:path';
 import fs from 'fs';
 
 import { app, BrowserWindow, Tray, Menu } from 'electron';
+import { MicaBrowserWindow } from 'mica-electron';
 import { ipcMain } from 'electron/main';
 import cors from '@koa/cors';
 import alsong from 'alsong';
@@ -15,9 +16,9 @@ class Application {
   private tray: Tray;
   private app: Koa;
 
-  private mainWindow: BrowserWindow;
-  private settingsWindow: BrowserWindow;
-  private lyricsWindow: BrowserWindow;
+  public mainWindow: BrowserWindow;
+  public settingsWindow: MicaBrowserWindow;
+  public lyricsWindow: BrowserWindow;
 
   initTray() {
     this.tray = new Tray(getFile('./assets/IconMusic.png'));
@@ -29,6 +30,9 @@ class Application {
       {
         type: 'normal',
         label: 'Settings',
+        click: () => {
+          this.settingsWindow.show();
+        }
       },
       {
         type: 'separator',
@@ -123,17 +127,42 @@ class Application {
         preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
       },
+      show: false,
     });
     this.mainWindow.setIgnoreMouseEvents(true, { forward: true });
 
     if (app.isPackaged) {
       this.mainWindow.loadFile(getFile('./index.html'));
     } else {
-      const url = `http://localhost:5173`;
-  
-      this.mainWindow.loadURL(url);
-  
-      console.log('load from url', url);
+      this.mainWindow.loadURL(`http://localhost:5173`);
+    }
+  }
+
+  initSettingsWindow() {
+    this.settingsWindow = new MicaBrowserWindow({
+      width: 800,
+      height: 600,
+      webPreferences: {
+        preload: path.join(__dirname, './preload.js'),
+        nodeIntegration: true,
+      },
+      show: false,
+      title: 'Settings',
+      // transparent: true,
+      // frame: false,
+      backgroundColor: 'transparent',
+      backgroundMaterial: 'mica',
+      autoHideMenuBar: true,
+      resizable: false,
+      transparent: false,
+    });
+    this.settingsWindow.setDarkTheme();
+    this.settingsWindow.setMicaEffect();
+
+    if (app.isPackaged) {
+      this.settingsWindow.loadFile(getFile('./settings.html'));
+    } else {
+      this.settingsWindow.loadURL(`http://localhost:5173/settings.html`);
     }
   }
 };

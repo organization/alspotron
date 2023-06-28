@@ -9,7 +9,11 @@ const application = new Application();
 
   application.initTray();
   application.initServer();
+
   application.initMainWindow();
+  application.initSettingsWindow();
+
+  application.mainWindow.show();
 
   console.log('[Alspotron] App is ready');
 })();

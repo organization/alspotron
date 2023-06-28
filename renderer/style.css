@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
+/* reset */
+html, body, #app {
   padding: 0;
   margin: 0;
 
@@ -14,6 +15,18 @@ html, body {
   box-sizing: border-box;
 }
 
+/* utils */
+.fluent-scrollbar {
+  overflow: auto;
+}
+.fluent-scrollbar::-webkit-scrollbar {
+  @apply w-[4px] h-[4px] p-[1px];
+}
+.fluent-scrollbar::-webkit-scrollbar-thumb {
+  @apply w-[2px] h-[2px] bg-gray-400 rounded-full border border-transparent border-solid bg-clip-padding;
+}
+
+/* animations */
 
 .lyric-enter-active {
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);

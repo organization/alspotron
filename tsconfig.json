@@ -11,9 +11,6 @@
     "types": ["vite/client"],
     "baseUrl": ".",
     "outDir": "./dist",
-    "paths": {
-      "@/*": ["./renderer/*"]
-    }
   },
   "exclude": [
     "*.config.ts",

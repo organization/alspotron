@@ -3,7 +3,7 @@ import { TransitionGroup } from 'solid-transition-group';
 
 import LyricProgressBar from './components/LyricProgressBar';
 import LyricsItem from './components/LyricsItem';
-import { UpdateData } from './types';
+import { UpdateData } from '../types';
 
 const App = () => {
   const [progress, setProgress] = createSignal(0);

@@ -1,4 +1,4 @@
-import icon from '../../assets/IconMusic.png';
+import icon from '../../../assets/IconMusic.png';
 
 interface LyricProgressBarProps {
   percent: number;

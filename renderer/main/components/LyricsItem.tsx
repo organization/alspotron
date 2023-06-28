@@ -35,7 +35,11 @@ const LyricsItem = (props: LyricsItemProps) => {
     <div
       ref={dom}
       style={props.status === 'stopped' ? `${style()} opacity: 0.5;` : style()}
-      class={'py-1 px-2 bg-gray-900/50 text-gray-100 whitespace-pre-line text-center transition-all duration-[225ms] ease-out origin-right'}
+      class={`
+        py-1 px-2 whitespace-pre-line text-center
+        bg-gray-900/50 text-gray-100
+        transition-all duration-[225ms] ease-out origin-right
+      `}
     >
       {props.children}
     </div>
