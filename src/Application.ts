@@ -11,6 +11,7 @@ import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
 import type { RequestBody } from './types';
 import { getFile } from '../utils/resource';
+import { Config, LyricMapper, config, lyricMapper, setConfig, setLyricMapper } from './config';
 
 class Application {
   private tray: Tray;
@@ -75,8 +76,7 @@ class Application {
     router.post('/', async (ctx, next) => {
       ctx.status = 200;
 
-      this.mainWindow.webContents.send('update', ctx.request.body as RequestBody);
-      if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) this.lyricsWindow.webContents.send('update', ctx.request.body as RequestBody);
+      this.broadcast('update', ctx.request.body as RequestBody);
 
       await next();
     });
@@ -96,7 +96,21 @@ class Application {
     this.app.use(router.routes()).use(router.allowedMethods());
 
     this.app.listen(1608, '127.0.0.1');
+  }
 
+  broadcast(event: string, ...args: any[]) {
+    this.mainWindow.webContents.send(event, ...args);
+    if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) this.lyricsWindow.webContents.send(event, ...args);
+    if (this.settingsWindow && !this.settingsWindow.isDestroyed()) this.settingsWindow.webContents.send(event, ...args);
+  }
+
+  initHook() {
+    ipcMain.handle('get-lyric-by-id', async (_, id: number) => {
+      const lyric = await alsong.getLyricById(id).catch(() => null);
+      if (lyric) delete lyric.registerDate;
+
+      return lyric;
+    });
     ipcMain.handle('get-lyric', async (_, data: RequestBody['data']) => {
       if (!Array.isArray(data.artists) || !data.title) return {};
 
@@ -115,8 +129,19 @@ class Application {
         playtime: data.duration,
       }).catch(() => []);
 
-      return result;
+      return result.map((it) => ({ ...it, registerDate: it.registerDate.toISOString() }));
     });
+
+    ipcMain.handle('set-config', async (_, data: Partial<Config>) => {
+      setConfig(data);
+      this.broadcast('config', config());
+    });
+    ipcMain.handle('get-config', async () => config());
+    ipcMain.handle('set-lyric-mapper', async (_, data: Partial<LyricMapper>) => {
+      setLyricMapper(data);
+      this.broadcast('lyric-mapper', lyricMapper());
+    });
+    ipcMain.handle('get-lyric-mapper', async () => lyricMapper());
   }
 
   initMainWindow() {
