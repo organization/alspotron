@@ -18,19 +18,24 @@ class Application {
 
   public mainWindow: BrowserWindow;
   public settingsWindow: MicaBrowserWindow;
-  public lyricsWindow: BrowserWindow;
+  public lyricsWindow: MicaBrowserWindow;
 
   initTray() {
     this.tray = new Tray(getFile('./assets/IconMusic.png'));
     const contextMenu = Menu.buildFromTemplate([
       {
         type: 'normal',
-        label: 'Lyrics',
+        label: '가사 선택',
+        click: () => {
+          this.initLyricsWindow();
+          this.lyricsWindow.show();
+        }
       },
       {
         type: 'normal',
-        label: 'Settings',
+        label: '설정',
         click: () => {
+          this.initSettingsWindow();
           this.settingsWindow.show();
         }
       },
@@ -39,7 +44,7 @@ class Application {
       },
       {
         type: 'normal',
-        label: 'quit',
+        label: '종료',
         click: () => {
           app.quit();
         }
@@ -71,6 +76,7 @@ class Application {
       ctx.status = 200;
 
       this.mainWindow.webContents.send('update', ctx.request.body as RequestBody);
+      if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) this.lyricsWindow.webContents.send('update', ctx.request.body as RequestBody);
 
       await next();
     });
@@ -91,7 +97,7 @@ class Application {
 
     this.app.listen(1608, '127.0.0.1');
 
-    ipcMain.handle('get-lyric', async (event, data: RequestBody['data']) => {
+    ipcMain.handle('get-lyric', async (_, data: RequestBody['data']) => {
       if (!Array.isArray(data.artists) || !data.title) return {};
 
       const artist = data?.artists?.join(', ') ?? '';
@@ -103,6 +109,13 @@ class Application {
       const lyric = await alsong.getLyricById(metadata[0].lyricId).catch(() => ({ lyric: data.lyrics }));
 
       return lyric;
+    });
+    ipcMain.handle('search-lyric', async (_, data: { artist: string; title: string; duration?: number; }) => {
+      const result = await alsong(data.artist, data.title, {
+        playtime: data.duration,
+      }).catch(() => []);
+
+      return result;
     });
   }
 
@@ -147,7 +160,7 @@ class Application {
         nodeIntegration: true,
       },
       show: false,
-      title: 'Settings',
+      title: 'Alspotron 설정',
       // transparent: true,
       // frame: false,
       backgroundColor: 'transparent',
@@ -163,6 +176,34 @@ class Application {
       this.settingsWindow.loadFile(getFile('./settings.html'));
     } else {
       this.settingsWindow.loadURL(`http://localhost:5173/settings.html`);
+    }
+  }
+  
+  initLyricsWindow() {
+    this.lyricsWindow = new MicaBrowserWindow({
+      width: 1000,
+      height: 600,
+      webPreferences: {
+        preload: path.join(__dirname, './preload.js'),
+        nodeIntegration: true,
+      },
+      show: false,
+      title: '가사 선택',
+      // transparent: true,
+      // frame: false,
+      backgroundColor: 'transparent',
+      backgroundMaterial: 'mica',
+      autoHideMenuBar: true,
+      resizable: false,
+      transparent: false,
+    });
+    this.lyricsWindow.setDarkTheme();
+    this.lyricsWindow.setMicaEffect();
+
+    if (app.isPackaged) {
+      this.lyricsWindow.loadFile(getFile('./lyrics.html'));
+    } else {
+      this.lyricsWindow.loadURL(`http://localhost:5173/lyrics.html`);
     }
   }
 };

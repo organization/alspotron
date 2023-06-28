@@ -11,7 +11,6 @@ const application = new Application();
   application.initServer();
 
   application.initMainWindow();
-  application.initSettingsWindow();
 
   application.mainWindow.show();
 

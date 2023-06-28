@@ -1,7 +1,10 @@
 import Marquee from '../../components/Marquee';
 import icon from '../../../assets/IconMusic.png';
+import { JSX } from 'solid-js/jsx-runtime';
+import { splitProps } from 'solid-js';
+import { cx } from '../../utils/classNames';
 
-interface LyricProgressBarProps {
+interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
   percent: number;
   title: string;
   artist: string;
@@ -10,14 +13,20 @@ interface LyricProgressBarProps {
 }
 
 const LyricProgressBar = (props: LyricProgressBarProps) => {
+  const [local, leftProps] = splitProps(props, ['percent', 'title', 'artist', 'status', 'coverUrl']);
+
   return (
     <div
-      style={`--percent: ${props.percent * 100}%; opacity: ${props.status === 'stopped' ? 0.5 : 1}`}
-      class={`
-        w-[320px]
-        relative p-3 transition-all duration-[225ms] ease-out
-        bg-gray-900/50 text-gray-50 rounded-md overflow-hidden
-      `}
+      {...leftProps}
+      style={`--percent: ${local.percent * 100}%; opacity: ${local.status === 'stopped' ? 0.5 : 1}; ${leftProps.style}`}
+      class={cx(
+        `
+          w-[320px]
+          relative p-3 transition-all duration-[225ms] ease-out
+          bg-gray-900/50 text-gray-50 rounded-md overflow-hidden
+        `,
+        leftProps.class,
+      )}
     >
       <div
         class={`
@@ -25,20 +34,20 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
         `}
       >
         <img
-          src={props.coverUrl ?? icon}
+          src={local.coverUrl ?? icon}
           class={`
             w-6 h-6 object-contain transition-all duration-[225ms] ease-out
-            ${props.status === 'stopped' ? 'grayscale' : ''}
-            ${props.status === 'stopped' ? 'scale-95' : ''}
+            ${local.status === 'stopped' ? 'grayscale' : ''}
+            ${local.status === 'stopped' ? 'scale-95' : ''}
           `}
         />
         <Marquee gap={32}>
           <div class={'w-fit flex flex-row justify-start items-center gap-2'}>
-            {props.artist}
+            {local.artist}
             <div class={'mx-1'}>
               -
             </div>
-            {props.title}
+            {local.title}
           </div>
         </Marquee>
       </div>
