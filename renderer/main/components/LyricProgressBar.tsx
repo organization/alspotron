@@ -1,5 +1,5 @@
 import Marquee from '../../components/Marquee';
-import icon from '../../../assets/IconMusic.png';
+import icon from '../../../assets/icon_music.png';
 import { JSX } from 'solid-js/jsx-runtime';
 import { splitProps } from 'solid-js';
 import { cx } from '../../utils/classNames';

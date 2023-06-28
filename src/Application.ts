@@ -13,6 +13,8 @@ import type { RequestBody } from './types';
 import { getFile } from '../utils/resource';
 import { Config, LyricMapper, config, lyricMapper, setConfig, setLyricMapper } from './config';
 
+const iconPath = getFile('./assets/icon_square.png');
+
 class Application {
   private tray: Tray;
   private app: Koa;
@@ -22,7 +24,7 @@ class Application {
   public lyricsWindow: MicaBrowserWindow;
 
   initTray() {
-    this.tray = new Tray(getFile('./assets/IconMusic.png'));
+    this.tray = new Tray(getFile('./assets/icon_music.png'));
     const contextMenu = Menu.buildFromTemplate([
       {
         type: 'normal',
@@ -166,6 +168,7 @@ class Application {
         nodeIntegration: true,
       },
       show: false,
+      icon: iconPath,
     });
     this.mainWindow.setIgnoreMouseEvents(true, { forward: true });
 
@@ -193,6 +196,7 @@ class Application {
       autoHideMenuBar: true,
       resizable: false,
       transparent: false,
+      icon: iconPath,
     });
     this.settingsWindow.setDarkTheme();
     this.settingsWindow.setMicaEffect();
@@ -221,6 +225,7 @@ class Application {
       autoHideMenuBar: true,
       resizable: false,
       transparent: false,
+      icon: iconPath,
     });
     this.lyricsWindow.setDarkTheme();
     this.lyricsWindow.setMicaEffect();
