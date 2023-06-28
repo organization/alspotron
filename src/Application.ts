@@ -9,6 +9,7 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
 import type { RequestBody } from './types';
+import { getFile } from '../utils/resource';
 
 class Application {
   private tray: Tray;
@@ -19,7 +20,7 @@ class Application {
   private lyricsWindow: BrowserWindow;
 
   initTray() {
-    this.tray = new Tray('assets/IconMusic.png');
+    this.tray = new Tray(getFile('./assets/IconMusic.png'));
     const contextMenu = Menu.buildFromTemplate([
       {
         type: 'normal',
@@ -51,7 +52,7 @@ class Application {
       },
     ]);
 
-    this.tray.setToolTip('Alspotron 0.0.1');
+    this.tray.setToolTip('Alspotron');
     this.tray.setContextMenu(contextMenu);
   }
 
@@ -126,7 +127,7 @@ class Application {
     this.mainWindow.setIgnoreMouseEvents(true, { forward: true });
 
     if (app.isPackaged) {
-      this.mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+      this.mainWindow.loadFile(getFile('./index.html'));
     } else {
       const url = `http://localhost:5173`;
   

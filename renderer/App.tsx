@@ -19,7 +19,7 @@ const App = () => {
 
     let index = 0;
     for (; index < timestamp.length; index += 1) {
-      if (parseInt(timestamp[index + 1]) > progress()) {
+      if (parseInt(timestamp[index + 1]) > progress() + 1225) {
         break;
       }
     }
