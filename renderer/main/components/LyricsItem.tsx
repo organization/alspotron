@@ -18,7 +18,11 @@ const LyricsItem = (props: LyricsItemProps) => {
   const style = () => {
     if (!init()) return `transition-delay: ${225 + local.delay * 75}ms;`;
 
+    const rect = dom.getBoundingClientRect();
+
     return `
+      width: ${rect.width}px;
+      height: ${rect.height}px;
       top: ${dom.offsetTop}px;
       transition-delay: ${local.delay * 75}ms;
       scale: ${local.status === 'stopped' ? '0.95' : '1'};
