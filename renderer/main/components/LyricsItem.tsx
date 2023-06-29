@@ -10,16 +10,13 @@ export interface LyricsItemProps {
 const LyricsItem = (props: LyricsItemProps) => {
   let dom: HTMLDivElement;
 
-  const [rect, setRect] = createSignal<DOMRect | null>(null);
+  const [init, setInit] = createSignal(false);
 
   const style = () => {
-    if (!rect()) return `transition-delay: ${225 + props.delay * 75}ms;`;
+    if (!init()) return `transition-delay: ${225 + props.delay * 75}ms;`;
 
     return `
-      width: ${rect().width}px;
-      height: ${rect().height}px;
-      left: ${rect().x}px;
-      top: ${rect().y}px;
+      top: ${dom.offsetTop}px;
       transition-delay: ${props.delay * 75}ms;
       scale: ${props.status === 'stopped' ? '0.95' : '1'};
     `;
@@ -27,7 +24,7 @@ const LyricsItem = (props: LyricsItemProps) => {
 
   onMount(() => {
     dom.addEventListener('transitionend', () => {
-      setRect(dom.getBoundingClientRect());
+      setInit(true);
     }, { once: true });
   });
 

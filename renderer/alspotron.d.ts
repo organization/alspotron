@@ -6,4 +6,8 @@ declare global {
     ipcRenderer: typeof electronIpcRenderer;
     fs: typeof fs;
   }
+
+  export type DeepPartial<T> = T extends object ? {
+    [P in keyof T]?: DeepPartial<T[P]>;
+  } : T;
 }

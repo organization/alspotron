@@ -23,6 +23,14 @@ export interface Config {
     };
   };
 
+  windowPosition: {
+    anchor: 'top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right';
+    top: number | null;
+    left: number | null;
+    bottom: number | null;
+    right: number | null;
+  };
+
   syncThrottle: number;
 }
 export const DEFAULT_CONFIG = {
@@ -46,8 +54,16 @@ export const DEFAULT_CONFIG = {
     }
   },
 
+  windowPosition: {
+    anchor: 'bottom-right',
+    top: 32,
+    left: 32,
+    bottom: 32,
+    right: 32,
+  },
+
   syncThrottle: 1000 * 3,
-};
+} satisfies Config;
 
 let configFileTimeout: NodeJS.Timeout | null = null;
 const configSignal = createSignal<Config>(DEFAULT_CONFIG);
@@ -65,6 +81,7 @@ export const setConfig = (params: Partial<Config>) => {
     ...DEFAULT_CONFIG,
     ...configSignal[0](),
     ...params,
+
     style: {
       ...DEFAULT_CONFIG.style,
       ...configSignal[0]().style,
@@ -79,6 +96,12 @@ export const setConfig = (params: Partial<Config>) => {
         ...configSignal[0]().style.lyric,
         ...params.style?.lyric,
       },
+    },
+
+    windowPosition: {
+      ...DEFAULT_CONFIG.windowPosition,
+      ...configSignal[0]().windowPosition,
+      ...params.windowPosition,
     },
   };
   

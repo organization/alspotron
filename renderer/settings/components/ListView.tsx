@@ -1,23 +1,33 @@
-import { For, createSignal, splitProps } from 'solid-js';
+import { For, Signal, createSignal, splitProps } from 'solid-js';
 import { JSX } from 'solid-js/jsx-runtime';
+
 import ListItem from './ListItem';
+
 import { cx } from '../../utils/classNames';
 
 export interface ListItemData {
   id: string;
   label: string;
-  icon?: string;
+  icon?: string | JSX.Element;
 }
 export interface ListViewProps extends JSX.HTMLAttributes<HTMLUListElement> {
   items: ListItemData[];
-  initTab?: string;
+  initItem?: string;
+  onSelectItem?: (data: ListItemData) => void;
+
+  value?: Signal<string>;
 }
 
 const ListView = (props: ListViewProps) => {
-  const [local, leftProps] = splitProps(props, ['items']);
+  const [local, leftProps] = splitProps(props, ['items', 'onSelectItem', 'value']);
 
-  const [tab, setTab] = createSignal(props.initTab ?? local.items[0].id);
+  const [tab, setTab] = local.value ?? createSignal(props.initItem ?? local.items[0].id);
   const index = () => local.items.findIndex((item) => item.id === tab());
+
+  const onSelect = (item: ListItemData) => {
+    setTab(item.id);
+    local.onSelectItem?.(item);
+  };
 
   return (
     <ul
@@ -26,7 +36,7 @@ const ListView = (props: ListViewProps) => {
     >
       <div
         style={`translate: 0px ${16 + index() * 40}px;`}
-        class={'absolute w-[3px] h-4 bg-primary-500 rounded-full left-4 top-[10px] bottom-[10px] transition-all duration-300 ease-[cubic-bezier(0.7, 0, 0.84, 0)]'}
+        class={'absolute w-[3px] h-4 bg-primary-500 rounded-full left-4 top-[10px] bottom-[10px] transition-all duration-300 ease-[cubic-bezier(0.87, 0, 0.13, 1)]'}
       />
       <For each={local.items}>
         {(item) => (
@@ -34,7 +44,7 @@ const ListView = (props: ListViewProps) => {
             selected={tab() === item.id}
             icon={item.icon}
             title={item.label}
-            onClick={() => setTab(item.id)}
+            onClick={() => onSelect(item)}
           />
         )}
       </For>

@@ -2,7 +2,7 @@ import { createSignal } from 'solid-js';
 import { Config } from '../../src/config';
 
 const useConfig = () => {
-  const [config, setConfig] = createSignal<Config>(null);
+  const [config, setConfig] = createSignal<Config | null>(null);
 
   (async () => {
     if (config()) return;
@@ -16,7 +16,7 @@ const useConfig = () => {
     setConfig(data);
   });
 
-  const setPublicConfig = async (newMapper: Partial<Config>) => {
+  const setPublicConfig = async (newMapper: DeepPartial<Config>) => {
     await window.ipcRenderer.invoke('set-config', newMapper);
   };
 

@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'fs';
 
-import { app, BrowserWindow, Tray, Menu } from 'electron';
+import { app, BrowserWindow, Tray, Menu, shell } from 'electron';
 import { MicaBrowserWindow } from 'mica-electron';
 import { ipcMain } from 'electron/main';
 import cors from '@koa/cors';
@@ -200,6 +200,10 @@ class Application {
     });
     this.settingsWindow.setDarkTheme();
     this.settingsWindow.setMicaEffect();
+    this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
+      shell.openExternal(url);
+      return { action: 'deny' };
+    });
 
     if (app.isPackaged) {
       this.settingsWindow.loadFile(getFile('./settings.html'));
