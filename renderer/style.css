@@ -55,6 +55,7 @@
   }
   .input.color::-webkit-color-swatch {
     @apply max-w-[16px] max-h-[16px] rounded-full border-none mx-auto;
+    opacity: var(--opacity, 1);
   }
 
   .select.solid-select-container {

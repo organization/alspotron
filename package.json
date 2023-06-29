@@ -16,6 +16,7 @@
   "author": "Su-Yong",
   "license": "ISC",
   "devDependencies": {
+    "@types/color": "^3.0.3",
     "@types/koa": "^2.13.6",
     "@types/koa__cors": "^4.0.0",
     "@types/koa-bodyparser": "^4.3.10",
@@ -35,6 +36,7 @@
     "@koa/cors": "^4.0.0",
     "@popperjs/core": "^2.11.8",
     "alsong": "^3.0.1",
+    "color": "^4.2.3",
     "font-list": "^1.5.0",
     "koa": "^2.14.2",
     "koa-bodyparser": "^4.4.1",

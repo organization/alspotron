@@ -2,6 +2,7 @@ import { Show, createEffect, createSignal, onMount } from 'solid-js';
 
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
+import ColorPicker from '../components/ColorPicker';
 
 import useHorizontalScroll from '../../hooks/useHorizontalScroll';
 import useConfig from '../../hooks/useConfig';
@@ -26,32 +27,34 @@ const ThemeContainer = () => {
       <div class={'text-3xl mb-1 px-4'}>
         테마
       </div>
-      <div class={'text-md mt-4 mb-1 px-4'}>
-        프리셋
-      </div>
-      <div
-        ref={presetContainer}
-        class={'min-h-[128px] flex flex-row justify-start items-center gap-1 fluent-scrollbar px-4'}
-      >
-        <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋1
-        </Card>
-        <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋2
-        </Card>
-        <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋3
-        </Card>
-        <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋4
-        </Card>
-        <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋5
-        </Card>
-        <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋6
-        </Card>
-      </div>
+      <Show when={false}>
+        <div class={'text-md mt-4 mb-1 px-4'}>
+          프리셋
+        </div>
+        <div
+          ref={presetContainer}
+          class={'min-h-[128px] flex flex-row justify-start items-center gap-1 fluent-scrollbar px-4'}
+        >
+          <Card class={'min-w-[128px] h-[128px]'}>
+            대충 프리셋1
+          </Card>
+          <Card class={'min-w-[128px] h-[128px]'}>
+            대충 프리셋2
+          </Card>
+          <Card class={'min-w-[128px] h-[128px]'}>
+            대충 프리셋3
+          </Card>
+          <Card class={'min-w-[128px] h-[128px]'}>
+            대충 프리셋4
+          </Card>
+          <Card class={'min-w-[128px] h-[128px]'}>
+            대충 프리셋5
+          </Card>
+          <Card class={'min-w-[128px] h-[128px]'}>
+            대충 프리셋6
+          </Card>
+        </div>
+      </Show>
       <div class={'text-md mt-4 mb-1 px-4'}>
         일반 테마 설정
       </div>
@@ -137,33 +140,27 @@ const ThemeContainer = () => {
           <div class={'text-md'}>
             글씨 색상
           </div>
-          <input
-            type={'color'}
-            class={'input color'}
+          <ColorPicker
             value={config()?.style.nowPlaying.color}
-            onChange={(event) => setConfig({ style: { nowPlaying: { color: event.target.value } } })}
+            onColorChange={(color) => setConfig({ style: { nowPlaying: { color } } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
           <div class={'text-md'}>
             배경 색상
           </div>
-          <input
-            type={'color'}
-            class={'input color'}
+          <ColorPicker
             value={config()?.style.nowPlaying.background}
-            onChange={(event) => setConfig({ style: { nowPlaying: { background: event.target.value } } })}
+            onColorChange={(color) => setConfig({ style: { nowPlaying: { background: color } } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
           <div class={'text-md'}>
             재생바 색상
           </div>
-          <input
-            type={'color'}
-            class={'input color'}
+          <ColorPicker
             value={config()?.style.nowPlaying.backgroundProgress}
-            onChange={(event) => setConfig({ style: { nowPlaying: { backgroundProgress: event.target.value } } })}
+            onColorChange={(color) => setConfig({ style: { nowPlaying: { backgroundProgress: color } } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -197,22 +194,18 @@ const ThemeContainer = () => {
           <div class={'text-md'}>
             글씨 색상
           </div>
-          <input
-            type={'color'}
-            class={'input color'}
+          <ColorPicker
             value={config()?.style.lyric.color}
-            onChange={(event) => setConfig({ style: { lyric: { color: event.target.value } } })}
+            onColorChange={(color) => setConfig({ style: { lyric: { color } } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
           <div class={'text-md'}>
             배경 색상
           </div>
-          <input
-            type={'color'}
-            class={'input color'}
+          <ColorPicker
             value={config()?.style.lyric.background}
-            onChange={(event) => setConfig({ style: { lyric: { background: event.target.value } } })}
+            onColorChange={(color) => setConfig({ style: { lyric: { background: color } } })}
           />
         </Card>
       </div>
