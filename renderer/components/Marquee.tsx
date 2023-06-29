@@ -41,6 +41,7 @@ const Marquee = (props: MarqueeProps) => {
       characterData: true,
       childList: true,
       subtree: true,
+      attributes: true,
     });
   });
 

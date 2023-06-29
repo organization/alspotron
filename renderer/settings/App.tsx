@@ -1,10 +1,10 @@
 import { Match, Switch, createEffect, createSignal } from 'solid-js';
+import { Transition } from 'solid-transition-group';
 
 import ListView, { ListItemData } from './components/ListView';
-import type { Config } from '../../src/config';
 import InfoContainer from './containers/InfoContainer';
-import { Transition } from 'solid-transition-group';
 import PositionContainer from './containers/PositionContainer';
+import ThemeContainer from './containers/ThemeContainer';
 
 const TAB_LIST: ListItemData[] = [
   {
@@ -16,10 +16,15 @@ const TAB_LIST: ListItemData[] = [
       </svg>
     )
   },
-  // {
-  //   id: 'theme',
-  //   label: '테마',
-  // },
+  {
+    id: 'theme',
+    label: '테마',
+    icon: (
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3.839 5.858c2.94-3.916 9.03-5.055 13.364-2.36 4.28 2.66 5.854 7.777 4.1 12.577-1.655 4.533-6.016 6.328-9.159 4.048-1.177-.854-1.634-1.925-1.854-3.664l-.106-.987-.045-.398c-.123-.934-.311-1.352-.705-1.572-.535-.298-.892-.305-1.595-.033l-.351.146-.179.078c-1.014.44-1.688.595-2.541.416l-.2-.047-.164-.047c-2.789-.864-3.202-4.647-.565-8.157Zm.984 6.716.123.037.134.03c.439.087.814.015 1.437-.242l.602-.257c1.202-.493 1.985-.54 3.046.05.917.512 1.275 1.298 1.457 2.66l.053.459.055.532.047.422c.172 1.361.485 2.09 1.248 2.644 2.275 1.65 5.534.309 6.87-3.349 1.516-4.152.174-8.514-3.484-10.789-3.675-2.284-8.899-1.306-11.373 1.987-2.075 2.763-1.82 5.28-.215 5.816Zm11.225-1.994a1.25 1.25 0 1 1 2.414-.647 1.25 1.25 0 0 1-2.414.647Zm.494 3.488a1.25 1.25 0 1 1 2.415-.647 1.25 1.25 0 0 1-2.415.647ZM14.07 7.577a1.25 1.25 0 1 1 2.415-.647 1.25 1.25 0 0 1-2.415.647Zm-.028 8.998a1.25 1.25 0 1 1 2.414-.647 1.25 1.25 0 0 1-2.414.647Zm-3.497-9.97a1.25 1.25 0 1 1 2.415-.646 1.25 1.25 0 0 1-2.415.646Z" fill="#ffffff"/>
+      </svg>
+    )
+  },
   // {
   //   id: 'plugin',
   //   label: '플러그인',
@@ -49,7 +54,7 @@ const App = () => {
     >
       <ListView
         value={[tabId, setTabId]}
-        class={'w-[312px] '}
+        class={'w-[312px] shrink-0'}
         items={TAB_LIST}
       />
       <Transition name={'tab'} mode={'outin'}>
@@ -60,7 +65,10 @@ const App = () => {
           <Match when={tabId() === 'about'}>
             <InfoContainer />
           </Match>
-          <Match when={tabId() === 'theme' || tabId() === 'plugin'}>
+          <Match when={tabId() === 'theme'}>
+            <ThemeContainer />
+          </Match>
+          <Match when={tabId() === 'plugin'}>
             <div class={'flex-1 fluent-scrollbar'}>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec elit sed velit gravida viverra eleifend non diam. Quisque turpis dui, posuere eu accumsan a, porttitor vitae orci. Nullam placerat elementum massa gravida laoreet. In blandit urna sit amet justo ultricies facilisis. Proin eget dictum purus. In condimentum facilisis mauris a pretium. Maecenas sollicitudin arcu id vestibulum fringilla. Maecenas dictum tincidunt nisl eu tristique. Suspendisse potenti. Mauris sit amet augue at purus dictum tempor id sit amet nibh. Aenean quis justo ac sem egestas tristique. Sed purus enim, pellentesque vitae dictum a, pretium vehicula velit.
 

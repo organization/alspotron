@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 @layer components {
-  
   .btn-icon {
     @apply !px-2;
   }
@@ -51,6 +50,40 @@
     outline-none py-1 px-3 mb-[1px] focus:mb-[0px]
   }
 
+  .input.color {
+    @apply px-0 py-0 w-8 aspect-square text-center;
+  }
+  .input.color::-webkit-color-swatch {
+    @apply max-w-[16px] max-h-[16px] rounded-full border-none mx-auto;
+  }
+
+  .select.solid-select-container {
+    @apply !border-0;
+  }
+  .select .solid-select-control {
+    @apply bg-gray-100/5 text-white rounded-[4px] hover:bg-gray-100/10 focus:bg-black/10
+    border-[1px] border-gray-100/[2%] border-b-gray-100/20
+    !outline-none py-1 px-3 mb-[1px];
+  }
+  .select .solid-select-control:has(~ .solid-select-list) {
+    @apply border-b-primary-500 border-gray-100/10 mb-[0px] border-b-2;
+  }
+  .select .solid-select-list {
+    @apply bg-gray-900 shadow-md rounded-[4px] p-1 fluent-scrollbar max-w-full;
+  }
+  .select .solid-select-placeholder {
+    @apply text-white/30;
+  }
+  .select .solid-select-option {
+    @apply truncate;
+  }
+  .select .solid-select-option:hover {
+    @apply bg-white/10 rounded;
+  }
+  .select .solid-select-option[data-focused=true] {
+    @apply bg-primary-500/30 rounded;
+  }
+
   .spinner-shape {
     fill: none;
     stroke-width: var(--stroke-width);
@@ -88,7 +121,7 @@ html, body, #app {
   height: 100%;
 }
 
-* {
+:where(*) {
   font-size: 14px;
   box-sizing: border-box;
 }

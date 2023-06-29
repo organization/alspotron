@@ -97,7 +97,21 @@ const App = () => {
       <TransitionGroup name={'lyric'}>
         <For each={lyrics()?.[lyricIndex()] ?? []}>
           {(item, index) => (
-            <LyricsItem status={status()} delay={index()}>
+            <LyricsItem
+              status={status()}
+              delay={index()}
+              style={`
+                font-family: ${config()?.style.font};
+                font-weight: ${config()?.style.fontWeight};
+                font-size: ${
+                  typeof config()?.style.lyric.fontSize === 'string'
+                    ? config()?.style.lyric.fontSize
+                    : `${config()?.style.lyric.fontSize}px`
+                };
+                color: ${config()?.style.lyric.color};
+                background-color: ${config()?.style.lyric.background};
+              `}
+            >
               {item}
             </LyricsItem>
           )}
@@ -110,6 +124,23 @@ const App = () => {
         artist={artist()}
         percent={progress() / duration()}
         status={status()}
+        style={`
+          max-width: ${config()?.style.nowPlaying.maxWidth}px;
+          font-family: ${config()?.style.font};
+          font-weight: ${config()?.style.fontWeight};
+          color: ${config()?.style.nowPlaying.color};
+          background-color: ${config()?.style.nowPlaying.background};
+        `}
+        textStyle={`
+          font-size: ${
+            typeof config()?.style.nowPlaying.fontSize === 'string'
+              ? config()?.style.nowPlaying.fontSize
+              : `${config()?.style.nowPlaying.fontSize}px`
+          };
+        `}
+        progressStyle={`
+          background-color: ${config()?.style.nowPlaying.backgroundProgress};
+        `}
       />
     </div>
   )

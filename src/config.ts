@@ -5,21 +5,19 @@ import fs from 'fs/promises';
 export interface Config {
   style: {
     font: string;
+    fontWeight: string;
 
     nowPlaying: {
       color: string;
       background: string;
       backgroundProgress: string;
       fontSize: number;
-      width: number;
+      maxWidth: number;
     };
     lyric: {
       color: string;
       background: string;
       fontSize: number;
-      width: number;
-      height: number;
-      align: string;
     };
   };
 
@@ -36,21 +34,20 @@ export interface Config {
 export const DEFAULT_CONFIG = {
   style: {
     font: 'KoPubWorldDotum',
+    fontWeight: '400',
+
     nowPlaying: {
       color: '#FFFFFF',
       background: 'rgba(29, 29, 29, .50)',
       backgroundProgress: 'rgba(29, 29, 29, .80)',
       fontSize: 11,
-      width: 300
+      maxWidth: 300
     },
 
     lyric: {
       color: '#FFFFFF',
       background: 'rgba(29, 29, 29, .70)',
       fontSize: 12,
-      width: 500,
-      height: 150,
-      align: 'right'
     }
   },
 

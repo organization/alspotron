@@ -2,6 +2,7 @@
 
 import fs from 'fs';
 import { contextBridge, ipcRenderer } from 'electron';
+import { getFonts } from 'font-list';
 
 const withPrototype = (obj: Record<string, any>) => {
   const protos = Object.getPrototypeOf(obj);
@@ -22,4 +23,5 @@ const withPrototype = (obj: Record<string, any>) => {
 };
 
 contextBridge.exposeInMainWorld('fs', fs);
+contextBridge.exposeInMainWorld('getFont', getFonts);
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer));
