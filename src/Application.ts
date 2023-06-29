@@ -30,16 +30,26 @@ class Application {
         type: 'normal',
         label: '가사 선택',
         click: () => {
-          this.initLyricsWindow();
-          this.lyricsWindow.show();
+          if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
+            if (this.lyricsWindow.isMinimized()) this.lyricsWindow.restore();
+            this.lyricsWindow.focus();
+          } else {
+            this.initLyricsWindow();
+            this.lyricsWindow.show();
+          }
         }
       },
       {
         type: 'normal',
         label: '설정',
         click: () => {
-          this.initSettingsWindow();
-          this.settingsWindow.show();
+          if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
+            if (this.settingsWindow.isMinimized()) this.settingsWindow.restore();
+            this.settingsWindow.focus();
+          } else {
+            this.initSettingsWindow();
+            this.settingsWindow.show();
+          }
         }
       },
       {
