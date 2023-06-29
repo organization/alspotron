@@ -37,21 +37,6 @@ const TAB_LIST: ListItemData[] = [
 
 const App = () => {
   const [tabId, setTabId] = createSignal(TAB_LIST[0].id);
-  const [value, setValue] = createSignal('');
-
-  createEffect(() => {
-    window.ipcRenderer.invoke('set-config', {
-      style: {
-        font: value(),
-      },
-    });
-  });
-
-  (async () => {
-    const config: Config = await window.ipcRenderer.invoke('get-config');
-
-    setValue(config.style.font);
-  })();
 
   return (
     <div
@@ -77,7 +62,6 @@ const App = () => {
           </Match>
           <Match when={tabId() === 'theme' || tabId() === 'plugin'}>
             <div class={'flex-1 fluent-scrollbar'}>
-              <input class={'input'} value={value()} onChange={(event) => setValue((event.target as HTMLInputElement).value)}></input>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec elit sed velit gravida viverra eleifend non diam. Quisque turpis dui, posuere eu accumsan a, porttitor vitae orci. Nullam placerat elementum massa gravida laoreet. In blandit urna sit amet justo ultricies facilisis. Proin eget dictum purus. In condimentum facilisis mauris a pretium. Maecenas sollicitudin arcu id vestibulum fringilla. Maecenas dictum tincidunt nisl eu tristique. Suspendisse potenti. Mauris sit amet augue at purus dictum tempor id sit amet nibh. Aenean quis justo ac sem egestas tristique. Sed purus enim, pellentesque vitae dictum a, pretium vehicula velit.
 
       Aenean purus ipsum, mattis id ante at, imperdiet semper nisi. Mauris et nisi vulputate, imperdiet ante vitae, aliquam elit. Curabitur rutrum, ante finibus vestibulum ornare, est ligula congue ipsum, ac tincidunt nisi nisl vitae purus. Proin condimentum orci vel justo volutpat ullamcorper. Aliquam in facilisis erat, id auctor erat. Suspendisse convallis facilisis odio, at dictum ex placerat non. Mauris eget augue dapibus, facilisis augue sed, tincidunt ante. Ut non finibus nisl, id vestibulum lorem. Duis iaculis elementum purus, quis convallis nisi tempus sed.

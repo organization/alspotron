@@ -68,15 +68,17 @@ export const DEFAULT_CONFIG = {
 let configFileTimeout: NodeJS.Timeout | null = null;
 const configSignal = createSignal<Config>(DEFAULT_CONFIG);
 (async () => {
-  const str = await fs.readFile('config.json', 'utf-8').catch(() => null);
+  const str = await fs.readFile('config.json', 'utf-8').catch(() => JSON.stringify(DEFAULT_CONFIG));
   try {
     const config = JSON.parse(str);
     configSignal[1](config);
-  } catch {}
+  } catch {
+    setConfig(DEFAULT_CONFIG);
+  }
 })();
 
 export const config = configSignal[0];
-export const setConfig = (params: Partial<Config>) => {
+export const setConfig = (params: DeepPartial<Config>) => {
   const value = {
     ...DEFAULT_CONFIG,
     ...configSignal[0](),
@@ -84,24 +86,24 @@ export const setConfig = (params: Partial<Config>) => {
 
     style: {
       ...DEFAULT_CONFIG.style,
-      ...configSignal[0]().style,
-      ...params.style,
+      ...configSignal[0]()?.style,
+      ...params?.style,
       nowPlaying: {
         ...DEFAULT_CONFIG.style.nowPlaying,
-        ...configSignal[0]().style.nowPlaying,
-        ...params.style?.nowPlaying,
+        ...configSignal[0]()?.style?.nowPlaying,
+        ...params?.style?.nowPlaying,
       },
       lyric: {
         ...DEFAULT_CONFIG.style.lyric,
-        ...configSignal[0]().style.lyric,
-        ...params.style?.lyric,
+        ...configSignal[0]()?.style?.lyric,
+        ...params?.style?.lyric,
       },
     },
 
     windowPosition: {
       ...DEFAULT_CONFIG.windowPosition,
-      ...configSignal[0]().windowPosition,
-      ...params.windowPosition,
+      ...configSignal[0]()?.windowPosition,
+      ...params?.windowPosition,
     },
   };
   
@@ -122,11 +124,13 @@ export interface LyricMapper {
 let lyricMapperFileTimeout: NodeJS.Timeout | null = null;
 const lyricMapperSignal = createSignal<LyricMapper>();
 (async () => {
-  const str = await fs.readFile('lyrics.json', 'utf-8').catch(() => null);
+  const str = await fs.readFile('lyrics.json', 'utf-8').catch(() => '{}');
   try {
     const lyricMapper = JSON.parse(str);
     lyricMapperSignal[1](lyricMapper);
-  } catch {}
+  } catch {
+    setLyricMapper({});
+  }
 })();
 
 export const lyricMapper = lyricMapperSignal[0];

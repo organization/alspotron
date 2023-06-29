@@ -144,7 +144,7 @@ class Application {
       return result.map((it) => ({ ...it, registerDate: it.registerDate.toISOString() }));
     });
 
-    ipcMain.handle('set-config', async (_, data: Partial<Config>) => {
+    ipcMain.handle('set-config', async (_, data: DeepPartial<Config>) => {
       setConfig(data);
       this.broadcast('config', config());
     });
