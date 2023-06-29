@@ -89,6 +89,7 @@ html, body, #app {
 }
 
 * {
+  font-size: 14px;
   box-sizing: border-box;
 }
 
@@ -144,11 +145,27 @@ html, body, #app {
 }
 
 .lyric-exit-active {
-  position: fixed;
+  position: absolute;
 }
 
 .lyric-exit-to {
   transform: translateY(-200%) scale(0.9);
   opacity: 0;
   filter: blur(4px);
+}
+
+.tab-enter-active {
+  transition: all 0.225s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.tab-exit-active {
+  transition: all 0.225s cubic-bezier(0.5, 0, 0.75, 0);
+}
+
+.tab-enter {
+  transform: translateY(128px);
+  opacity: 0;
+}
+
+.tab-exit-to {
+  opacity: 0;
 }
