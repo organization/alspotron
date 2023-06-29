@@ -1,6 +1,6 @@
 {
   "name": "alspotron",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Alspotify의 Electron 버전입니다",
   "main": "./dist/index.js",
   "scripts": {
