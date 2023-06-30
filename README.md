@@ -25,7 +25,7 @@
 
 2.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases) 
 
-    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 압축을 해제해주세요.
+    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
 
 3.  Alspotron Companion 설치  
 
@@ -43,11 +43,13 @@
 
 3.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)  
 
-    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 압축을 해제해주세요.
+    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
 
 ### 그 외 플레이어 (e.g. Apple Music)
 
--   [tuna-obs](https://github.com/univrsal/tuna)를 참고하세요.
+1.  [tuna-obs](https://github.com/univrsal/tuna)를 참고하여 관련 설정을 마쳐주세요.
+2.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)
+    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
 
 ### (모든 뮤직 플레이어 해당) 마지막 단계
 
