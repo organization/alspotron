@@ -87,12 +87,22 @@ const App = () => {
             placeholder={'작곡가'}
             value={artist()}
             onChange={() => setArtist((event.target as HTMLInputElement).value)}
+            onKeyPress={(event) => {
+              if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                void onSearch();
+              }
+            }}
           />
           <input
             class={'input flex-1'}
             placeholder={'제목'}
             value={title()}
             onChange={() => setTitle((event.target as HTMLInputElement).value)}
+            onKeyPress={(event) => {
+              if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                void onSearch();
+              }
+            }}
           />
           <button class={'btn-text btn-icon'} onClick={() => void onSearch()}>
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -131,7 +141,7 @@ const App = () => {
                       hour12: false,
                       dateStyle: 'medium',
                       timeStyle: 'medium',
-                    }) : 'sibal'}
+                    }) : 'Invalid Date'}
                   </div>
                   <Show when={metadata.playtime >= 0}>
                     <div class={'h-fit text-sm text-right text-white/50'}>
