@@ -10,6 +10,10 @@
     "postinstall": "npx patch-package",
     "build": "tsc&&vite build",
     "dist": "npm run build&&electron-builder",
+    "dist:all": "npm run build&&electron-builder -wl --x64 --arm64",
+    "dist:mac": "electron-builder --mac --x64 --arm64",
+    "dist:win": "electron-builder --win --ia32 --x64",
+    "dist:linux": "electron-builder --linux --x64 --arm64",
     "dist:only": "electron-builder"
   },
   "keywords": [],
@@ -55,7 +59,7 @@
   },
   "build": {
     "productName": "Alspotron",
-    "asar": false,
+    "asar": true,
     "appId": "me.suyong.alspotron",
     "extends": null,
     "files": [

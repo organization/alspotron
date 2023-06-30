@@ -183,7 +183,7 @@ class Application {
     this.mainWindow.setIgnoreMouseEvents(true, { forward: true });
 
     if (app.isPackaged) {
-      void this.mainWindow.loadFile(getFile('./index.html'));
+      void this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
     } else {
       void this.mainWindow.loadURL('http://localhost:5173');
     }
@@ -216,7 +216,7 @@ class Application {
     });
 
     if (app.isPackaged) {
-      void this.settingsWindow.loadFile(getFile('./settings.html'));
+      void this.settingsWindow.loadFile(path.join(__dirname, '../settings.html'));
     } else {
       void this.settingsWindow.loadURL('http://localhost:5173/settings.html');
     }
@@ -245,7 +245,7 @@ class Application {
     this.lyricsWindow.setMicaEffect();
 
     if (app.isPackaged) {
-      void this.lyricsWindow.loadFile(getFile('./lyrics.html'));
+      void this.lyricsWindow.loadFile(path.join(__dirname, '../lyrics.html'));
     } else {
       void this.lyricsWindow.loadURL('http://localhost:5173/lyrics.html');
     }
