@@ -4,8 +4,8 @@ import { LyricMapper } from '../../src/config';
 const useLyricMapper = () => {
   const [lyricMapper, setLyricMapper] = createSignal<LyricMapper>({});
 
-  (async () => {
-    const result = await window.ipcRenderer.invoke('get-lyric-mapper');
+  void (async () => {
+    const result = await window.ipcRenderer.invoke('get-lyric-mapper') as LyricMapper;
 
     setLyricMapper(result || {});
   })();

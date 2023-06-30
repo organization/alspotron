@@ -1,7 +1,8 @@
-import Marquee from '../../components/Marquee';
-import icon from '../../../assets/icon_music.png';
-import { JSX } from 'solid-js/jsx-runtime';
 import { splitProps } from 'solid-js';
+// eslint-disable-next-line import/no-unresolved
+import { JSX } from 'solid-js/jsx-runtime';
+import icon from '../../../assets/icon_music.png';
+import Marquee from '../../components/Marquee';
 import { cx } from '../../utils/classNames';
 
 interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
@@ -28,6 +29,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
   return (
     <div
       {...leftProps}
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       style={`--percent: ${local.percent * 100}%; opacity: ${local.status === 'stopped' ? 0.5 : 1}; ${leftProps.style}`}
       class={cx(
         `

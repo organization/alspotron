@@ -1,4 +1,5 @@
 import { Show, children, createSignal, mergeProps, onCleanup, onMount, splitProps } from 'solid-js';
+// eslint-disable-next-line import/no-unresolved
 import { JSX } from 'solid-js/jsx-runtime';
 
 import { cx } from '../utils/classNames';
@@ -63,7 +64,7 @@ const Marquee = (props: MarqueeProps) => {
         {child1()}
       </div>
       <Show when={useMarquee()}>
-        <div class={`marquee`} style={`padding-right: ${local.gap}px`}>
+        <div class={'marquee'} style={`padding-right: ${local.gap}px`}>
           {child2()}
         </div>
       </Show>

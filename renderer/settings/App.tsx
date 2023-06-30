@@ -1,4 +1,4 @@
-import { Match, Switch, createEffect, createSignal } from 'solid-js';
+import { Match, Switch, createSignal } from 'solid-js';
 import { Transition } from 'solid-transition-group';
 
 import ListView, { ListItemData } from './components/ListView';

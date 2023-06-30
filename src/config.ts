@@ -64,11 +64,11 @@ export const DEFAULT_CONFIG = {
 
 let configFileTimeout: NodeJS.Timeout | null = null;
 const configSignal = createSignal<Config>(DEFAULT_CONFIG);
-(async () => {
+void (async () => {
   const str = await fs.readFile('config.json', 'utf-8').catch(() => JSON.stringify(DEFAULT_CONFIG));
   try {
     const config = JSON.parse(str);
-    configSignal[1](config);
+    configSignal[1](config as Config);
   } catch {
     setConfig(DEFAULT_CONFIG);
   }
@@ -107,6 +107,7 @@ export const setConfig = (params: DeepPartial<Config>) => {
   configSignal[1](value);
 
   if (configFileTimeout) clearTimeout(configFileTimeout);
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   configFileTimeout = setTimeout(async () => {
     configFileTimeout = null;
 
@@ -120,11 +121,11 @@ export interface LyricMapper {
 
 let lyricMapperFileTimeout: NodeJS.Timeout | null = null;
 const lyricMapperSignal = createSignal<LyricMapper>();
-(async () => {
+void (async () => {
   const str = await fs.readFile('lyrics.json', 'utf-8').catch(() => '{}');
   try {
     const lyricMapper = JSON.parse(str);
-    lyricMapperSignal[1](lyricMapper);
+    lyricMapperSignal[1](lyricMapper as LyricMapper);
   } catch {
     setLyricMapper({});
   }
@@ -140,6 +141,7 @@ export const setLyricMapper = (params: Partial<LyricMapper>) => {
   lyricMapperSignal[1](value);
 
   if (lyricMapperFileTimeout) clearTimeout(lyricMapperFileTimeout);
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   lyricMapperFileTimeout = setTimeout(async () => {
     lyricMapperFileTimeout = null;
 

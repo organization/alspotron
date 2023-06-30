@@ -1,17 +1,19 @@
-import path from 'node:path';
-import fs from 'fs';
-
-import { app, BrowserWindow, Tray, Menu, shell } from 'electron';
-import { MicaBrowserWindow } from 'mica-electron';
-import { ipcMain } from 'electron/main';
 import cors from '@koa/cors';
 import alsong from 'alsong';
+import {app, BrowserWindow, Menu, shell, Tray} from 'electron';
+// eslint-disable-next-line import/no-unresolved
+import {ipcMain} from 'electron/main';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
-import type { RequestBody } from './types';
-import { getFile } from '../utils/resource';
-import { Config, LyricMapper, config, lyricMapper, setConfig, setLyricMapper } from './config';
+import {MicaBrowserWindow} from 'mica-electron';
+import {getFile} from '../utils/resource';
+import {Config, config, LyricMapper, lyricMapper, setConfig, setLyricMapper} from './config';
+import type {RequestBody} from './types';
+import path from 'node:path';
+
+type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
+type LyricMetadata = Awaited<ReturnType<typeof alsong>>;
 
 const iconPath = getFile('./assets/icon_square.png');
 
@@ -110,7 +112,7 @@ class Application {
     this.app.listen(1608, '127.0.0.1');
   }
 
-  broadcast(event: string, ...args: any[]) {
+  broadcast<T>(event: string, ...args: T[]) {
     this.mainWindow.webContents.send(event, ...args);
     if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) this.lyricsWindow.webContents.send(event, ...args);
     if (this.settingsWindow && !this.settingsWindow.isDestroyed()) this.settingsWindow.webContents.send(event, ...args);
@@ -118,7 +120,7 @@ class Application {
 
   initHook() {
     ipcMain.handle('get-lyric-by-id', async (_, id: number) => {
-      const lyric = await alsong.getLyricById(id).catch(() => null);
+      const lyric = await alsong.getLyricById(id).catch(() => null) as Lyric & { registerDate?: Date };
       if (lyric) delete lyric.registerDate;
 
       return lyric;
@@ -129,31 +131,29 @@ class Application {
       const artist = data?.artists?.join(', ') ?? '';
       const title = data?.title ?? '';
 
-      const metadata = await alsong(artist, title, {}).catch(() => []);
+      const metadata = await alsong(artist, title, {}).catch(() => []) as LyricMetadata[];
       if (metadata.length <= 0) return {};
 
-      const lyric = await alsong.getLyricById(metadata[0].lyricId).catch(() => ({ lyric: data.lyrics }));
-
-      return lyric;
+      return await alsong.getLyricById(metadata[0].lyricId).catch(() => ({lyric: data.lyrics}));
     });
     ipcMain.handle('search-lyric', async (_, data: { artist: string; title: string; duration?: number; }) => {
       const result = await alsong(data.artist, data.title, {
         playtime: data.duration,
-      }).catch(() => []);
+      }).catch(() => []) as (LyricMetadata & { registerDate: Date })[];
 
       return result.map((it) => ({ ...it, registerDate: it.registerDate.toISOString() }));
     });
 
-    ipcMain.handle('set-config', async (_, data: DeepPartial<Config>) => {
+    ipcMain.handle('set-config', (_, data: DeepPartial<Config>) => {
       setConfig(data);
       this.broadcast('config', config());
     });
-    ipcMain.handle('get-config', async () => config());
-    ipcMain.handle('set-lyric-mapper', async (_, data: Partial<LyricMapper>) => {
+    ipcMain.handle('get-config', () => config());
+    ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>) => {
       setLyricMapper(data);
       this.broadcast('lyric-mapper', lyricMapper());
     });
-    ipcMain.handle('get-lyric-mapper', async () => lyricMapper());
+    ipcMain.handle('get-lyric-mapper', () => lyricMapper());
   }
 
   initMainWindow() {
@@ -183,9 +183,9 @@ class Application {
     this.mainWindow.setIgnoreMouseEvents(true, { forward: true });
 
     if (app.isPackaged) {
-      this.mainWindow.loadFile(getFile('./index.html'));
+      void this.mainWindow.loadFile(getFile('./index.html'));
     } else {
-      this.mainWindow.loadURL(`http://localhost:5173`);
+      void this.mainWindow.loadURL('http://localhost:5173');
     }
   }
 
@@ -211,14 +211,14 @@ class Application {
     this.settingsWindow.setDarkTheme();
     this.settingsWindow.setMicaEffect();
     this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
-      shell.openExternal(url);
+      void shell.openExternal(url);
       return { action: 'deny' };
     });
 
     if (app.isPackaged) {
-      this.settingsWindow.loadFile(getFile('./settings.html'));
+      void this.settingsWindow.loadFile(getFile('./settings.html'));
     } else {
-      this.settingsWindow.loadURL(`http://localhost:5173/settings.html`);
+      void this.settingsWindow.loadURL('http://localhost:5173/settings.html');
     }
   }
   
@@ -245,11 +245,11 @@ class Application {
     this.lyricsWindow.setMicaEffect();
 
     if (app.isPackaged) {
-      this.lyricsWindow.loadFile(getFile('./lyrics.html'));
+      void this.lyricsWindow.loadFile(getFile('./lyrics.html'));
     } else {
-      this.lyricsWindow.loadURL(`http://localhost:5173/lyrics.html`);
+      void this.lyricsWindow.loadURL('http://localhost:5173/lyrics.html');
     }
   }
-};
+}
 
 export default Application;

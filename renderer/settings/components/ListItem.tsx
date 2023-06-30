@@ -1,5 +1,5 @@
-import { cx } from '../../utils/classNames';
 import { JSX, Show, splitProps } from 'solid-js';
+import { cx } from '../../utils/classNames';
 
 export interface ListItemProps extends JSX.LiHTMLAttributes<HTMLLIElement> {
   icon?: string | JSX.Element;
@@ -28,7 +28,7 @@ const ListItem = (props: ListItemProps) => {
         when={typeof local.icon === 'string'}
         fallback={local.icon as JSX.Element}
       >
-        <img src={local.icon as string} />
+        <img src={local.icon as string} alt='Local Icon'/>
       </Show>
       <div class={'text-md ml-4'}>
         {local.title}

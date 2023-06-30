@@ -1,11 +1,14 @@
-import { Accessor, For, createEffect, createMemo, createSignal, on, untrack } from 'solid-js';
+import alsong from 'alsong';
+import { For, createEffect, createMemo, createSignal, on } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
+import useConfig from '../hooks/useConfig';
+import useLyricMapper from '../hooks/useLyricMapper';
+import { UpdateData } from '../types';
 import LyricProgressBar from './components/LyricProgressBar';
 import LyricsItem from './components/LyricsItem';
-import { UpdateData } from '../types';
-import useLyricMapper from '../hooks/useLyricMapper';
-import useConfig from '../hooks/useConfig';
+
+type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
 
 const App = () => {
   const [progress, setProgress] = createSignal(0);
@@ -35,7 +38,7 @@ const App = () => {
     return timestamp[index];
   });
 
-  window.ipcRenderer.on('update', async (_, message) => {
+  window.ipcRenderer.on('update', (_, message: { data: UpdateData }) => {
     const data: UpdateData = message.data;
 
     setOriginalData(data);
@@ -57,9 +60,9 @@ const App = () => {
 
     const lyric = (
       typeof id === 'number'
-        ? (await window.ipcRenderer.invoke('get-lyric-by-id', id) ?? data)
-        : await window.ipcRenderer.invoke('get-lyric', data)
-    );
+        ? (await window.ipcRenderer.invoke('get-lyric-by-id', id) as Lyric ?? data)
+        : await window.ipcRenderer.invoke('get-lyric', data) as Lyric
+    )
 
     if (lyric?.lyric) setLyrics(lyric.lyric);
     else setLyrics(null);

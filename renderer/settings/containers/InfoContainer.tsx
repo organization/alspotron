@@ -1,6 +1,5 @@
 import Card from '../../components/Card';
 
-import packageJson from '../../../package.json';
 
 const InfoContainer = () => {
   const onLink = (url: string) => {
@@ -29,7 +28,7 @@ const InfoContainer = () => {
             https://github.com/organization/alspotron
           </div>
         </div>
-        <div class={'flex-1'}></div>
+        <div class={'flex-1'} />
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" fill="#ffffff"/>
         </svg>
@@ -38,7 +37,7 @@ const InfoContainer = () => {
         제작자
       </div>
       <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/HelloWorld017')}>
-        <img src={'https://avatars.githubusercontent.com/u/3919433?s=64&v=4'} class={'w-8 h-8 mr-3 rounded-full'} />
+        <img src={'https://avatars.githubusercontent.com/u/3919433?s=64&v=4'} class={'w-8 h-8 mr-3 rounded-full'} alt='Khinenw Profile Image'/>
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>
             Khinenw
@@ -47,13 +46,13 @@ const InfoContainer = () => {
             Alspotify 원작자
           </div>
         </div>
-        <div class={'flex-1'}></div>
+        <div class={'flex-1'} />
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" fill="#ffffff"/>
         </svg>
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/Su-Yong')}>
-        <img src={'https://avatars.githubusercontent.com/u/13764936?s=64&v=4'} class={'w-8 h-8 mr-3 rounded-full'} />
+        <img src={'https://avatars.githubusercontent.com/u/13764936?s=64&v=4'} class={'w-8 h-8 mr-3 rounded-full'} alt='Su-Yong Profile Image'/>
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>
             Su-Yong
@@ -62,13 +61,13 @@ const InfoContainer = () => {
             Alspotron 제작자
           </div>
         </div>
-        <div class={'flex-1'}></div>
+        <div class={'flex-1'} />
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" fill="#ffffff"/>
         </svg>
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/JellyBrick')}>
-        <img src={'https://avatars.githubusercontent.com/u/16558115?s=64&v=4'} class={'w-8 h-8 mr-3 rounded-full'} />
+        <img src={'https://avatars.githubusercontent.com/u/16558115?s=64&v=4'} class={'w-8 h-8 mr-3 rounded-full'} alt='JellyBrick Profile Image'/>
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>
             JellyBrick
@@ -77,7 +76,7 @@ const InfoContainer = () => {
             Alspotron 제작자
           </div>
         </div>
-        <div class={'flex-1'}></div>
+        <div class={'flex-1'} />
         <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" fill="#ffffff"/>
         </svg>

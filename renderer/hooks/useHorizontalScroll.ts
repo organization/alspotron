@@ -11,13 +11,13 @@ const useHorizontalScroll = (
 ) => {
   let scrollWidth: number;
   let targetLeft: number;
-  let getScrollStep = () => scrollWidth / offset;
+  const getScrollStep = () => scrollWidth / offset;
 
   const scrollLeft = () => {
-    let beforeLeft = container.scrollLeft;
-    let wantDx = getScrollStep();
-    let diff = targetLeft - container.scrollLeft;
-    let dX = wantDx >= Math.abs(diff) ? diff : Math.sign(diff) * wantDx;
+    const beforeLeft = container.scrollLeft;
+    const wantDx = getScrollStep();
+    const diff = targetLeft - container.scrollLeft;
+    const dX = wantDx >= Math.abs(diff) ? diff : Math.sign(diff) * wantDx;
 
     container.scrollBy(dX, 0);
 

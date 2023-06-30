@@ -1,7 +1,8 @@
-import { cx } from '../utils/classNames';
+// eslint-disable-next-line import/no-unresolved
 import { JSX } from 'solid-js/jsx-runtime';
+import { cx } from '../utils/classNames';
 
-export interface CardProps extends JSX.HTMLAttributes<HTMLDivElement> {}
+export type CardProps = JSX.HTMLAttributes<HTMLDivElement>
 const Card = (props: CardProps) => {
   return (
     <div

@@ -1,13 +1,13 @@
 import { Show, createEffect, createSignal, on } from 'solid-js';
 
+import Card from '../components/Card';
+import Marquee from '../components/Marquee';
+import useLyricMapper from '../hooks/useLyricMapper';
 import LyricProgressBar from '../main/components/LyricProgressBar';
 
 import { UpdateData } from '../types';
-import Card from '../components/Card';
 
 import type alsong from 'alsong';
-import useLyricMapper from '../hooks/useLyricMapper';
-import Marquee from '../components/Marquee';
 
 type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
 
@@ -24,7 +24,7 @@ const SideBar = () => {
 
   const [lyricMapper] = useLyricMapper();
   
-  window.ipcRenderer.on('update', async (_, message) => {
+  window.ipcRenderer.on('update', (_, message: { data: UpdateData }) => {
     const data: UpdateData = message.data;
 
     setOriginalData(data);
@@ -43,7 +43,7 @@ const SideBar = () => {
     if (!data) return;
 
     const id: number | undefined = mapper?.[`${data.title}:${data.cover_url}`];
-    const lyric: Lyric = await window.ipcRenderer.invoke('get-lyric-by-id', id);
+    const lyric: Lyric = await window.ipcRenderer.invoke('get-lyric-by-id', id) as Lyric;
 
     if (lyric) setLyric(lyric);
     else setLyric(null);

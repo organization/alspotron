@@ -3,8 +3,8 @@ import usePopper from 'solid-popper';
 
 import { cx } from '../utils/classNames';
 
-import type { JSX } from 'solid-js/jsx-runtime';
 import type { Options } from '@popperjs/core';
+import type { JSX } from 'solid-js/jsx-runtime';
 
 export interface SelectProps extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
   placeholder?: string;

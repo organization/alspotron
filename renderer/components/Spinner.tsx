@@ -1,6 +1,7 @@
+import { mergeProps, splitProps } from 'solid-js';
+// eslint-disable-next-line import/no-unresolved
 import { JSX } from 'solid-js/jsx-runtime';
 import { cx } from '../utils/classNames'
-import { mergeProps, splitProps } from 'solid-js';
 
 export interface SpinnerProps extends JSX.HTMLAttributes<HTMLDivElement> {
   strokeWidth?: number;
@@ -13,7 +14,7 @@ const Spinner = (props: SpinnerProps): JSX.Element => {
 
     return `M 12 ${width} A ${12 - width} ${12 - width} 0 1 1 ${width} 12`;
   };
-  const dashLength = () => 57.5 - local.strokeWidth * 2.5;
+  const dashLength = () => 57.5 - (local.strokeWidth * 2.5);
 
   return (
     <div

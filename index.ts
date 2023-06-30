@@ -4,7 +4,7 @@ import Application from './src/Application';
 
 const application = new Application();
 
-(async () => {
+void (async () => {
   await app.whenReady();
 
   application.initTray();

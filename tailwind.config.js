@@ -9,8 +9,8 @@ delete colors.blueGray;
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./renderer/index.html",
-    "./renderer/**/*.{js,ts,jsx,tsx}",
+    './renderer/index.html',
+    './renderer/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     colors: {
@@ -22,11 +22,11 @@ module.exports = {
       warn: colors.yellow,
     },
     fontSize: {
-      xs: '0.75rem',
-      sm: '0.875rem',
-      base: '0.875rem',
-      lg: '1rem',
-      xl: '1.25rem',
+      'xs': '0.75rem',
+      'sm': '0.875rem',
+      'base': '0.875rem',
+      'lg': '1rem',
+      'xl': '1.25rem',
       '2xl': '1.563rem',
       '3xl': '1.953rem',
       '4xl': '2.441rem',

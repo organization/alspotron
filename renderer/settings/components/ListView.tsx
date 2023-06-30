@@ -1,9 +1,10 @@
 import { For, Signal, createSignal, splitProps } from 'solid-js';
+// eslint-disable-next-line import/no-unresolved
 import { JSX } from 'solid-js/jsx-runtime';
 
+import { cx } from '../../utils/classNames';
 import ListItem from './ListItem';
 
-import { cx } from '../../utils/classNames';
 
 export interface ListItemData {
   id: string;
@@ -35,7 +36,7 @@ const ListView = (props: ListViewProps) => {
       class={cx('relative flex flex-col justify-start items-start p-4 gap-1', leftProps.class)}
     >
       <div
-        style={`translate: 0px ${16 + index() * 40}px;`}
+        style={`translate: 0px ${16 + (index() * 40)}px;`}
         class={'absolute w-[3px] h-4 bg-primary-500 rounded-full left-4 top-[10px] bottom-[10px] transition-all duration-300 ease-[cubic-bezier(0.87, 0, 0.13, 1)]'}
       />
       <For each={local.items}>

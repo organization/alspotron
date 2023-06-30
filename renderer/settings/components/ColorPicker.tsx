@@ -1,5 +1,5 @@
-import { createEffect, createSignal } from 'solid-js';
 import Color from 'color';
+import { createEffect, createSignal } from 'solid-js';
 
 import colors from 'tailwindcss/colors';
 
@@ -81,7 +81,7 @@ const ColorPicker = (props: ColorPickerProps) => {
         <div
           class={'w-[12px] h-[12px] rounded-full bg-primary-500 z-0'}
           style={{
-            translate: `var(--alpha) 0`,
+            'translate': 'var(--alpha) 0',
             'box-shadow': `0 0 0 3px ${colors.gray[900]}, 0 0 0 4px ${colors.gray[500]}`
           }}
         />

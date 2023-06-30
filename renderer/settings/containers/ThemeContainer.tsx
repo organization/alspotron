@@ -1,25 +1,27 @@
-import { Show, createEffect, createSignal, onMount } from 'solid-js';
+import { Show, createSignal, onMount } from 'solid-js';
 
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
+import useConfig from '../../hooks/useConfig';
+import useHorizontalScroll from '../../hooks/useHorizontalScroll';
 import ColorPicker from '../components/ColorPicker';
 
-import useHorizontalScroll from '../../hooks/useHorizontalScroll';
-import useConfig from '../../hooks/useConfig';
 
 const ThemeContainer = () => {
-  let presetContainer: HTMLDivElement | null = null;
+  const presetContainer: HTMLDivElement | null = null;
 
   const [config, setConfig] = useConfig();
   const [keyword, setKeyword] = createSignal();
   const [fontList, setFontList] = createSignal<string[]>([]);
 
-  (async () => {
+  void (async () => {
     setFontList(await window.getFont({ disableQuoting: true }));
   })();
 
-  onMount(async () => {
-    useHorizontalScroll(presetContainer!);
+  onMount(() => {
+    if (presetContainer) {
+      useHorizontalScroll(presetContainer);
+    }
   });
 
   return (
@@ -72,7 +74,7 @@ const ThemeContainer = () => {
             popupClass={'p-1 bg-gray-800 rounded'}
             options={fontList()}
             value={config()?.style?.font}
-            onChange={(value) => setConfig({ style: { font: value } })}
+            onChange={(value) => void setConfig({ style: { font: value } })}
             renderItem={(props, option) => (
               <li
                 {...props}
@@ -108,7 +110,7 @@ const ThemeContainer = () => {
               '900',
             ]}
             value={config()?.style?.fontWeight ?? '400'}
-            onChange={(value) => setConfig({ style: { fontWeight: value } })}
+            onChange={(value) => void setConfig({ style: { fontWeight: value } })}
             renderItem={(props, option) => (
               <li
                 {...props}
@@ -133,7 +135,7 @@ const ThemeContainer = () => {
             type={'number'}
             class={'input'}
             value={config()?.style.nowPlaying.fontSize}
-            onChange={(event) => setConfig({ style: { nowPlaying: { fontSize: event.target.valueAsNumber } } })}
+            onChange={(event) => void setConfig({ style: { nowPlaying: { fontSize: event.target.valueAsNumber } } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -142,7 +144,7 @@ const ThemeContainer = () => {
           </div>
           <ColorPicker
             value={config()?.style.nowPlaying.color}
-            onColorChange={(color) => setConfig({ style: { nowPlaying: { color } } })}
+            onColorChange={(color) => void setConfig({ style: { nowPlaying: { color } } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -151,7 +153,7 @@ const ThemeContainer = () => {
           </div>
           <ColorPicker
             value={config()?.style.nowPlaying.background}
-            onColorChange={(color) => setConfig({ style: { nowPlaying: { background: color } } })}
+            onColorChange={(color) => void setConfig({ style: { nowPlaying: { background: color } } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -160,7 +162,7 @@ const ThemeContainer = () => {
           </div>
           <ColorPicker
             value={config()?.style.nowPlaying.backgroundProgress}
-            onColorChange={(color) => setConfig({ style: { nowPlaying: { backgroundProgress: color } } })}
+            onColorChange={(color) => void setConfig({ style: { nowPlaying: { backgroundProgress: color } } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -171,7 +173,7 @@ const ThemeContainer = () => {
             type={'number'}
             class={'input'}
             value={config()?.style.nowPlaying.maxWidth}
-            onChange={(event) => setConfig({ style: { nowPlaying: { maxWidth: event.target.valueAsNumber } } })}
+            onChange={(event) => void setConfig({ style: { nowPlaying: { maxWidth: event.target.valueAsNumber } } })}
           />
         </Card>
       </div>
@@ -187,7 +189,7 @@ const ThemeContainer = () => {
             type={'number'}
             class={'input'}
             value={config()?.style.lyric.fontSize}
-            onChange={(event) => setConfig({ style: { lyric: { fontSize: event.target.valueAsNumber } } })}
+            onChange={(event) => void setConfig({ style: { lyric: { fontSize: event.target.valueAsNumber } } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -196,7 +198,7 @@ const ThemeContainer = () => {
           </div>
           <ColorPicker
             value={config()?.style.lyric.color}
-            onColorChange={(color) => setConfig({ style: { lyric: { color } } })}
+            onColorChange={(color) => void setConfig({ style: { lyric: { color } } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -205,7 +207,7 @@ const ThemeContainer = () => {
           </div>
           <ColorPicker
             value={config()?.style.lyric.background}
-            onColorChange={(color) => setConfig({ style: { lyric: { background: color } } })}
+            onColorChange={(color) => void setConfig({ style: { lyric: { background: color } } })}
           />
         </Card>
       </div>

@@ -5,7 +5,7 @@ export interface UpdateData {
   progress: number;
   duration: number;
   cover_url: string;
-  lyrics: {
+  lyric: {
     [key: string]: string[];
   }
 }

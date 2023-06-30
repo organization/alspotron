@@ -2,11 +2,11 @@ import { For, Show, createSignal } from 'solid-js';
 
 import Card from '../components/Card';
 import Spinner from '../components/Spinner';
+import useLyricMapper from '../hooks/useLyricMapper';
+import { UpdateData } from '../types';
 import SideBar from './SideBar';
 
-import { UpdateData } from '../types';
 import type alsong from 'alsong';
-import useLyricMapper from '../hooks/useLyricMapper';
 
 type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>[number];
 
@@ -18,9 +18,9 @@ const App = () => {
   const [loading, setLoading] = createSignal(false);
   const [lyricMetadata, setLyricMetadata] = createSignal<LyricMetadata[]>([]);
 
-  const [_, setLyricMapper] = useLyricMapper();
+  const setLyricMapper = useLyricMapper()[1];
 
-  window.ipcRenderer.on('update', async (_, message) => {
+  window.ipcRenderer.on('update', (_, message: { data: UpdateData }) => {
     const data: UpdateData = message.data;
 
     if (originalData()?.title !== data.title) {
@@ -28,7 +28,7 @@ const App = () => {
       setArtist(data.artists.join(', '));
       setOriginalData(data);
       
-      onSearch();
+      void onSearch();
     }
   });
 
@@ -37,7 +37,7 @@ const App = () => {
     const result = await window.ipcRenderer.invoke('search-lyric', {
       title: title(),
       artist: artist(),
-    });
+    }) as LyricMetadata[] & { registerDate: string };
 
     setLyricMetadata(result);
     setLoading(false);
@@ -53,7 +53,7 @@ const App = () => {
       [`${data.title}:${data.cover_url}`]: metadata.lyricId,
     };
 
-    setLyricMapper(newMapper);
+    await setLyricMapper(newMapper);
     setLoading(false);
   };
 
@@ -94,7 +94,7 @@ const App = () => {
             value={title()}
             onChange={() => setTitle((event.target as HTMLInputElement).value)}
           />
-          <button class={'btn-text btn-icon'} onClick={onSearch}>
+          <button class={'btn-text btn-icon'} onClick={() => void onSearch()}>
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" fill="#ffffff" />
             </svg>
@@ -111,7 +111,7 @@ const App = () => {
           </Show>
           <For each={lyricMetadata()}>
             {(metadata) => (
-              <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onSelect(metadata)}>
+              <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => void onSelect(metadata)}>
                 <div class={'flex flex-col justify-center items-start'}>
                   <div class={'h-fit text-xs text-white/50'}>
                     ID: {metadata.lyricId}
