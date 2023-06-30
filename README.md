@@ -69,7 +69,7 @@
 
 ## Migration from Alspotify
 
-[문서](https://github.com/organization/alspotron/MIGRATION_FROM_ALSPOTIFY.md)를 참고하세요.
+[문서](https://github.com/organization/alspotron/blob/master/MIGRATION_FROM_ALSPOTIFY.md)를 참고하세요.
 
 ## LICENSE
 
