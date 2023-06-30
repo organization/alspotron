@@ -2,6 +2,7 @@ import alsong from 'alsong';
 import { For, createEffect, createMemo, createSignal, on } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
+import IconMusic from '../../assets/icon_music.png';
 import useConfig from '../hooks/useConfig';
 import useLyricMapper from '../hooks/useLyricMapper';
 import { UpdateData } from '../types';
@@ -48,7 +49,9 @@ const App = () => {
     setArtist(data.artists.join(', '));
     setProgress(data.progress);
     setDuration(data.duration);
-    setCoverUrl(data.cover_url);
+    setCoverUrl(
+      data.cover_url.match(/^(?:file|https?):\/\//) ? data.cover_url : IconMusic,
+    );
   });
 
   createEffect(on([title, coverUrl, lyricMapper], async () => {

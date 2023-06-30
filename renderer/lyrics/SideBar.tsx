@@ -1,5 +1,6 @@
 import { Show, createEffect, createSignal, on } from 'solid-js';
 
+import IconMusic from '../../assets/icon_music.png';
 import Card from '../components/Card';
 import Marquee from '../components/Marquee';
 import useLyricMapper from '../hooks/useLyricMapper';
@@ -34,7 +35,9 @@ const SideBar = () => {
     setArtist(data.artists.join(', '));
     setProgress(data.progress);
     setDuration(data.duration);
-    setCoverUrl(data.cover_url);
+    setCoverUrl(
+      data.cover_url.match(/^(?:file|https?):\/\//) ? data.cover_url : IconMusic,
+    );
   });
 
   createEffect(on([title, coverUrl, lyricMapper], async () => {
