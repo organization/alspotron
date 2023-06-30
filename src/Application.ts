@@ -9,11 +9,13 @@ import Router from 'koa-router';
 import { MicaBrowserWindow, IS_WINDOWS_11 } from 'mica-electron';
 import { getFile } from '../utils/resource';
 import { Config, config, DEFAULT_CONFIG, LyricMapper, lyricMapper, setConfig, setLyricMapper } from './config';
+import { IOverlay } from './electron-overlay';
 import type { RequestBody } from './types';
 import path from 'node:path';
 
 type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
 type LyricMetadata = Awaited<ReturnType<typeof alsong>>;
+type Overlay = typeof IOverlay;
 
 const iconPath = getFile('./assets/icon_square.png');
 const glassOptions: Partial<GlasstronOptions> = {
@@ -32,6 +34,11 @@ app.commandLine.appendSwitch('enable-transparent-visuals');
 class Application {
   private tray: Tray;
   private app: Koa;
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  private overlay: Overlay = require(path.join(__dirname, 'electron-overlay.node')) as Overlay;
+  private markQuit = false;
+  private scaleFactor = 1.0;
+  private lastUpdate: RequestBody;
 
   public mainWindow: BrowserWindow;
   public settingsWindow: BrowserWindow;
@@ -116,6 +123,7 @@ class Application {
         type: 'normal',
         label: '종료',
         click: () => {
+          this.markQuit = true;
           app.quit();
         }
       },
@@ -183,6 +191,131 @@ class Application {
     this.app.listen(1608, '127.0.0.1');
   }
 
+  public addOverlayWindow(
+    name: string,
+    window: Electron.BrowserWindow,
+    dragborder = 0,
+    captionHeight = 0,
+    transparent = false
+  ) {
+    const display = screen.getDisplayNearestPoint(
+      screen.getCursorScreenPoint()
+    );
+
+    this.overlay.addWindow(window.id, {
+      name,
+      transparent,
+      resizable: window.isResizable(),
+      maxWidth: window.isResizable
+        ? display.bounds.width
+        : window.getBounds().width,
+      maxHeight: window.isResizable
+        ? display.bounds.height
+        : window.getBounds().height,
+      minWidth: window.isResizable ? 100 : window.getBounds().width,
+      minHeight: window.isResizable ? 100 : window.getBounds().height,
+      nativeHandle: window.getNativeWindowHandle().readUInt32LE(0),
+      rect: {
+        x: window.getBounds().x,
+        y: window.getBounds().y,
+        width: Math.floor(window.getBounds().width * this.scaleFactor),
+        height: Math.floor(window.getBounds().height * this.scaleFactor),
+      },
+      caption: {
+        left: dragborder,
+        right: dragborder,
+        top: dragborder,
+        height: captionHeight,
+      },
+      dragBorderWidth: dragborder,
+    });
+
+    window.webContents.on(
+      'paint',
+      (event, dirty, image: Electron.NativeImage) => {
+        if (this.markQuit) {
+          return;
+        }
+        this.overlay.sendFrameBuffer(
+          window.id,
+          image.getBitmap(),
+          image.getSize().width,
+          image.getSize().height
+        );
+      }
+    );
+
+    window.on('ready-to-show', () => {
+      window.focusOnWebView();
+    });
+
+    window.on('resize', () => {
+      console.log(`${name} resizing`)
+      this.overlay.sendWindowBounds(window.id, {
+        rect: {
+          x: window.getBounds().x,
+          y: window.getBounds().y,
+          width: Math.floor(window.getBounds().width * this.scaleFactor),
+          height: Math.floor(window.getBounds().height * this.scaleFactor),
+        },
+      });
+    });
+
+    const windowId = window.id;
+    window.on('closed', () => {
+      this.overlay.closeWindow(windowId);
+    });
+
+    window.webContents.on('cursor-changed', (event, type) => {
+      let cursor: string;
+      switch (type) {
+        case 'default':
+          cursor = 'IDC_ARROW';
+          break;
+        case 'pointer':
+          cursor = 'IDC_HAND';
+          break;
+        case 'crosshair':
+          cursor = 'IDC_CROSS';
+          break;
+        case 'text':
+          cursor = 'IDC_IBEAM';
+          break;
+        case 'wait':
+          cursor = 'IDC_WAIT';
+          break;
+        case 'help':
+          cursor = 'IDC_HELP';
+          break;
+        case 'move':
+          cursor = 'IDC_SIZEALL';
+          break;
+        case 'nwse-resize':
+          cursor = 'IDC_SIZENWSE';
+          break;
+        case 'nesw-resize':
+          cursor = 'IDC_SIZENESW';
+          break;
+        case 'ns-resize':
+          cursor = 'IDC_SIZENS';
+          break;
+        case 'ew-resize':
+          cursor = 'IDC_SIZEWE';
+          break;
+        case 'none':
+          cursor = '';
+          break;
+      }
+      if (cursor) {
+        this.overlay.sendCommand({ command: 'cursor', cursor });
+      }
+    });
+  }
+
+  initOverlay() {
+    this.overlay.start();
+  }
+
   broadcast<T>(event: string, ...args: T[]) {
     this.mainWindow.webContents.send(event, ...args);
     if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) this.lyricsWindow.webContents.send(event, ...args);
@@ -190,6 +323,20 @@ class Application {
   }
 
   initHook() {
+    ipcMain.once('start', () => {
+      this.initOverlay();
+
+      this.addOverlayWindow('StatusBar', this.mainWindow, 0, 0, true);
+
+      for (const window of this.overlay.getTopWindows()) {
+        // TEST game: Genshin Impact
+        // TODO: game (Window) selector
+        if (window.title.includes('원신') || window.title.includes('Genshin Impact') || window.title.includes('GenshinImpact')) {
+          console.log(`inject to TITLE: ${window.title} PID: ${window.processId}`);
+          this.overlay.injectProcess(window);
+        }
+      }
+    });
     ipcMain.handle('get-current-version', () => {
       return autoUpdater.currentVersion.version;
     });
@@ -269,6 +416,7 @@ class Application {
       webPreferences: {
         preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
+        offscreen: true, // must be 'true' for 'paint'
       },
       show: false,
       icon: iconPath,

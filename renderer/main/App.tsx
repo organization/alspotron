@@ -6,6 +6,7 @@ import LyricProgressBar from './components/LyricProgressBar';
 import Lyrics from './components/Lyrics';
 
 const App = () => {
+  window.ipcRenderer.send('start');
   const [config] = useConfig();
 
   return (
