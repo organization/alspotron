@@ -75,7 +75,7 @@ class Application {
         type: 'normal',
         label: 'devtools',
         click: () => {
-          this.mainWindow.webContents.openDevTools();
+          this.mainWindow.webContents.openDevTools({ mode: 'detach' });
         },
       },
     ]);
