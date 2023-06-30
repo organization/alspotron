@@ -2,6 +2,7 @@ import alsong from 'alsong';
 import { For, createEffect, createMemo, createSignal, on } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
+import TreeMap from 'ts-treemap';
 import IconMusic from '../../assets/icon_music.png';
 import useConfig from '../hooks/useConfig';
 import useLyricMapper from '../hooks/useLyricMapper';
@@ -18,7 +19,7 @@ const App = () => {
   const [artist, setArtist] = createSignal('N/A');
   const [status, setStatus] = createSignal('idle');
   const [coverUrl, setCoverUrl] = createSignal<string>();
-  const [lyrics, setLyrics] = createSignal<Record<string, string[]> | null>({});
+  const [lyrics, setLyrics] = createSignal<TreeMap<number, string[]> | null>(null);
   const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
 
   const [lyricMapper] = useLyricMapper();
@@ -27,16 +28,7 @@ const App = () => {
   const lyricIndex = createMemo(() => {
     if (lyrics() === null) return 0;
 
-    const timestamp = Object.keys(lyrics());
-
-    let index = 0;
-    for (; index < timestamp.length; index += 1) {
-      if (parseInt(timestamp[index + 1]) > progress() + 1225) {
-        break;
-      }
-    }
-
-    return timestamp[index];
+    return lyrics().lowerKey(progress() + 1225);
   });
 
   window.ipcRenderer.on('update', (_, message: { data: UpdateData }) => {
@@ -67,7 +59,13 @@ const App = () => {
         : await window.ipcRenderer.invoke('get-lyric', data) as Lyric
     )
 
-    if (lyric?.lyric) setLyrics(lyric.lyric);
+    if (lyric?.lyric) {
+      const treeMap = new TreeMap<number, string[]>();
+      for (const key in lyric.lyric) {
+        treeMap.set(~~key, lyric.lyric[key]);
+      }
+      setLyrics(treeMap);
+    }
     else setLyrics(null);
   }));
 
@@ -101,7 +99,7 @@ const App = () => {
       }}
     >
       <TransitionGroup name={'lyric'}>
-        <For each={lyrics()?.[lyricIndex()] ?? []}>
+        <For each={lyrics()?.get(lyricIndex()) ?? []}>
           {(item, index) => (
             <LyricsItem
               status={status()}

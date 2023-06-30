@@ -84,7 +84,7 @@ const App = () => {
         <div class={'w-full flex gap-2 mb-4 px-4'}>
           <input
             class={'input'}
-            placeholder={'작곡가'}
+            placeholder={'아티스트 명'}
             value={artist()}
             onChange={() => setArtist((event.target as HTMLInputElement).value)}
             onKeyPress={(event) => {
