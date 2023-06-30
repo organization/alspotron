@@ -95,7 +95,7 @@
       "title": "Alspotron"
     },
     "win": {
-      "icon": "assets/icon_square.ico",
+      "icon": "assets/icon256.ico",
       "target": [
         {
           "target": "nsis",
