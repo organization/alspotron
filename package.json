@@ -1,19 +1,24 @@
 {
   "name": "alspotron",
-  "version": "0.3.0",
-  "description": "Alspotify의 Electron 버전입니다",
+  "version": "0.3.1",
+  "description": "Alsoptron is a lyric viewer for YouTube Music / Spotify.",
   "main": "./dist/index.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:main\" \"npm run dev:renderer\"",
-    "dev:main": "tsc&&electron ./dist/index.js",
+    "dev:main": "tsc && electron ./dist/index.js",
     "dev:renderer": "vite",
     "postinstall": "npx patch-package",
-    "build": "tsc&&vite build",
-    "dist": "npm run build&&electron-builder",
-    "dist:all": "npm run build&&electron-builder -wl --x64 --arm64",
-    "dist:mac": "electron-builder --mac --x64 --arm64",
-    "dist:win": "electron-builder --win --ia32 --x64",
-    "dist:linux": "electron-builder --linux --x64 --arm64",
+    "clean": "del-cli dist",
+    "build": "tsc && vite build",
+    "dist": "npm run clean && npm run build && electron-builder -p never",
+    "dist:all": "npm run clean && npm run build && electron-builder --win --mac --linux -p never",
+    "dist:mac": "npm run clean && npm run build && electron-builder --mac dmg:x64 -p never",
+    "dist:mac:arm64": "npm run clean && npm run build && electron-builder --mac dmg:arm64 -p never",
+    "dist:win": "npm run clean && npm run build && electron-builder --win -p never",
+    "dist:linux": "npm run clean && npm run build && electron-builder --linux -p never",
+    "release:mac": "npm run clean && npm run build && electron-builder --mac -p always",
+    "release:win": "npm run clean && npm run build && electron-builder --win -p always",
+    "release:linux": "npm run clean && npm run build && electron-builder --linux -p always -c.snap.publish=github",
     "dist:only": "electron-builder"
   },
   "keywords": [],
@@ -29,6 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "autoprefixer": "^10.4.14",
     "concurrently": "^8.2.0",
+    "del-cli": "^5.0.0",
     "electron": "^25.2.0",
     "electron-builder": "^24.4.0",
     "eslint": "^8.43.0",
@@ -69,8 +75,16 @@
       "./assets/**"
     ],
     "mac": {
+      "icon": "assets/icon_square.icns",
+      "identity": null,
       "target": [
-        "default"
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
       ],
       "category": "public.app-category.music"
     },
@@ -78,19 +92,22 @@
       "title": "Alspotron"
     },
     "win": {
+      "icon": "assets/icon_square.ico",
       "target": [
         {
           "target": "nsis",
           "arch": [
             "x64",
-            "ia32"
+            "ia32",
+            "arm64"
           ]
         },
         {
           "target": "portable",
           "arch": [
             "x64",
-            "ia32"
+            "ia32",
+            "arm64"
           ]
         }
       ]
@@ -99,6 +116,16 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": true
+    },
+    "linux": {
+      "icon": "assets/icon256.png",
+      "category": "Utility",
+      "target": [
+        "AppImage",
+        "freebsd",
+        "deb",
+        "rpm"
+      ]
     },
     "directories": {
       "buildResources": "./build",

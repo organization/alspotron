@@ -1,0 +1,125 @@
+# from https://github.com/th-ch/youtube-music/blob/master/.github/workflows/build.yml
+name: Build Alspotron
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+env:
+  NODE_VERSION: "18.x"
+
+jobs:
+  build:
+    name: Build Alspotron
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          npm ci
+
+      # Build and release if it's the main repository
+      - name: Build and release on Mac
+        if: startsWith(matrix.os, 'macOS') && github.repository == 'organization/alspotron'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run release:mac
+
+      - name: Build and release on Linux
+        if: startsWith(matrix.os, 'ubuntu') && github.repository == 'organization/alspotron'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run release:linux
+
+      - name: Build and release on Windows
+        if: startsWith(matrix.os, 'windows') && github.repository == 'organization/alspotron'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run release:win
+
+      # Only build without release if it is a fork
+      - name: Build on Mac
+        if: startsWith(matrix.os, 'macOS') && github.repository != 'organization/alspotron'
+        run: |
+          npm run dist:mac
+
+      - name: Build on Linux
+        if: startsWith(matrix.os, 'ubuntu') && github.repository != 'organization/alspotron'
+        run: |
+          npm run dist:linux
+
+      - name: Build on Windows
+        if: startsWith(matrix.os, 'windows') && github.repository != 'organization/alspotron'
+        run: |
+          npm run dist:win
+
+  release:
+    runs-on: ubuntu-latest
+    name: Release Alspotron
+    if: github.repository == 'organization/alspotron' && github.ref == 'refs/heads/master'
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          npm ci
+
+      - name: Get version
+        run: |
+          echo "VERSION_TAG=v$(node -pe "require('./package.json').version")" >> $GITHUB_ENV
+
+      - name: Check if version already exists in tags
+        run: |
+          echo "VERSION_HASH=$(git rev-parse -q --verify 'refs/tags/${{ env.VERSION_TAG }}')" >> $GITHUB_ENV
+          echo "CHANGELOG_ANCHOR=$(echo $VERSION_TAG | sed -e 's/\.//g')" >> $GITHUB_ENV
+
+      - name: Fetch draft release
+        if: ${{ env.VERSION_HASH == '' }}
+        uses: cardinalby/git-get-release-action@v1
+        id: get_draft_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          latest: true
+          draft: true
+          searchLimit: 1
+
+      - name: Publish Release (if it does not exist)
+        if: ${{ env.VERSION_HASH == '' }}
+        uses: irongut/EditRelease@v1.2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          id: ${{ steps.get_draft_release.outputs.id }}
+          draft: false
+          prerelease: false
+          replacename: true
+          name: ${{ env.VERSION_TAG }}
+          replacebody: true
+          body: |
+
+            Thanks to all contributors! 🏅
