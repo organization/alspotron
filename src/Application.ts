@@ -1,12 +1,14 @@
 import cors from '@koa/cors';
 import alsong from 'alsong';
-import {app, BrowserWindow, Menu, shell, Tray} from 'electron';
+// eslint-disable-next-line import/no-unresolved
+import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
+import { app, BrowserWindow, Menu, shell, Tray } from 'electron';
 // eslint-disable-next-line import/no-unresolved
 import {ipcMain} from 'electron/main';
+import glasstron from 'glasstron';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
-import {MicaBrowserWindow} from 'mica-electron';
 import {getFile} from '../utils/resource';
 import {Config, config, LyricMapper, lyricMapper, setConfig, setLyricMapper} from './config';
 import type {RequestBody} from './types';
@@ -17,13 +19,15 @@ type LyricMetadata = Awaited<ReturnType<typeof alsong>>;
 
 const iconPath = getFile('./assets/icon_square.png');
 
+app.commandLine.appendSwitch('enable-transparent-visuals');
+
 class Application {
   private tray: Tray;
   private app: Koa;
 
   public mainWindow: BrowserWindow;
-  public settingsWindow: MicaBrowserWindow;
-  public lyricsWindow: MicaBrowserWindow;
+  public settingsWindow: BrowserWindow;
+  public lyricsWindow: BrowserWindow;
 
   initTray() {
     this.tray = new Tray(getFile('./assets/icon_music.png'));
@@ -157,6 +161,12 @@ class Application {
   }
 
   initMainWindow() {
+    setupTitlebar();
+    // HACK: empty application menu without breaking layout
+    Menu.setApplicationMenu(Menu.buildFromTemplate([{
+      label: '',
+      submenu: []
+    }]));
     this.mainWindow = new BrowserWindow({
       width: 800,
       height: 600,
@@ -190,26 +200,27 @@ class Application {
   }
 
   initSettingsWindow() {
-    this.settingsWindow = new MicaBrowserWindow({
+    this.settingsWindow = new glasstron.BrowserWindow({
       width: 800,
       height: 600,
       webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
+        preload: path.join(__dirname, './preload-titlebar.js'),
         nodeIntegration: true,
       },
       show: false,
       title: 'Alspotron 설정',
-      // transparent: true,
-      // frame: false,
-      backgroundColor: 'transparent',
-      backgroundMaterial: 'mica',
+      transparent: false,
+      frame: false,
+      blur: true,
+      blurType: 'acrylic',
+      backgroundColor: '#000000000',
       autoHideMenuBar: true,
       resizable: false,
-      transparent: false,
       icon: iconPath,
     });
-    this.settingsWindow.setDarkTheme();
-    this.settingsWindow.setMicaEffect();
+    this.settingsWindow.setResizable(true);
+    attachTitlebarToWindow(this.settingsWindow);
+
     this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
       void shell.openExternal(url);
       return { action: 'deny' };
@@ -223,26 +234,26 @@ class Application {
   }
   
   initLyricsWindow() {
-    this.lyricsWindow = new MicaBrowserWindow({
+    this.lyricsWindow = new glasstron.BrowserWindow({
       width: 1000,
       height: 600,
       webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
+        preload: path.join(__dirname, './preload-titlebar.js'),
         nodeIntegration: true,
       },
       show: false,
       title: '가사 선택',
-      // transparent: true,
-      // frame: false,
-      backgroundColor: 'transparent',
-      backgroundMaterial: 'mica',
+      transparent: false,
+      frame: false,
+      blur: true,
+      blurType: 'acrylic',
+      backgroundColor: '#000000000',
       autoHideMenuBar: true,
       resizable: false,
-      transparent: false,
       icon: iconPath,
     });
-    this.lyricsWindow.setDarkTheme();
-    this.lyricsWindow.setMicaEffect();
+    this.lyricsWindow.setResizable(true);
+    attachTitlebarToWindow(this.lyricsWindow);
 
     if (app.isPackaged) {
       void this.lyricsWindow.loadFile(path.join(__dirname, '../lyrics.html'));
