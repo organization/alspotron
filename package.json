@@ -54,7 +54,7 @@
   "dependencies": {
     "@koa/cors": "^4.0.0",
     "@popperjs/core": "^2.11.8",
-    "alsong": "^3.0.1",
+    "alsong": "^4.0.0",
     "color": "^4.2.3",
     "custom-electron-titlebar": "^4.2.3",
     "font-list": "^1.5.0",
