@@ -67,6 +67,10 @@
 | :------------------------------------------------------------------------------------------------------: |
 | ![image](https://github.com/organization/alspotron/assets/16558115/c2ca3749-0819-4525-88a1-5503490afa96) |
 
+## Migration from Alspotify
+
+[문서](https://github.com/organization/alspotron/MIGRATION_FROM_ALSPOTIFY.md)를 참고하세요.
+
 ## LICENSE
 
 `Apache License 2.0`

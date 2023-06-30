@@ -2,3 +2,4 @@
 postcss.config.js
 tailwind.config.js
 vite.config.ts
+extensions/alspotron.js
