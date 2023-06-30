@@ -1,6 +1,8 @@
+import { app } from 'electron';
 import { createSignal } from 'solid-js';
 
 import fs from 'fs/promises';
+import path from 'node:path';
 
 export interface Config {
   style: {
@@ -62,10 +64,12 @@ export const DEFAULT_CONFIG = {
   syncThrottle: 1000 * 3,
 } satisfies Config;
 
+const defaultConfigDirectory = app.getPath('userData');
+
 let configFileTimeout: NodeJS.Timeout | null = null;
 const configSignal = createSignal<Config>(DEFAULT_CONFIG);
 void (async () => {
-  const str = await fs.readFile('config.json', 'utf-8').catch(() => JSON.stringify(DEFAULT_CONFIG));
+  const str = await fs.readFile(path.join(defaultConfigDirectory, 'config.json'), 'utf-8').catch(() => JSON.stringify(DEFAULT_CONFIG));
   try {
     const config = JSON.parse(str);
     configSignal[1](config as Config);
@@ -111,7 +115,7 @@ export const setConfig = (params: DeepPartial<Config>) => {
   configFileTimeout = setTimeout(async () => {
     configFileTimeout = null;
 
-    await fs.writeFile('config.json', JSON.stringify(configSignal[0](), null, 2), 'utf-8').catch(() => null);
+    await fs.writeFile(path.join(defaultConfigDirectory, 'config.json'), JSON.stringify(configSignal[0](), null, 2), 'utf-8').catch(() => null);
   }, 1000);
 };
 
@@ -122,7 +126,7 @@ export interface LyricMapper {
 let lyricMapperFileTimeout: NodeJS.Timeout | null = null;
 const lyricMapperSignal = createSignal<LyricMapper>();
 void (async () => {
-  const str = await fs.readFile('lyrics.json', 'utf-8').catch(() => '{}');
+  const str = await fs.readFile(path.join(defaultConfigDirectory, 'lyrics.json'), 'utf-8').catch(() => '{}');
   try {
     const lyricMapper = JSON.parse(str);
     lyricMapperSignal[1](lyricMapper as LyricMapper);
@@ -145,6 +149,6 @@ export const setLyricMapper = (params: Partial<LyricMapper>) => {
   lyricMapperFileTimeout = setTimeout(async () => {
     lyricMapperFileTimeout = null;
 
-    await fs.writeFile('lyrics.json', JSON.stringify(lyricMapperSignal[0](), null, 2), 'utf-8').catch(() => null);
+    await fs.writeFile(path.join(defaultConfigDirectory, 'lyrics.json'), JSON.stringify(lyricMapperSignal[0](), null, 2), 'utf-8').catch(() => null);
   }, 1000);
 };
