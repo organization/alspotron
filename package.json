@@ -22,8 +22,11 @@
     "dist:only": "electron-builder"
   },
   "keywords": [],
-  "author": "Su-Yong",
-  "license": "ISC",
+  "author": "Su-Yong <simssy2205@gmail.com>",
+  "contributors": [
+    "JellyBrick <shlee1503@naver.com>"
+  ],
+  "license": "Apache-2.0",
   "devDependencies": {
     "@total-typescript/ts-reset": "^0.4.2",
     "@types/color": "^3.0.3",
