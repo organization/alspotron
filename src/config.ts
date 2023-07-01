@@ -25,6 +25,7 @@ export interface Config {
 
   windowPosition: {
     anchor: 'top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right';
+    display: number | null;
     top: number | null;
     left: number | null;
     bottom: number | null;
@@ -43,7 +44,7 @@ export const DEFAULT_CONFIG = {
       background: 'rgba(29, 29, 29, .50)',
       backgroundProgress: 'rgba(29, 29, 29, .80)',
       fontSize: 11,
-      maxWidth: 300
+      maxWidth: 300,
     },
 
     lyric: {
@@ -55,6 +56,7 @@ export const DEFAULT_CONFIG = {
 
   windowPosition: {
     anchor: 'bottom-right',
+    display: null,
     top: 32,
     left: 32,
     bottom: 32,

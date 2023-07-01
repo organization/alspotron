@@ -2,7 +2,7 @@ import cors from '@koa/cors';
 import alsong from 'alsong';
 // eslint-disable-next-line import/no-unresolved
 import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
-import { app, BrowserWindow, Menu, shell, Tray } from 'electron';
+import { app, BrowserWindow, Menu, screen, shell, Tray } from 'electron';
 // eslint-disable-next-line import/no-unresolved
 import {ipcMain} from 'electron/main';
 import glasstron from 'glasstron';
@@ -151,6 +151,7 @@ class Application {
     ipcMain.handle('set-config', (_, data: DeepPartial<Config>) => {
       setConfig(data);
       this.broadcast('config', config());
+      this.updateMainWindowConfig();
     });
     ipcMain.handle('get-config', () => config());
     ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>) => {
@@ -197,6 +198,55 @@ class Application {
     } else {
       void this.mainWindow.loadURL('http://localhost:5173');
     }
+
+    const onUpdate = () => this.updateMainWindowConfig();
+    app.on('ready', onUpdate);
+    screen.on('display-metrics-changed', onUpdate);
+    screen.on('display-added', onUpdate);
+    screen.on('display-removed', onUpdate);
+  }
+
+  updateMainWindowConfig() {
+    const { windowPosition,style } = config();
+    const windowWidth = style.nowPlaying.maxWidth;
+    const windowHeight = 300;
+    const activeDisplay =
+      screen.getAllDisplays().find(display => display.id === windowPosition.display) ||
+      screen.getPrimaryDisplay();
+    
+    const anchorX = (() => {
+      if (windowPosition.anchor.includes('left')) {
+        return activeDisplay.bounds.x + windowPosition.left;
+      }
+
+      if (windowPosition.anchor.includes('right')) {
+        return activeDisplay.bounds.x
+          + (activeDisplay.bounds.width - windowWidth)
+          - windowPosition.right;
+      }
+
+      return activeDisplay.bounds.x
+          + ((activeDisplay.bounds.width - windowWidth) / 2);
+
+    })();
+
+    const anchorY = (() => {
+      if (windowPosition.anchor.includes('top')) {
+        return activeDisplay.bounds.y + windowPosition.top;
+      }
+
+      if (windowPosition.anchor.includes('bottom')) {
+        return activeDisplay.bounds.y
+          + activeDisplay.bounds.height - windowHeight
+          - windowPosition.bottom;
+      }
+
+      return activeDisplay.bounds.y
+          + ((activeDisplay.bounds.height - windowHeight) / 2);
+    })();
+
+    this.mainWindow.setSize(windowWidth, windowHeight);
+    this.mainWindow.setPosition(Math.round(anchorX), Math.round(anchorY));
   }
 
   initSettingsWindow() {

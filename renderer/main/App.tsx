@@ -72,18 +72,17 @@ const App = () => {
   return (
     <div
       class={`
-        fixed w-fit h-fit
-        flex flex-col gap-4
+        fixed w-full h-fit
+        flex gap-4
       `}
       classList={{
         'top-0': config()?.windowPosition.anchor.includes('top'),
         'bottom-0': config()?.windowPosition.anchor.includes('bottom'),
         'left-0': config()?.windowPosition.anchor.includes('left'),
         'right-0': config()?.windowPosition.anchor.includes('right'),
-
         'left-[50%] right-[50%] translate-x-[-50%]': ['top', 'bottom', 'center'].includes(config()?.windowPosition.anchor),
         'top-[50%] bottom-[50%] translate-y-[-50%]': ['left', 'right', 'center'].includes(config()?.windowPosition.anchor),
-        
+
         'justify-start': config()?.windowPosition.anchor.includes('top'),
         'justify-center': ['left', 'right', 'center'].includes(config()?.windowPosition.anchor),
         'justify-end': config()?.windowPosition.anchor.includes('bottom'),
@@ -92,10 +91,7 @@ const App = () => {
         'items-end': config()?.windowPosition.anchor.includes('right'),
       }}
       style={{
-        'margin-left': `${config()?.windowPosition.left ?? 0}px`,
-        'margin-right': `${config()?.windowPosition.right ?? 0}px`,
-        'margin-top': `${config()?.windowPosition.top ?? 0}px`,
-        'margin-bottom': `${config()?.windowPosition.bottom ?? 0}px`,
+        'flex-direction': config()?.windowPosition.anchor.includes('bottom') ? 'column' : 'column-reverse',
       }}
     >
       <TransitionGroup name={'lyric'}>
