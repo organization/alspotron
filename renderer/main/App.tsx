@@ -2,7 +2,7 @@ import alsong from 'alsong';
 import { For, createEffect, createMemo, createSignal, on } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
-import TreeMap from 'ts-treemap';
+import TreeMap from 'ts-treemap-next';
 import IconMusic from '../../assets/icon_music.png';
 import useConfig from '../hooks/useConfig';
 import useLyricMapper from '../hooks/useLyricMapper';
