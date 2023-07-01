@@ -85,6 +85,12 @@ class Application {
             click: () => {
               this.lyricsWindow?.webContents.openDevTools({ mode: 'detach' });
             },
+          },
+          {
+            label: '설정 창',
+            click: () => {
+              this.settingsWindow?.webContents.openDevTools({ mode: 'detach' });
+            },
           }
         ]
       },
