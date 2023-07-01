@@ -1,56 +1,24 @@
-import { Show, createEffect, createSignal, on } from 'solid-js';
+import { Show, createMemo } from 'solid-js';
 
-import IconMusic from '../../assets/icon_music.png';
 import Card from '../components/Card';
 import Marquee from '../components/Marquee';
-import useLyricMapper from '../hooks/useLyricMapper';
 import LyricProgressBar from '../main/components/LyricProgressBar';
-
-import { UpdateData } from '../types';
-
-import type alsong from 'alsong';
-
-type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
+import { usePlayingInfo } from '../main/components/PlayingInfoProvider';
 
 const SideBar = () => {
-  const [progress, setProgress] = createSignal(0);
-  const [duration, setDuration] = createSignal(0);
-  const [title, setTitle] = createSignal('Not Playing');
-  const [artist, setArtist] = createSignal('N/A');
-  const [status, setStatus] = createSignal('idle');
-  const [coverUrl, setCoverUrl] = createSignal<string>();
-  const [lyric, setLyric] = createSignal<Lyric | null>(null);
+  const { lyrics, originalLyric } = usePlayingInfo();
 
-  const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
+  const alsongLyric = () => {
+    const lyricInfo = originalLyric();
+    return lyricInfo?.kind === 'alsong' ? lyricInfo.data : null;
+  };
 
-  const [lyricMapper] = useLyricMapper();
-  
-  window.ipcRenderer.on('update', (_, message: { data: UpdateData }) => {
-    const data: UpdateData = message.data;
+  const lyricItems = createMemo(() =>
+    Array.from(lyrics()?.values() ?? [])
+      .map(lyric => lyric.join('\n'))
+      .join('\n\n')
+  );
 
-    setOriginalData(data);
-
-    setStatus(data.status);
-    setTitle(data.title);
-    setArtist(data.artists.join(', '));
-    setProgress(data.progress);
-    setDuration(data.duration);
-    setCoverUrl(
-      data.cover_url.match(/^(?:file|https?):\/\//) ? data.cover_url : IconMusic,
-    );
-  });
-
-  createEffect(on([title, coverUrl, lyricMapper], async () => {
-    const data = originalData();
-    const mapper = lyricMapper();
-    if (!data) return;
-
-    const id: number | undefined = mapper?.[`${data.title}:${data.cover_url}`];
-    const lyric: Lyric = await window.ipcRenderer.invoke('get-lyric-by-id', id) as Lyric;
-
-    if (lyric) setLyric(lyric);
-    else setLyric(null);
-  }));
 
   return (
     <div
@@ -63,31 +31,24 @@ const SideBar = () => {
       <div class={'text-xl'}>
         현재 재생중인 음악
       </div>
-      <LyricProgressBar
-        coverUrl={coverUrl()}
-        title={title()}
-        artist={artist()}
-        percent={progress() / duration()}
-        status={status()}
-        class={'!w-[280px]'}
-      />
+      <LyricProgressBar class={'!w-[280px]'} />
       <div class={'text-xl mt-4'}>
         현재 적용중인 가사
       </div>
       <Card class={'w-full flex flex-row justify-start items-start gap-1'}>
         <div class={'w-full flex flex-col justify-center items-start'}>
-          <Show when={lyric()}>
+          <Show when={originalLyric()}>
             <div class={'text-xs text-white/50'}>
-              ID: {lyric()?.lyricId}
+              ID: {alsongLyric()?.lyricId}
              {' · '}
-              작성자: {lyric()?.register.name ?? 'N/A'}
+              작성자: {alsongLyric()?.register?.name ?? 'N/A'}
             </div>
           </Show>
           <Marquee class={'w-full'}>
-            {lyric()?.title ?? '자동'}
+            {alsongLyric()?.title ?? '자동'}
           </Marquee>
           <div class={'text-sm'}>
-            {lyric()?.artist ?? 'N/A'}
+            {alsongLyric()?.artist ?? 'N/A'}
           </div>
         </div>
         <div class={'flex-1'} />
