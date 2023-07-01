@@ -1,3 +1,4 @@
+import deepmerge from 'deepmerge';
 import { app } from 'electron';
 import { createSignal } from 'solid-js';
 
@@ -116,7 +117,7 @@ export const setConfig = (params: DeepPartial<Config>) => {
 try {
   const str = readFileSync(path.join(defaultConfigDirectory, 'config.json'), 'utf-8');
   const config = JSON.parse(str);
-  configSignal[1](config as Config);
+  configSignal[1](deepmerge(DEFAULT_CONFIG, config as Config));
 } catch {
   setConfig(DEFAULT_CONFIG);
 }
