@@ -5,7 +5,7 @@ const AnchoredView = (props: { children: JSX.Element }) => {
   const [config] = useConfig();
   return (
       <div
-        class="fixed w-full h-fit flex gap-4"
+        class="fixed w-full h-fit flex flex-col gap-4"
         classList={{
           'top-0': config()?.windowPosition.anchor.includes('top'),
           'bottom-0': config()?.windowPosition.anchor.includes('bottom'),
