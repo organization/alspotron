@@ -41,10 +41,6 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
 
     setOriginalData(data);
     setStatus(data.status);
-    if (!data.status && data.playing === false) {
-      // for Spotify
-      setStatus('stopped');
-    }
 
     if (typeof data.title === 'string') {
       setTitle(data.title);

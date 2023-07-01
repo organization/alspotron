@@ -32,7 +32,7 @@
   const getInfo = async () => {
     if (!Spicetify.Player.isPlaying()) {
       return {
-        playing: false
+        status: 'stopped',
       };
     }
 
