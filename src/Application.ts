@@ -208,13 +208,14 @@ class Application {
   }
 
   updateMainWindowConfig() {
-    const { windowPosition, style } = config();
-    const windowWidth = style.nowPlaying.maxWidth;
-    const windowHeight = 300;
     const activeDisplay =
       screen.getAllDisplays().find(display => display.id === windowPosition.display) ||
       screen.getPrimaryDisplay();
-    
+
+    const { windowPosition, style } = config();
+    const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
+    const windowHeight = 300;
+
     const anchorX = (() => {
       if (windowPosition.anchor.includes('left')) {
         return activeDisplay.bounds.x + windowPosition.left;

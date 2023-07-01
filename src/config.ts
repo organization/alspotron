@@ -22,6 +22,7 @@ export interface Config {
       color: string;
       background: string;
       fontSize: number;
+      maxWidth: number;
     };
   };
 
@@ -53,6 +54,7 @@ export const DEFAULT_CONFIG = {
       color: '#FFFFFF',
       background: 'rgba(29, 29, 29, .70)',
       fontSize: 12,
+      maxWidth: 700,
     }
   },
 
