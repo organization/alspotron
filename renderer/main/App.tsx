@@ -1,3 +1,9 @@
+import alsong from 'alsong';
+import { For, createEffect, createMemo, createSignal, on } from 'solid-js';
+import { TransitionGroup } from 'solid-transition-group';
+
+import TreeMap from 'ts-treemap';
+import IconMusic from '../../assets/icon_music.png';
 import useConfig from '../hooks/useConfig';
 import AnchoredView from './components/AnchoredView';
 import LyricProgressBar from './components/LyricProgressBar';
