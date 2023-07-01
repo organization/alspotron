@@ -79,7 +79,6 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     if (!data) return;
 
     const id: number | undefined = mapper[`${data.title}:${data.cover_url}`];
-    console.log(id);
     const lyricInfo = await (async () => {
       const alsongLyric = (
         typeof id === 'number'
@@ -87,7 +86,6 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
           : await window.ipcRenderer.invoke('get-lyric', data) as Lyric
       );
 
-    console.log(alsongLyric);
       if (alsongLyric) {
         return { kind: 'alsong', data: alsongLyric } as const;
       }
