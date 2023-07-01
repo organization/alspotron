@@ -208,11 +208,11 @@ class Application {
   }
 
   updateMainWindowConfig() {
+    const { windowPosition, style } = config();
     const activeDisplay =
       screen.getAllDisplays().find(display => display.id === windowPosition.display) ||
       screen.getPrimaryDisplay();
 
-    const { windowPosition, style } = config();
     const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
     const windowHeight = 300;
 
