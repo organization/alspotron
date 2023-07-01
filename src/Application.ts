@@ -2,7 +2,7 @@ import cors from '@koa/cors';
 import alsong from 'alsong';
 // eslint-disable-next-line import/no-unresolved
 import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
-import { app, BrowserWindow, Menu, shell, Tray } from 'electron';
+import { app, BrowserWindow, Menu, screen, shell, Tray } from 'electron';
 // eslint-disable-next-line import/no-unresolved
 import {ipcMain} from 'electron/main';
 import glasstron from 'glasstron';
@@ -72,11 +72,27 @@ class Application {
         type: 'separator',
       },
       {
-        type: 'normal',
-        label: 'devtools',
-        click: () => {
-          this.mainWindow.webContents.openDevTools({ mode: 'detach' });
-        },
+        label: '개발자 도구',
+        submenu: [
+          {
+            label: '가사 표시기 창',
+            click: () => {
+              this.mainWindow?.webContents.openDevTools({ mode: 'detach' });
+            },
+          },
+          {
+            label: '가사 선택 창',
+            click: () => {
+              this.lyricsWindow?.webContents.openDevTools({ mode: 'detach' });
+            },
+          },
+          {
+            label: '설정 창',
+            click: () => {
+              this.settingsWindow?.webContents.openDevTools({ mode: 'detach' });
+            },
+          }
+        ]
       },
     ]);
 
@@ -151,6 +167,7 @@ class Application {
     ipcMain.handle('set-config', (_, data: DeepPartial<Config>) => {
       setConfig(data);
       this.broadcast('config', config());
+      this.updateMainWindowConfig();
     });
     ipcMain.handle('get-config', () => config());
     ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>) => {
@@ -178,7 +195,7 @@ class Application {
       frame: false,
       focusable: false,
       alwaysOnTop: true,
-      fullscreen: true,
+      fullscreen: false,
       skipTaskbar: true,
       hasShadow: false,
       hiddenInMissionControl: true,
@@ -197,6 +214,57 @@ class Application {
     } else {
       void this.mainWindow.loadURL('http://localhost:5173');
     }
+
+    const onUpdate = () => this.updateMainWindowConfig();
+    screen.on('display-metrics-changed', onUpdate);
+    screen.on('display-added', onUpdate);
+    screen.on('display-removed', onUpdate);
+
+    onUpdate();
+  }
+
+  updateMainWindowConfig() {
+    const { windowPosition, style } = config();
+    const activeDisplay =
+      screen.getAllDisplays().find(display => display.id === windowPosition.display) ||
+      screen.getPrimaryDisplay();
+
+    const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
+    const windowHeight = 300;
+
+    const anchorX = (() => {
+      if (windowPosition.anchor.includes('left')) {
+        return activeDisplay.bounds.x + windowPosition.left;
+      }
+
+      if (windowPosition.anchor.includes('right')) {
+        return activeDisplay.bounds.x
+          + (activeDisplay.bounds.width - windowWidth)
+          - windowPosition.right;
+      }
+
+      return activeDisplay.bounds.x
+          + ((activeDisplay.bounds.width - windowWidth) / 2);
+
+    })();
+
+    const anchorY = (() => {
+      if (windowPosition.anchor.includes('top')) {
+        return activeDisplay.bounds.y + windowPosition.top;
+      }
+
+      if (windowPosition.anchor.includes('bottom')) {
+        return activeDisplay.bounds.y
+          + activeDisplay.bounds.height - windowHeight
+          - windowPosition.bottom;
+      }
+
+      return activeDisplay.bounds.y
+          + ((activeDisplay.bounds.height - windowHeight) / 2);
+    })();
+
+    this.mainWindow.setSize(windowWidth, windowHeight);
+    this.mainWindow.setPosition(Math.round(anchorX), Math.round(anchorY));
   }
 
   initSettingsWindow() {

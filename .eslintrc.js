@@ -32,6 +32,7 @@ module.exports = {
       }
     ],
     'import/prefer-default-export': 'off',
+    'solid/style-prop': ['error', { allowString: true }],
     'camelcase': ['error', { properties: 'never' }],
     'class-methods-use-this': 'off',
     'lines-around-comment': [
@@ -44,7 +45,6 @@ module.exports = {
       },
     ],
     'max-len': 'off',
-    // 'no-console': ['error', { allow: ['warn', 'error'] }],
     'no-mixed-operators': 'error',
     'no-multi-spaces': ['error', { ignoreEOLComments: true }],
     'no-tabs': 'error',
@@ -53,7 +53,7 @@ module.exports = {
       avoidEscape: true,
       allowTemplateLiterals: false,
     }],
-    'quote-props': ['error', 'consistent']
+    'quote-props': ['error', 'consistent'],
   },
   ignorePatterns: ['dist', 'node_modules'],
 };

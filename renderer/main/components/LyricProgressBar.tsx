@@ -1,16 +1,13 @@
 import { splitProps } from 'solid-js';
-// eslint-disable-next-line import/no-unresolved
-import { JSX } from 'solid-js/jsx-runtime';
 import icon from '../../../assets/icon_music.png';
 import Marquee from '../../components/Marquee';
 import { cx } from '../../utils/classNames';
+import { usePlayingInfo } from './PlayingInfoProvider';
+import type { JSX } from 'solid-js/jsx-runtime';
 
 interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
-  percent: number;
-  title: string;
-  artist: string;
-  status?: string;
-  coverUrl?: string;
+  style?: string;
+  class?: string;
 
   progressStyle?: string;
   progressClass?: string;
@@ -20,43 +17,45 @@ interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
 }
 
 const LyricProgressBar = (props: LyricProgressBarProps) => {
-  const [local, style, leftProps] = splitProps(
+  const { coverUrl, title, artist, progress, duration, status } = usePlayingInfo();
+  const [style, containerProps] = splitProps(
     props,
-    ['percent', 'title', 'artist', 'status', 'coverUrl'],
-    ['progressClass', 'progressStyle', 'textClass', 'textStyle'],
+    ['class', 'style', 'progressClass', 'progressStyle', 'textClass', 'textStyle'],
   );
 
   return (
     <div
-      {...leftProps}
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      style={`--percent: ${local.percent * 100}%; opacity: ${local.status === 'stopped' ? 0.5 : 1}; ${leftProps.style}`}
+      style={`
+        --percent: ${progress() / duration() * 100}%;
+        opacity: ${status() === 'stopped' ? 0.5 : 1};
+        ${style.style}
+      `}
       class={cx(
         `
           relative p-3 transition-all duration-[225ms] ease-out z-0
           bg-gray-900/50 text-gray-50 rounded-md overflow-hidden
         `,
-        leftProps.class,
+        style.class,
       )}
+      {...containerProps}
     >
       <div
         class={cx(
-          'absolute inset-0 bg-gray-500 z-[-1] scale-x-[--percent] origin-left transition-all duration-225 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]',
+          `
+            absolute inset-0 bg-gray-500 z-[-1] scale-x-[--percent] origin-left
+            transition-all duration-225 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]
+          `,
           style.progressClass,
         )}
         style={style.progressStyle}
       />
-      <div
-        class={`
-          flex flex-row justify-start items-center gap-2 z-20
-        `}
-      >
+      <div class={'flex flex-row justify-start items-center gap-2 z-20'}>
         <img
-          src={local.coverUrl ?? icon}
+          src={coverUrl() ?? icon}
           class={`
             w-6 h-6 object-contain transition-all duration-[225ms] ease-out
-            ${local.status === 'stopped' ? 'grayscale' : ''}
-            ${local.status === 'stopped' ? 'scale-95' : ''}
+            ${status() === 'stopped' ? 'grayscale' : ''}
+            ${status() === 'stopped' ? 'scale-95' : ''}
           `}
         />
         <Marquee gap={32}>
@@ -64,11 +63,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
             class={cx('w-fit flex flex-row justify-start items-center gap-2', style.textClass)}
             style={style.textStyle}
           >
-            {local.artist}
-            {' '}
-            -
-            {' '}
-            {local.title}
+            {`${artist()} - ${title()}`}
           </div>
         </Marquee>
       </div>

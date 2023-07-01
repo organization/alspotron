@@ -1,5 +1,4 @@
 export interface TunaOBSPayload {
-  playing: boolean;
   title: string;
   artist: string;
   progress: number;

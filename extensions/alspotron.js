@@ -32,7 +32,7 @@
   const getInfo = async () => {
     if (!Spicetify.Player.isPlaying()) {
       return {
-        playing: false
+        status: 'stopped',
       };
     }
 
@@ -40,7 +40,6 @@
     if (previousInfo.uri !== uri) {
       return {
         status: 'playing',
-        playing: true,
         title: Spicetify.Player.data.track.metadata.title,
         artists: [Spicetify.Player.data.track.metadata.artist_name],
         cover_url: uri,
@@ -52,7 +51,6 @@
 
     return {
       status: 'playing',
-      playing: true,
       cover_url: uri,
       duration: Spicetify.Player.getDuration(),
       progress: Spicetify.Player.getProgress()
