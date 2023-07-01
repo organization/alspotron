@@ -1,6 +1,7 @@
 import { app } from 'electron';
 import { createSignal } from 'solid-js';
 
+import { readFileSync } from 'fs';
 import fs from 'fs/promises';
 import path from 'node:path';
 
@@ -70,15 +71,6 @@ const defaultConfigDirectory = app.getPath('userData');
 
 let configFileTimeout: NodeJS.Timeout | null = null;
 const configSignal = createSignal<Config>(DEFAULT_CONFIG);
-void (async () => {
-  const str = await fs.readFile(path.join(defaultConfigDirectory, 'config.json'), 'utf-8').catch(() => JSON.stringify(DEFAULT_CONFIG));
-  try {
-    const config = JSON.parse(str);
-    configSignal[1](config as Config);
-  } catch {
-    setConfig(DEFAULT_CONFIG);
-  }
-})();
 
 export const config = configSignal[0];
 export const setConfig = (params: DeepPartial<Config>) => {
@@ -120,6 +112,14 @@ export const setConfig = (params: DeepPartial<Config>) => {
     await fs.writeFile(path.join(defaultConfigDirectory, 'config.json'), JSON.stringify(configSignal[0](), null, 2), 'utf-8').catch(() => null);
   }, 1000);
 };
+
+try {
+  const str = readFileSync(path.join(defaultConfigDirectory, 'config.json'), 'utf-8');
+  const config = JSON.parse(str);
+  configSignal[1](config as Config);
+} catch {
+  setConfig(DEFAULT_CONFIG);
+}
 
 export interface LyricMapper {
   [key: string]: number;

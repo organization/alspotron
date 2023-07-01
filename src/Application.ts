@@ -179,7 +179,7 @@ class Application {
       frame: false,
       focusable: false,
       alwaysOnTop: true,
-      fullscreen: true,
+      fullscreen: false,
       skipTaskbar: true,
       hasShadow: false,
       hiddenInMissionControl: true,
@@ -200,14 +200,15 @@ class Application {
     }
 
     const onUpdate = () => this.updateMainWindowConfig();
-    app.on('ready', onUpdate);
     screen.on('display-metrics-changed', onUpdate);
     screen.on('display-added', onUpdate);
     screen.on('display-removed', onUpdate);
+
+    onUpdate();
   }
 
   updateMainWindowConfig() {
-    const { windowPosition,style } = config();
+    const { windowPosition, style } = config();
     const windowWidth = style.nowPlaying.maxWidth;
     const windowHeight = 300;
     const activeDisplay =
