@@ -1,4 +1,4 @@
-import { Show, createMemo } from 'solid-js';
+import { Show, createMemo, For } from 'solid-js';
 
 import Card from '../components/Card';
 import Marquee from '../components/Marquee';
@@ -16,7 +16,6 @@ const SideBar = () => {
   const lyricItems = createMemo(() =>
     Array.from(lyrics()?.values() ?? [])
       .map(lyric => lyric.join('\n'))
-      .join('\n\n')
   );
 
 
@@ -56,8 +55,8 @@ const SideBar = () => {
           <path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff"/>
         </svg>
       </Card>
-      <div class={'flex-1 block text-center overflow-scroll whitespace-pre-line'}>
-        {lyricItems()}
+      <div class={'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto whitespace-pre-line py-2'}>
+        <For each={lyricItems()}>{(value) => value + '\n\n'}</For>
       </div>
     </div>
   )
