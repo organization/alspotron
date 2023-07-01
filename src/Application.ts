@@ -72,11 +72,27 @@ class Application {
         type: 'separator',
       },
       {
-        type: 'normal',
-        label: 'devtools',
-        click: () => {
-          this.mainWindow.webContents.openDevTools({ mode: 'detach' });
-        },
+        label: '개발자 도구',
+        submenu: [
+          {
+            label: '가사 표시기 창',
+            click: () => {
+              this.mainWindow?.webContents.openDevTools({ mode: 'detach' });
+            },
+          },
+          {
+            label: '가사 선택 창',
+            click: () => {
+              this.lyricsWindow?.webContents.openDevTools({ mode: 'detach' });
+            },
+          },
+          {
+            label: '설정 창',
+            click: () => {
+              this.settingsWindow?.webContents.openDevTools({ mode: 'detach' });
+            },
+          }
+        ]
       },
     ]);
 

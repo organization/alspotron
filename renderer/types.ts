@@ -8,4 +8,5 @@ export interface UpdateData {
   lyric: {
     [key: string]: string[];
   }
+  playing?: boolean;
 }

@@ -1,36 +1,32 @@
-import { For, Show, createSignal } from 'solid-js';
+import { For, Show, createSignal, createEffect, on } from 'solid-js';
 
 import Card from '../components/Card';
 import Spinner from '../components/Spinner';
 import useLyricMapper from '../hooks/useLyricMapper';
-import { UpdateData } from '../types';
+import PlayingInfoProvider, { usePlayingInfo } from '../main/components/PlayingInfoProvider';
 import SideBar from './SideBar';
 
 import type alsong from 'alsong';
 
 type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>[number];
 
-const App = () => {
-  const [title, setTitle] = createSignal('Not Playing');
-  const [artist, setArtist] = createSignal('N/A');
-  const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
+const LyricsMapEditor = () => {
+  const { title: playingTitle, artist: playingArtist, originalData, status } = usePlayingInfo();
+
+  const [title, setTitle] = createSignal(playingTitle());
+  const [artist, setArtist] = createSignal(playingArtist());
 
   const [loading, setLoading] = createSignal(false);
   const [lyricMetadata, setLyricMetadata] = createSignal<LyricMetadata[]>([]);
+  const [, setLyricMapper] = useLyricMapper();
 
-  const setLyricMapper = useLyricMapper()[1];
-
-  window.ipcRenderer.on('update', (_, message: { data: UpdateData }) => {
-    const data: UpdateData = message.data;
-
-    if (originalData()?.title !== data.title) {
-      setTitle(data.title);
-      setArtist(data.artists.join(', '));
-      setOriginalData(data);
-      
+  createEffect(on([playingTitle, playingArtist, status], () => {
+    if (status() !== 'idle') {
+      setTitle(playingTitle().trim());
+      setArtist(playingArtist().trim());
       void onSearch();
     }
-  });
+  }));
 
   const onSearch = async () => {
     setLoading(true);
@@ -86,7 +82,7 @@ const App = () => {
             class={'input'}
             placeholder={'아티스트 명'}
             value={artist()}
-            onChange={() => setArtist((event.target as HTMLInputElement).value)}
+            onChange={event => setArtist(event.target.value)}
             onKeyPress={(event) => {
               if (event.code === 'Enter' || event.code === 'NumpadEnter') {
                 void onSearch();
@@ -97,7 +93,7 @@ const App = () => {
             class={'input flex-1'}
             placeholder={'제목'}
             value={title()}
-            onChange={() => setTitle((event.target as HTMLInputElement).value)}
+            onChange={event => setTitle(event.target.value)}
             onKeyPress={(event) => {
               if (event.code === 'Enter' || event.code === 'NumpadEnter') {
                 void onSearch();
@@ -157,8 +153,14 @@ const App = () => {
           </For>
         </div>
       </div>
-    </div>
-  )
+  </div>
+  );
 };
+
+const App = () => (
+  <PlayingInfoProvider>
+    <LyricsMapEditor />
+  </PlayingInfoProvider>
+);
 
 export default App;
