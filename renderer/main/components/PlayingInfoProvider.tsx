@@ -1,6 +1,6 @@
 import alsong from 'alsong';
 import { Accessor, createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from 'solid-js';
-import TreeMap from 'ts-treemap';
+import TreeMap from 'ts-treemap-next';
 import IconMusic from '../../../assets/icon_music.png';
 import useLyricMapper from '../../hooks/useLyricMapper';
 import { UpdateData } from '../../types';
