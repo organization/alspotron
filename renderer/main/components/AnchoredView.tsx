@@ -1,4 +1,4 @@
-import {JSX} from 'solid-js';
+import { JSX } from 'solid-js';
 import useConfig from '../../hooks/useConfig';
 
 const AnchoredView = (props: { children: JSX.Element }) => {
