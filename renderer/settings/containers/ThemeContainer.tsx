@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import { Show, createSignal, onMount } from 'solid-js';
 
 import { Config } from '../../../src/config';
@@ -217,7 +216,7 @@ const ThemeContainer = () => {
         <Card
           class={'flex-none w-1/2 right-0 text-center items-center'}
           onClick={() => void (async() => {
-            await setConfig(await ipcRenderer.invoke('get-default-config') as Config)
+            await setConfig(await window.ipcRenderer.invoke('get-default-config') as Config)
           })()}
         >
           초기화
