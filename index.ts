@@ -7,6 +7,7 @@ const application = new Application();
 void (async () => {
   await app.whenReady();
 
+  application.initAutoUpdater();
   application.initTray();
   application.initServer();
   application.initHook();
