@@ -42,22 +42,30 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     setOriginalData(data);
     setStatus(data.status);
 
-    if (typeof data.title === 'string') {
+    if (typeof data.title === 'string' && Array.isArray(data.artists)) {
       setTitle(data.title);
-    }
-
-    if (Array.isArray(data.artists)) {
       setArtist(data.artists.join(', '));
     }
 
-    setProgress(data.progress);
-    setDuration(data.duration);
-    setCoverUrl(
-      data.cover_url.match(/^(?:file|https?):\/\//) ? data.cover_url : IconMusic,
-    );
+    if (typeof data.progress === 'number' && typeof data.duration === 'number') {
+      setProgress(data.progress);
+      setDuration(data.duration);
+    }
+
+    if (typeof data.cover_url === 'string' && data.cover_url.match(/^(?:file|https?):\/\//)) {
+      setCoverUrl(data.cover_url)
+    } else {
+      setCoverUrl(IconMusic);
+    }
   };
 
   window.ipcRenderer.on('update', onUpdate);
+  void window.ipcRenderer.invoke('get-last-update').then((update?: { data: UpdateData }) => {
+    if (update) {
+      onUpdate(null, update);
+    }
+  });
+
   onMount(() => {
     setInterval(() => {
       if (status() === 'playing') {
