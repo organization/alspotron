@@ -1,6 +1,6 @@
+import { OrderedMap } from '@js-sdsl/ordered-map';
 import alsong from 'alsong';
 import { Accessor, createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from 'solid-js';
-import TreeMap from 'ts-treemap-next';
 import IconMusic from '../../../assets/icon_music.png';
 import useLyricMapper from '../../hooks/useLyricMapper';
 import { UpdateData } from '../../types';
@@ -13,7 +13,7 @@ type PlayingInfo = {
   artist: Accessor<string>;
   status: Accessor<'idle' | 'playing' | 'stopped'>;
   coverUrl: Accessor<string>;
-  lyrics: Accessor<TreeMap<number, string[]> | null>;
+  lyrics: Accessor<OrderedMap<number, string[]> | null>;
   originalData: Accessor<UpdateData | null>;
   originalLyric: Accessor<LyricInfo | null>;
 };
@@ -30,7 +30,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [artist, setArtist] = createSignal('N/A');
   const [status, setStatus] = createSignal('idle');
   const [coverUrl, setCoverUrl] = createSignal<string>();
-  const [lyrics, setLyrics] = createSignal<TreeMap<number, string[]> | null>(null);
+  const [lyrics, setLyrics] = createSignal<OrderedMap<number, string[]> | null>(null);
   const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
   const [originalLyric, setOriginalLyric] = createSignal<LyricInfo | null>(null);
 
@@ -95,9 +95,11 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
 
     setOriginalLyric(lyricInfo);
     if (lyricInfo?.data.lyric) {
-      const treeMap = new TreeMap<number, string[]>();
+      const treeMap = new OrderedMap<number, string[]>();
+      const iter = treeMap.begin();
+
       for (const key in lyricInfo.data.lyric) {
-        treeMap.set(~~key, lyricInfo.data.lyric[key]);
+        treeMap.setElement(~~key, lyricInfo.data.lyric[key], iter);
       }
 
       setLyrics(treeMap);
