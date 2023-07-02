@@ -214,7 +214,7 @@ const ThemeContainer = () => {
           테마 초기화
         </div>
         <Card
-          class={'flex-none w-1/2 right-0 text-center items-center'}
+          class={'flex !w-2/5 right-0 text-center justify-center'}
           onClick={() => void (async() => {
             await setConfig(await window.ipcRenderer.invoke('get-default-config') as Config)
           })()}
