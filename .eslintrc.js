@@ -17,6 +17,7 @@ module.exports = {
     ecmaVersion: 'latest'
   },
   rules: {
+    'object-curly-spacing': ['error', 'always'],
     // '@typescript-eslint/no-floating-promises': 'off',
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'import/first': 'error',

@@ -13,10 +13,11 @@ const SideBar = () => {
     return lyricInfo?.kind === 'alsong' ? lyricInfo.data : null;
   };
 
-  const lyricItems = createMemo(() =>
-    Array.from(lyrics()?.values() ?? [])
-      .map(lyric => lyric.join('\n'))
-  );
+  const lyricItems = createMemo(() => {
+    const items: string[] = [];
+    lyrics()?.forEach(([_, lyric]) => items.push(lyric.join('\n')));
+    return items;
+  });
 
 
   return (

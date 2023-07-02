@@ -1,15 +1,16 @@
 import cors from '@koa/cors';
 import alsong from 'alsong';
-import { app, BrowserWindow, Menu, screen, shell, Tray } from 'electron';
+import { app, BrowserWindow, Menu, dialog, screen, shell, Tray } from 'electron';
 // eslint-disable-next-line import/no-unresolved
-import {ipcMain} from 'electron/main';
+import { ipcMain } from 'electron/main';
+import { autoUpdater } from 'electron-updater';
 import glasstron from 'glasstron';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
-import {getFile} from '../utils/resource';
-import {Config, config, LyricMapper, lyricMapper, setConfig, setLyricMapper} from './config';
-import type {RequestBody} from './types';
+import { getFile } from '../utils/resource';
+import { Config, config, LyricMapper, lyricMapper, setConfig, setLyricMapper } from './config';
+import type { RequestBody } from './types';
 import path from 'node:path';
 
 type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
@@ -26,6 +27,45 @@ class Application {
   public mainWindow: BrowserWindow;
   public settingsWindow: BrowserWindow;
   public lyricsWindow: BrowserWindow;
+  
+  initAutoUpdater() {
+    if (app.isPackaged) {
+      autoUpdater.autoDownload = false;
+
+      autoUpdater.on('update-available', (it) => {
+        const downloadLink =
+          'https://github.com/organization/alspotron/releases/latest';
+        const releaseNote: string | null
+          = typeof it.releaseNotes === 'string' ? it.releaseNotes : it.releaseNotes?.map((it) => it.note)?.join('\n')
+        const 
+        Opts: Electron.MessageBoxOptions = {
+          type: 'info',
+          buttons: ['다운로드 페이지로 이동'],
+          title: `Alspotron 업데이트 알림 (${it.version})`,
+          message: `새로운 ${it.version} 버전이 ${it.releaseDate}에 출시되었어요.`,
+          detail: `릴리즈 노트: ${releaseNote}` ?? `${downloadLink}에서 다운로드 할 수 있어요.`,
+        };
+        void dialog.showMessageBox(dialogOpts).then((dialogOutput) => {
+          switch (dialogOutput.response) {
+            // Download
+            case 1:
+              void shell.openExternal(downloadLink);
+              break;
+            // TODO: Discard updates
+            case 2:
+              break;
+            default:
+              break;
+          }
+        });
+      });
+
+      const updateTimeout = setTimeout(() => {
+        void autoUpdater.checkForUpdatesAndNotify();
+        clearTimeout(updateTimeout);
+      }, 2000);
+    }
+  }
 
   initTray() {
     this.tray = new Tray(getFile('./assets/icon_music.png'));
@@ -135,6 +175,15 @@ class Application {
   }
 
   initHook() {
+    ipcMain.handle('get-current-version', () => {
+      return autoUpdater.currentVersion.version;
+    });
+    ipcMain.handle('compare-with-current-version', (_, otherVersion: string) => {
+      return autoUpdater.currentVersion.compare(otherVersion);
+    });
+    ipcMain.handle('check-update', async () => {
+      return await autoUpdater.checkForUpdatesAndNotify();
+    });
     ipcMain.handle('get-lyric-by-id', async (_, id: number) => {
       const lyric = await alsong.getLyricById(id).catch(() => null) as Lyric & { registerDate?: Date };
       if (lyric) delete lyric.registerDate;
@@ -150,7 +199,7 @@ class Application {
       const metadata = await alsong(artist, title, {}).catch(() => []) as LyricMetadata[];
       if (metadata.length <= 0) return {};
 
-      return await alsong.getLyricById(metadata[0].lyricId).catch(() => ({lyric: data.lyrics}));
+      return await alsong.getLyricById(metadata[0].lyricId).catch(() => ({ lyric: data.lyrics }));
     });
     ipcMain.handle('search-lyric', async (_, data: { artist: string; title: string; duration?: number; }) => {
       const result = await alsong(data.artist, data.title, {

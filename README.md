@@ -1,4 +1,4 @@
-# Alspotron [![Github All Releases](https://img.shields.io/github/downloads/organization/alspotron/total.svg)](<>)
+# Alspotron <a href="https://github.com/organization/alspotron/releases/latest"><img src="https://img.shields.io/github/downloads/organization/alspotron/total.svg"/></a>
 
 ### 커스텀이 편리한 _Spotify_, _YouTube Music_ 가사 표시기
 
@@ -44,6 +44,10 @@
 3.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)  
 
     -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
+  
+#### YouTube Music 사용자는 주의!
+
+**반드시** [이 링크](https://github.com/organization/alspotron/issues/1)를 참고하여 `adblocker` 플러그인을 비활성화하거나, `in-player` adblocker로 전환해주세요.
 
 ### 그 외 플레이어 (e.g. Apple Music)
 
@@ -86,14 +90,3 @@
 ## Special thanks
 
 -   [Khinenw](https://github.com/HelloWorld017)'s **[Alspotify](https://github.com/HelloWorld017/alspotify)**
-
-## TODO
-
--   [ ] 플러그인 시스템 구현
--   [ ] 애니메이션 ON / OFF 구현
--   [ ] 애니메이션 효과 변경 기능
--   [ ] `DirectX` 게임에 오버레이로 표시
-
-## Known Bugs
-
--   [ ] 일시정지 후, 재생을 누르면 가사 레이아웃이 잠시 깨짐
