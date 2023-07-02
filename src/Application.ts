@@ -234,7 +234,6 @@ class Application {
       frame: false,
       focusable: false,
       alwaysOnTop: true,
-      fullscreen: false,
       skipTaskbar: true,
       hasShadow: false,
       hiddenInMissionControl: true,
@@ -245,6 +244,11 @@ class Application {
       },
       show: false,
       icon: iconPath,
+    });
+
+    this.mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+    this.mainWindow.setVisibleOnAllWorkspaces(true, {
+        visibleOnFullScreen: true,
     });
     this.mainWindow.setIgnoreMouseEvents(true, { forward: true });
 
@@ -342,7 +346,7 @@ class Application {
       void this.settingsWindow.loadURL('http://localhost:5173/settings.html');
     }
   }
-  
+
   initLyricsWindow() {
     this.lyricsWindow = new glasstron.BrowserWindow({
       width: 1000,
