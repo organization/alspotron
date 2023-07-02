@@ -27,7 +27,7 @@ class Application {
   public mainWindow: BrowserWindow;
   public settingsWindow: BrowserWindow;
   public lyricsWindow: BrowserWindow;
-  
+
   initAutoUpdater() {
     if (app.isPackaged) {
       autoUpdater.autoDownload = false;
@@ -37,8 +37,7 @@ class Application {
           'https://github.com/organization/alspotron/releases/latest';
         const releaseNote: string | null
           = typeof it.releaseNotes === 'string' ? it.releaseNotes : it.releaseNotes?.map((it) => it.note)?.join('\n')
-        const 
-        Opts: Electron.MessageBoxOptions = {
+        const dialogOpts: Electron.MessageBoxOptions = {
           type: 'info',
           buttons: ['다운로드 페이지로 이동'],
           title: `Alspotron 업데이트 알림 (${it.version})`,
