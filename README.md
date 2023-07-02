@@ -53,7 +53,13 @@
 
 ### (모든 뮤직 플레이어 해당) 마지막 단계
 
+#### Windows, Linux
+
 -   `Alspotron` 실행
+
+#### macOS
+
+-   `xattr -cr /Applications/Alspotron.app` 혹은 [해당 링크](https://archivers.tistory.com/74)를 참고하여 실행하세요.
 
 ## Config
 
