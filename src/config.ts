@@ -31,6 +31,8 @@ export interface Config {
       maxWidth: number;
       stoppedOpacity: number;
     };
+
+    userCSS: string | null;
   };
 
   windowPosition: {
@@ -69,7 +71,9 @@ export const DEFAULT_CONFIG = {
       fontSize: 12,
       maxWidth: 700,
       stoppedOpacity: 0.5,
-    }
+    },
+
+    userCSS: null,
   },
 
   windowPosition: {

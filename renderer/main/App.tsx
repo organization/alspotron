@@ -1,6 +1,9 @@
 import { Accessor, Show, createRenderEffect, createSignal, on } from 'solid-js';
 import PlayingInfoProvider from '../components/PlayingInfoProvider';
+import UserCSS from '../components/UserCSS';
 import useConfig from '../hooks/useConfig';
+import { cx } from '../utils/classNames';
+import { userCSSSelectors } from '../utils/userCSSSelectors';
 import AnchoredView from './components/AnchoredView';
 import LyricProgressBar from './components/LyricProgressBar';
 import Lyrics from './components/Lyrics';
@@ -76,6 +79,7 @@ const App = () => {
     <PlayingInfoProvider>
       <AnchoredView
         ref={anchoredView}
+        class={cx('flex flex-col gap-8', userCSSSelectors.wrapper)}
         {...handles}
       >
         <Lyrics />
@@ -97,6 +101,7 @@ const App = () => {
           />
         </Show>
       </AnchoredView>
+      <UserCSS />
     </PlayingInfoProvider>
   );
 };
