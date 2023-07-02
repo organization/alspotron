@@ -25,7 +25,8 @@
   "author": "Su-Yong <simssy2205@gmail.com>",
   "contributors": [
     "JellyBrick <shlee1503@naver.com>",
-    "SeongMin Park <smn@duck.com>"
+    "SeongMin Park <smn@duck.com>",
+    "nenw <khi@nenw.dev>"
   ],
   "license": "Apache-2.0",
   "devDependencies": {
