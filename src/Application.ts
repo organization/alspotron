@@ -36,10 +36,9 @@ class Application {
         click: () => {
           if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
             if (this.lyricsWindow.isMinimized()) this.lyricsWindow.restore();
-            this.lyricsWindow.focus();
+            this.lyricsWindow.show();
           } else {
             this.initLyricsWindow();
-            this.lyricsWindow.show();
           }
         }
       },
@@ -49,10 +48,9 @@ class Application {
         click: () => {
           if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
             if (this.settingsWindow.isMinimized()) this.settingsWindow.restore();
-            this.settingsWindow.focus();
+            this.settingsWindow.show();
           } else {
             this.initSettingsWindow();
-            this.settingsWindow.show();
           }
         }
       },
@@ -173,6 +171,16 @@ class Application {
       this.broadcast('lyric-mapper', lyricMapper());
     });
     ipcMain.handle('get-lyric-mapper', () => lyricMapper());
+
+    ipcMain.on('window-minimize', () => {
+      BrowserWindow.getFocusedWindow()?.minimize();
+    })
+    ipcMain.on('window-maximize', () => {
+      BrowserWindow.getFocusedWindow()?.maximize();
+    })
+    ipcMain.on('window-close', () => {
+      BrowserWindow.getFocusedWindow()?.close();
+    })
   }
 
   initMainWindow() {
@@ -267,23 +275,21 @@ class Application {
   initSettingsWindow() {
     this.settingsWindow = new glasstron.BrowserWindow({
       width: 800,
-      height: 600,
+      height: 800,
       webPreferences: {
         preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
       },
-      show: false,
       title: 'Alspotron 설정',
       titleBarStyle: 'hiddenInset',
-      frame: false,
+      frame: process.platform === 'darwin',
       blur: true,
       blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
       blurGnomeSigma: 100,
       blurCornerRadius: 20,
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      vibrancy: 'fullscreen-ui',
+      vibrancy: 'sidebar',
       autoHideMenuBar: true,
-      resizable: true,
       icon: iconPath,
     });
 
@@ -307,18 +313,16 @@ class Application {
         preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
       },
-      show: false,
       title: '가사 선택',
       titleBarStyle: 'hiddenInset',
-      frame: false,
+      frame: process.platform === 'darwin',
       blur: true,
       blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
       blurGnomeSigma: 100,
       blurCornerRadius: 20,
-      vibrancy: 'fullscreen-ui',
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      vibrancy: 'sidebar',
       autoHideMenuBar: true,
-      resizable: true,
       icon: iconPath,
     });
 

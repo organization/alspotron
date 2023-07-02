@@ -24,7 +24,8 @@
   "keywords": [],
   "author": "Su-Yong <simssy2205@gmail.com>",
   "contributors": [
-    "JellyBrick <shlee1503@naver.com>"
+    "JellyBrick <shlee1503@naver.com>",
+    "SeongMin Park <smn@duck.com>"
   ],
   "license": "Apache-2.0",
   "devDependencies": {

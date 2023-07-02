@@ -73,6 +73,7 @@ const LyricsMapEditor = () => {
       <Titlebar />
       <div
         class={`
+          mt-10
           w-full h-full
           flex flex-row justify-start items-stretch gap-0
           text-white

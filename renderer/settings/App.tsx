@@ -49,6 +49,7 @@ const App = () => {
       <Titlebar />
       <div
         class={`
+          mt-10
           flex flex-row justify-start items-stretch
           text-white
           overflow-hidden
