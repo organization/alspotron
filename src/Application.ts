@@ -2,9 +2,10 @@ import cors from '@koa/cors';
 import alsong from 'alsong';
 // eslint-disable-next-line import/no-unresolved
 import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
-import { app, BrowserWindow, Menu, screen, shell, Tray } from 'electron';
+import { app, BrowserWindow, dialog, Menu, screen, shell, Tray } from 'electron';
 // eslint-disable-next-line import/no-unresolved
 import { ipcMain } from 'electron/main';
+import { autoUpdater } from 'electron-updater';
 import glasstron from 'glasstron';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
@@ -28,6 +29,44 @@ class Application {
   public mainWindow: BrowserWindow;
   public settingsWindow: BrowserWindow;
   public lyricsWindow: BrowserWindow;
+  
+  initAutoUpdater() {
+    if (app.isPackaged) {
+      autoUpdater.autoDownload = false;
+
+      autoUpdater.on('update-available', (it) => {
+        const downloadLink =
+          'https://github.com/organization/alspotron/releases/latest';
+        const releaseNote: string | null
+          = typeof it.releaseNotes === 'string' ? it.releaseNotes : it.releaseNotes?.map((it) => it.note)?.join('\n')
+        const dialogOpts: Electron.MessageBoxOptions = {
+          type: 'info',
+          buttons: ['다운로드 페이지로 이동'],
+          title: `Alspotron 업데이트 알림 (${it.version})`,
+          message: `새로운 ${it.version} 버전이 ${it.releaseDate}에 출시되었어요.`,
+          detail: `릴리즈 노트: ${releaseNote}` ?? `${downloadLink}에서 다운로드 할 수 있어요.`,
+        };
+        void dialog.showMessageBox(dialogOpts).then((dialogOutput) => {
+          switch (dialogOutput.response) {
+            // Download
+            case 1:
+              void shell.openExternal(downloadLink);
+              break;
+            // TODO: Discard updates
+            case 2:
+              break;
+            default:
+              break;
+          }
+        });
+      });
+
+      const updateTimeout = setTimeout(() => {
+        void autoUpdater.checkForUpdatesAndNotify();
+        clearTimeout(updateTimeout);
+      }, 2000);
+    }
+  }
 
   initTray() {
     this.tray = new Tray(getFile('./assets/icon_music.png'));
@@ -139,6 +178,15 @@ class Application {
   }
 
   initHook() {
+    ipcMain.handle('get-current-version', () => {
+      return autoUpdater.currentVersion.version;
+    });
+    ipcMain.handle('compare-with-current-version', (_, otherVersion: string) => {
+      return autoUpdater.currentVersion.compare(otherVersion);
+    });
+    ipcMain.handle('check-update', async () => {
+      return await autoUpdater.checkForUpdatesAndNotify();
+    });
     ipcMain.handle('get-lyric-by-id', async (_, id: number) => {
       const lyric = await alsong.getLyricById(id).catch(() => null) as Lyric & { registerDate?: Date };
       if (lyric) delete lyric.registerDate;
