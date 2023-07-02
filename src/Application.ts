@@ -4,14 +4,14 @@ import alsong from 'alsong';
 import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
 import { app, BrowserWindow, Menu, screen, shell, Tray } from 'electron';
 // eslint-disable-next-line import/no-unresolved
-import {ipcMain} from 'electron/main';
+import { ipcMain } from 'electron/main';
 import glasstron from 'glasstron';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
-import {getFile} from '../utils/resource';
-import {Config, config, LyricMapper, lyricMapper, setConfig, setLyricMapper} from './config';
-import type {RequestBody} from './types';
+import { getFile } from '../utils/resource';
+import { Config, config, LyricMapper, lyricMapper, setConfig, setLyricMapper } from './config';
+import type { RequestBody } from './types';
 import path from 'node:path';
 
 type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
@@ -154,7 +154,7 @@ class Application {
       const metadata = await alsong(artist, title, {}).catch(() => []) as LyricMetadata[];
       if (metadata.length <= 0) return {};
 
-      return await alsong.getLyricById(metadata[0].lyricId).catch(() => ({lyric: data.lyrics}));
+      return await alsong.getLyricById(metadata[0].lyricId).catch(() => ({ lyric: data.lyrics }));
     });
     ipcMain.handle('search-lyric', async (_, data: { artist: string; title: string; duration?: number; }) => {
       const result = await alsong(data.artist, data.title, {
