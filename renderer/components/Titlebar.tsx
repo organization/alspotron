@@ -23,7 +23,6 @@ const Button = (props: ButtonProps) => {
 }
 
 const Titlebar = () => {
-  const svgStyle = cx('w-10 h-full p-3 mx-auto')
   return (
     <div
       class={cx('fixed h-10 top-0 left-0 right-0 z-50')}
@@ -41,21 +40,21 @@ const Titlebar = () => {
           <Button onClick={() => {
             window.ipcRenderer.send('window-minimize')
           }}>
-            <svg class={svgStyle}>
+            <svg class={cx('w-10 h-full p-3 mx-auto')}>
               <use href="./assets/titlebar_icons.svg#minimize-window" />
             </svg>
           </Button>
           <Button onClick={() => {
             window.ipcRenderer.send('window-maximize')
           }}>
-            <svg class={svgStyle}>
+            <svg class={cx('w-10 h-full p-3 mx-auto')}>
               <use href="./assets/titlebar_icons.svg#maximize-window" />
             </svg>
           </Button>
           <Button onClick={() => {
             window.ipcRenderer.send('window-close')
           }}>
-            <svg class={svgStyle}>
+            <svg class={cx('w-10 h-full p-3 mx-auto')}>
               <use href="./assets/titlebar_icons.svg#close-window" />
             </svg>
           </Button>
