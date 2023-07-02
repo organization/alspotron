@@ -178,6 +178,15 @@ class Application {
   }
 
   initHook() {
+    ipcMain.handle('get-current-version', () => {
+      return autoUpdater.currentVersion.version;
+    });
+    ipcMain.handle('compare-with-current-version', (_, otherVersion: string) => {
+      return autoUpdater.currentVersion.compare(otherVersion);
+    });
+    ipcMain.handle('check-update', async () => {
+      return await autoUpdater.checkForUpdatesAndNotify();
+    });
     ipcMain.handle('get-lyric-by-id', async (_, id: number) => {
       const lyric = await alsong.getLyricById(id).catch(() => null) as Lyric & { registerDate?: Date };
       if (lyric) delete lyric.registerDate;
