@@ -207,6 +207,8 @@ class Application {
       show: false,
       icon: iconPath,
     });
+    this.mainWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+    this.mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
     this.mainWindow.setIgnoreMouseEvents(true, { forward: true });
 
     if (app.isPackaged) {
