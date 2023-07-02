@@ -207,14 +207,16 @@ const ThemeContainer = () => {
         />
       </Card>
     </div>
-    <div class={'text-md mt-4 mb-1 px-4'}/>
+    <div class={'text-md mt-4 mb-1 px-4'}>
+      테마 리셋
+    </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
           테마 초기화
         </div>
         <Card
-          class={'flex !w-2/5 right-0 text-center justify-center'}
+          class={'py-[0.4rem] w-[12.7rem] text-center items-center'}
           onClick={() => void (async() => {
             await setConfig(await window.ipcRenderer.invoke('get-default-config') as Config)
           })()}
