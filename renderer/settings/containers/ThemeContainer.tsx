@@ -1,4 +1,4 @@
-import { Show, createSignal, onMount } from 'solid-js';
+import {Show, createSignal, onMount} from 'solid-js';
 
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
@@ -209,6 +209,52 @@ const ThemeContainer = () => {
             value={config()?.style.lyric.background}
             onColorChange={(color) => void setConfig({ style: { lyric: { background: color } } })}
           />
+        </Card>
+      </div>
+      <div class={'text-md mt-4 mb-1 px-4'}/>
+      <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
+        <Card class={'flex flex-row justify-between items-center gap-1'}>
+          <div class={'text-md'}>
+            테마 초기화
+          </div>
+          <Card
+            class={'flex-none w-1/2 right-0 text-center items-center'}
+            onClick={() => void setConfig({
+              /* TODO: DEFAULT_CONFIG 받아오기 일단 하드코딩 해놓음 */
+              style: {
+                font: 'KoPubWorldDotum',
+                fontWeight: '400',
+
+                nowPlaying: {
+                  color: '#FFFFFF',
+                  background: 'rgba(29, 29, 29, .50)',
+                  backgroundProgress: 'rgba(29, 29, 29, .80)',
+                  fontSize: 11,
+                  maxWidth: 300,
+                },
+
+                lyric: {
+                  color: '#FFFFFF',
+                  background: 'rgba(29, 29, 29, .70)',
+                  fontSize: 12,
+                  maxWidth: 700,
+                }
+              },
+
+              windowPosition: {
+                anchor: 'bottom-right',
+                display: null,
+                top: 32,
+                left: 32,
+                bottom: 32,
+                right: 32,
+              },
+
+              syncThrottle: 1000 * 3,
+            })}
+          >
+            초기화
+          </Card>
         </Card>
       </div>
     </div>
