@@ -301,7 +301,7 @@ class Application {
       screen.getPrimaryDisplay();
 
     const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
-    const windowHeight = 300;
+    const windowHeight = style.maxHeight;
 
     const anchorX = (() => {
       if (windowPosition.anchor.includes('left')) {

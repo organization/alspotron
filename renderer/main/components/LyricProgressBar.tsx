@@ -2,6 +2,7 @@ import { splitProps } from 'solid-js';
 import icon from '../../../assets/icon_music.png';
 import Marquee from '../../components/Marquee';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
+import useConfig from '../../hooks/useConfig';
 import { cx } from '../../utils/classNames';
 import type { JSX } from 'solid-js/jsx-runtime';
 
@@ -17,6 +18,7 @@ interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
 }
 
 const LyricProgressBar = (props: LyricProgressBarProps) => {
+  const [config] = useConfig();
   const { coverUrl, title, artist, progress, duration, status } = usePlayingInfo();
   const [style, containerProps] = splitProps(
     props,
@@ -27,7 +29,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     <div
       style={`
         --percent: ${progress() / duration() * 100}%;
-        opacity: ${status() === 'stopped' ? 0.5 : 1};
+        opacity: ${status() === 'stopped' ? config()?.style.nowPlaying.stoppedOpacity : 1};
         ${style.style}
       `}
       class={cx(
