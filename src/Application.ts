@@ -1,7 +1,5 @@
 import cors from '@koa/cors';
 import alsong from 'alsong';
-// eslint-disable-next-line import/no-unresolved
-import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
 import { app, BrowserWindow, Menu, screen, shell, Tray } from 'electron';
 // eslint-disable-next-line import/no-unresolved
 import {ipcMain} from 'electron/main';
@@ -178,12 +176,7 @@ class Application {
   }
 
   initMainWindow() {
-    setupTitlebar();
-    // HACK: empty application menu without breaking layout
-    Menu.setApplicationMenu(Menu.buildFromTemplate([{
-      label: '',
-      submenu: []
-    }]));
+    Menu.setApplicationMenu(null);
     this.mainWindow = new BrowserWindow({
       width: 800,
       height: 600,
@@ -276,12 +269,12 @@ class Application {
       width: 800,
       height: 600,
       webPreferences: {
-        preload: path.join(__dirname, './preload-titlebar.js'),
+        preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
       },
       show: false,
       title: 'Alspotron 설정',
-      transparent: false,
+      titleBarStyle: 'hiddenInset',
       frame: false,
       blur: true,
       blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
@@ -290,11 +283,9 @@ class Application {
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
       vibrancy: 'fullscreen-ui',
       autoHideMenuBar: true,
-      resizable: false,
+      resizable: true,
       icon: iconPath,
     });
-    this.settingsWindow.setResizable(true);
-    attachTitlebarToWindow(this.settingsWindow);
 
     this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
       void shell.openExternal(url);
@@ -313,12 +304,12 @@ class Application {
       width: 1000,
       height: 600,
       webPreferences: {
-        preload: path.join(__dirname, './preload-titlebar.js'),
+        preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
       },
       show: false,
       title: '가사 선택',
-      transparent: false,
+      titleBarStyle: 'hiddenInset',
       frame: false,
       blur: true,
       blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
@@ -327,11 +318,9 @@ class Application {
       vibrancy: 'fullscreen-ui',
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
       autoHideMenuBar: true,
-      resizable: false,
+      resizable: true,
       icon: iconPath,
     });
-    this.lyricsWindow.setResizable(true);
-    attachTitlebarToWindow(this.lyricsWindow);
 
     if (app.isPackaged) {
       void this.lyricsWindow.loadFile(path.join(__dirname, '../lyrics.html'));
