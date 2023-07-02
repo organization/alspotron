@@ -59,6 +59,7 @@
     "color": "^4.2.3",
     "custom-electron-titlebar": "^4.2.3",
     "deepmerge": "^4.3.1",
+    "electron-updater": "^6.1.1",
     "font-list": "^1.5.0",
     "glasstron": "^0.1.1",
     "koa": "^2.14.2",
@@ -68,7 +69,7 @@
     "solid-js": "^1.7.7",
     "solid-popper": "^0.3.0",
     "solid-transition-group": "^0.2.2",
-    "ts-treemap-next": "^1.0.0"
+    "@js-sdsl/ordered-map": "^4.4.1"
   },
   "build": {
     "productName": "Alspotron",
