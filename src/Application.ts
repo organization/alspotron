@@ -10,7 +10,7 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
 import {getFile} from '../utils/resource';
-import {Config, config, LyricMapper, lyricMapper, setConfig, setLyricMapper} from './config';
+import {Config, config, DEFAULT_CONFIG, LyricMapper, lyricMapper, setConfig, setLyricMapper} from './config';
 import type {RequestBody} from './types';
 import path from 'node:path';
 
@@ -170,6 +170,7 @@ class Application {
       this.updateMainWindowConfig();
     });
     ipcMain.handle('get-config', () => config());
+    ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
     ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>) => {
       setLyricMapper(data);
       this.broadcast('lyric-mapper', lyricMapper());
