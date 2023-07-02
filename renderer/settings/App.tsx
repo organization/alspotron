@@ -82,6 +82,9 @@ const App = () => {
             <Match when={tabId() === 'theme'}>
               <ThemeContainer />
             </Match>
+            <Match when={tabId() === 'updater'}>
+              <UpdaterContainer />
+            </Match>
             <Match when={tabId() === 'plugin'}>
               <div class={'flex-1 fluent-scrollbar'}>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc nec elit sed velit gravida viverra eleifend non diam. Quisque turpis dui, posuere eu accumsan a, porttitor vitae orci. Nullam placerat elementum massa gravida laoreet. In blandit urna sit amet justo ultricies facilisis. Proin eget dictum purus. In condimentum facilisis mauris a pretium. Maecenas sollicitudin arcu id vestibulum fringilla. Maecenas dictum tincidunt nisl eu tristique. Suspendisse potenti. Mauris sit amet augue at purus dictum tempor id sit amet nibh. Aenean quis justo ac sem egestas tristique. Sed purus enim, pellentesque vitae dictum a, pretium vehicula velit.
