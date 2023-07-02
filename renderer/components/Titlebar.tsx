@@ -1,7 +1,6 @@
 // import { BrowserWindow } from 'electron'
 import { Show } from 'solid-js';
-// eslint-disable-next-line import/no-unresolved
-import { JSX } from 'solid-js/jsx-runtime';
+import type { JSX } from 'solid-js/jsx-runtime';
 import { cx } from '../utils/classNames';
 
 const isMac = /Mac/.test(navigator.userAgent);
