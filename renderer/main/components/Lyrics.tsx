@@ -10,8 +10,15 @@ const Lyrics = () => {
   const [config] = useConfig();
   const { status, lyrics, progress } = usePlayingInfo();
   const lyric = createMemo(() => {
-    if (lyrics() === null) return lyrics()?.get(0);
-    return lyrics().lowerEntry(progress() + TRANSITION_DURATION)?.[1];
+    const tempLyrics = lyrics();
+    if (tempLyrics === null) return null;
+
+    const last = tempLyrics.lowerBound(progress() + TRANSITION_DURATION);
+    if (!last.equals(tempLyrics.begin()) && last !== tempLyrics.begin()) {
+      return last.pre().pointer[1];
+    }
+
+    return last.pointer[1];
   });
 
   return (
