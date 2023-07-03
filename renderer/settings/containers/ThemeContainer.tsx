@@ -88,14 +88,13 @@ const ThemeContainer = () => {
           style={{
             'font-family': config()?.style?.font,
           }}
-          popupClass={'p-1 bg-gray-800 rounded'}
           options={fontList()}
           value={config()?.style?.font}
           onChange={(value) => void setConfig({ style: { font: value } })}
           renderItem={(props, option) => <li
             {...props}
             style={{ 'font-family': option }}
-            class={'w-full p-2 hover:bg-gray-700 rounded'}
+            class={'w-full p-2 hover:bg-white/10 rounded-lg'}
           >
             {option}
           </li>}
@@ -112,7 +111,6 @@ const ThemeContainer = () => {
             'font-family': config()?.style?.font,
             'font-weight': config()?.style?.fontWeight,
           }}
-          popupClass={'p-1 bg-gray-800 rounded'}
           options={[
             '100',
             '200',
@@ -129,7 +127,7 @@ const ThemeContainer = () => {
           renderItem={(props, option) => <li
             {...props}
             style={{ 'font-weight': option }}
-            class={'w-full p-2 hover:bg-gray-700 rounded truncate'}
+            class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
           >
             {option} - 다람쥐 헌 쳇바퀴에 타고파
           </li>}
@@ -170,7 +168,6 @@ const ThemeContainer = () => {
               format={getAnimationName}
               placeholder={'가사 전환 애니메이션'}
               class={'select w-48 font-select'}
-              popupClass={'p-1 bg-gray-800 rounded'}
               options={[
                 'none',
                 'fade',
@@ -181,7 +178,7 @@ const ThemeContainer = () => {
               renderItem={(props, option) => <li
                 {...props}
                 style={{ 'font-weight': option }}
-                class={'w-full p-2 hover:bg-gray-700 rounded truncate'}
+                class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
               >
                 {getAnimationName(option)}
               </li>}

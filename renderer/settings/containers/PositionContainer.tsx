@@ -121,7 +121,7 @@ const PositionContainer = () => {
           renderItem={(props, option) => <li
             {...props}
             style={{ 'font-weight': option }}
-            class={'w-full p-2 hover:bg-gray-700 rounded truncate'}
+            class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
           >
             {option === 'column' ? '위에서 아래로' : '아래에서 위로'}
           </li>}

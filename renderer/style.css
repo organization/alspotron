@@ -179,3 +179,19 @@ html, body, #app {
 .card-exit-to {
   opacity: 0;
 }
+
+.selector-enter-active {
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.selector-exit-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.selector-enter {
+  transform: translateY(-50%) scaleY(0.1);
+  opacity: 0;
+}
+
+.selector-exit-to {
+  opacity: 0;
+}
