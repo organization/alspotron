@@ -1,8 +1,6 @@
 import cors from '@koa/cors';
 import alsong from 'alsong';
-// eslint-disable-next-line import/no-unresolved
-import { setupTitlebar, attachTitlebarToWindow } from 'custom-electron-titlebar/main';
-import { app, BrowserWindow, dialog, Menu, screen, shell, Tray } from 'electron';
+import { app, BrowserWindow, Menu, dialog, screen, shell, Tray } from 'electron';
 // eslint-disable-next-line import/no-unresolved
 import { ipcMain } from 'electron/main';
 import { autoUpdater } from 'electron-updater';
@@ -29,7 +27,7 @@ class Application {
   public mainWindow: BrowserWindow;
   public settingsWindow: BrowserWindow;
   public lyricsWindow: BrowserWindow;
-  
+
   initAutoUpdater() {
     if (app.isPackaged) {
       autoUpdater.autoDownload = false;
@@ -77,10 +75,9 @@ class Application {
         click: () => {
           if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
             if (this.lyricsWindow.isMinimized()) this.lyricsWindow.restore();
-            this.lyricsWindow.focus();
+            this.lyricsWindow.show();
           } else {
             this.initLyricsWindow();
-            this.lyricsWindow.show();
           }
         }
       },
@@ -90,10 +87,9 @@ class Application {
         click: () => {
           if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
             if (this.settingsWindow.isMinimized()) this.settingsWindow.restore();
-            this.settingsWindow.focus();
+            this.settingsWindow.show();
           } else {
             this.initSettingsWindow();
-            this.settingsWindow.show();
           }
         }
       },
@@ -224,15 +220,20 @@ class Application {
       this.broadcast('lyric-mapper', lyricMapper());
     });
     ipcMain.handle('get-lyric-mapper', () => lyricMapper());
+
+    ipcMain.on('window-minimize', () => {
+      BrowserWindow.getFocusedWindow()?.minimize();
+    })
+    ipcMain.on('window-maximize', () => {
+      BrowserWindow.getFocusedWindow()?.maximize();
+    })
+    ipcMain.on('window-close', () => {
+      BrowserWindow.getFocusedWindow()?.close();
+    })
   }
 
   initMainWindow() {
-    setupTitlebar();
-    // HACK: empty application menu without breaking layout
-    Menu.setApplicationMenu(Menu.buildFromTemplate([{
-      label: '',
-      submenu: []
-    }]));
+    Menu.setApplicationMenu(null);
     this.mainWindow = new BrowserWindow({
       width: 800,
       height: 600,
@@ -323,27 +324,23 @@ class Application {
   initSettingsWindow() {
     this.settingsWindow = new glasstron.BrowserWindow({
       width: 800,
-      height: 600,
+      height: 800,
       webPreferences: {
-        preload: path.join(__dirname, './preload-titlebar.js'),
+        preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
       },
-      show: false,
       title: 'Alspotron 설정',
-      transparent: false,
+      titleBarStyle: 'hiddenInset',
       frame: false,
       blur: true,
       blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
       blurGnomeSigma: 100,
       blurCornerRadius: 20,
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      vibrancy: 'fullscreen-ui',
+      vibrancy: 'sidebar',
       autoHideMenuBar: true,
-      resizable: false,
       icon: iconPath,
     });
-    this.settingsWindow.setResizable(true);
-    attachTitlebarToWindow(this.settingsWindow);
 
     this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
       void shell.openExternal(url);
@@ -362,25 +359,21 @@ class Application {
       width: 1000,
       height: 600,
       webPreferences: {
-        preload: path.join(__dirname, './preload-titlebar.js'),
+        preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
       },
-      show: false,
       title: '가사 선택',
-      transparent: false,
+      titleBarStyle: 'hiddenInset',
       frame: false,
       blur: true,
       blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
       blurGnomeSigma: 100,
       blurCornerRadius: 20,
-      vibrancy: 'fullscreen-ui',
       backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      vibrancy: 'sidebar',
       autoHideMenuBar: true,
-      resizable: false,
       icon: iconPath,
     });
-    this.lyricsWindow.setResizable(true);
-    attachTitlebarToWindow(this.lyricsWindow);
 
     if (app.isPackaged) {
       void this.lyricsWindow.loadFile(path.join(__dirname, '../lyrics.html'));
