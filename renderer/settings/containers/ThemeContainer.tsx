@@ -12,7 +12,6 @@ const ThemeContainer = () => {
   const presetContainer: HTMLDivElement | null = null;
 
   const [config, setConfig] = useConfig();
-  const [keyword, setKeyword] = createSignal();
   const [fontList, setFontList] = createSignal<string[]>([]);
 
   void (async () => {
@@ -211,18 +210,27 @@ const ThemeContainer = () => {
       테마 설정
     </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
-      <Card class={'flex flex-row justify-between items-center gap-1'}>
-        <div class={'text-md'}>
-          테마 초기화
+      <Card
+        class={'flex flex-row justify-between items-center gap-1'}
+        subCards={[
+          <button
+            class={'btn-primary'}
+            onClick={async () => {
+              await setConfig(await window.ipcRenderer.invoke('get-default-config') as Config)
+            }}
+          >
+            초기화
+          </button>,
+        ]}
+      >
+        <div class={'flex flex-col justify-start items-start gap-0'}>
+          <div class={'text-md'}>
+            테마 초기화
+          </div>
+          <div class={'text-xs mt-[-2px] text-white/80'}>
+            테마를 초기화 하게 되면 원상 복구 할 수 없습니다.
+          </div>
         </div>
-        <button
-          class={'btn-primary'}
-          onClick={async () => {
-            await setConfig(await window.ipcRenderer.invoke('get-default-config') as Config)
-          }}
-        >
-          초기화
-        </button>
       </Card>
     </div>
   </div>
