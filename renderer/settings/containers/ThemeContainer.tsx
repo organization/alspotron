@@ -213,17 +213,19 @@ const ThemeContainer = () => {
       <Card
         class={'flex flex-row justify-between items-center gap-1'}
         subCards={[
-          <button
-            class={'btn-primary'}
-            onClick={async () => {
-              await setConfig(await window.ipcRenderer.invoke('get-default-config') as Config)
-            }}
-          >
-            초기화
-          </button>,
+          <div class={'w-full h-full flex justify-start items-center'}>
+            <button
+              class={'btn-primary'}
+              onClick={async () => {
+                await setConfig(await window.ipcRenderer.invoke('get-default-config') as Config)
+              }}
+              >
+              초기화
+            </button>
+          </div>,
         ]}
       >
-        <div class={'flex flex-col justify-start items-start gap-0'}>
+        <div class={'w-full h-full flex flex-col justify-center items-start gap-0'}>
           <div class={'text-md'}>
             테마 초기화
           </div>
