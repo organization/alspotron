@@ -18,6 +18,7 @@ export interface Config {
       backgroundProgress: string;
       fontSize: number;
       maxWidth: number;
+      visible: boolean;
     };
     lyric: {
       color: string;
@@ -51,6 +52,7 @@ export const DEFAULT_CONFIG = {
       backgroundProgress: 'rgba(29, 29, 29, .80)',
       fontSize: 11,
       maxWidth: 300,
+      visible: true,
     },
 
     lyric: {

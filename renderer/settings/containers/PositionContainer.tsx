@@ -127,6 +127,26 @@ const PositionContainer = () => {
           </li>}
         />
       </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'}>
+        <div class={'font-md'}>
+          현재 노래 표시하기
+        </div>
+        <div class={'flex-1'} />
+        <Selector
+          format={(value) => value === 'true' ? '표시' : '표시안함'}
+          value={config()?.style?.nowPlaying?.visible?.toString() ?? 'true'}
+          onChange={(value) => void setConfig({ style: { nowPlaying: { visible: value === 'true' } } })}
+          options={['true', 'false']}
+          class={'select'}
+          renderItem={(props, option) => <li
+            {...props}
+            style={{ 'font-weight': option }}
+            class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
+          >
+            {option === 'true' ? '표시' : '표시안함'}
+          </li>}
+        />
+      </Card>
       
       <div class={'text-md mt-8 mb-1'}>
         여백 조절
