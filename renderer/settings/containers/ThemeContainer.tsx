@@ -10,6 +10,15 @@ import useHorizontalScroll from '../../hooks/useHorizontalScroll';
 import LyricsItem from '../../main/components/LyricsItem';
 import ColorPicker from '../components/ColorPicker';
 
+const ANIMATION_LIST = [
+  'none',
+  'fade',
+  'pretty',
+  'slide',
+  'show-up',
+  'scale',
+  'slime',
+];
 
 const ThemeContainer = () => {
   // eslint-disable-next-line prefer-const
@@ -39,6 +48,10 @@ const ThemeContainer = () => {
     if (value === 'none') return '없음';
     if (value === 'fade') return '페이드';
     if (value === 'pretty') return '예쁘게';
+    if (value === 'slide') return '슬라이드';
+    if (value === 'show-up') return 'Show Up';
+    if (value === 'scale') return '크기조절';
+    if (value === 'slime') return '슬라임';
 
     return `알 수 없음(${value})`;
   };
@@ -169,11 +182,7 @@ const ThemeContainer = () => {
               format={getAnimationName}
               placeholder={'가사 전환 애니메이션'}
               class={'select w-48 font-select'}
-              options={[
-                'none',
-                'fade',
-                'pretty',
-              ]}
+              options={ANIMATION_LIST}
               value={config()?.style?.animation ?? 'pretty'}
               onChange={(value) => void setConfig({ style: { animation: value } })}
               renderItem={(props, option) => <li

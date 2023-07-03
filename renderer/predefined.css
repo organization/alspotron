@@ -75,3 +75,116 @@
   opacity: 0;
   filter: blur(4px);
 }
+
+/* slide */
+.lyric-slide-enter-active {
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.lyric-slide-exit-active {
+  transition: all 0.3s cubic-bezier(0.5, 0, 0.75, 0);
+}
+.lyric-slide-move {
+  transition: all 0.625s ease-in-out;
+}
+
+.lyric-slide-enter {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.lyric-slide-exit-active {
+  position: absolute;
+}
+
+.lyric-slide-exit-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+/* show-up */
+.lyric-show-up-enter-active {
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: center;
+}
+.lyric-show-up-exit-active {
+  transition: all 0.3s cubic-bezier(0.5, 0, 0.75, 0);
+  transform-origin: center;
+}
+.lyric-show-up-move {
+  transition: all 0.625s ease-in-out;
+  transform-origin: center;
+}
+
+.lyric-show-up-enter {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.lyric-show-up-exit-active {
+  position: absolute;
+}
+
+.lyric-show-up-exit-to {
+  transform: scale(80%);
+  opacity: 0;
+  filter: blur(4px);
+}
+
+/* scale */
+.lyric-scale-enter-active {
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: center;
+}
+.lyric-scale-exit-active {
+  transition: all 0.3s cubic-bezier(0.5, 0, 0.75, 0);
+  transform-origin: center;
+}
+.lyric-scale-move {
+  transition: all 0.625s ease-in-out;
+  transform-origin: center;
+}
+
+.lyric-scale-enter {
+  transform: scale(200%);
+  opacity: 0;
+  filter: blur(4px);
+}
+
+.lyric-scale-exit-active {
+  position: absolute;
+}
+
+.lyric-scale-exit-to {
+  transform: scale(20%);
+  opacity: 0;
+  filter: blur(4px);
+}
+
+/* slime */
+.lyric-slime-enter-active {
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center;
+}
+.lyric-slime-exit-active {
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center;
+}
+.lyric-slime-move {
+  transition: all 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  transform-origin: center;
+}
+
+.lyric-slime-enter {
+  transform: scaleX(50%) scaleY(120%);
+  opacity: 0;
+}
+
+.lyric-slime-exit-active {
+  position: absolute;
+}
+
+.lyric-slime-exit-to {
+  transform: scaleX(120%) scaleY(30%) translateY(30%);
+  opacity: 0;
+  filter: blur(4px);
+}
