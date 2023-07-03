@@ -1,5 +1,5 @@
-import { For, Match, Show, Switch, createSignal, splitProps } from 'solid-js';
-import { Transition } from 'solid-transition-group';
+import { For, Match, Show, Switch, createSignal, getOwner, runWithOwner, splitProps } from 'solid-js';
+import { Transition, TransitionGroup } from 'solid-transition-group';
 
 import { cx } from '../utils/classNames';
 
@@ -16,7 +16,7 @@ const Card = (props: CardProps) => {
   
   const [expand, setExpand] = local.onExpand ? [() => local.expand, local.onExpand] : createSignal(local.expand);
 
-  const isSubCard = () => (local.subCards?.length ?? 0) > 0;
+  const isSubCard = () => 'subCards' in local;
 
   const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = (event) => {
     if (isSubCard()) {
@@ -31,7 +31,7 @@ const Card = (props: CardProps) => {
       {...leftProps}
       class={cx(
         `
-          relative w-full px-4 py-3
+          relative w-full min-h-[67px] px-4 py-3
           shadow-sm bg-white/[7.5%] hover:bg-white/10 active:bg-white/5
           select-none
         `,
@@ -43,6 +43,9 @@ const Card = (props: CardProps) => {
       onClick={onClick}
     >
       {leftProps.children}
+      <Show when={isSubCard()}>
+        <div class={'flex-1'} />
+      </Show>
       <Switch>
         <Match when={expand() === true}>
           <svg class={'w-4 h-4 fill-none'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -61,7 +64,7 @@ const Card = (props: CardProps) => {
   return isSubCard() ? (
     <div class={'flex flex-col justify-start itmes-stretch gap-[1px]'}>
       {mainCard}
-      <Transition name={'card'}>
+      <TransitionGroup name={'card'}>
         <Show when={expand()}>
           <For each={local.subCards}>
             {(element, index) => (
@@ -77,7 +80,7 @@ const Card = (props: CardProps) => {
             )}
           </For>
         </Show>
-      </Transition>
+      </TransitionGroup>
     </div>
   ) : mainCard;
 };
