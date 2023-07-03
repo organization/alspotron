@@ -35,7 +35,6 @@ const SideBar = () => {
   });
 
   const onResetLyric = () => {
-    console.log('clicked');
     const newMapper = {
       [`${title()}:${coverUrl()}`]: undefined,
     };
