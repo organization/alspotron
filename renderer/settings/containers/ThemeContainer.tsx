@@ -76,12 +76,12 @@ const ThemeContainer = () => {
           value={config()?.style?.font}
           onChange={(value) => void setConfig({ style: { font: value } })}
           renderItem={(props, option) => <li
-              {...props}
-              style={{ 'font-family': option }}
-              class={'w-full p-2 hover:bg-gray-700 rounded'}
-            >
-              {option}
-            </li>}
+            {...props}
+            style={{ 'font-family': option }}
+            class={'w-full p-2 hover:bg-gray-700 rounded'}
+          >
+            {option}
+          </li>}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -110,12 +110,12 @@ const ThemeContainer = () => {
           value={config()?.style?.fontWeight ?? '400'}
           onChange={(value) => void setConfig({ style: { fontWeight: value } })}
           renderItem={(props, option) => <li
-              {...props}
-              style={{ 'font-weight': option }}
-              class={'w-full p-2 hover:bg-gray-700 rounded truncate'}
-            >
-              {option} - 다람쥐 헌 쳇바퀴에 타고파
-            </li>}
+            {...props}
+            style={{ 'font-weight': option }}
+            class={'w-full p-2 hover:bg-gray-700 rounded truncate'}
+          >
+            {option} - 다람쥐 헌 쳇바퀴에 타고파
+          </li>}
         />
       </Card>
     </div>
@@ -208,21 +208,21 @@ const ThemeContainer = () => {
       </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
-      테마 리셋
+      테마 설정
     </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
           테마 초기화
         </div>
-        <Card
-          class={'py-[0.4rem] w-[12.7rem] text-center items-center'}
-          onClick={() => void (async() => {
+        <button
+          class={'btn-primary'}
+          onClick={async () => {
             await setConfig(await window.ipcRenderer.invoke('get-default-config') as Config)
-          })()}
+          }}
         >
           초기화
-        </Card>
+        </button>
       </Card>
     </div>
   </div>
