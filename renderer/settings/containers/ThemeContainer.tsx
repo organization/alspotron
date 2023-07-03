@@ -1,28 +1,46 @@
-import { Show, createSignal, onMount } from 'solid-js';
+import { Show, createSignal, onCleanup, onMount } from 'solid-js';
+import { TransitionGroup } from 'solid-transition-group';
 
-import { Config } from '../../../src/config';
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
+import ColorPicker from '../components/ColorPicker';
+import LyricsItem from '../../main/components/LyricsItem';
+
 import useConfig from '../../hooks/useConfig';
 import useHorizontalScroll from '../../hooks/useHorizontalScroll';
-import ColorPicker from '../components/ColorPicker';
 
+import { Config } from '../../../src/config';
 
 const ThemeContainer = () => {
-  const presetContainer: HTMLDivElement | null = null;
+  let presetContainer: HTMLDivElement | null = null;
+  let interval: NodeJS.Timer | null = null;
 
   const [config, setConfig] = useConfig();
   const [fontList, setFontList] = createSignal<string[]>([]);
+  const [preview, setPreview] = createSignal(false);
 
   void (async () => {
     setFontList(await window.getFont({ disableQuoting: true }));
   })();
 
   onMount(() => {
-    if (presetContainer) {
-      useHorizontalScroll(presetContainer);
-    }
+    if (presetContainer) useHorizontalScroll(presetContainer);
+
+    interval = setInterval(() => {
+      setPreview(!preview());
+    }, 1500);
   });
+  onCleanup(() => {
+    if (interval) clearInterval(interval);
+  });
+
+  const getAnimationName = (value: string) => {
+    if (value === 'none') return '없음';
+    if (value === 'fade') return '페이드';
+    if (value === 'pretty') return '예쁘게';
+
+    return `알 수 없음(${value})`;
+  };
 
   return <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
     <div class={'text-3xl mb-1 px-4'}>
@@ -116,6 +134,68 @@ const ThemeContainer = () => {
             {option} - 다람쥐 헌 쳇바퀴에 타고파
           </li>}
         />
+      </Card>
+      <Card
+        class={'flex flex-row justify-between items-center gap-1'}
+        subCards={[
+          <div class={'flex flex-col justify-start items-stretch gap-1'}>
+            <div class={'text-md'}> 
+              미리보기
+            </div>
+            <div class={'relative w-full h-32 flex flex-col justify-start items-start gap-4'}>
+              <TransitionGroup name={`lyric-${config()?.style?.animation ?? 'pretty'}`}>
+                <Show when={preview()}>
+                  <LyricsItem delay={0}>
+                    가사 전환 애니메이션 미리보기용 가사입니다
+                  </LyricsItem>
+                  <LyricsItem
+                    delay={config()?.style?.animation === 'none' ? 0 : 1}>
+                    https://github.com/organization/alspotron
+                  </LyricsItem>
+                  <LyricsItem
+                    delay={config()?.style?.animation === 'none' ? 0 : 2}
+                  >
+                    가사 전환 애니메이션을 바꾸는 중간에는 끊길수 있습니다
+                  </LyricsItem>
+                </Show>
+              </TransitionGroup>
+            </div>
+          </div>,
+          <div class={'w-full h-full flex justify-start items-center'}>
+            <div class={'text-md'}>
+              애니메이션 선택
+            </div>
+            <div class={'flex-1'} />
+            <Selector
+              format={getAnimationName}
+              placeholder={'가사 전환 애니메이션'}
+              class={'select w-48 font-select'}
+              popupClass={'p-1 bg-gray-800 rounded'}
+              options={[
+                'none',
+                'fade',
+                'pretty',
+              ]}
+              value={config()?.style?.animation ?? 'pretty'}
+              onChange={(value) => void setConfig({ style: { animation: value } })}
+              renderItem={(props, option) => <li
+                {...props}
+                style={{ 'font-weight': option }}
+                class={'w-full p-2 hover:bg-gray-700 rounded truncate'}
+              >
+                {getAnimationName(option)}
+              </li>}
+            />
+          </div>
+        ]}
+      >
+        <div class={'text-md'}>
+          가사 전환 애니메이션
+        </div>
+        <div class={'flex-1'} />
+        <div class={'text-md text-white/80 mr-2'}>
+          {getAnimationName(config()?.style?.animation ?? 'pretty')}
+        </div>
       </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>

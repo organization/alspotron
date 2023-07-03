@@ -10,28 +10,30 @@ const Lyrics = () => {
   const { status } = usePlayingInfo();
   const [lyric] = useLyric();
 
+  const animation = () => config()?.style?.animation ?? 'pretty';
+
   return (
-      <TransitionGroup name={'lyric'}>
-        <For each={lyric() ?? []}>
-          {(item, index) => item && (
-            <LyricsItem
-              status={status()}
-              delay={index()}
-              style={`
-                font-family: ${config()?.style.font};
-                font-weight: ${config()?.style.fontWeight};
-                font-size: ${config()?.style.lyric.fontSize}px;
-                color: ${config()?.style.lyric.color};
-                background-color: ${config()?.style.lyric.background};
-                text-align: var(--text-align);
-              `}
-            >
-              {item}
-            </LyricsItem>
-          )}
-        </For>
-      </TransitionGroup>
-    );
+    <TransitionGroup name={`lyric-${animation()}`}>
+      <For each={lyric() ?? []}>
+        {(item, index) => item && (
+          <LyricsItem
+            status={status()}
+            delay={animation() === 'none' ? 0 : index()}
+            style={`
+              font-family: ${config()?.style.font};
+              font-weight: ${config()?.style.fontWeight};
+              font-size: ${config()?.style.lyric.fontSize}px;
+              color: ${config()?.style.lyric.color};
+              background-color: ${config()?.style.lyric.background};
+              text-align: var(--text-align);
+            `}
+          >
+            {item}
+          </LyricsItem>
+        )}
+      </For>
+    </TransitionGroup>
+  );
 };
 
 export default Lyrics;

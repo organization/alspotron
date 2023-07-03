@@ -10,6 +10,7 @@ export interface Config {
   style: {
     font: string;
     fontWeight: string;
+    animation: string;
 
     nowPlaying: {
       color: string;
@@ -42,6 +43,7 @@ export const DEFAULT_CONFIG = {
   style: {
     font: 'KoPubWorldDotum',
     fontWeight: '400',
+    animation: 'pretty',
 
     nowPlaying: {
       color: '#FFFFFF',
