@@ -2,24 +2,13 @@ import { createMemo, For } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group'
 import useConfig from '../../hooks/useConfig';
 import LyricsItem from './LyricsItem'
-import { usePlayingInfo } from './PlayingInfoProvider';
-
-const TRANSITION_DURATION = 1225;
+import { usePlayingInfo } from '../../components/PlayingInfoProvider';
+import useLyric from '../../hooks/useLyric';
 
 const Lyrics = () => {
   const [config] = useConfig();
-  const { status, lyrics, progress } = usePlayingInfo();
-  const lyric = createMemo(() => {
-    const tempLyrics = lyrics();
-    if (tempLyrics === null) return null;
-
-    const last = tempLyrics.lowerBound(progress() + TRANSITION_DURATION);
-    if (!last.equals(tempLyrics.begin()) && last !== tempLyrics.begin()) {
-      return last.pre().pointer[1];
-    }
-
-    return last.pointer[1];
-  });
+  const { status } = usePlayingInfo();
+  const [lyric] = useLyric();
 
   return (
       <TransitionGroup name={'lyric'}>

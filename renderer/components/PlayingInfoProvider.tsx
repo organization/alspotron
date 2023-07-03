@@ -1,9 +1,9 @@
 import { OrderedMap } from '@js-sdsl/ordered-map';
 import alsong from 'alsong';
 import { Accessor, createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from 'solid-js';
-import IconMusic from '../../../assets/icon_music.png';
-import useLyricMapper from '../../hooks/useLyricMapper';
-import { UpdateData } from '../../types';
+import IconMusic from '../../assets/icon_music.png';
+import useLyricMapper from '../hooks/useLyricMapper';
+import { UpdateData } from '../types';
 
 type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
 type PlayingInfo = {

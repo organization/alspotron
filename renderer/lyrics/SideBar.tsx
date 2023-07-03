@@ -1,12 +1,14 @@
-import { Show, createMemo, For } from 'solid-js';
+import { Show, createMemo, For, createEffect } from 'solid-js';
 
 import Card from '../components/Card';
 import Marquee from '../components/Marquee';
 import LyricProgressBar from '../main/components/LyricProgressBar';
-import { usePlayingInfo } from '../main/components/PlayingInfoProvider';
+import { usePlayingInfo } from '../components/PlayingInfoProvider';
+import useLyric from '../hooks/useLyric';
 
 const SideBar = () => {
   const { lyrics, originalLyric } = usePlayingInfo();
+  const [_, lyricTime] = useLyric();
 
   const alsongLyric = () => {
     const lyricInfo = originalLyric();
@@ -14,11 +16,21 @@ const SideBar = () => {
   };
 
   const lyricItems = createMemo(() => {
-    const items: string[] = [];
-    lyrics()?.forEach(([_, lyric]) => items.push(lyric.join('\n')));
+    const items: [number, string[]][] = [];
+
+    lyrics()?.forEach((item) => items.push(item));
+
     return items;
   });
 
+  createEffect(() => {
+    const time = lyricTime();
+
+    document.querySelector(`#lyric-${time}`)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  });
 
   return (
     <div
@@ -56,8 +68,20 @@ const SideBar = () => {
           <path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff"/>
         </svg>
       </Card>
-      <div class={'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto whitespace-pre-line py-2'}>
-        <For each={lyricItems()}>{(value) => value + '\n\n'}</For>
+      <div class={'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto'}>
+        <For each={lyricItems()}>
+          {([time, value]) => (
+            <div
+              id={`lyric-${time}`}
+              class={'my-4 whitespace-pre-line'}
+              classList={{
+                'text-primary-500': lyricTime() === time,
+              }}
+            >
+              {value.join('\n')}
+            </div>
+          )}
+        </For>
       </div>
     </div>
   )

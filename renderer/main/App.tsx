@@ -2,7 +2,7 @@ import useConfig from '../hooks/useConfig';
 import AnchoredView from './components/AnchoredView';
 import LyricProgressBar from './components/LyricProgressBar';
 import Lyrics from './components/Lyrics';
-import PlayingInfoProvider from './components/PlayingInfoProvider';
+import PlayingInfoProvider from '../components/PlayingInfoProvider';
 
 const App = () => {
   const [config] = useConfig();
