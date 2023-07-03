@@ -1,8 +1,6 @@
 import cors from '@koa/cors';
 import alsong from 'alsong';
-import { app, BrowserWindow, Menu, dialog, screen, shell, Tray } from 'electron';
-// eslint-disable-next-line import/no-unresolved
-import { ipcMain } from 'electron/main';
+import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import glasstron from 'glasstron';
 import Koa from 'koa';

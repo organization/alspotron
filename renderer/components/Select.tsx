@@ -1,11 +1,11 @@
-import { For, Show, createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js';
+import { Placement, autoUpdate, offset } from '@floating-ui/dom';
 import { useFloating } from 'solid-floating-ui';
+import { For, Show, createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js';
 
+import { Transition } from 'solid-transition-group';
 import { cx } from '../utils/classNames';
 
 import type { JSX } from 'solid-js/jsx-runtime';
-import { Transition } from 'solid-transition-group';
-import { Placement, autoUpdate, offset } from '@floating-ui/dom';
 
 export interface SelectProps extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
   placeholder?: string;

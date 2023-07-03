@@ -58,8 +58,7 @@ const Card = (props: CardProps) => {
     </div>
   );
 
-  return isSubCard() ? (
-    <div class={'flex flex-col justify-start itmes-stretch gap-[1px]'}>
+  return <Show when={isSubCard()} fallback={mainCard}><div class={'flex flex-col justify-start itmes-stretch gap-[1px]'}>
       {mainCard}
       <TransitionGroup name={'card'}>
         <Show when={expand()}>
@@ -68,8 +67,8 @@ const Card = (props: CardProps) => {
               <Card
                 class={'hover:!bg-white/[7.5%]'}
                 classList={{
-                  '!rounded-none': index() !== local.subCards!.length - 1,
-                  '!rounded-t-none rounded-b': index() === local.subCards!.length - 1,
+                  '!rounded-none': index() !== local.subCards.length - 1,
+                  '!rounded-t-none rounded-b': index() === local.subCards.length - 1,
                 }}
               >
                 {element}
@@ -78,8 +77,7 @@ const Card = (props: CardProps) => {
           </For>
         </Show>
       </TransitionGroup>
-    </div>
-  ) : mainCard;
+    </div></Show>;
 };
 
 export default Card;

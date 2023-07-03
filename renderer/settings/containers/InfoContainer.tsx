@@ -1,11 +1,11 @@
 import { UpdateCheckResult } from 'electron-updater';
 import { createSignal, Switch, Match } from 'solid-js';
 
+import MainIcon from '../../../assets/icon_music.png';
+import packageJson from '../../../package.json';
 import Card from '../../components/Card';
 import Spinner from '../../components/Spinner';
 
-import packageJson from '../../../package.json';
-import MainIcon from '../../../assets/icon_music.png';
 
 const InfoContainer = () => {
   const [updateData, setUpdateData] = createSignal<{

@@ -1,8 +1,8 @@
 import { splitProps } from 'solid-js';
 import icon from '../../../assets/icon_music.png';
 import Marquee from '../../components/Marquee';
-import { cx } from '../../utils/classNames';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
+import { cx } from '../../utils/classNames';
 import type { JSX } from 'solid-js/jsx-runtime';
 
 interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {

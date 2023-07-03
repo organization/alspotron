@@ -1,9 +1,9 @@
+import icon from '../../../assets/icon_music.png';
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
 
 import useConfig from '../../hooks/useConfig';
 
-import icon from '../../../assets/icon_music.png';
 
 
 const PositionContainer = () => {

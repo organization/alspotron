@@ -1,17 +1,18 @@
 import { Show, createSignal, onCleanup, onMount } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
+import { Config } from '../../../src/config';
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
-import ColorPicker from '../components/ColorPicker';
-import LyricsItem from '../../main/components/LyricsItem';
 
 import useConfig from '../../hooks/useConfig';
 import useHorizontalScroll from '../../hooks/useHorizontalScroll';
+import LyricsItem from '../../main/components/LyricsItem';
+import ColorPicker from '../components/ColorPicker';
 
-import { Config } from '../../../src/config';
 
 const ThemeContainer = () => {
+  // eslint-disable-next-line prefer-const
   let presetContainer: HTMLDivElement | null = null;
   let interval: NodeJS.Timer | null = null;
 
@@ -293,9 +294,9 @@ const ThemeContainer = () => {
           <div class={'w-full h-full flex justify-start items-center'}>
             <button
               class={'btn-primary'}
-              onClick={async () => {
+              onClick={void (async () => {
                 await setConfig(await window.ipcRenderer.invoke('get-default-config') as Config)
-              }}
+              })}
               >
               초기화
             </button>

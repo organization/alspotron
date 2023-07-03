@@ -1,10 +1,10 @@
 import { For, Show, createSignal, createEffect, on } from 'solid-js';
 
 import Card from '../components/Card';
-import Spinner from '../components/Spinner';
 import Layout from '../components/Layout';
-import useLyricMapper from '../hooks/useLyricMapper';
 import PlayingInfoProvider, { usePlayingInfo } from '../components/PlayingInfoProvider';
+import Spinner from '../components/Spinner';
+import useLyricMapper from '../hooks/useLyricMapper';
 import SideBar from './SideBar';
 
 import type alsong from 'alsong';

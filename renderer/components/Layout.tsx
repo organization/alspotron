@@ -1,5 +1,5 @@
-import { JSX } from 'solid-js/jsx-runtime';
 import Titlebar from './Titlebar';
+import type { JSX } from 'solid-js/jsx-runtime';
 
 interface LayoutProps {
   children: JSX.Element;

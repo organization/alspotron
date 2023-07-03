@@ -1,9 +1,9 @@
 import { createMemo, For } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group'
-import useConfig from '../../hooks/useConfig';
-import LyricsItem from './LyricsItem'
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
+import useConfig from '../../hooks/useConfig';
 import useLyric from '../../hooks/useLyric';
+import LyricsItem from './LyricsItem'
 
 const Lyrics = () => {
   const [config] = useConfig();

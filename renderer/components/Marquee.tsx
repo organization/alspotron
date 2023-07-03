@@ -1,8 +1,7 @@
 import { Show, children, createSignal, mergeProps, onCleanup, onMount, splitProps } from 'solid-js';
-// eslint-disable-next-line import/no-unresolved
-import { JSX } from 'solid-js/jsx-runtime';
-
 import { cx } from '../utils/classNames';
+import type { JSX } from 'solid-js/jsx-runtime';
+
 
 export interface MarqueeProps extends JSX.HTMLAttributes<HTMLDivElement> {
   children: JSX.Element;

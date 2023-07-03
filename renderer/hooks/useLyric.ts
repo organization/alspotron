@@ -1,5 +1,5 @@
-import { usePlayingInfo } from '../components/PlayingInfoProvider';
 import { createMemo } from 'solid-js';
+import { usePlayingInfo } from '../components/PlayingInfoProvider';
 
 const BIAS = 1000; // ms
 const TRANSITION_DURATION = 225; // ms

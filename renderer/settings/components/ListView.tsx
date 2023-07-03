@@ -1,9 +1,8 @@
 import { For, Signal, createSignal, splitProps } from 'solid-js';
-// eslint-disable-next-line import/no-unresolved
-import { JSX } from 'solid-js/jsx-runtime';
 
 import { cx } from '../../utils/classNames';
 import ListItem from './ListItem';
+import type { JSX } from 'solid-js/jsx-runtime';
 
 
 export interface ListItemData {

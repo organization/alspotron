@@ -1,7 +1,6 @@
 import { mergeProps, splitProps } from 'solid-js';
-// eslint-disable-next-line import/no-unresolved
-import { JSX } from 'solid-js/jsx-runtime';
 import { cx } from '../utils/classNames'
+import type { JSX } from 'solid-js/jsx-runtime';
 
 export interface SpinnerProps extends JSX.HTMLAttributes<HTMLDivElement> {
   strokeWidth?: number;
