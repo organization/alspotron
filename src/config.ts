@@ -33,6 +33,7 @@ export interface Config {
     left: number | null;
     bottom: number | null;
     right: number | null;
+    direction: 'column' | 'column-reverse';
   };
 
   syncThrottle: number;
@@ -65,6 +66,7 @@ export const DEFAULT_CONFIG = {
     left: 32,
     bottom: 32,
     right: 32,
+    direction: 'column',
   },
 
   syncThrottle: 1000 * 3,

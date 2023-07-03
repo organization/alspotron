@@ -23,7 +23,7 @@ const AnchoredView = (props: { children: JSX.Element }) => {
         }}
         style={{
           '--text-align': config()?.windowPosition.anchor.match(/left|right|center/)?.at(0) ?? 'center',
-          'flex-direction': config()?.windowPosition.anchor.includes('bottom') ? 'column' : 'column-reverse',
+          'flex-direction': config()?.windowPosition?.direction ?? 'column',
         }}
       >
       {props.children}

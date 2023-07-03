@@ -13,6 +13,7 @@ export interface SelectProps extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 
   options: string[];
   value?: string;
   onChange?: (value: string) => void;
+  format?: (value: string) => string;
 
   popupClass?: string;
   popupStyle?: string;
@@ -22,7 +23,7 @@ export interface SelectProps extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 
 const Selector = (props: SelectProps) => {
   const [local, popup, leftProps] = splitProps(
     props,
-    ['options', 'value', 'onChange', 'renderItem', 'placement'],
+    ['format', 'options', 'value', 'onChange', 'renderItem', 'placement'],
     ['popupClass', 'popupStyle']
   );
 
@@ -55,7 +56,7 @@ const Selector = (props: SelectProps) => {
   });
 
   createEffect(() => {
-    setOptions(local.options.filter((option) => option.includes(keyword() ?? '')));
+    setOptions(local.options.filter((option) => (local.format?.(option) ?? option).includes(keyword() ?? '')));
   })
 
   onCleanup(() => {
@@ -68,7 +69,7 @@ const Selector = (props: SelectProps) => {
         {...leftProps}
         ref={setAnchor}
         class={cx('input', leftProps.class)}
-        value={keyword() ?? local.value}
+        value={keyword() ?? local.format?.(local.value) ?? local.value}
         onInput={(event) => setKeyword(event.target.value)}
         onFocusIn={() => setOpen(true)}
       />

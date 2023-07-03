@@ -1,7 +1,9 @@
-import icon from '../../../assets/icon_music.png';
 import Card from '../../components/Card';
+import Selector from '../../components/Select';
 
 import useConfig from '../../hooks/useConfig';
+
+import icon from '../../../assets/icon_music.png';
 
 
 const PositionContainer = () => {
@@ -104,6 +106,27 @@ const PositionContainer = () => {
           오른쪽 아래
         </Card>
       </div>
+      <Card class={'flex flex-row justify-start items-center gap-1'}>
+        <div class={'font-md'}>
+          가사 표시 방향
+        </div>
+        <div class={'flex-1'} />
+        <Selector
+          format={(value) => value === 'column' ? '위에서 아래로' : '아래에서 위로'}
+          value={config()?.windowPosition?.direction ?? 'column'}
+          onChange={(value) => void setConfig({ windowPosition: { direction: value as 'column' | 'column-reverse' } })}
+          options={['column', 'column-reverse']}
+          class={'select'}
+          popupClass={'p-1 bg-gray-800 rounded'}
+          renderItem={(props, option) => <li
+            {...props}
+            style={{ 'font-weight': option }}
+            class={'w-full p-2 hover:bg-gray-700 rounded truncate'}
+          >
+            {option === 'column' ? '위에서 아래로' : '아래에서 위로'}
+          </li>}
+        />
+      </Card>
       
       <div class={'text-md mt-8 mb-1'}>
         여백 조절
