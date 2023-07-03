@@ -1,6 +1,6 @@
 import cors from '@koa/cors';
 import alsong from 'alsong';
-import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain } from 'electron';
+import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain, nativeImage } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import glasstron from 'glasstron';
 import Koa from 'koa';
@@ -65,7 +65,12 @@ class Application {
   }
 
   initTray() {
-    this.tray = new Tray(getFile('./assets/icon_music.png'));
+    const trayIcon = nativeImage.createFromPath(getFile('./assets/icon_square.png'));
+    trayIcon.resize({
+      width: 16,
+      height: 16,
+    });
+    this.tray = new Tray(trayIcon);
     const contextMenu = Menu.buildFromTemplate([
       {
         type: 'normal',
