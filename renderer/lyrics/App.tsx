@@ -2,6 +2,7 @@ import { For, Show, createSignal, createEffect, on } from 'solid-js';
 
 import Card from '../components/Card';
 import Spinner from '../components/Spinner';
+import Titlebar from '../components/Titlebar';
 import useLyricMapper from '../hooks/useLyricMapper';
 import PlayingInfoProvider, { usePlayingInfo } from '../main/components/PlayingInfoProvider';
 import SideBar from './SideBar';
@@ -68,92 +69,97 @@ const LyricsMapEditor = () => {
   };
 
   return (
-    <div
-      class={`
-        w-full h-full
-        flex flex-row justify-start items-stretch gap-0
-        text-white
-      `}
-    >
-      <SideBar />
-      <div class={'w-full flex-1 flex flex-col justify-start items-center gap-1 pt-4'}>
-        <div class={'w-full flex gap-2 mb-4 px-4'}>
-          <input
-            class={'input'}
-            placeholder={'아티스트 명'}
-            value={artist()}
-            onChange={event => setArtist(event.target.value)}
-            onKeyPress={(event) => {
-              if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-                void onSearch();
-              }
-            }}
-          />
-          <input
-            class={'input flex-1'}
-            placeholder={'제목'}
-            value={title()}
-            onChange={event => setTitle(event.target.value)}
-            onKeyPress={(event) => {
-              if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-                void onSearch();
-              }
-            }}
-          />
-          <button class={'btn-text btn-icon'} onClick={() => void onSearch()}>
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" fill="#ffffff" />
-            </svg>
-          </button>
-        </div>
-        <div class={'w-full flex flex-col justify-start items-center gap-1 fluent-scrollbar px-4 pb-4'}>
-          <Show when={loading()}>
-            <Spinner class={'w-8 h-8 stroke-primary-500'} />
-          </Show>
-          <Show when={!loading() && lyricMetadata().length === 0}>
-            <div class={'text-white/30'}>
-              검색결과가 없습니다.
-            </div>
-          </Show>
-          <For each={lyricMetadata()}>
-            {(metadata) => (
-              <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => void onSelect(metadata)}>
-                <div class={'flex flex-col justify-center items-start'}>
-                  <div class={'h-fit text-xs text-white/50'}>
-                    ID: {metadata.lyricId}
-                  </div>
-                  <div class={''}>
-                    {metadata.title}
-                  </div>
-                  <div class={'text-sm'}>
-                    {metadata.artist}
-                  </div>
-                </div>
-                <div class={'flex-1'} />
-                <div class={'flex flex-col justify-end items-end mr-3 self-center'}>
-                  <div class={'w-[140px] text-sm text-right text-white/50'}>
-                    {metadata.registerDate ? new Date(metadata.registerDate).toLocaleString(undefined, {
-                      timeZone: 'Asia/Seoul',
-                      hour12: false,
-                      dateStyle: 'medium',
-                      timeStyle: 'medium',
-                    }) : 'Invalid Date'}
-                  </div>
-                  <Show when={metadata.playtime >= 0}>
-                    <div class={'h-fit text-sm text-right text-white/50'}>
-                      재생시간: {getTime(metadata.playtime)}
+    <>
+      <Titlebar />
+      <div
+        class={`
+          mt-10
+          w-full h-full
+          flex flex-row justify-start items-stretch gap-0
+          text-white
+        `}
+      >
+        <SideBar />
+        <div class={'w-full flex-1 flex flex-col justify-start items-center gap-1 pt-4'}>
+          <div class={'w-full flex gap-2 mb-4 px-4'}>
+            <input
+              class={'input'}
+              placeholder={'아티스트 명'}
+              value={artist()}
+              onChange={event => setArtist(event.target.value)}
+              onKeyPress={(event) => {
+                if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                  void onSearch();
+                }
+              }}
+            />
+            <input
+              class={'input flex-1'}
+              placeholder={'제목'}
+              value={title()}
+              onChange={event => setTitle(event.target.value)}
+              onKeyPress={(event) => {
+                if (event.code === 'Enter' || event.code === 'NumpadEnter') {
+                  void onSearch();
+                }
+              }}
+            />
+            <button class={'btn-text btn-icon'} onClick={() => void onSearch()}>
+              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" fill="#ffffff" />
+              </svg>
+            </button>
+          </div>
+          <div class={'w-full flex flex-col justify-start items-center gap-1 fluent-scrollbar px-4 pb-4'}>
+            <Show when={loading()}>
+              <Spinner class={'w-8 h-8 stroke-primary-500'} />
+            </Show>
+            <Show when={!loading() && lyricMetadata().length === 0}>
+              <div class={'text-white/30'}>
+                검색결과가 없습니다.
+              </div>
+            </Show>
+            <For each={lyricMetadata()}>
+              {(metadata) => (
+                <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => void onSelect(metadata)}>
+                  <div class={'flex flex-col justify-center items-start'}>
+                    <div class={'h-fit text-xs text-white/50'}>
+                      ID: {metadata.lyricId}
                     </div>
-                  </Show>
-                </div>
-                <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class={'self-center'}>
-                  <path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff"/>
-                </svg>
-              </Card>
-            )}
-          </For>
+                    <div class={''}>
+                      {metadata.title}
+                    </div>
+                    <div class={'text-sm'}>
+                      {metadata.artist}
+                    </div>
+                  </div>
+                  <div class={'flex-1'} />
+                  <div class={'flex flex-col justify-end items-end mr-3 self-center'}>
+                    <div class={'w-[140px] text-sm text-right text-white/50'}>
+                      {metadata.registerDate ? new Date(metadata.registerDate).toLocaleString(undefined, {
+                        timeZone: 'Asia/Seoul',
+                        hour12: false,
+                        dateStyle: 'medium',
+                        timeStyle: 'medium',
+                      }) : 'Invalid Date'}
+                    </div>
+                    <Show when={metadata.playtime >= 0}>
+                      <div class={'h-fit text-sm text-right text-white/50'}>
+                        재생시간: {getTime(metadata.playtime)}
+                      </div>
+                    </Show>
+                  </div>
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class={'self-center'}>
+                    <path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff"/>
+                  </svg>
+                </Card>
+              )}
+            </For>
+          </div>
         </div>
       </div>
-  </div>
+    </>
+
   );
 };
 
