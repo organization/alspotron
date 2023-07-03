@@ -19,8 +19,8 @@ type PlayingInfo = {
 };
 
 type LyricInfo =
-  | { kind: 'alsong', data: Lyric }
-  | { kind: 'default', data: UpdateData };
+  | { useMapper: boolean, kind: 'alsong', data: Lyric }
+  | { useMapper: boolean, kind: 'default', data: UpdateData };
 
 const PlayingInfoContext = createContext<PlayingInfo>();
 const PlayingInfoProvider = (props: { children: JSX.Element }) => {
@@ -83,11 +83,11 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
       );
 
       if (alsongLyric) {
-        return { kind: 'alsong', data: alsongLyric } as const;
+        return { useMapper: typeof id === 'number', kind: 'alsong', data: alsongLyric } as const;
       }
 
       if (data.lyric) {
-        return { kind: 'default', data } as const;
+        return { useMapper: typeof id === 'number', kind: 'default', data } as const;
       }
 
       return null;
