@@ -1,4 +1,4 @@
-# Alspotron 
+# Alspotron <a href="https://github.com/organization/alspotron/releases/latest"><img src="https://img.shields.io/github/downloads/organization/alspotron/total.svg"/></a>
 
 ### 커스텀이 편리한 *Spotify*, *YouTube Music* 가사 표시기
 
