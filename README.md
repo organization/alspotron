@@ -1,6 +1,6 @@
-# Alspotron <a href="https://github.com/organization/alspotron/releases/latest"><img src="https://img.shields.io/github/downloads/organization/alspotron/total.svg"/></a>
+# Alspotron 
 
-### 커스텀이 편리한 _Spotify_, _YouTube Music_ 가사 표시기
+### 커스텀이 편리한 *Spotify*, *YouTube Music* 가사 표시기
 
 > `스포티파이` 혹은 `유튜브 뮤직`등의 `뮤직 플레이어`에서 재생중인 노래의 알송 가사를 화면에 표시해줍니다.\
 > 알송 가사가 존재하지 않는 경우, 스포티파이의 내장 가사를 표시합니다. (**스포티파이로 재생하는 경우만 해당**)  
@@ -44,7 +44,7 @@
 3.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)  
 
     -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
-  
+
 #### YouTube Music 사용자는 주의!
 
 **반드시** [이 링크](https://github.com/organization/alspotron/issues/1)를 참고하여 `adblocker` 플러그인을 비활성화하거나, `in-player` adblocker로 전환해주세요.
@@ -71,13 +71,13 @@
 
 |                                                   위치 설정                                                  |                                                   테마 설정                                                  |
 | :------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------: |
-| ![image](https://github.com/organization/alspotron/assets/16558115/50bfa831-eff3-4daa-8e42-5fd43c8de755) | ![image](https://github.com/organization/alspotron/assets/16558115/a9db7eac-dce0-4e06-b315-ff5a9b844a44) |
+| ![image](https://github.com/organization/alspotron/assets/16558115/d09cc0ec-cab7-4fd4-89fe-0836699e352a) | ![image](https://github.com/organization/alspotron/assets/16558115/2e4ae98b-559e-4e8d-b3bb-f5e3081bcf88) |
 
 2.  트레이 아이콘의 `가사 선택`을 선택하여 현재 재생 중인 노래의 가사를 다른 가사로 교체할 수 있습니다.
 
 |                                          곡을 검색하고, 다른 가사를 적용한 예제                                          |
 | :------------------------------------------------------------------------------------------------------: |
-| ![image](https://github.com/organization/alspotron/assets/16558115/c2ca3749-0819-4525-88a1-5503490afa96) |
+| ![image](https://github.com/organization/alspotron/assets/16558115/0315c44e-27cb-4882-a7d8-e6e91531790a) |
 
 ## Migration from Alspotify
 
