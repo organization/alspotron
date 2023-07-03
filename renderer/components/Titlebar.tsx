@@ -25,7 +25,7 @@ const Button = (props: ButtonProps) => {
 const Titlebar = () => {
   return (
     <div
-      class={cx('fixed h-10 top-0 left-0 right-0 z-50')}
+      class={cx('w-full h-10 z-50')}
       style={{
         '-webkit-user-select': 'none',
         '-webkit-app-region': 'drag'

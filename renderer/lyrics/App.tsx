@@ -2,7 +2,7 @@ import { For, Show, createSignal, createEffect, on } from 'solid-js';
 
 import Card from '../components/Card';
 import Spinner from '../components/Spinner';
-import Titlebar from '../components/Titlebar';
+import Layout from '../components/Layout';
 import useLyricMapper from '../hooks/useLyricMapper';
 import PlayingInfoProvider, { usePlayingInfo } from '../main/components/PlayingInfoProvider';
 import SideBar from './SideBar';
@@ -69,11 +69,9 @@ const LyricsMapEditor = () => {
   };
 
   return (
-    <>
-      <Titlebar />
+    <Layout>
       <div
         class={`
-          mt-10
           w-full h-full
           flex flex-row justify-start items-stretch gap-0
           text-white
@@ -158,7 +156,7 @@ const LyricsMapEditor = () => {
           </div>
         </div>
       </div>
-    </>
+    </Layout>
 
   );
 };

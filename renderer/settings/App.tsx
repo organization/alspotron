@@ -1,8 +1,9 @@
 import { Match, Switch, createSignal } from 'solid-js';
 import { Transition } from 'solid-transition-group';
-import Titlebar from '../components/Titlebar';
 
+import Layout from '../components/Layout';
 import ListView, { ListItemData } from './components/ListView';
+
 import InfoContainer from './containers/InfoContainer';
 import PositionContainer from './containers/PositionContainer';
 import ThemeContainer from './containers/ThemeContainer';
@@ -55,11 +56,9 @@ const App = () => {
   const [tabId, setTabId] = createSignal(TAB_LIST[0].id);
 
   return (
-    <>
-      <Titlebar />
+    <Layout>
       <div
         class={`
-          mt-10
           w-full h-full
           flex flex-row justify-start items-stretch
           text-white
@@ -101,7 +100,7 @@ const App = () => {
           </Switch>
         </Transition>
       </div>
-    </>
+    </Layout>
   )
 };
 
