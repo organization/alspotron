@@ -1,4 +1,4 @@
-import { For, Show, createSignal, createEffect, on } from 'solid-js';
+import { For, Show, createSignal, createEffect, on, startTransition } from 'solid-js';
 
 import Card from '../components/Card';
 import Layout from '../components/Layout';
@@ -21,11 +21,11 @@ const LyricsMapEditor = () => {
   const [lyricMetadata, setLyricMetadata] = createSignal<LyricMetadata[]>([]);
   const [, setLyricMapper] = useLyricMapper();
 
-  createEffect(on([playingTitle, playingArtist, status], () => {
-    if (status() !== 'idle') {
+  createEffect(on([playingTitle, playingArtist, status], async () => {
+    if (status() !== 'idle' && status() !== 'stopped') {
       setTitle(playingTitle().trim());
       setArtist(playingArtist().trim());
-      void onSearch();
+      await startTransition(async () => await onSearch());
     }
   }));
 
@@ -86,7 +86,7 @@ const LyricsMapEditor = () => {
               class={'input'}
               placeholder={'아티스트 명'}
               value={artist()}
-              onChange={event => setArtist(event.target.value)}
+              onInput={(event) => setArtist(event.target.value)}
               onKeyPress={(event) => {
                 if (event.code === 'Enter' || event.code === 'NumpadEnter') {
                   void onSearch();
@@ -97,7 +97,7 @@ const LyricsMapEditor = () => {
               class={'input flex-1'}
               placeholder={'제목'}
               value={title()}
-              onChange={event => setTitle(event.target.value)}
+              onInput={(event) => setTitle(event.target.value)}
               onKeyPress={(event) => {
                 if (event.code === 'Enter' || event.code === 'NumpadEnter') {
                   void onSearch();

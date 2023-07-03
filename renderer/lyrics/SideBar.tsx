@@ -42,7 +42,7 @@ const SideBar = () => {
     void setLyricMapper(newMapper);
   };
 
-  const isMappedLyric: boolean = originalLyric()?.useMapper ?? false;
+  const isMappedLyric = () => originalLyric()?.useMapper ?? false;
 
   return (
     <div
@@ -63,9 +63,9 @@ const SideBar = () => {
         class={'w-full flex flex-row justify-start items-center gap-1'}
         subCards={[
           <div class={'w-full h-full flex items-center'}>
-            <button class={isMappedLyric ? 'btn-primary' : 'btn-primary-disabled disabled'} onClick={onResetLyric} disabled={!isMappedLyric}>
+            <button class={isMappedLyric() ? 'btn-primary' : 'btn-primary-disabled disabled'} onClick={onResetLyric} disabled={!isMappedLyric()}>
               <Switch fallback={'자동 인식 중'}>
-                <Match when={isMappedLyric}>
+                <Match when={isMappedLyric()}>
                   자동 인식으로 변경
                 </Match>
               </Switch>
@@ -82,7 +82,7 @@ const SideBar = () => {
                 작성자: {alsongLyric()?.register?.name ?? 'N/A'}
               {' · '}
                 <Switch fallback={'자동 검색'}>
-                  <Match when={isMappedLyric}>
+                  <Match when={isMappedLyric()}>
                     수동 설정
                   </Match>
                 </Switch>
