@@ -1,5 +1,5 @@
 import { UpdateCheckResult } from 'electron-updater';
-import { createSignal, Switch, Match } from 'solid-js';
+import { createSignal, Switch, Match, onMount, createEffect } from 'solid-js';
 
 import MainIcon from '../../../assets/icon_music.png';
 import packageJson from '../../../package.json';
@@ -10,6 +10,7 @@ import Spinner from '../../components/Spinner';
 const InfoContainer = () => {
   const [updateData, setUpdateData] = createSignal<{
     updateCheckResult: UpdateCheckResult,
+    compareResult: 0 | 1 | -1,
     currentVersion: string,
   }>(null);
 
@@ -19,18 +20,20 @@ const InfoContainer = () => {
     if (!updateResult) {
       setUpdateData({
         updateCheckResult: null,
+        compareResult: 0,
         currentVersion,
       });
       return;
     }
     const compareResult = await window.ipcRenderer.invoke('compare-with-current-version', updateResult.updateInfo.version) as 0 | 1 | -1;
-    if (compareResult < 0) {
-      setUpdateData({
-        updateCheckResult: updateResult,
-        currentVersion,
-      });
-    }
+    setUpdateData({
+      updateCheckResult: updateResult,
+      compareResult,
+      currentVersion,
+    });
   };
+
+  onMount(() => void refreshUpdateData());
 
   const onLink = (url: string) => {
     window.open(url);
@@ -45,7 +48,7 @@ const InfoContainer = () => {
         지원
       </div>
       <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/organization/alspotron')}>
-        <img src={MainIcon} class={'w-6 h-6 mr-4 object-contain'} />
+        <img src={MainIcon} class={'w-6 h-6 mr-4 object-contain'} alt={'Main Icon'}/>
         <div class={'flex flex-col justify-center items-start'}>
           <div class={'text-md'}>
             Alspotron
@@ -76,7 +79,7 @@ const InfoContainer = () => {
                   </div>
                 )}
               >
-                <Match when={updateData()?.updateCheckResult}>
+                <Match when={updateData()?.compareResult < 0}>
                   <div class={'text-md'}>
                     새로운 업데이트가 존재합니다
                   </div>
@@ -84,7 +87,7 @@ const InfoContainer = () => {
                     최신 버전: {updateData().updateCheckResult.updateInfo.version}
                   </div>
                 </Match>
-                <Match when={updateData()}>
+                <Match when={updateData()?.compareResult >= 0}>
                   <div class={'text-md'}>
                     최신 버전입니다
                   </div>

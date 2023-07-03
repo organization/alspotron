@@ -37,7 +37,7 @@ class Application {
           = typeof it.releaseNotes === 'string' ? it.releaseNotes : it.releaseNotes?.map((it) => it.note)?.join('\n')
         const dialogOpts: Electron.MessageBoxOptions = {
           type: 'info',
-          buttons: ['다운로드 페이지로 이동'],
+          buttons: ['다운로드 & 설치 후 재실행'],
           title: `Alspotron 업데이트 알림 (${it.version})`,
           message: `새로운 ${it.version} 버전이 ${it.releaseDate}에 출시되었어요.`,
           detail: `릴리즈 노트: ${releaseNote}` ?? `${downloadLink}에서 다운로드 할 수 있어요.`,
@@ -46,7 +46,9 @@ class Application {
           switch (dialogOutput.response) {
             // Download
             case 1:
-              void shell.openExternal(downloadLink);
+              void autoUpdater.downloadUpdate().then(() => {
+                autoUpdater.quitAndInstall(true, true)
+              });
               break;
             // TODO: Discard updates
             case 2:
