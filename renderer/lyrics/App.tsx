@@ -80,7 +80,7 @@ const LyricsMapEditor = () => {
         <PlayingInfoProvider>
           <SideBar />
         </PlayingInfoProvider>
-        <div class={'w-full flex-1 flex flex-col justify-start items-center gap-1 pt-4'}>
+        <div class={'min-w-0 flex-1 flex flex-col justify-start items-center gap-1 pt-4'}>
           <div class={'w-full flex gap-2 mb-4 px-4'}>
             <input
               class={'input'}
