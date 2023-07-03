@@ -1,7 +1,8 @@
 import { createSignal, onMount, splitProps } from 'solid-js';
-// eslint-disable-next-line import/no-unresolved
-import { JSX } from 'solid-js/jsx-runtime';
+
 import { cx } from '../../utils/classNames';
+
+import type { JSX } from 'solid-js/jsx-runtime';
 
 export interface LyricsItemProps extends JSX.HTMLAttributes<HTMLDivElement> {
   children: JSX.Element;
@@ -19,11 +20,7 @@ const LyricsItem = (props: LyricsItemProps) => {
   const style = () => {
     if (!init()) return `transition-delay: ${225 + (local.delay * 75)}ms;`;
 
-    const rect = dom.getBoundingClientRect();
-
     return `
-      width: ${rect.width}px;
-      height: ${rect.height}px;
       top: ${dom.offsetTop}px;
       transition-delay: ${local.delay * 75}ms;
       scale: ${local.status === 'stopped' ? '0.95' : '1'};
