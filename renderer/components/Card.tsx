@@ -1,8 +1,9 @@
-// eslint-disable-next-line import/no-unresolved
-import { JSX } from 'solid-js/jsx-runtime';
-import { cx } from '../utils/classNames';
 import { For, Match, Show, Switch, createSignal, splitProps } from 'solid-js';
 import { Transition } from 'solid-transition-group';
+
+import { cx } from '../utils/classNames';
+
+import type { JSX } from 'solid-js/jsx-runtime';
 
 export interface CardProps extends JSX.HTMLAttributes<HTMLDivElement> {
   expand?: boolean;
@@ -17,12 +18,12 @@ const Card = (props: CardProps) => {
 
   const isSubCard = () => (local.subCards?.length ?? 0) > 0;
 
-  const onClick = (event: MouseEvent) => {
+  const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = (event) => {
     if (isSubCard()) {
       setExpand(!(expand() ?? false));
     }
 
-    if (typeof leftProps.onClick === 'function') return leftProps.onClick[1](event);
+    if (typeof leftProps.onClick === 'function') return leftProps.onClick(event);
   };
 
   const mainCard = (
