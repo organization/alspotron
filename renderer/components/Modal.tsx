@@ -1,16 +1,29 @@
-import { JSX, Show } from 'solid-js'
+import { createSignal, JSX, Show } from 'solid-js'
 import { Portal } from 'solid-js/web'
 
-const Modal = (props: { open?: boolean, closer?: () => void, children: JSX.Element, }) => (
-  <Show when={props.open && (document.getElementById('Modal') == null)}>
-    <Portal mount={document.getElementById('app')}>
-      <div class={'fixed inset-0 backdrop-blur-sm backdrop-grayscale bg-primary-500/5 w-full h-full'}>
-        <div class={'flex w-full h-full justify-center items-center'}>
-          {props.children}
+const Modal = (props: { open?: boolean, closer?: () => void, children: JSX.Element, }) => {
+
+  const [isOpen, setIsOpen] = createSignal(true)
+
+  if(document.getElementById('Modal') != null) setIsOpen(false)
+
+  return (
+    <Show when={props.open && isOpen()}>
+      <Portal mount={document.getElementById('app')}>
+        <div class={'fixed inset-0 backdrop-grayscale bg-slate-400/50 w-full h-full'}>
+          <div
+            id={'Modal'}
+            class={'flex w-full h-full justify-center items-center'}
+            onClick={(e) => {
+              if(e.currentTarget == e.target) setIsOpen(false);
+            }}
+          >
+            {props.children}
+          </div>
         </div>
-      </div>
-    </Portal>
-  </Show>
-);
+      </Portal>
+    </Show>
+  );
+};
 
 export default Modal;
