@@ -60,7 +60,7 @@ const useProximityStyle = (element: Accessor<HTMLDivElement>) => {
   };
 
   createRenderEffect(on([proximityOpacity], () => {
-    element()?.animate([{ opacity: proximityOpacity() }], 500);
+    element()?.animate([{ opacity: proximityOpacity() }], { duration: 500, fill: 'forwards' });
   }));
 
   return {
