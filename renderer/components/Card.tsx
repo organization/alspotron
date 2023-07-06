@@ -1,5 +1,5 @@
-import { For, Match, Show, Switch, createSignal, getOwner, runWithOwner, splitProps } from 'solid-js';
-import { Transition, TransitionGroup } from 'solid-transition-group';
+import { For, Match, Show, Switch, createSignal, splitProps } from 'solid-js';
+import { TransitionGroup } from 'solid-transition-group';
 
 import { cx } from '../utils/classNames';
 

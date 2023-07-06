@@ -1,5 +1,5 @@
 import { UpdateCheckResult } from 'electron-updater';
-import { createSignal, Switch, Match, onMount, createEffect } from 'solid-js';
+import { createSignal, Switch, Match, onMount } from 'solid-js';
 
 import MainIcon from '../../../assets/icon_music.png';
 import packageJson from '../../../package.json';

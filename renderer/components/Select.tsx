@@ -1,4 +1,4 @@
-import { Placement, autoUpdate, offset } from '@floating-ui/dom';
+import { Placement, offset } from '@floating-ui/dom';
 import { useFloating } from 'solid-floating-ui';
 import { For, Show, createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js';
 

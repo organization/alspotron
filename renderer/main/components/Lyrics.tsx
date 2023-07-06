@@ -1,4 +1,4 @@
-import { createMemo, For } from 'solid-js';
+import { For } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group'
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import useConfig from '../../hooks/useConfig';
