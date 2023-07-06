@@ -2,7 +2,8 @@ import cors from '@koa/cors';
 import alsong from 'alsong';
 import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain, nativeImage } from 'electron';
 import { autoUpdater } from 'electron-updater';
-import glasstron from 'glasstron';
+import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
+import { MicaBrowserWindow, IS_WINDOWS_11 } from 'mica-electron';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
@@ -15,6 +16,16 @@ type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
 type LyricMetadata = Awaited<ReturnType<typeof alsong>>;
 
 const iconPath = getFile('./assets/icon_square.png');
+const glassOptions: Partial<GlasstronOptions> = {
+  blur: true,
+  blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
+  blurGnomeSigma: 100,
+  blurCornerRadius: 20,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+};
+const micaOptions = {
+  show: false,
+};
 
 app.commandLine.appendSwitch('enable-transparent-visuals');
 
@@ -230,7 +241,8 @@ class Application {
       BrowserWindow.getFocusedWindow()?.minimize();
     })
     ipcMain.on('window-maximize', () => {
-      BrowserWindow.getFocusedWindow()?.maximize();
+      if (BrowserWindow.getFocusedWindow()?.isMaximized()) BrowserWindow.getFocusedWindow()?.unmaximize();
+      else BrowserWindow.getFocusedWindow()?.maximize();
     })
     ipcMain.on('window-close', () => {
       BrowserWindow.getFocusedWindow()?.close();
@@ -327,7 +339,9 @@ class Application {
   }
 
   initSettingsWindow() {
-    this.settingsWindow = new glasstron.BrowserWindow({
+    this.settingsWindow = new (IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow)({
+      ...glassOptions,
+      ...micaOptions,
       width: 800,
       height: 800,
       webPreferences: {
@@ -337,15 +351,16 @@ class Application {
       title: 'Alspotron 설정',
       titleBarStyle: 'hiddenInset',
       frame: false,
-      blur: true,
-      blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
-      blurGnomeSigma: 100,
-      blurCornerRadius: 20,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
       vibrancy: 'sidebar',
       autoHideMenuBar: true,
       icon: iconPath,
     });
+
+    if (this.settingsWindow instanceof MicaBrowserWindow) {
+      this.settingsWindow.setDarkTheme();
+      this.settingsWindow.setMicaEffect();
+      this.settingsWindow.show();
+    }
 
     this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
       void shell.openExternal(url);
@@ -360,7 +375,9 @@ class Application {
   }
 
   initLyricsWindow() {
-    this.lyricsWindow = new glasstron.BrowserWindow({
+    this.lyricsWindow = new (IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow)({
+      ...glassOptions,
+      ...micaOptions,
       width: 1000,
       height: 600,
       webPreferences: {
@@ -370,15 +387,16 @@ class Application {
       title: '가사 선택',
       titleBarStyle: 'hiddenInset',
       frame: false,
-      blur: true,
-      blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
-      blurGnomeSigma: 100,
-      blurCornerRadius: 20,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
       vibrancy: 'sidebar',
       autoHideMenuBar: true,
       icon: iconPath,
     });
+
+    if (this.lyricsWindow instanceof MicaBrowserWindow) {
+      this.lyricsWindow.setDarkTheme();
+      this.lyricsWindow.setMicaEffect();
+      this.lyricsWindow.show();
+    }
 
     if (app.isPackaged) {
       void this.lyricsWindow.loadFile(path.join(__dirname, '../lyrics.html'));
