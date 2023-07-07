@@ -32,6 +32,7 @@ app.commandLine.appendSwitch('enable-transparent-visuals');
 class Application {
   private tray: Tray;
   private app: Koa;
+  private lastUpdate: RequestBody;
 
   public mainWindow: BrowserWindow;
   public settingsWindow: BrowserWindow;
@@ -161,7 +162,8 @@ class Application {
     router.post('/', async (ctx, next) => {
       ctx.status = 200;
 
-      this.broadcast('update', ctx.request.body as RequestBody);
+      this.lastUpdate = ctx.request.body as RequestBody;
+      this.broadcast('update', this.lastUpdate);
 
       await next();
     });
@@ -199,6 +201,7 @@ class Application {
     ipcMain.handle('check-update', async () => {
       return await autoUpdater.checkForUpdatesAndNotify();
     });
+    ipcMain.handle('get-last-update', () => this.lastUpdate);
     ipcMain.handle('get-lyric-by-id', async (_, id: number) => {
       const lyric = await alsong.getLyricById(id).catch(() => null) as Lyric & { registerDate?: Date };
       if (lyric) delete lyric.registerDate;
@@ -301,7 +304,7 @@ class Application {
       screen.getPrimaryDisplay();
 
     const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
-    const windowHeight = 300;
+    const windowHeight = style.maxHeight;
 
     const anchorX = (() => {
       if (windowPosition.anchor.includes('left')) {

@@ -4,7 +4,9 @@ import Card from '../components/Card';
 import Layout from '../components/Layout';
 import PlayingInfoProvider, { usePlayingInfo } from '../components/PlayingInfoProvider';
 import Spinner from '../components/Spinner';
+import UserCSS from '../components/UserCSS';
 import useLyricMapper from '../hooks/useLyricMapper';
+import { formatTime } from '../utils/formatTime';
 import SideBar from './SideBar';
 
 import type alsong from 'alsong';
@@ -52,20 +54,6 @@ const LyricsMapEditor = () => {
 
     await setLyricMapper(newMapper);
     setLoading(false);
-  };
-
-  const getTime = (ms: number) => {
-    const seconds = ~~(ms / 1000);
-    const minutes = ~~(seconds / 60);
-    const hours = ~~(minutes / 60);
-
-    return `${
-      hours.toString().padStart(2, '0')
-    }:${
-      (minutes % 60).toString().padStart(2, '0')
-    }:${
-      (seconds % 60).toString().padStart(2, '0')
-    }`;
   };
 
   return (
@@ -145,7 +133,7 @@ const LyricsMapEditor = () => {
                     </div>
                     <Show when={metadata.playtime >= 0}>
                       <div class={'h-fit text-sm text-right text-white/50'}>
-                        재생시간: {getTime(metadata.playtime)}
+                        재생시간: {formatTime(metadata.playtime)}
                       </div>
                     </Show>
                   </div>
@@ -159,13 +147,13 @@ const LyricsMapEditor = () => {
         </div>
       </div>
     </Layout>
-
   );
 };
 
 const App = () => (
   <PlayingInfoProvider>
     <LyricsMapEditor />
+    <UserCSS />
   </PlayingInfoProvider>
 );
 

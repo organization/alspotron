@@ -1,16 +1,19 @@
 import { createSignal, onMount, splitProps } from 'solid-js';
 
+import useConfig from '../../hooks/useConfig';
 import { cx } from '../../utils/classNames';
 
 import type { JSX } from 'solid-js/jsx-runtime';
 
 export interface LyricsItemProps extends JSX.HTMLAttributes<HTMLDivElement> {
   children: JSX.Element;
+  style?: string;
   status?: string;
   delay?: number;
 }
 
 const LyricsItem = (props: LyricsItemProps) => {
+  const [config] = useConfig();
   const [local, leftProps] = splitProps(props, ['status', 'delay']);
 
   let dom: HTMLDivElement;
@@ -24,6 +27,7 @@ const LyricsItem = (props: LyricsItemProps) => {
       top: ${dom.offsetTop}px;
       transition-delay: ${local.delay * 75}ms;
       scale: ${local.status === 'stopped' ? '0.95' : '1'};
+      opacity: ${local.status === 'stopped' ? config()?.style.lyric.stoppedOpacity : 1};
     `;
   };
 
@@ -37,8 +41,7 @@ const LyricsItem = (props: LyricsItemProps) => {
     <div
       {...leftProps}
       ref={dom}
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      style={local.status === 'stopped' ? `${style()} opacity: 0.5; ${props.style}` : `${style()}; ${props.style}`}
+      style={`${style()}; ${props.style}`}
       class={cx(`
         py-1 px-2 whitespace-pre-line text-center
         bg-gray-900/50 text-gray-100
