@@ -41,6 +41,7 @@ class Application {
   private lastUpdate: RequestBody;
 
   public mainWindow: BrowserWindow;
+  public overlayWindow: BrowserWindow;
   public settingsWindow: BrowserWindow;
   public lyricsWindow: BrowserWindow;
 
@@ -318,22 +319,24 @@ class Application {
 
   broadcast<T>(event: string, ...args: T[]) {
     this.mainWindow.webContents.send(event, ...args);
+    if (this.overlayWindow && !this.overlayWindow.isDestroyed()) this.overlayWindow.webContents.send(event, ...args);
     if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) this.lyricsWindow.webContents.send(event, ...args);
     if (this.settingsWindow && !this.settingsWindow.isDestroyed()) this.settingsWindow.webContents.send(event, ...args);
   }
 
   initHook() {
-    ipcMain.once('start', () => {
+    ipcMain.on('start', () => {
       this.initOverlay();
 
-      this.addOverlayWindow('StatusBar', this.mainWindow, 0, 0, true);
+      this.addOverlayWindow('Overlay', this.overlayWindow, 0, 0, true);
 
-      for (const window of this.overlay.getTopWindows()) {
-        // TEST game: Genshin Impact
+      for (const window of this.overlay.getTopWindows(true)) {
+        // Tested game: Genshin Impact, Overwatch
         // TODO: game (Window) selector
-        if (window.title.includes('원신') || window.title.includes('Genshin Impact') || window.title.includes('GenshinImpact')) {
+        if (window.title.includes('Overwatch') || window.title.includes('오버워치')) {
           console.log(`inject to TITLE: ${window.title} PID: ${window.processId}`);
-          this.overlay.injectProcess(window);
+          console.log(window);
+          console.log(this.overlay.injectProcess(window));
         }
       }
     });
@@ -374,7 +377,10 @@ class Application {
     ipcMain.handle('set-config', (_, data: DeepPartial<Config>) => {
       setConfig(data);
       this.broadcast('config', config());
-      this.updateMainWindowConfig();
+      this.updateWindowConfig(this.mainWindow);
+      if (process.platform === 'win32') {
+        this.updateWindowConfig(this.overlayWindow);
+      }
     });
     ipcMain.handle('get-config', () => config());
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
@@ -398,7 +404,7 @@ class Application {
 
   initMainWindow() {
     Menu.setApplicationMenu(null);
-    this.mainWindow = new BrowserWindow({
+    const windowOptions = {
       width: 800,
       height: 600,
       movable: false,
@@ -416,11 +422,11 @@ class Application {
       webPreferences: {
         preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
-        offscreen: true, // must be 'true' for 'paint'
       },
       show: false,
       icon: iconPath,
-    });
+    };
+    this.mainWindow = new BrowserWindow(windowOptions);
 
     this.mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
     this.mainWindow.setVisibleOnAllWorkspaces(true, {
@@ -434,15 +440,38 @@ class Application {
       void this.mainWindow.loadURL('http://localhost:5173');
     }
 
-    const onUpdate = () => this.updateMainWindowConfig();
-    screen.on('display-metrics-changed', onUpdate);
-    screen.on('display-added', onUpdate);
-    screen.on('display-removed', onUpdate);
+    const onMainWindowUpdate = () => this.updateWindowConfig(this.mainWindow);
+    screen.on('display-metrics-changed', onMainWindowUpdate);
+    screen.on('display-added', onMainWindowUpdate);
+    screen.on('display-removed', onMainWindowUpdate);
 
-    onUpdate();
+    onMainWindowUpdate();
+
+    if (process.platform === 'win32') {
+      this.overlayWindow = new BrowserWindow({
+        ...windowOptions,
+        webPreferences: {
+          ...windowOptions.webPreferences,
+          offscreen: true,
+        }
+      });
+      this.overlayWindow.setIgnoreMouseEvents(true, { forward: true });
+      if (app.isPackaged) {
+        void this.overlayWindow.loadFile(path.join(__dirname, '../index.html'));
+      } else {
+        void this.overlayWindow.loadURL('http://localhost:5173');
+      }
+
+      const onOverlayWindowUpdate = () => this.updateWindowConfig(this.overlayWindow);
+      screen.on('display-metrics-changed', onOverlayWindowUpdate);
+      screen.on('display-added', onOverlayWindowUpdate);
+      screen.on('display-removed', onOverlayWindowUpdate);
+
+      onOverlayWindowUpdate();
+    }
   }
 
-  updateMainWindowConfig() {
+  updateWindowConfig(window: BrowserWindow) {
     const { windowPosition, style } = config();
     const activeDisplay =
       screen.getAllDisplays().find((display) => display.id === windowPosition.display) ||
@@ -482,8 +511,8 @@ class Application {
           + ((activeDisplay.bounds.height - windowHeight) / 2);
     })();
 
-    this.mainWindow.setSize(windowWidth, windowHeight);
-    this.mainWindow.setPosition(Math.round(anchorX), Math.round(anchorY));
+    window.setSize(windowWidth, windowHeight);
+    window.setPosition(Math.round(anchorX), Math.round(anchorY));
   }
 
   initSettingsWindow() {

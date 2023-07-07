@@ -60,7 +60,7 @@ export declare namespace IOverlay {
         injectSucceed: boolean;
     }
 
-    export function getTopWindows(): IWindow[];
+    export function getTopWindows(includeFullscreen?: boolean): IWindow[];
     export function injectProcess(process: IProcessThread): IInjectResult;
 
     export function start(): void;
