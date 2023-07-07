@@ -9,7 +9,7 @@ import Router from 'koa-router';
 import { MicaBrowserWindow, IS_WINDOWS_11 } from 'mica-electron';
 import { getFile } from '../utils/resource';
 import { Config, config, DEFAULT_CONFIG, LyricMapper, lyricMapper, setConfig, setLyricMapper } from './config';
-import { IOverlay } from './electron-overlay';
+import type { IOverlay } from './electron-overlay';
 import type { RequestBody } from './types';
 import path from 'node:path';
 
