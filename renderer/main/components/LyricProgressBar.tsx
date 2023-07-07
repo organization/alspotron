@@ -2,10 +2,7 @@ import { splitProps } from 'solid-js';
 import icon from '../../../assets/icon_music.png';
 import Marquee from '../../components/Marquee';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
-import useConfig from '../../hooks/useConfig';
 import { cx } from '../../utils/classNames';
-import { formatTime } from '../../utils/formatTime';
-import { userCSSSelectors } from '../../utils/userCSSSelectors';
 import type { JSX } from 'solid-js/jsx-runtime';
 
 interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
@@ -20,7 +17,6 @@ interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
 }
 
 const LyricProgressBar = (props: LyricProgressBarProps) => {
-  const [config] = useConfig();
   const { coverUrl, title, artist, progress, duration, status } = usePlayingInfo();
   const [style, containerProps] = splitProps(
     props,
@@ -31,9 +27,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     <div
       style={`
         --percent: ${progress() / duration() * 100}%;
-        --duration: ${formatTime(duration())};
-        --progress: ${formatTime(progress())};
-        opacity: ${status() === 'stopped' ? config()?.style.nowPlaying.stoppedOpacity : 1};
+        opacity: ${status() === 'stopped' ? 0.5 : 1};
         ${style.style}
       `}
       class={cx(
@@ -41,7 +35,6 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
           relative p-3 transition-all duration-[225ms] ease-out z-0
           bg-gray-900/50 text-gray-50 rounded-md overflow-hidden
         `,
-        userCSSSelectors.nowplaying,
         style.class,
       )}
       {...containerProps}
@@ -52,7 +45,6 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
             absolute inset-0 bg-gray-500 z-[-1] scale-x-[--percent] origin-left
             transition-all duration-225 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]
           `,
-          userCSSSelectors['nowplaying-progress'],
           style.progressClass,
         )}
         style={style.progressStyle}
@@ -62,19 +54,16 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
           src={coverUrl() ?? icon}
           class={`
             w-6 h-6 object-contain transition-all duration-[225ms] ease-out
-            ${userCSSSelectors['nowplaying-cover']}
             ${status() === 'stopped' ? 'grayscale' : ''}
             ${status() === 'stopped' ? 'scale-95' : ''}
           `}
         />
-        <Marquee gap={32} style={userCSSSelectors['nowplaying-marquee']}>
+        <Marquee gap={32}>
           <div
             class={cx('w-fit flex flex-row justify-start items-center gap-2', style.textClass)}
             style={style.textStyle}
           >
-            <span class={userCSSSelectors['nowplaying-artist']}>{artist()}</span>
-            {' - '}
-            <span class={userCSSSelectors['nowplaying-title']}>{title()}</span>
+            {`${artist()} - ${title()}`}
           </div>
         </Marquee>
       </div>

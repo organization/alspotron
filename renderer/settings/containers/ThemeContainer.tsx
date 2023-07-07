@@ -9,7 +9,6 @@ import useConfig from '../../hooks/useConfig';
 import useHorizontalScroll from '../../hooks/useHorizontalScroll';
 import LyricsItem from '../../main/components/LyricsItem';
 import ColorPicker from '../components/ColorPicker';
-import UserCSSEditor from '../components/UserCSSEditor';
 
 const ANIMATION_LIST = [
   'none',
@@ -19,7 +18,6 @@ const ANIMATION_LIST = [
   'show-up',
   'scale',
   'slime',
-  'custom',
 ];
 
 const ThemeContainer = () => {
@@ -54,7 +52,6 @@ const ThemeContainer = () => {
     if (value === 'show-up') return 'Show Up';
     if (value === 'scale') return '크기조절';
     if (value === 'slime') return '슬라임';
-    if (value === 'custom') return '사용자 CSS';
 
     return `알 수 없음(${value})`;
   };
@@ -207,28 +204,6 @@ const ThemeContainer = () => {
           {getAnimationName(config()?.style?.animation ?? 'pretty')}
         </div>
       </Card>
-      <Card class={'flex flex-row justify-between items-center gap-1'}>
-        <div class={'text-md'}>
-          마우스 커서 근접 시 투명도
-        </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={config()?.style.proximityOpacity}
-          onChange={(event) => void setConfig({ style: { proximityOpacity: event.target.valueAsNumber } })}
-        />
-      </Card>
-      <Card class={'flex flex-row justify-between items-center gap-1'}>
-        <div class={'text-md'}>
-          최대 높이
-        </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={config()?.style.maxHeight}
-          onChange={(event) => void setConfig({ style: { maxHeight: event.target.valueAsNumber } })}
-        />
-      </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
       Now Playing 테마 설정
@@ -240,7 +215,7 @@ const ThemeContainer = () => {
         </div>
         <input
           type={'number'}
-          class={'input w-48'}
+          class={'input'}
           value={config()?.style.nowPlaying.fontSize}
           onChange={(event) => void setConfig({ style: { nowPlaying: { fontSize: event.target.valueAsNumber } } })}
         />
@@ -278,20 +253,9 @@ const ThemeContainer = () => {
         </div>
         <input
           type={'number'}
-          class={'input w-48'}
+          class={'input'}
           value={config()?.style.nowPlaying.maxWidth}
           onChange={(event) => void setConfig({ style: { nowPlaying: { maxWidth: event.target.valueAsNumber } } })}
-        />
-      </Card>
-      <Card class={'flex flex-row justify-between items-center gap-1'}>
-        <div class={'text-md'}>
-          일시정지 시 투명도
-        </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={config()?.style.nowPlaying.stoppedOpacity}
-          onChange={(event) => void setConfig({ style: { nowPlaying: { stoppedOpacity: event.target.valueAsNumber } } })}
         />
       </Card>
     </div>
@@ -305,7 +269,7 @@ const ThemeContainer = () => {
         </div>
         <input
           type={'number'}
-          class={'input w-48'}
+          class={'input'}
           value={config()?.style.lyric.fontSize}
           onChange={(event) => void setConfig({ style: { lyric: { fontSize: event.target.valueAsNumber } } })}
         />
@@ -328,34 +292,9 @@ const ThemeContainer = () => {
           onColorChange={(color) => void setConfig({ style: { lyric: { background: color } } })}
         />
       </Card>
-      <Card class={'flex flex-row justify-between items-center gap-1'}>
-        <div class={'text-md'}>
-          일시정지 시 투명도
-        </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={config()?.style.lyric.stoppedOpacity}
-          onChange={(event) => void setConfig({ style: { lyric: { stoppedOpacity: event.target.valueAsNumber } } })}
-        />
-      </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
       테마 설정
-    </div>
-    <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
-      <Card
-        class={'flex flex-row justify-between items-center gap-1'}
-        subCards={[
-          <UserCSSEditor />
-        ]}
-      >
-        <div class={'w-full h-full flex flex-col justify-center items-start gap-0'}>
-          <div class={'text-md'}>
-            사용자 CSS
-          </div>
-        </div>
-      </Card>
     </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card
