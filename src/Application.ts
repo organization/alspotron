@@ -378,22 +378,14 @@ class Application {
     ipcMain.handle('stop-overlay', () => {
       this.stopOverlay();
     });
-    ipcMain.handle('add-overlay-to-window', async (
-      _,
-      executableName: string,
-    ) => {
+    ipcMain.handle('inject-overlay-to-process', (_, processId: number) => {
       if (process.platform !== 'win32') {
         return;
       }
-      // Tested game: Overwatch
-      const processInfo = (await psList())
-        .filter((it) => it.name == executableName)[0];
 
-      if (processInfo) {
-        for (const window of this.overlay.getTopWindows(true)) {
-          if (window.processId === processInfo.pid) {
-            this.overlay.injectProcess(window);
-          }
+      for (const window of this.overlay.getTopWindows(true)) {
+        if (window.processId === processId) {
+          this.overlay.injectProcess(window);
         }
       }
     });
