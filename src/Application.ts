@@ -325,10 +325,10 @@ class Application {
   }
 
   initHook() {
-    ipcMain.on('start', () => {
+    ipcMain.handle('start', () => {
       this.initOverlay();
 
-      this.addOverlayWindow('Overlay', this.overlayWindow, 0, 0, true);
+      this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
 
       for (const window of this.overlay.getTopWindows(true)) {
         // Tested game: Genshin Impact, Overwatch
