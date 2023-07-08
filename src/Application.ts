@@ -6,7 +6,6 @@ import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
-import * as koffi from 'koffi';
 import { MicaBrowserWindow, IS_WINDOWS_11 } from 'mica-electron';
 import psList from 'ps-list';
 import { getFile } from '../utils/resource';
@@ -326,107 +325,23 @@ class Application {
   }
 
   initHook() {
-    // Define necessary Win32 API functions
-    const user32Library = koffi.load('user32.dll');
-    const user32 = {
-      IsWindowVisible: user32Library.stdcall('IsWindowVisible', 'bool', ['int32']),
-      IsIconic: user32Library.stdcall('IsIconic', 'bool', ['int32']),
-      GetClientRect: user32Library.stdcall('GetClientRect', 'bool', ['int32', koffi.out(koffi.pointer('uint32_t'))]),
-      GetWindowLongA: user32Library.stdcall('GetWindowLongA', 'long', ['int32', 'int32']),
-      GetDesktopWindow: user32Library.stdcall('GetDesktopWindow', 'int32', []),
-      GetWindow: user32Library.stdcall('GetWindow', 'int32', ['int32', 'int32']),
-      GetWindowThreadProcessId: user32Library.stdcall('GetWindowThreadProcessId', 'int', ['int', koffi.out(koffi.pointer('uint32_t'))]),
-    };
-
-    const GWL_STYLE = -16;
-    const GWL_EXSTYLE = -20;
-    const WS_EX_TOOLWINDOW = 0x00000080;
-    const WS_CHILD = 0x40000000;
-
-    // Define the window search mode enum
-    enum WindowSearchMode {
-      INCLUDE_MINIMIZED = 0,
-      EXCLUDE_MINIMIZED = 1,
-    }
-
-    // Define the check_window_valid function
-    const checkWindowValid = (window: number, mode: WindowSearchMode) => {
-      const rect = Buffer.alloc(16); // sizeof(RECT) = 16 bytes
-      const styles = user32.GetWindowLongA(window, GWL_STYLE) as number;
-      const exStyles = user32.GetWindowLongA(window, GWL_EXSTYLE) as number;
-
-      if (!user32.IsWindowVisible(window) || (mode === WindowSearchMode.EXCLUDE_MINIMIZED && user32.IsIconic(window)))
-        return false;
-
-      user32.GetClientRect(window, rect);
-
-      if (exStyles & WS_EX_TOOLWINDOW)
-        return false;
-      if (styles & WS_CHILD)
-        return false;
-      return !(mode === WindowSearchMode.EXCLUDE_MINIMIZED && (rect.readInt32LE(8) === 0 || rect.readInt32LE(12) === 0));
-    };
-
-    const nextWindow = (window: number, mode: WindowSearchMode): number => {
-      do {
-        window = user32.GetWindow(window, 2 /* GW_HWNDNEXT */) as number;
-      } while (!(!window || checkWindowValid(window, mode)));
-
-      return window;
-    }
-
-    const firstWindow = (mode: WindowSearchMode): number => {
-      let window = user32.GetWindow(user32.GetDesktopWindow(), 5 /* GW_CHILD */) as number;
-      if (!checkWindowValid(window, mode))
-        window = nextWindow(window, mode);
-      return window;
-    };
-
-    const processIdToWindowId = (processId: number, mode: WindowSearchMode): number => {
-      let window = firstWindow(mode);
-      while (window) {
-        const processIdBuffer = [null];
-        user32.GetWindowThreadProcessId(window, processIdBuffer);
-
-        const windowProcessId = processIdBuffer[0] as number;
-        if (windowProcessId === processId) {
-          return window;
-        }
-
-        window = nextWindow(window, mode);
-      }
-    };
-
     ipcMain.handle('start', async () => {
       this.initOverlay();
 
       this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
 
       // Tested game: Overwatch
+      // TODO: game (Window) selector
       const processInfo = (await psList()).filter((it) => it.name.includes('Overwatch'))[0];
 
-      const title = processInfo.name;
-      const processId = processInfo.pid;
-      const windowId = processIdToWindowId(processId, WindowSearchMode.INCLUDE_MINIMIZED);
-      const window = {
-        processId,
-        windowId,
-        title,
-        threadId: -1,
-      } as IOverlay.IWindow;
-      console.log(window);
-      console.log(this.overlay.injectProcess(window as IOverlay.IProcessThread));
+      for (const window of this.overlay.getTopWindows(true)) {
+        if (window.processId === processInfo.pid) {
+          console.log(`inject to TITLE: ${window.title} PID: ${window.processId}`);
+          console.log(window);
 
-      // for (const window of this.overlay.getTopWindows(true)) {
-      //   // Tested game: Genshin Impact, Overwatch
-      //   // TODO: game (Window) selector
-      //   if (window.processId === processInfo.pid) {
-      //     console.log(`inject to TITLE: ${window.title} PID: ${window.processId}`);
-      //     console.log(window);
-      //
-      //     console.log(this.overlay.injectProcess(window));
-      //   }
-      // }
+          console.log(this.overlay.injectProcess(window));
+        }
+      }
     });
     ipcMain.handle('get-current-version', () => {
       return autoUpdater.currentVersion.version;
