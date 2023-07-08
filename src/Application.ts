@@ -48,6 +48,29 @@ class Application {
   public overlayWindow: BrowserWindow;
   public settingsWindow: BrowserWindow;
   public lyricsWindow: BrowserWindow;
+  public mainWindowOptions = {
+    width: 800,
+    height: 600,
+    movable: false,
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    transparent: true,
+    frame: false,
+    focusable: false,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    hasShadow: false,
+    hiddenInMissionControl: true,
+    roundedCorners: false,
+    webPreferences: {
+      preload: path.join(__dirname, './preload.js'),
+      nodeIntegration: true,
+    },
+    show: false,
+    icon: iconPath,
+  };
+  private onOverlayWindowUpdate: () => void;
 
   initAutoUpdater() {
     if (app.isPackaged) {
@@ -203,6 +226,8 @@ class Application {
     captionHeight = 0,
     transparent = false
   ) {
+    this.markQuit = false;
+
     const display = screen.getDisplayNearestPoint(
       screen.getCursorScreenPoint()
     );
@@ -317,8 +342,19 @@ class Application {
     });
   }
 
+  removeOverlay(window: BrowserWindow) {
+    this.markQuit = true;
+    this.overlay.closeWindow(window.id);
+  }
+
   initOverlay() {
+    this.initOverlayWindow();
     this.overlay.start();
+  }
+
+  stopOverlay() {
+    this.removeOverlayWindow();
+    this.overlay.stop();
   }
 
   broadcast<T>(event: string, ...args: T[]) {
@@ -329,21 +365,29 @@ class Application {
   }
 
   initHook() {
-    ipcMain.handle('start', async () => {
+    ipcMain.handle('start-overlay', () => {
       this.initOverlay();
 
       this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
-
+    });
+    ipcMain.handle('stop-overlay', () => {
+      this.stopOverlay();
+    });
+    ipcMain.handle('add-overlay-to-window', async (
+      _,
+      executableName: string,
+    ) => {
+      if (process.platform !== 'win32') {
+        return;
+      }
       // Tested game: Overwatch
-      // TODO: game (Window) selector
-      const processInfo = (await psList()).filter((it) => it.name.includes('Overwatch'))[0];
+      const processInfo = (await psList())
+        .filter((it) => it.name == executableName)[0];
+
       if (processInfo) {
         for (const window of this.overlay.getTopWindows(true)) {
           if (window.processId === processInfo.pid) {
-            console.log(`inject to TITLE: ${window.title} PID: ${window.processId}`);
-            console.log(window);
-
-            console.log(this.overlay.injectProcess(window));
+            this.overlay.injectProcess(window);
           }
         }
       }
@@ -412,29 +456,7 @@ class Application {
 
   initMainWindow() {
     Menu.setApplicationMenu(null);
-    const windowOptions = {
-      width: 800,
-      height: 600,
-      movable: false,
-      resizable: false,
-      minimizable: false,
-      maximizable: false,
-      transparent: true,
-      frame: false,
-      focusable: false,
-      alwaysOnTop: true,
-      skipTaskbar: true,
-      hasShadow: false,
-      hiddenInMissionControl: true,
-      roundedCorners: false,
-      webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
-        nodeIntegration: true,
-      },
-      show: false,
-      icon: iconPath,
-    };
-    this.mainWindow = new BrowserWindow(windowOptions);
+    this.mainWindow = new BrowserWindow(this.mainWindowOptions);
 
     this.mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
     this.mainWindow.setVisibleOnAllWorkspaces(true, {
@@ -454,12 +476,14 @@ class Application {
     screen.on('display-removed', onMainWindowUpdate);
 
     onMainWindowUpdate();
+  }
 
+  initOverlayWindow() {
     if (process.platform === 'win32') {
       this.overlayWindow = new BrowserWindow({
-        ...windowOptions,
+        ...this.mainWindowOptions,
         webPreferences: {
-          ...windowOptions.webPreferences,
+          ...this.mainWindowOptions.webPreferences,
           offscreen: true,
         }
       });
@@ -470,12 +494,26 @@ class Application {
         void this.overlayWindow.loadURL('http://localhost:5173');
       }
 
-      const onOverlayWindowUpdate = () => this.updateWindowConfig(this.overlayWindow);
-      screen.on('display-metrics-changed', onOverlayWindowUpdate);
-      screen.on('display-added', onOverlayWindowUpdate);
-      screen.on('display-removed', onOverlayWindowUpdate);
+      this.onOverlayWindowUpdate = () => this.updateWindowConfig(this.overlayWindow);
+      screen.on('display-metrics-changed', this.onOverlayWindowUpdate);
+      screen.on('display-added', this.onOverlayWindowUpdate);
+      screen.on('display-removed', this.onOverlayWindowUpdate);
 
-      onOverlayWindowUpdate();
+      this.onOverlayWindowUpdate();
+    }
+  }
+
+  removeOverlayWindow() {
+    if (this.overlayWindow) {
+      this.removeOverlay(this.overlayWindow);
+      if (this.onOverlayWindowUpdate) {
+        screen.removeListener('display-metrics-changed', this.onOverlayWindowUpdate);
+        screen.removeListener('display-added', this.onOverlayWindowUpdate);
+        screen.removeListener('display-removed', this.onOverlayWindowUpdate);
+        this.onOverlayWindowUpdate = undefined;
+      }
+      this.overlayWindow.close();
+      this.overlayWindow = undefined;
     }
   }
 
