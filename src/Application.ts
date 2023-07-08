@@ -1,4 +1,3 @@
-import * as ffi from '@alexssmusica/ffi-napi';
 import cors from '@koa/cors';
 import alsong from 'alsong';
 import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain, nativeImage } from 'electron';
@@ -7,6 +6,7 @@ import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
+import * as koffi from 'koffi';
 import { MicaBrowserWindow, IS_WINDOWS_11 } from 'mica-electron';
 import psList from 'ps-list';
 import { getFile } from '../utils/resource';
@@ -40,7 +40,6 @@ class Application {
   private overlay: Overlay = require(path.join(__dirname, 'electron-overlay.node')) as Overlay;
   private markQuit = false;
   private scaleFactor = 1.0;
-  private lastUpdate: RequestBody;
 
   public mainWindow: BrowserWindow;
   public overlayWindow: BrowserWindow;
@@ -328,15 +327,16 @@ class Application {
 
   initHook() {
     // Define necessary Win32 API functions
-    const user32 = ffi.Library('user32', {
-      IsWindowVisible: ['bool', ['int32']],
-      IsIconic: ['bool', ['int32']],
-      GetClientRect: ['bool', ['int32', 'pointer']],
-      GetWindowLongA: ['long', ['int32', 'int32']],
-      GetDesktopWindow: ['int32', []],
-      GetWindow: ['int32', ['int32', 'int32']],
-      GetWindowThreadProcessId: ['uint32', ['int32', 'pointer']],
-    });
+    const user32Library = koffi.load('user32.dll');
+    const user32 = {
+      IsWindowVisible: user32Library.stdcall('IsWindowVisible', 'bool', ['int32']),
+      IsIconic: user32Library.stdcall('IsIconic', 'bool', ['int32']),
+      GetClientRect: user32Library.stdcall('GetClientRect', 'bool', ['int32', koffi.out(koffi.pointer('uint32_t'))]),
+      GetWindowLongA: user32Library.stdcall('GetWindowLongA', 'long', ['int32', 'int32']),
+      GetDesktopWindow: user32Library.stdcall('GetDesktopWindow', 'int32', []),
+      GetWindow: user32Library.stdcall('GetWindow', 'int32', ['int32', 'int32']),
+      GetWindowThreadProcessId: user32Library.stdcall('GetWindowThreadProcessId', 'int', ['int', koffi.out(koffi.pointer('uint32_t'))]),
+    };
 
     const GWL_STYLE = -16;
     const GWL_EXSTYLE = -20;
@@ -352,8 +352,8 @@ class Application {
     // Define the check_window_valid function
     const checkWindowValid = (window: number, mode: WindowSearchMode) => {
       const rect = Buffer.alloc(16); // sizeof(RECT) = 16 bytes
-      const styles = ~~user32.GetWindowLongA(window, GWL_STYLE);
-      const exStyles = ~~user32.GetWindowLongA(window, GWL_EXSTYLE);
+      const styles = user32.GetWindowLongA(window, GWL_STYLE) as number;
+      const exStyles = user32.GetWindowLongA(window, GWL_EXSTYLE) as number;
 
       if (!user32.IsWindowVisible(window) || (mode === WindowSearchMode.EXCLUDE_MINIMIZED && user32.IsIconic(window)))
         return false;
@@ -368,18 +368,15 @@ class Application {
     };
 
     const nextWindow = (window: number, mode: WindowSearchMode): number => {
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        window = user32.GetWindow(window, 2 /* GW_HWNDNEXT */);
-        if (!window || checkWindowValid(window, mode))
-          break;
-      }
+      do {
+        window = user32.GetWindow(window, 2 /* GW_HWNDNEXT */) as number;
+      } while (!(!window || checkWindowValid(window, mode)));
 
       return window;
     }
 
     const firstWindow = (mode: WindowSearchMode): number => {
-      let window = user32.GetWindow(user32.GetDesktopWindow(), 5 /* GW_CHILD */);
+      let window = user32.GetWindow(user32.GetDesktopWindow(), 5 /* GW_CHILD */) as number;
       if (!checkWindowValid(window, mode))
         window = nextWindow(window, mode);
       return window;
@@ -388,10 +385,10 @@ class Application {
     const processIdToWindowId = (processId: number, mode: WindowSearchMode): number => {
       let window = firstWindow(mode);
       while (window) {
-        const processIdBuffer = Buffer.alloc(4); // sizeof(DWORD) = 4 bytes
+        const processIdBuffer = [null];
         user32.GetWindowThreadProcessId(window, processIdBuffer);
 
-        const windowProcessId = processIdBuffer.readInt32LE();
+        const windowProcessId = processIdBuffer[0] as number;
         if (windowProcessId === processId) {
           return window;
         }
@@ -405,18 +402,31 @@ class Application {
 
       this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
 
-      for (const window of this.overlay.getTopWindows(true)) {
-        // Tested game: Genshin Impact, Overwatch
-        // TODO: game (Window) selector
-        if (window.title.includes('Overwatch') || window.title.includes('오버워치')) {
-          console.log(`inject to TITLE: ${window.title} PID: ${window.processId}`);
-          console.log(window);
-          const pid = (await psList()).filter((it) => it.name.includes('Overwatch'))[0].pid;
-          console.log('PID', pid);
-          console.log('TID', processIdToWindowId(pid, WindowSearchMode.INCLUDE_MINIMIZED));
-          console.log(this.overlay.injectProcess(window));
-        }
-      }
+      // Tested game: Overwatch
+      const processInfo = (await psList()).filter((it) => it.name.includes('Overwatch'))[0];
+
+      const title = processInfo.name;
+      const processId = processInfo.pid;
+      const windowId = processIdToWindowId(processId, WindowSearchMode.INCLUDE_MINIMIZED);
+      const window = {
+        processId,
+        windowId,
+        title,
+        threadId: -1,
+      } as IOverlay.IWindow;
+      console.log(window);
+      console.log(this.overlay.injectProcess(window as IOverlay.IProcessThread));
+
+      // for (const window of this.overlay.getTopWindows(true)) {
+      //   // Tested game: Genshin Impact, Overwatch
+      //   // TODO: game (Window) selector
+      //   if (window.processId === processInfo.pid) {
+      //     console.log(`inject to TITLE: ${window.title} PID: ${window.processId}`);
+      //     console.log(window);
+      //
+      //     console.log(this.overlay.injectProcess(window));
+      //   }
+      // }
     });
     ipcMain.handle('get-current-version', () => {
       return autoUpdater.currentVersion.version;
