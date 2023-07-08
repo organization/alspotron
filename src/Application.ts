@@ -36,7 +36,11 @@ class Application {
   private tray: Tray;
   private app: Koa;
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  private overlay: Overlay = require(path.join(__dirname, 'electron-overlay.node')) as Overlay;
+  private overlay: Overlay = require(
+    app.isPackaged ?
+      path.join(process.resourcesPath, './assets/overlay/electron-overlay.node') :
+      path.join('../../', './assets/overlay/electron-overlay.node'),
+  ) as Overlay;
   private markQuit = false;
   private scaleFactor = 1.0;
 
@@ -333,13 +337,14 @@ class Application {
       // Tested game: Overwatch
       // TODO: game (Window) selector
       const processInfo = (await psList()).filter((it) => it.name.includes('Overwatch'))[0];
+      if (processInfo) {
+        for (const window of this.overlay.getTopWindows(true)) {
+          if (window.processId === processInfo.pid) {
+            console.log(`inject to TITLE: ${window.title} PID: ${window.processId}`);
+            console.log(window);
 
-      for (const window of this.overlay.getTopWindows(true)) {
-        if (window.processId === processInfo.pid) {
-          console.log(`inject to TITLE: ${window.title} PID: ${window.processId}`);
-          console.log(window);
-
-          console.log(this.overlay.injectProcess(window));
+            console.log(this.overlay.injectProcess(window));
+          }
         }
       }
     });
