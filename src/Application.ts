@@ -1,3 +1,4 @@
+import * as ffi from '@alexssmusica/ffi-napi';
 import cors from '@koa/cors';
 import alsong from 'alsong';
 import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain, nativeImage } from 'electron';
@@ -7,6 +8,7 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
 import { MicaBrowserWindow, IS_WINDOWS_11 } from 'mica-electron';
+import psList from 'ps-list';
 import { getFile } from '../utils/resource';
 import { Config, config, DEFAULT_CONFIG, LyricMapper, lyricMapper, setConfig, setLyricMapper } from './config';
 import type { IOverlay } from './electron-overlay';
@@ -325,7 +327,80 @@ class Application {
   }
 
   initHook() {
-    ipcMain.handle('start', () => {
+    // Define necessary Win32 API functions
+    const user32 = ffi.Library('user32', {
+      IsWindowVisible: ['bool', ['int32']],
+      IsIconic: ['bool', ['int32']],
+      GetClientRect: ['bool', ['int32', 'pointer']],
+      GetWindowLongA: ['long', ['int32', 'int32']],
+      GetDesktopWindow: ['int32', []],
+      GetWindow: ['int32', ['int32', 'int32']],
+      GetWindowThreadProcessId: ['uint32', ['int32', 'pointer']],
+    });
+
+    const GWL_STYLE = -16;
+    const GWL_EXSTYLE = -20;
+    const WS_EX_TOOLWINDOW = 0x00000080;
+    const WS_CHILD = 0x40000000;
+
+    // Define the window search mode enum
+    enum WindowSearchMode {
+      INCLUDE_MINIMIZED = 0,
+      EXCLUDE_MINIMIZED = 1,
+    }
+
+    // Define the check_window_valid function
+    const checkWindowValid = (window: number, mode: WindowSearchMode) => {
+      const rect = Buffer.alloc(16); // sizeof(RECT) = 16 bytes
+      const styles = ~~user32.GetWindowLongA(window, GWL_STYLE);
+      const exStyles = ~~user32.GetWindowLongA(window, GWL_EXSTYLE);
+
+      if (!user32.IsWindowVisible(window) || (mode === WindowSearchMode.EXCLUDE_MINIMIZED && user32.IsIconic(window)))
+        return false;
+
+      user32.GetClientRect(window, rect);
+
+      if (exStyles & WS_EX_TOOLWINDOW)
+        return false;
+      if (styles & WS_CHILD)
+        return false;
+      return !(mode === WindowSearchMode.EXCLUDE_MINIMIZED && (rect.readInt32LE(8) === 0 || rect.readInt32LE(12) === 0));
+    };
+
+    const nextWindow = (window: number, mode: WindowSearchMode): number => {
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        window = user32.GetWindow(window, 2 /* GW_HWNDNEXT */);
+        if (!window || checkWindowValid(window, mode))
+          break;
+      }
+
+      return window;
+    }
+
+    const firstWindow = (mode: WindowSearchMode): number => {
+      let window = user32.GetWindow(user32.GetDesktopWindow(), 5 /* GW_CHILD */);
+      if (!checkWindowValid(window, mode))
+        window = nextWindow(window, mode);
+      return window;
+    };
+
+    const processIdToWindowId = (processId: number, mode: WindowSearchMode): number => {
+      let window = firstWindow(mode);
+      while (window) {
+        const processIdBuffer = Buffer.alloc(4); // sizeof(DWORD) = 4 bytes
+        user32.GetWindowThreadProcessId(window, processIdBuffer);
+
+        const windowProcessId = processIdBuffer.readInt32LE();
+        if (windowProcessId === processId) {
+          return window;
+        }
+
+        window = nextWindow(window, mode);
+      }
+    };
+
+    ipcMain.handle('start', async () => {
       this.initOverlay();
 
       this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
@@ -336,6 +411,9 @@ class Application {
         if (window.title.includes('Overwatch') || window.title.includes('오버워치')) {
           console.log(`inject to TITLE: ${window.title} PID: ${window.processId}`);
           console.log(window);
+          const pid = (await psList()).filter((it) => it.name.includes('Overwatch'))[0].pid;
+          console.log('PID', pid);
+          console.log('TID', processIdToWindowId(pid, WindowSearchMode.INCLUDE_MINIMIZED));
           console.log(this.overlay.injectProcess(window));
         }
       }
