@@ -365,6 +365,11 @@ class Application {
   }
 
   initHook() {
+    ipcMain.handle('get-process-list', async (_, includeOtherUsersProcess: boolean) => {
+      return await psList({
+        all: includeOtherUsersProcess,
+      });
+    });
     ipcMain.handle('start-overlay', () => {
       this.initOverlay();
 
