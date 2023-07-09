@@ -4,11 +4,11 @@ import alsong from 'alsong';
 import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain, nativeImage } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
+import { hmc } from 'hmc-win32';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
 import { MicaBrowserWindow, IS_WINDOWS_11 } from 'mica-electron';
-import psList from 'ps-list';
 import { getFile } from '../utils/resource';
 import { Config, config, DEFAULT_CONFIG, LyricMapper, lyricMapper, setConfig, setLyricMapper } from './config';
 import type { IOverlay } from './electron-overlay';
@@ -385,10 +385,13 @@ class Application {
   }
 
   initHook() {
-    ipcMain.handle('get-process-list', async (_, includeOtherUsersProcess: boolean) => {
-      return await psList({
-        all: includeOtherUsersProcess,
-      });
+    ipcMain.handle('get-process-list', () => {
+      // Can use getDetailsProcessList to get the execution path, but it's 20ms slower
+      // return HMC.getDetailsProcessList();
+      return hmc.getProcessList();
+    });
+    ipcMain.handle('process-id-to-file-path', (_, processId: number) => {
+      return hmc.getProcessidFilePath(processId);
     });
     ipcMain.handle('start-overlay', () => {
       this.initOverlay();
@@ -403,11 +406,10 @@ class Application {
         return;
       }
 
-      for (const window of this.overlay.getTopWindows(true)) {
-        if (window.processId === processId) {
-          this.overlay.injectProcess(window);
-        }
-      }
+      this.overlay.injectProcess({
+        processId,
+        windowId: hmc.getProcessHandle(processId).handle,
+      });
     });
     ipcMain.handle('get-current-version', () => {
       return autoUpdater.currentVersion.version;
