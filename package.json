@@ -75,6 +75,7 @@
     "solid-transition-group": "^0.2.2"
   },
   "optionalDependencies": {
+    "emittery": "^0.13.1",
     "@jellybrick/wql-process-monitor": "^1.4.3"
   },
   "build": {
