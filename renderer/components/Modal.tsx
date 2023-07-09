@@ -10,12 +10,15 @@ const Modal = (props: { open?: boolean, closer?: () => void, children: JSX.Eleme
   return (
     <Show when={props.open && isOpen()}>
       <Portal mount={document.getElementById('app')}>
-        <div class={'fixed inset-0 backdrop-grayscale bg-slate-400/50 w-full h-full'}>
+        <div class={'fixed inset-0 backdrop-grayscale bg-slate-400/25 w-full h-full'}>
           <div
             id={'Modal'}
             class={'flex w-full h-full justify-center items-center'}
             onClick={(e) => {
-              if(e.currentTarget == e.target) setIsOpen(false);
+              if(e.currentTarget == e.target) {
+                if(props.closer != null) props.closer();
+                else setIsOpen(false);
+              }
             }}
           >
             {props.children}
