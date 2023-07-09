@@ -72,7 +72,9 @@
     "ps-list": "^7.2.0",
     "solid-floating-ui": "^0.2.1",
     "solid-js": "^1.7.7",
-    "solid-transition-group": "^0.2.2",
+    "solid-transition-group": "^0.2.2"
+  },
+  "optionalDependencies": {
     "@jellybrick/wql-process-monitor": "^1.4.3"
   },
   "build": {
