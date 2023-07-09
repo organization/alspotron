@@ -1,3 +1,4 @@
+import { promises as WQLAsync } from '@jellybrick/wql-process-monitor';
 import cors from '@koa/cors';
 import alsong from 'alsong';
 import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain, nativeImage } from 'electron';
@@ -71,6 +72,25 @@ class Application {
     icon: iconPath,
   };
   private onOverlayWindowUpdate: () => void;
+  private onProcessCreation = (name: string, pid: number, filePath?: string) => {
+    // empty
+  };
+  private onProcessDeletion = (name: string, pid: number) => {
+    // empty;
+  };
+
+  constructor() {
+    if (process.platform === 'win32') {
+      void WQLAsync.subscribe({
+        creation: true,
+        deletion: true,
+        filterWindowsNoise: true,
+      }).then((it) => {
+        it.on('creation', ([name, pid, filePath]) => this.onProcessCreation(name, pid, filePath));
+        it.on('deletion', ([name, pid]) => this.onProcessDeletion(name, pid));
+      });
+    }
+  }
 
   initAutoUpdater() {
     if (app.isPackaged) {
