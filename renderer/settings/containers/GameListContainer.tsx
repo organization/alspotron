@@ -68,7 +68,7 @@ const GameListContainer = (props: GameListContainerProps) => {
               <div class={'w-full'}>
                 {game.name}
               </div>
-              <Marquee class={'text-sm text-gray-400'}>
+              <Marquee class={'text-sm text-gray-400'} gap={18}>
                 {game.path}
               </Marquee>
             </div>

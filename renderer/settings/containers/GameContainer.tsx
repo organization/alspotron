@@ -73,7 +73,7 @@ const GameContainer = () => {
                     <div class={'w-full'}>
                       {game.name}
                     </div>
-                    <Marquee class={'text-sm text-gray-400'}>
+                    <Marquee class={'text-sm text-gray-400'} gap={18}>
                       {game.pid}
                     </Marquee>
                   </div>
