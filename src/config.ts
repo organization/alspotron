@@ -130,6 +130,7 @@ try {
   setConfig(DEFAULT_CONFIG);
 }
 
+/* Lyric Mapper */
 export interface LyricMapper {
   [key: string]: number;
 }
@@ -147,13 +148,13 @@ void (async () => {
 })();
 
 export const lyricMapper = lyricMapperSignal[0];
-export const setLyricMapper = (params: Partial<LyricMapper>) => {
+export const setLyricMapper = (params: Partial<LyricMapper>, useFallback = true) => {
   const value = {
     ...lyricMapperSignal[0](),
     ...params,
   };
   
-  lyricMapperSignal[1](value);
+  lyricMapperSignal[1](useFallback ? value : params);
 
   if (lyricMapperFileTimeout) clearTimeout(lyricMapperFileTimeout);
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -161,5 +162,40 @@ export const setLyricMapper = (params: Partial<LyricMapper>) => {
     lyricMapperFileTimeout = null;
 
     await fs.writeFile(path.join(defaultConfigDirectory, 'lyrics.json'), JSON.stringify(lyricMapperSignal[0](), null, 2), 'utf-8').catch(() => null);
+  }, 1000);
+};
+
+/* Games */
+export interface GameList {
+  [path: string]: string; // mame
+}
+
+let gameListFileTimeout: NodeJS.Timeout | null = null;
+const gameListSignal = createSignal<GameList>();
+void (async () => {
+  const str = await fs.readFile(path.join(defaultConfigDirectory, 'gameList.json'), 'utf-8').catch(() => '{}');
+  try {
+    const gameList = JSON.parse(str);
+    gameListSignal[1](gameList as GameList);
+  } catch {
+    setGameList({});
+  }
+})();
+
+export const gameList = gameListSignal[0];
+export const setGameList = (params: Partial<GameList>, useFallback = true) => {
+  const value = {
+    ...gameListSignal[0](),
+    ...params,
+  };
+  
+  gameListSignal[1](useFallback ? value : params);
+
+  if (gameListFileTimeout) clearTimeout(gameListFileTimeout);
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  gameListFileTimeout = setTimeout(async () => {
+    gameListFileTimeout = null;
+
+    await fs.writeFile(path.join(defaultConfigDirectory, 'gameList.json'), JSON.stringify(gameListSignal[0](), null, 2), 'utf-8').catch(() => null);
   }, 1000);
 };

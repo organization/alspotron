@@ -5,13 +5,13 @@ import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain, nativeI
 import { autoUpdater } from 'electron-updater';
 import { extractIcon } from 'exe-icon-extractor';
 import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
-import { hmc } from 'hmc-win32';
+import { getProcessName, hmc } from 'hmc-win32';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
 import { MicaBrowserWindow, IS_WINDOWS_11 } from 'mica-electron';
 import { getFile } from '../utils/resource';
-import { Config, config, DEFAULT_CONFIG, LyricMapper, lyricMapper, setConfig, setLyricMapper } from './config';
+import { Config, config, DEFAULT_CONFIG, GameList, gameList, LyricMapper, lyricMapper, setConfig, setGameList, setLyricMapper } from './config';
 import type { IOverlay } from './electron-overlay';
 import type { RequestBody } from './types';
 import path from 'node:path';
@@ -73,6 +73,7 @@ class Application {
     icon: iconPath,
   };
   private onOverlayWindowUpdate: () => void;
+  private registeredPidList: number[] = [];
 
   constructor() {
     if (process.platform === 'win32') {
@@ -380,6 +381,7 @@ class Application {
   }
 
   initHook() {
+    ipcMain.handle('get-registered-process-list', () => this.registeredPidList);
     ipcMain.handle('get-icon', (_, path: string) => {
       try {
         const result = extractIcon(path, 'large');
@@ -454,11 +456,16 @@ class Application {
     });
     ipcMain.handle('get-config', () => config());
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
-    ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>) => {
-      setLyricMapper(data);
+    ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>, useFallback = true) => {
+      setLyricMapper(data, useFallback);
       this.broadcast('lyric-mapper', lyricMapper());
     });
     ipcMain.handle('get-lyric-mapper', () => lyricMapper());
+    ipcMain.handle('set-game-list', (_, data: Partial<GameList>, useFallback = true) => {
+      setGameList(data, useFallback);
+      this.broadcast('game-list', gameList());
+    });
+    ipcMain.handle('get-game-list', () => gameList());
 
     ipcMain.on('window-minimize', () => {
       BrowserWindow.getFocusedWindow()?.minimize();
@@ -647,22 +654,48 @@ class Application {
   }
   
   private onProcessCreation(name: string, pid: number, filePath?: string) {
-    if (name.includes('Overwatch')) {
-      // setTimeout(() => {
-      //   this.initOverlay();
-      //   this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
-      //   console.log(this.overlay.getTopWindows(true));
-      //   for (const window of this.overlay.getTopWindows(true)) {
-      //     if (window.processId == pid) {
-      //       console.log(window);
-      //       this.overlay.injectProcess(window);
-      //     }
-      //   }
-      // }, 10000);
+    const gamePathList = Object.keys(gameList());
+
+    if (gamePathList.includes(filePath)) {
+      let tryCount = 0;
+
+      const tryToInject = () => {
+        tryCount += 1;
+
+        if (tryCount > 20) {
+          console.warn('failed to inject', name, pid, filePath);
+          return;
+        }
+
+        const isInit = Number(hmc.getForegroundWindowProcessID()) === Number(pid);
+        if (isInit) {
+          if (this.registeredPidList.length == 0) {
+            this.initOverlay();
+            this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
+          }
+
+          for (const window of this.overlay.getTopWindows(true)) {
+            if (window.processId == pid) {
+              this.overlay.injectProcess(window);
+
+              this.registeredPidList.push(pid);
+              this.broadcast('registered-process-list', this.registeredPidList);
+            }
+          }
+        } else {
+          setTimeout(tryToInject, 1000);
+        }
+      };
+      tryToInject();
     }
   }
   private onProcessDeletion(name: string, pid: number) {
-    // empty;
+    const index = this.registeredPidList.findIndex((it) => it === Number(pid));
+    if (index >= 0) this.registeredPidList.splice(index, 1);
+
+    this.broadcast('registered-process-list', this.registeredPidList);
+
+    if (this.registeredPidList.length <= 0) this.stopOverlay();
   }
 }
 
