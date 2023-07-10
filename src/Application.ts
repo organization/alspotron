@@ -40,8 +40,8 @@ class Application {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   private overlay: Overlay = require(
     app.isPackaged ?
-      path.join(process.resourcesPath, './assets/electron-overlay.node') :
-      path.join('../../', './assets/electron-overlay.node'),
+      path.join(process.resourcesPath, './assets/overlay/electron-overlay.node') :
+      path.join('../../', './assets/overlay/electron-overlay.node'),
   ) as Overlay;
   private markQuit = false;
   private scaleFactor = 1.0;
