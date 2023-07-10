@@ -3,6 +3,7 @@ import cors from '@koa/cors';
 import alsong from 'alsong';
 import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain, nativeImage } from 'electron';
 import { autoUpdater } from 'electron-updater';
+import { extractIcon } from 'exe-icon-extractor';
 import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
 import { hmc } from 'hmc-win32';
 import Koa from 'koa';
@@ -14,7 +15,6 @@ import { Config, config, DEFAULT_CONFIG, LyricMapper, lyricMapper, setConfig, se
 import type { IOverlay } from './electron-overlay';
 import type { RequestBody } from './types';
 import path from 'node:path';
-import { extractIcon } from 'exe-icon-extractor';
 
 type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
 type LyricMetadata = Awaited<ReturnType<typeof alsong>>;
@@ -660,10 +660,10 @@ class Application {
       //   }
       // }, 10000);
     }
-  };
+  }
   private onProcessDeletion(name: string, pid: number) {
     // empty;
-  };
+  }
 }
 
 export default Application;
