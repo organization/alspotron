@@ -29,4 +29,5 @@ const withPrototype = (obj: Record<string, any>) => {
 contextBridge.exposeInMainWorld('fs', fs);
 contextBridge.exposeInMainWorld('getFont', getFonts);
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer));
+contextBridge.exposeInMainWorld('isWindows', process.platform === 'win32');
 contextBridge.exposeInMainWorld('hmc', withPrototype(hmc));

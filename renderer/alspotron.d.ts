@@ -8,6 +8,7 @@ declare global {
     ipcRenderer: typeof electronIpcRenderer;
     fs: typeof fs;
     getFont: typeof getFonts;
+    isWindows: boolean;
     hmc: typeof hmc;
   }
 
