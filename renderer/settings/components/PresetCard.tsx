@@ -1,7 +1,7 @@
 import { Show, splitProps } from 'solid-js';
 import Card from '../../components/Card';
-import { JSX } from 'solid-js/jsx-runtime';
 import { cx } from '../../utils/classNames';
+import type { JSX } from 'solid-js/jsx-runtime';
 
 export interface PresetCardProps extends JSX.HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
@@ -16,7 +16,7 @@ const PresetCard = (props: PresetCardProps) => {
       {...leftProps}
       class={cx('relative group h-full aspect-square !p-0 overflow-hidden z-0 cursor-pointer', leftProps.class)}
     >
-      <img src={local.url} class={'-z-1 group-hover:opacity-50'} />
+      <img src={local.url} class={'-z-1 group-hover:opacity-50'} alt={'Preset Image'}/>
       <div
         class={`
           absolute left-0 right-0 bottom-0

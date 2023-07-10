@@ -1,19 +1,16 @@
 import { For, Match, Show, Switch, createEffect, createSignal } from 'solid-js';
-
-import { HMC } from 'hmc-win32';
-
 import Card from '../../components/Card';
 import Marquee from '../../components/Marquee';
 import useGameList from '../../hooks/useGameList';
-import GameListContainer from './GameListContainer';
-import { Transition } from 'solid-transition-group';
 import usePlayingGame from '../../hooks/usePlayingGame';
+import GameListContainer from './GameListContainer';
 
 interface ProcessData {
   name: string;
   pid: number;
   path: string;
-  icon?: any;
+  title?: string;
+  icon?: string;
 }
 
 const GameContainer = () => {
@@ -25,7 +22,7 @@ const GameContainer = () => {
   const playingGame = usePlayingGame();
 
   createEffect(() => {
-    updateProcessList(showOnlyAvailable());
+    void updateProcessList(showOnlyAvailable());
   });
 
   const updateProcessList = async (isAvailable = true) => {
@@ -37,7 +34,7 @@ const GameContainer = () => {
       .filter((process) => !isAvailable || availableWindowsPID.includes(process.pid))
       .map(async (data) => {
         if (data.path.startsWith('C:\\Windows\\')) return null;
-        const icon = await window.ipcRenderer.invoke('get-icon', data.path);
+        const icon = await window.ipcRenderer.invoke('get-icon', data.path) as string;
 
         return { ...data, icon };
       }),
@@ -45,10 +42,10 @@ const GameContainer = () => {
 
     setProcessList(result.filter((it) => !!it));
   };
-  updateProcessList();
+  void updateProcessList();
 
   const onAddGame = (process: ProcessData) => {
-    setGameList({
+    void setGameList({
       [process.path]: process.name,
     });
   };
@@ -56,7 +53,7 @@ const GameContainer = () => {
     const list = { ...gameList() };
     delete list[path];
 
-    setGameList(list, false);
+    void setGameList(list, false);
   };
 
   return (
@@ -106,7 +103,7 @@ const GameContainer = () => {
               {(process) => (
                 <Card class={'w-full flex justify-start items-center gap-4'}>
                   <Show when={!!process.icon} fallback={<div class={'w-6 h-6 aspect-square'} />}>
-                    <img src={process.icon} class={'w-6 h-6 object-cover'} />
+                    <img src={process.icon} class={'w-6 h-6 object-cover'} alt={'Icon'}/>
                   </Show>
                   <div class={'w-0 flex flex-col justify-center items-stretch flex-1'}>
                     <div class={'w-full'}>

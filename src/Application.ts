@@ -5,7 +5,7 @@ import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain, nativeI
 import { autoUpdater } from 'electron-updater';
 import { extractIcon } from 'exe-icon-extractor';
 import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
-import { getProcessName, hmc } from 'hmc-win32';
+import { hmc } from 'hmc-win32';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
@@ -457,12 +457,12 @@ class Application {
     ipcMain.handle('get-config', () => config());
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
     ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>, useFallback = true) => {
-      setLyricMapper(data, useFallback);
+      setLyricMapper(data, useFallback as boolean); // SUPER WEIRD TypeScript
       this.broadcast('lyric-mapper', lyricMapper());
     });
     ipcMain.handle('get-lyric-mapper', () => lyricMapper());
     ipcMain.handle('set-game-list', (_, data: Partial<GameList>, useFallback = true) => {
-      setGameList(data, useFallback);
+      setGameList(data, useFallback as boolean);
       this.broadcast('game-list', gameList());
     });
     ipcMain.handle('get-game-list', () => gameList());

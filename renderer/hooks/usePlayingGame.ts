@@ -4,7 +4,7 @@ const usePlayingGame = () => {
   const [gameList, setGameList] = createSignal<number[]>([]);
 
   void (async () => {
-    const result = await window.ipcRenderer.invoke('get-registered-process-list');
+    const result = await window.ipcRenderer.invoke('get-registered-process-list') as number[];
 
     setGameList(result || []);
   })();

@@ -1,24 +1,30 @@
-import useGameList from '../../hooks/useGameList';
+import { For, Show, createEffect, createSignal } from 'solid-js';
 import Card from '../../components/Card';
 import Marquee from '../../components/Marquee';
-import { For, Show, createEffect, createSignal } from 'solid-js';
+import useGameList from '../../hooks/useGameList';
 
 export interface GameListContainerProps {
   onBack?: () => void;
 }
 
+interface GameList {
+  path: string;
+  name: string;
+  icon: string;
+}
+
 const GameListContainer = (props: GameListContainerProps) => {
-  const [availableGameList, setAvailableGameList] = createSignal([]);
+  const [availableGameList, setAvailableGameList] = createSignal<GameList[]>([]);
   const [gameList, setGameList] = useGameList();
 
   const updateAvailableGameList = async () => {
     const gamePathList = Object.entries(gameList())
       .map(([path, name]) => ({ path, name }));
 
-    const result: any[] = await Promise.all(
+    const result = await Promise.all(
       gamePathList.map(async (data) => {
-        const icon = await window.ipcRenderer.invoke('get-icon', data.path);
-        return { ...data, icon };
+        const icon = await window.ipcRenderer.invoke('get-icon', data.path) as string;
+        return { ...data, icon } as GameList;
       }),
     );
 
@@ -26,14 +32,14 @@ const GameListContainer = (props: GameListContainerProps) => {
   };
 
   createEffect(() => {
-    updateAvailableGameList();
+    void updateAvailableGameList();
   });
 
   const onRemoveGame = (path: string) => {
     const list = { ...gameList() };
     delete list[path];
 
-    setGameList(list, false);
+    void setGameList(list, false);
   };
 
   return (

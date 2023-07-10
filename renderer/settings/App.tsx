@@ -1,4 +1,4 @@
-import { Match, Switch, createSignal, Show } from 'solid-js';
+import { Match, Switch, createSignal } from 'solid-js';
 import { Transition } from 'solid-transition-group';
 
 import Layout from '../components/Layout';
