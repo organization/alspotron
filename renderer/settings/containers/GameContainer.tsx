@@ -109,7 +109,7 @@ const GameContainer = () => {
                     <div class={'w-full'}>
                       {process.name}
                     </div>
-                    <Marquee class={'text-sm text-gray-400'}>
+                    <Marquee class={'text-sm text-gray-400'} gap={18}>
                       {process.path}
                     </Marquee>
                   </div>
