@@ -30,4 +30,5 @@ contextBridge.exposeInMainWorld('fs', fs);
 contextBridge.exposeInMainWorld('getFont', getFonts);
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer));
 contextBridge.exposeInMainWorld('isWindows', process.platform === 'win32');
+contextBridge.exposeInMainWorld('systemRoot', process.env.SystemRoot);
 contextBridge.exposeInMainWorld('hmc', withPrototype(hmc));

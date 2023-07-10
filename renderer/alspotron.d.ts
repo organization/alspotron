@@ -9,6 +9,10 @@ declare global {
     fs: typeof fs;
     getFont: typeof getFonts;
     isWindows: boolean;
+    /**
+     * It is always defined because it is only used on Windows.
+     */
+    systemRoot: string;
     hmc: typeof hmc;
   }
 

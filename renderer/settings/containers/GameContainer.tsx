@@ -33,7 +33,7 @@ const GameContainer = () => {
       window.hmc.getDetailsProcessList()
       .filter((process) => !isAvailable || availableWindowsPID.includes(process.pid))
       .map(async (data) => {
-        if (data.path.startsWith('C:\\Windows\\')) return null;
+        if (data.path.toLowerCase().startsWith(window.systemRoot.toLowerCase())) return null;
         const icon = await window.ipcRenderer.invoke('get-icon', data.path) as string;
 
         return { ...data, icon };
