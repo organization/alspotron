@@ -14,6 +14,7 @@ import { Config, config, DEFAULT_CONFIG, LyricMapper, lyricMapper, setConfig, se
 import type { IOverlay } from './electron-overlay';
 import type { RequestBody } from './types';
 import path from 'node:path';
+import { extractIcon } from 'exe-icon-extractor';
 
 type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
 type LyricMetadata = Awaited<ReturnType<typeof alsong>>;
@@ -72,12 +73,6 @@ class Application {
     icon: iconPath,
   };
   private onOverlayWindowUpdate: () => void;
-  private onProcessCreation = (name: string, pid: number, filePath?: string) => {
-    // empty
-  };
-  private onProcessDeletion = (name: string, pid: number) => {
-    // empty;
-  };
 
   constructor() {
     if (process.platform === 'win32') {
@@ -385,13 +380,17 @@ class Application {
   }
 
   initHook() {
-    ipcMain.handle('get-process-list', () => {
-      // Can use getDetailsProcessList to get the execution path, but it's 20ms slower
-      // return HMC.getDetailsProcessList();
-      return hmc.getProcessList();
-    });
-    ipcMain.handle('process-id-to-file-path', (_, processId: number) => {
-      return hmc.getProcessidFilePath(processId);
+    ipcMain.handle('get-icon', (_, path: string) => {
+      try {
+        const result = extractIcon(path, 'large');
+
+        return `data:image/png;base64,${Buffer.from(result).toString('base64')}`; 
+        // return result;
+      } catch (err) {
+        // console.warn(err);
+      }
+
+      return null;
     });
     ipcMain.handle('start-overlay', () => {
       this.initOverlay();
@@ -646,6 +645,25 @@ class Application {
       void this.lyricsWindow.loadURL('http://localhost:5173/lyrics.html');
     }
   }
+  
+  private onProcessCreation(name: string, pid: number, filePath?: string) {
+    if (name.includes('Overwatch')) {
+      // setTimeout(() => {
+      //   this.initOverlay();
+      //   this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
+      //   console.log(this.overlay.getTopWindows(true));
+      //   for (const window of this.overlay.getTopWindows(true)) {
+      //     if (window.processId == pid) {
+      //       console.log(window);
+      //       this.overlay.injectProcess(window);
+      //     }
+      //   }
+      // }, 10000);
+    }
+  };
+  private onProcessDeletion(name: string, pid: number) {
+    // empty;
+  };
 }
 
 export default Application;

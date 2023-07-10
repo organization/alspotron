@@ -121,16 +121,22 @@ html, body, #app {
   overflow: auto;
 }
 .fluent-scrollbar::-webkit-scrollbar {
-  @apply w-[4px] h-[4px] p-[1px];
+  @apply w-[10px] h-[10px];
 }
 .fluent-scrollbar::-webkit-scrollbar-thumb {
-  @apply w-[2px] h-[2px] bg-gray-400 rounded-full border border-transparent border-solid bg-clip-padding;
+  @apply w-[10px] h-[10px] bg-gray-400 rounded-full border-[4px] border-transparent border-solid bg-clip-padding;
+}
+.fluent-scrollbar::-webkit-scrollbar-corner {
+  @apply hidden;
 }
 
 .remove-scrollbar::-webkit-scrollbar {
   @apply hidden;
 }
 .remove-scrollbar::-webkit-scrollbar-thumb {
+  @apply hidden;
+}
+.remove-scrollbar::-webkit-scrollbar-corner {
   @apply hidden;
 }
 

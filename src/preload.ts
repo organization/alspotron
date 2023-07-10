@@ -2,6 +2,7 @@
 
 import { contextBridge, ipcRenderer } from 'electron';
 import { getFonts } from 'font-list';
+import { hmc } from 'hmc-win32';
 import fs from 'fs';
 
 const withPrototype = (obj: Record<string, any>) => {
@@ -28,3 +29,4 @@ const withPrototype = (obj: Record<string, any>) => {
 contextBridge.exposeInMainWorld('fs', fs);
 contextBridge.exposeInMainWorld('getFont', getFonts);
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer));
+contextBridge.exposeInMainWorld('hmc', withPrototype(hmc));
