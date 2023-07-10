@@ -75,7 +75,7 @@
     "solid-transition-group": "^0.2.2"
   },
   "optionalDependencies": {
-    "@jellybrick/wql-process-monitor": "^1.4.3",
+    "@jellybrick/wql-process-monitor": "^1.4.5",
     "hmc-win32": "^1.3.6",
     "exe-icon-extractor": "^1.0.8"
   },
