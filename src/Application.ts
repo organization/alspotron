@@ -670,6 +670,11 @@ class Application {
         const isInit = Number(hmc.getForegroundWindowProcessID()) === Number(pid);
         if (isInit) {
           if (this.registeredPidList.length == 0) {
+            this.scaleFactor = screen.getDisplayNearestPoint({
+              x: 0,
+              y: 0,
+            }).scaleFactor;
+
             this.initOverlay();
             this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
           }
