@@ -29,6 +29,7 @@ const LyricsItem = (props: LyricsItemProps) => {
 
   onMount(() => {
     dom.addEventListener('transitionend', () => {
+      dom.style.willChange = 'auto';
       setInit(true);
     }, { once: true });
   });
@@ -38,11 +39,11 @@ const LyricsItem = (props: LyricsItemProps) => {
       {...leftProps}
       ref={dom}
       // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-      style={local.status === 'stopped' ? `${style()} opacity: 0.5; ${props.style}` : `${style()}; ${props.style}`}
+      style={local.status === 'stopped' ? `${style()} opacity: 0.5; ${props.style as string}` : `${style()}; ${props.style as string}`}
       class={cx(`
         py-1 px-2 whitespace-pre-line text-center
         bg-gray-900/50 text-gray-100
-        transition-all duration-[225ms] ease-out origin-right
+        transition-all duration-[225ms] ease-out origin-right will-change-transform
       `, leftProps.class)}
     >
       {leftProps.children}
