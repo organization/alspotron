@@ -10,7 +10,7 @@
     "jsxImportSource": "solid-js",
     "types": ["vite/client"],
     "baseUrl": ".",
-    "outDir": "./dist",
+    "outDir": "./dist"
   },
   "exclude": [
     "*.config.ts",

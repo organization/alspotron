@@ -1,19 +1,24 @@
+import { promises as WQLAsync } from '@jellybrick/wql-process-monitor';
 import cors from '@koa/cors';
 import alsong from 'alsong';
 import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain, nativeImage } from 'electron';
 import { autoUpdater } from 'electron-updater';
+import { extractIcon } from 'exe-icon-extractor';
 import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
+import { hmc } from 'hmc-win32';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import Router from 'koa-router';
 import { MicaBrowserWindow, IS_WINDOWS_11 } from 'mica-electron';
 import { getFile } from '../utils/resource';
-import { Config, config, DEFAULT_CONFIG, LyricMapper, lyricMapper, setConfig, setLyricMapper } from './config';
+import { Config, config, DEFAULT_CONFIG, GameList, gameList, LyricMapper, lyricMapper, setConfig, setGameList, setLyricMapper } from './config';
+import type { IOverlay } from './electron-overlay';
 import type { RequestBody } from './types';
 import path from 'node:path';
 
 type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
 type LyricMetadata = Awaited<ReturnType<typeof alsong>>;
+type Overlay = typeof IOverlay;
 
 const iconPath = getFile('./assets/icon_square.png');
 const glassOptions: Partial<GlasstronOptions> = {
@@ -32,10 +37,56 @@ app.commandLine.appendSwitch('enable-transparent-visuals');
 class Application {
   private tray: Tray;
   private app: Koa;
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  private overlay: Overlay = require(
+    app.isPackaged ?
+      path.join(process.resourcesPath, './assets/overlay/electron-overlay.node') :
+      path.join('../../', './assets/overlay/electron-overlay.node'),
+  ) as Overlay;
+  private markQuit = false;
+  private scaleFactor = 1.0;
 
   public mainWindow: BrowserWindow;
+  public overlayWindow: BrowserWindow;
   public settingsWindow: BrowserWindow;
   public lyricsWindow: BrowserWindow;
+  public mainWindowOptions = {
+    width: 800,
+    height: 600,
+    movable: false,
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    transparent: true,
+    frame: false,
+    focusable: false,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    hasShadow: false,
+    hiddenInMissionControl: true,
+    roundedCorners: false,
+    webPreferences: {
+      preload: path.join(__dirname, './preload.js'),
+      nodeIntegration: true,
+    },
+    show: false,
+    icon: iconPath,
+  };
+  private onOverlayWindowUpdate: () => void;
+  private registeredPidList: number[] = [];
+
+  constructor() {
+    if (process.platform === 'win32') {
+      void WQLAsync.subscribe({
+        creation: true,
+        deletion: true,
+        filterWindowsNoise: true,
+      }).then((it) => {
+        it.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
+        it.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
+      });
+    }
+  }
 
   initAutoUpdater() {
     if (app.isPackaged) {
@@ -116,6 +167,7 @@ class Application {
         type: 'normal',
         label: '종료',
         click: () => {
+          this.markQuit = true;
           app.quit();
         }
       },
@@ -183,13 +235,183 @@ class Application {
     this.app.listen(1608, '127.0.0.1');
   }
 
+  public addOverlayWindow(
+    name: string,
+    window: Electron.BrowserWindow,
+    dragborder = 0,
+    captionHeight = 0,
+    transparent = false
+  ) {
+    this.markQuit = false;
+
+    const display = screen.getDisplayNearestPoint(
+      screen.getCursorScreenPoint()
+    );
+
+    this.overlay.addWindow(window.id, {
+      name,
+      transparent,
+      resizable: window.isResizable(),
+      maxWidth: window.isResizable
+        ? display.bounds.width
+        : window.getBounds().width,
+      maxHeight: window.isResizable
+        ? display.bounds.height
+        : window.getBounds().height,
+      minWidth: window.isResizable ? 100 : window.getBounds().width,
+      minHeight: window.isResizable ? 100 : window.getBounds().height,
+      nativeHandle: window.getNativeWindowHandle().readUInt32LE(0),
+      rect: {
+        x: window.getBounds().x,
+        y: window.getBounds().y,
+        width: Math.floor(window.getBounds().width * this.scaleFactor),
+        height: Math.floor(window.getBounds().height * this.scaleFactor),
+      },
+      caption: {
+        left: dragborder,
+        right: dragborder,
+        top: dragborder,
+        height: captionHeight,
+      },
+      dragBorderWidth: dragborder,
+    });
+
+    window.webContents.on(
+      'paint',
+      (event, dirty, image: Electron.NativeImage) => {
+        if (this.markQuit) {
+          return;
+        }
+        this.overlay.sendFrameBuffer(
+          window.id,
+          image.getBitmap(),
+          image.getSize().width,
+          image.getSize().height
+        );
+      }
+    );
+
+    window.on('ready-to-show', () => {
+      window.focusOnWebView();
+    });
+
+    window.on('resize', () => {
+      console.log(`${name} resizing`)
+      this.overlay.sendWindowBounds(window.id, {
+        rect: {
+          x: window.getBounds().x,
+          y: window.getBounds().y,
+          width: Math.floor(window.getBounds().width * this.scaleFactor),
+          height: Math.floor(window.getBounds().height * this.scaleFactor),
+        },
+      });
+    });
+
+    const windowId = window.id;
+    window.on('closed', () => {
+      this.overlay.closeWindow(windowId);
+    });
+
+    window.webContents.on('cursor-changed', (event, type) => {
+      let cursor: string;
+      switch (type) {
+        case 'default':
+          cursor = 'IDC_ARROW';
+          break;
+        case 'pointer':
+          cursor = 'IDC_HAND';
+          break;
+        case 'crosshair':
+          cursor = 'IDC_CROSS';
+          break;
+        case 'text':
+          cursor = 'IDC_IBEAM';
+          break;
+        case 'wait':
+          cursor = 'IDC_WAIT';
+          break;
+        case 'help':
+          cursor = 'IDC_HELP';
+          break;
+        case 'move':
+          cursor = 'IDC_SIZEALL';
+          break;
+        case 'nwse-resize':
+          cursor = 'IDC_SIZENWSE';
+          break;
+        case 'nesw-resize':
+          cursor = 'IDC_SIZENESW';
+          break;
+        case 'ns-resize':
+          cursor = 'IDC_SIZENS';
+          break;
+        case 'ew-resize':
+          cursor = 'IDC_SIZEWE';
+          break;
+        case 'none':
+          cursor = '';
+          break;
+      }
+      if (cursor) {
+        this.overlay.sendCommand({ command: 'cursor', cursor });
+      }
+    });
+  }
+
+  removeOverlay(window: BrowserWindow) {
+    this.markQuit = true;
+    this.overlay.closeWindow(window.id);
+  }
+
+  initOverlay() {
+    this.initOverlayWindow();
+    this.overlay.start();
+  }
+
+  stopOverlay() {
+    this.removeOverlayWindow();
+    this.overlay.stop();
+  }
+
   broadcast<T>(event: string, ...args: T[]) {
     this.mainWindow.webContents.send(event, ...args);
+    if (this.overlayWindow && !this.overlayWindow.isDestroyed()) this.overlayWindow.webContents.send(event, ...args);
     if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) this.lyricsWindow.webContents.send(event, ...args);
     if (this.settingsWindow && !this.settingsWindow.isDestroyed()) this.settingsWindow.webContents.send(event, ...args);
   }
 
   initHook() {
+    ipcMain.handle('get-registered-process-list', () => this.registeredPidList);
+    ipcMain.handle('get-icon', (_, path: string) => {
+      try {
+        const result = extractIcon(path, 'large');
+
+        return `data:image/png;base64,${Buffer.from(result).toString('base64')}`; 
+        // return result;
+      } catch (err) {
+        // console.warn(err);
+      }
+
+      return null;
+    });
+    ipcMain.handle('start-overlay', () => {
+      this.initOverlay();
+
+      this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
+    });
+    ipcMain.handle('stop-overlay', () => {
+      this.stopOverlay();
+    });
+    ipcMain.handle('inject-overlay-to-process', (_, processId: number, name?: string, filePath?: string) => {
+      if (process.platform !== 'win32') {
+        return;
+      }
+
+      this.onProcessCreation(processId, name, filePath);
+    });
+    ipcMain.handle('remove-overlay-from-process', (_, processId: number) => {
+      this.onProcessDeletion(processId);
+    });
     ipcMain.handle('get-current-version', () => {
       return autoUpdater.currentVersion.version;
     });
@@ -227,15 +449,23 @@ class Application {
     ipcMain.handle('set-config', (_, data: DeepPartial<Config>) => {
       setConfig(data);
       this.broadcast('config', config());
-      this.updateMainWindowConfig();
+      this.updateWindowConfig(this.mainWindow);
+      if (process.platform === 'win32') {
+        this.updateWindowConfig(this.overlayWindow);
+      }
     });
     ipcMain.handle('get-config', () => config());
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
-    ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>) => {
-      setLyricMapper(data);
+    ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>, useFallback = true) => {
+      setLyricMapper(data, useFallback as boolean); // SUPER WEIRD TypeScript
       this.broadcast('lyric-mapper', lyricMapper());
     });
     ipcMain.handle('get-lyric-mapper', () => lyricMapper());
+    ipcMain.handle('set-game-list', (_, data: Partial<GameList>, useFallback = true) => {
+      setGameList(data, useFallback as boolean);
+      this.broadcast('game-list', gameList());
+    });
+    ipcMain.handle('get-game-list', () => gameList());
 
     ipcMain.on('window-minimize', () => {
       BrowserWindow.getFocusedWindow()?.minimize();
@@ -251,28 +481,7 @@ class Application {
 
   initMainWindow() {
     Menu.setApplicationMenu(null);
-    this.mainWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
-      movable: false,
-      resizable: false,
-      minimizable: false,
-      maximizable: false,
-      transparent: true,
-      frame: false,
-      focusable: false,
-      alwaysOnTop: true,
-      skipTaskbar: true,
-      hasShadow: false,
-      hiddenInMissionControl: true,
-      roundedCorners: false,
-      webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
-        nodeIntegration: true,
-      },
-      show: false,
-      icon: iconPath,
-    });
+    this.mainWindow = new BrowserWindow(this.mainWindowOptions);
 
     this.mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
     this.mainWindow.setVisibleOnAllWorkspaces(true, {
@@ -286,15 +495,54 @@ class Application {
       void this.mainWindow.loadURL('http://localhost:5173');
     }
 
-    const onUpdate = () => this.updateMainWindowConfig();
-    screen.on('display-metrics-changed', onUpdate);
-    screen.on('display-added', onUpdate);
-    screen.on('display-removed', onUpdate);
+    const onMainWindowUpdate = () => this.updateWindowConfig(this.mainWindow);
+    screen.on('display-metrics-changed', onMainWindowUpdate);
+    screen.on('display-added', onMainWindowUpdate);
+    screen.on('display-removed', onMainWindowUpdate);
 
-    onUpdate();
+    onMainWindowUpdate();
   }
 
-  updateMainWindowConfig() {
+  initOverlayWindow() {
+    if (process.platform === 'win32') {
+      this.overlayWindow = new BrowserWindow({
+        ...this.mainWindowOptions,
+        webPreferences: {
+          ...this.mainWindowOptions.webPreferences,
+          offscreen: true,
+        }
+      });
+      this.overlayWindow.setIgnoreMouseEvents(true, { forward: true });
+      if (app.isPackaged) {
+        void this.overlayWindow.loadFile(path.join(__dirname, '../index.html'));
+      } else {
+        void this.overlayWindow.loadURL('http://localhost:5173');
+      }
+
+      this.onOverlayWindowUpdate = () => this.updateWindowConfig(this.overlayWindow);
+      screen.on('display-metrics-changed', this.onOverlayWindowUpdate);
+      screen.on('display-added', this.onOverlayWindowUpdate);
+      screen.on('display-removed', this.onOverlayWindowUpdate);
+
+      this.onOverlayWindowUpdate();
+    }
+  }
+
+  removeOverlayWindow() {
+    if (this.overlayWindow) {
+      this.removeOverlay(this.overlayWindow);
+      if (this.onOverlayWindowUpdate) {
+        screen.removeListener('display-metrics-changed', this.onOverlayWindowUpdate);
+        screen.removeListener('display-added', this.onOverlayWindowUpdate);
+        screen.removeListener('display-removed', this.onOverlayWindowUpdate);
+        this.onOverlayWindowUpdate = undefined;
+      }
+      this.overlayWindow.close();
+      this.overlayWindow = undefined;
+    }
+  }
+
+  updateWindowConfig(window: BrowserWindow) {
     const { windowPosition, style } = config();
     const activeDisplay =
       screen.getAllDisplays().find((display) => display.id === windowPosition.display) ||
@@ -334,8 +582,8 @@ class Application {
           + ((activeDisplay.bounds.height - windowHeight) / 2);
     })();
 
-    this.mainWindow.setSize(windowWidth, windowHeight);
-    this.mainWindow.setPosition(Math.round(anchorX), Math.round(anchorY));
+    window.setSize(windowWidth, windowHeight);
+    window.setPosition(Math.round(anchorX), Math.round(anchorY));
   }
 
   initSettingsWindow() {
@@ -403,6 +651,56 @@ class Application {
     } else {
       void this.lyricsWindow.loadURL('http://localhost:5173/lyrics.html');
     }
+  }
+  
+  private onProcessCreation(pid: number, name?: string, filePath?: string) {
+    const gamePathList = Object.keys(gameList());
+
+    if (gamePathList.includes(filePath)) {
+      let tryCount = 0;
+
+      const tryToInject = () => {
+        tryCount += 1;
+
+        if (tryCount > 20) {
+          console.warn('failed to inject', name, pid, filePath);
+          return;
+        }
+
+        const isInit = Number(hmc.getForegroundWindowProcessID()) === Number(pid);
+        if (isInit) {
+          if (this.registeredPidList.length == 0) {
+            this.scaleFactor = screen.getDisplayNearestPoint({
+              x: 0,
+              y: 0,
+            }).scaleFactor;
+
+            this.initOverlay();
+            this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
+          }
+
+          for (const window of this.overlay.getTopWindows(true)) {
+            if (window.processId == pid) {
+              this.overlay.injectProcess(window);
+
+              this.registeredPidList.push(pid);
+              this.broadcast('registered-process-list', this.registeredPidList);
+            }
+          }
+        } else {
+          setTimeout(tryToInject, 1000);
+        }
+      };
+      tryToInject();
+    }
+  }
+  private onProcessDeletion(pid: number, name?: string) {
+    const index = this.registeredPidList.findIndex((it) => it === Number(pid));
+    if (index >= 0) this.registeredPidList.splice(index, 1);
+
+    this.broadcast('registered-process-list', this.registeredPidList);
+
+    if (this.registeredPidList.length <= 0) this.stopOverlay();
   }
 }
 

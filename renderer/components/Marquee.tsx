@@ -34,10 +34,23 @@ const Marquee = (props: MarqueeProps) => {
   }
   const observer = new MutationObserver(updateOverflow);
   onMount(() => {
-    updateOverflow();
-    ignore = false;
+    const limitTime = Date.now() + 3 * 1000;
+    const target = dom?.parentElement ?? dom;
+    const tryComputedOverflow = () => {
+      if (Date.now() > limitTime) return;
 
-    observer.observe(dom, {
+      requestAnimationFrame(() => {
+        if (dom.clientWidth === 0) {
+          tryComputedOverflow();
+        } else {
+          updateOverflow();
+          ignore = false;
+        }
+      });
+    };
+    tryComputedOverflow();
+
+    observer.observe(target, {
       characterData: true,
       childList: true,
       subtree: true,
