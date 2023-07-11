@@ -62,7 +62,7 @@
     "color": "^4.2.3",
     "deepmerge": "^4.3.1",
     "electron-updater": "^6.1.1",
-    "emittery": "^0.13.1",
+    "emittery": "^1.0.0",
     "font-list": "^1.5.0",
     "glasstron": "^0.1.1",
     "koa": "^2.14.2",
