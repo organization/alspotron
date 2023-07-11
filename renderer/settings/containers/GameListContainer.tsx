@@ -1,4 +1,4 @@
-import { For, Show, createEffect, createSignal } from 'solid-js';
+import { For, JSX, Show, createEffect, createSignal } from 'solid-js';
 import Card from '../../components/Card';
 import Marquee from '../../components/Marquee';
 import useGameList from '../../hooks/useGameList';
@@ -42,6 +42,19 @@ const GameListContainer = (props: GameListContainerProps) => {
     void setGameList(list, false);
   };
 
+  const onSelectGame: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
+    if (!event.target.files) return;
+
+    const file = event.target.files.item(0);
+    const isEXE = file.path.match(/.*\.exe$/);
+
+    if (!isEXE) return;
+
+    void setGameList({
+      [file.path]: file.name,
+    });
+  };
+
   return (
     <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1 flex justify-start items-center gap-2'}>
@@ -78,6 +91,16 @@ const GameListContainer = (props: GameListContainerProps) => {
           </Card>
         )}
       </For>
+      <label for={'game-selector'} class={'btn-primary text-center'}>
+        게임 수동 추가
+        <input
+          id={'game-selector'}
+          type={'file'}
+          accept={'.exe'}
+          class={'hidden'}
+          onInput={onSelectGame}
+        />
+      </label>
     </div>
   );
 };

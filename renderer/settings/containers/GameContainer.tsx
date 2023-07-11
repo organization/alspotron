@@ -68,18 +68,23 @@ const GameContainer = () => {
             </div>
             <For each={playingGame()}>
               {(game) => (
-                <Card>
+                <Card class={'w-full flex justify-start items-center gap-4'}>
                   <div class={'w-0 flex flex-col justify-center items-stretch flex-1'}>
                     <div class={'w-full'}>
                       {game.name}
                     </div>
                     <Marquee class={'text-sm text-gray-400'} gap={18}>
-                      {game.pid}
+                      {game.path}
                     </Marquee>
                   </div>
                 </Card>
               )}
             </For>
+            <Show when={playingGame().length === 0}>
+              <Card class={'w-full flex justify-start items-center gap-4'}>
+                실행중인 게임 없음
+              </Card>
+            </Show>
             <div class={'text-md mt-4 mb-1'}>
               저장된 게임 목록
             </div>

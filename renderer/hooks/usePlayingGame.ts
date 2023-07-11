@@ -16,7 +16,7 @@ const usePlayingGame = () => {
   return createMemo(() => {
     const processList = gameList();
 
-    const allProcessList = window.hmc.getProcessList();
+    const allProcessList = window.hmc.getDetailsProcessList();
 
     return allProcessList.filter((process) => processList.some((it) => Number(it) === Number(process.pid)));
   });
