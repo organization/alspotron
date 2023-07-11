@@ -97,7 +97,7 @@ const SideBar = () => {
           </div>
         </div>
       </Card>
-      <div class={'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto'}>
+      <div class={'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto will-change-scroll'}>
         <For each={lyricItems()}>
           {([time, value]) => (
             <div

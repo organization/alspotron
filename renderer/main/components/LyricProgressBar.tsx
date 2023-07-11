@@ -1,4 +1,4 @@
-import { splitProps } from 'solid-js';
+import { createEffect, createSignal, splitProps } from 'solid-js';
 import icon from '../../../assets/icon_music.png';
 import Marquee from '../../components/Marquee';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
@@ -22,12 +22,28 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     props,
     ['class', 'style', 'progressClass', 'progressStyle', 'textClass', 'textStyle'],
   );
+  const [progressTransition, setProgressTransition] = createSignal(false);
+
+  let percent: number = 0;
+  let oldPercent: number = 0;
+
+  createEffect(() => {
+    oldPercent = percent;
+    percent = progress() / duration();
+
+    if (Math.abs(percent - oldPercent) > 0.01) {
+      setProgressTransition(true)
+    } else if (progressTransition()) {
+      setProgressTransition(false)
+    }
+  });
 
   return (
     <div
       style={`
         --percent: ${progress() / duration() * 100}%;
         opacity: ${status() === 'stopped' ? 0.5 : 1};
+        will-change: opacity, transform;
         ${style.style}
       `}
       class={cx(
@@ -43,7 +59,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
         class={cx(
           `
             absolute inset-0 bg-gray-500 z-[-1] scale-x-[--percent] origin-left
-            transition-all duration-225 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]
+            ${progressTransition() ? 'transition-transform duration-225 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]' : ''}
           `,
           style.progressClass,
         )}
@@ -57,7 +73,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
             ${status() === 'stopped' ? 'grayscale' : ''}
             ${status() === 'stopped' ? 'scale-95' : ''}
           `}
-        />
+          alt={'Thumbnail'}/>
         <Marquee gap={32}>
           <div
             class={cx('w-fit flex flex-row justify-start items-center gap-2', style.textClass)}

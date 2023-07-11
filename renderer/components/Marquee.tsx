@@ -66,7 +66,10 @@ const Marquee = (props: MarqueeProps) => {
     <div
       {...leftProps}
       ref={dom}
-      class={cx('relative whitespace-nowrap overflow-auto flex flex-row justify-start items-center remove-scrollbar', props.class)}
+      class={cx(
+        'relative whitespace-nowrap overflow-auto flex flex-row justify-start items-center remove-scrollbar will-change-scroll',
+        props.class,
+      )}
       classList={{
         ...leftProps.classList,
         'overflow-hidden': useMarquee(),
