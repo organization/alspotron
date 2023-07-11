@@ -1,4 +1,4 @@
-import { createEffect, splitProps } from 'solid-js';
+import { createEffect, createSignal, splitProps } from 'solid-js';
 import icon from '../../../assets/icon_music.png';
 import Marquee from '../../components/Marquee';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
@@ -22,7 +22,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     props,
     ['class', 'style', 'progressClass', 'progressStyle', 'textClass', 'textStyle'],
   );
-  let progressDiv: HTMLDivElement;
+  const [progressTransition, setProgressTransition] = createSignal(false);
 
   let percent: number = 0;
   let oldPercent: number = 0;
@@ -32,13 +32,9 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     percent = progress() / duration();
 
     if (Math.abs(percent - oldPercent) > 0.01) {
-      progressDiv.style.transitionProperty = 'transform';
-      progressDiv.style.transitionTimingFunction = 'cubic-bezier(0.34, 1.56, 0.64, 1)';
-      progressDiv.style.transitionDuration = '225ms';
-    } else {
-      progressDiv.style.transitionProperty = 'none';
-      progressDiv.style.transitionTimingFunction = undefined;
-      progressDiv.style.transitionDuration = undefined;
+      setProgressTransition(true)
+    } else if (progressTransition()) {
+      setProgressTransition(false)
     }
   });
 
@@ -60,10 +56,10 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
       {...containerProps}
     >
       <div
-        ref={progressDiv}
         class={cx(
           `
             absolute inset-0 bg-gray-500 z-[-1] scale-x-[--percent] origin-left
+            ${progressTransition() ? 'transition-transform duration-225 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]' : ''}
           `,
           style.progressClass,
         )}
