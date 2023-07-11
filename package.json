@@ -43,7 +43,7 @@
     "electron-builder": "^24.4.0",
     "eslint": "^8.43.0",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-solid": "^0.12.1",
     "patch-package": "^7.0.0",
     "postcss": "^8.4.24",
