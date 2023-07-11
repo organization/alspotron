@@ -77,7 +77,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
             ${status() === 'stopped' ? 'grayscale' : ''}
             ${status() === 'stopped' ? 'scale-95' : ''}
           `}
-         alt={'Thumbnail'}/>
+          alt={'Thumbnail'}/>
         <Marquee gap={32}>
           <div
             class={cx('w-fit flex flex-row justify-start items-center gap-2', style.textClass)}
