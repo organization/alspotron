@@ -3,15 +3,15 @@
 ### 커스텀이 편리한 *Spotify*, *YouTube Music* 가사 표시기
 
 > `스포티파이` 혹은 `유튜브 뮤직`등의 `뮤직 플레이어`에서 재생중인 노래의 알송 가사를 화면에 표시해줍니다.\
-> 알송 가사가 존재하지 않는 경우, 스포티파이의 내장 가사를 표시합니다. (**스포티파이로 재생하는 경우만 해당**)  
+> 알송 가사가 존재하지 않는 경우, 스포티파이의 내장 가사를 표시합니다. (**스포티파이로 재생하는 경우만 해당**)\
 
 ### Screenshot
 
 -   동영상 위에 가사가 표시되게 촬영한 예시 이미지이며, 실제로는 위치를 자유롭게 선택할 수 있습니다.
 
-|                         Spotify                        |                                                        Youtube Music                                                        |
-| :----------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: |
-| ![Spotify Screenshot](https://i.imgur.com/0JJMhaU.png) | ![YouTube Music Screenshot](https://github.com/organization/alspotron/assets/16558115/fc22323e-d0b2-4abc-882e-2281c13f4cf4) |
+|                         Spotify                        |                                                        Youtube Music                                                        |                         Game Overlay (tested game: Overwatch)                       |
+| :----------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------: |
+| ![Spotify Screenshot](https://i.imgur.com/0JJMhaU.png) | ![YouTube Music Screenshot](https://github.com/organization/alspotron/assets/16558115/fc22323e-d0b2-4abc-882e-2281c13f4cf4) | ![Overlay Screenshot](https://github.com/organization/alspotron/assets/16558115/7bb95071-b8f7-45e1-af59-02e1586d5dcc) |
 
 ## Installation
 
