@@ -402,12 +402,12 @@ class Application {
     ipcMain.handle('stop-overlay', () => {
       this.stopOverlay();
     });
-    ipcMain.handle('inject-overlay-to-process', (_, processId: number) => {
+    ipcMain.handle('inject-overlay-to-process', (_, processId: number, name?: string, filePath?: string) => {
       if (process.platform !== 'win32') {
         return;
       }
 
-      this.onProcessCreation(processId);
+      this.onProcessCreation(processId, name, filePath);
     });
     ipcMain.handle('remove-overlay-from-process', (_, processId: number) => {
       this.onProcessDeletion(processId);
