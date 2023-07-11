@@ -22,23 +22,21 @@ const ANIMATION_LIST = [
 
 const ThemeContainer = () => {
   // eslint-disable-next-line prefer-const
-  let presetContainer: HTMLDivElement | null = null;
+  let presetContainer: HTMLDivElement | undefined;
   let interval: NodeJS.Timer | null = null;
 
   const [config, setConfig] = useConfig();
   const [fontList, setFontList] = createSignal<string[]>([]);
   const [preview, setPreview] = createSignal(false);
 
-  void (async () => {
+  (async () => {
     setFontList(await window.getFont({ disableQuoting: true }));
   })();
 
   onMount(() => {
     if (presetContainer) useHorizontalScroll(presetContainer);
 
-    interval = setInterval(() => {
-      setPreview(!preview());
-    }, 1500);
+    interval = setInterval(() => setPreview(!preview()), 1500);
   });
   onCleanup(() => {
     if (interval) clearInterval(interval);
@@ -104,7 +102,7 @@ const ThemeContainer = () => {
           }}
           options={fontList()}
           value={config()?.style?.font}
-          onChange={(value) => void setConfig({ style: { font: value } })}
+          onChange={(value) => setConfig({ style: { font: value } })}
           renderItem={(props, option) => <li
             {...props}
             style={{ 'font-family': option }}
@@ -137,7 +135,7 @@ const ThemeContainer = () => {
             '900',
           ]}
           value={config()?.style?.fontWeight ?? '400'}
-          onChange={(value) => void setConfig({ style: { fontWeight: value } })}
+          onChange={(value) => setConfig({ style: { fontWeight: value } })}
           renderItem={(props, option) => <li
             {...props}
             style={{ 'font-weight': option }}
@@ -184,7 +182,7 @@ const ThemeContainer = () => {
               class={'select w-48 font-select'}
               options={ANIMATION_LIST}
               value={config()?.style?.animation ?? 'pretty'}
-              onChange={(value) => void setConfig({ style: { animation: value } })}
+              onChange={(value) => setConfig({ style: { animation: value } })}
               renderItem={(props, option) => <li
                 {...props}
                 style={{ 'font-weight': option }}
@@ -217,7 +215,7 @@ const ThemeContainer = () => {
           type={'number'}
           class={'input'}
           value={config()?.style.nowPlaying.fontSize}
-          onChange={(event) => void setConfig({ style: { nowPlaying: { fontSize: event.target.valueAsNumber } } })}
+          onChange={(event) => setConfig({ style: { nowPlaying: { fontSize: event.target.valueAsNumber } } })}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -226,7 +224,7 @@ const ThemeContainer = () => {
         </div>
         <ColorPicker
           value={config()?.style.nowPlaying.color}
-          onColorChange={(color) => void setConfig({ style: { nowPlaying: { color } } })}
+          onColorChange={(color) => setConfig({ style: { nowPlaying: { color } } })}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -235,7 +233,7 @@ const ThemeContainer = () => {
         </div>
         <ColorPicker
           value={config()?.style.nowPlaying.background}
-          onColorChange={(color) => void setConfig({ style: { nowPlaying: { background: color } } })}
+          onColorChange={(color) => setConfig({ style: { nowPlaying: { background: color } } })}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -244,7 +242,7 @@ const ThemeContainer = () => {
         </div>
         <ColorPicker
           value={config()?.style.nowPlaying.backgroundProgress}
-          onColorChange={(color) => void setConfig({ style: { nowPlaying: { backgroundProgress: color } } })}
+          onColorChange={(color) => setConfig({ style: { nowPlaying: { backgroundProgress: color } } })}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -255,7 +253,7 @@ const ThemeContainer = () => {
           type={'number'}
           class={'input'}
           value={config()?.style.nowPlaying.maxWidth}
-          onChange={(event) => void setConfig({ style: { nowPlaying: { maxWidth: event.target.valueAsNumber } } })}
+          onChange={(event) => setConfig({ style: { nowPlaying: { maxWidth: event.target.valueAsNumber } } })}
         />
       </Card>
     </div>
@@ -271,7 +269,7 @@ const ThemeContainer = () => {
           type={'number'}
           class={'input'}
           value={config()?.style.lyric.fontSize}
-          onChange={(event) => void setConfig({ style: { lyric: { fontSize: event.target.valueAsNumber } } })}
+          onChange={(event) => setConfig({ style: { lyric: { fontSize: event.target.valueAsNumber } } })}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -280,7 +278,7 @@ const ThemeContainer = () => {
         </div>
         <ColorPicker
           value={config()?.style.lyric.color}
-          onColorChange={(color) => void setConfig({ style: { lyric: { color } } })}
+          onColorChange={(color) => setConfig({ style: { lyric: { color } } })}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -289,7 +287,7 @@ const ThemeContainer = () => {
         </div>
         <ColorPicker
           value={config()?.style.lyric.background}
-          onColorChange={(color) => void setConfig({ style: { lyric: { background: color } } })}
+          onColorChange={(color) => setConfig({ style: { lyric: { background: color } } })}
         />
       </Card>
     </div>
@@ -303,7 +301,7 @@ const ThemeContainer = () => {
           <div class={'w-full h-full flex justify-start items-center'}>
             <button
               class={'btn-primary'}
-              onClick={void (async () => {
+              onClick={(async () => {
                 await setConfig(await window.ipcRenderer.invoke('get-default-config') as Config)
               })}
               >

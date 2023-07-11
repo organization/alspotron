@@ -1,10 +1,11 @@
 import { createSignal } from 'solid-js';
+
 import { Config } from '../../src/config';
 
 const useConfig = () => {
   const [config, setConfig] = createSignal<Config | null>(null);
 
-  void (async () => {
+  (async () => {
     if (config()) return;
 
     const result = await window.ipcRenderer.invoke('get-config') as Config;

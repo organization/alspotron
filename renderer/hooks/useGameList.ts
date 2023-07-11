@@ -1,10 +1,11 @@
 import { createSignal } from 'solid-js';
+
 import { GameList } from '../../src/config';
 
 const useGameList = () => {
   const [gameList, setGameList] = createSignal<GameList>({});
 
-  void (async () => {
+  (async () => {
     const result = await window.ipcRenderer.invoke('get-game-list') as GameList;
 
     setGameList(result || {});

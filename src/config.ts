@@ -1,10 +1,13 @@
+/* eslint-disable solid/reactivity */
+import { readFileSync } from 'fs';
+
+import fs from 'fs/promises';
+
+import path from 'node:path';
+
 import deepmerge from 'deepmerge';
 import { app } from 'electron';
 import { createSignal } from 'solid-js';
-
-import { readFileSync } from 'fs';
-import fs from 'fs/promises';
-import path from 'node:path';
 
 export interface Config {
   style: {
@@ -137,7 +140,24 @@ export interface LyricMapper {
 
 let lyricMapperFileTimeout: NodeJS.Timeout | null = null;
 const lyricMapperSignal = createSignal<LyricMapper>();
-void (async () => {
+export const lyricMapper = lyricMapperSignal[0];
+export const setLyricMapper = (params: Partial<LyricMapper>, useFallback = true) => {
+  const value = {
+    ...lyricMapperSignal[0](),
+    ...params,
+  } as LyricMapper;
+  
+  lyricMapperSignal[1](useFallback ? value : params as LyricMapper);
+
+  if (lyricMapperFileTimeout) clearTimeout(lyricMapperFileTimeout);
+
+  lyricMapperFileTimeout = setTimeout(async () => {
+    lyricMapperFileTimeout = null;
+
+    await fs.writeFile(path.join(defaultConfigDirectory, 'lyrics.json'), JSON.stringify(lyricMapperSignal[0](), null, 2), 'utf-8').catch(() => null);
+  }, 1000);
+};
+(async () => {
   const str = await fs.readFile(path.join(defaultConfigDirectory, 'lyrics.json'), 'utf-8').catch(() => '{}');
   try {
     const lyricMapper = JSON.parse(str);
@@ -147,23 +167,6 @@ void (async () => {
   }
 })();
 
-export const lyricMapper = lyricMapperSignal[0];
-export const setLyricMapper = (params: Partial<LyricMapper>, useFallback = true) => {
-  const value = {
-    ...lyricMapperSignal[0](),
-    ...params,
-  };
-  
-  lyricMapperSignal[1](useFallback ? value : params);
-
-  if (lyricMapperFileTimeout) clearTimeout(lyricMapperFileTimeout);
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  lyricMapperFileTimeout = setTimeout(async () => {
-    lyricMapperFileTimeout = null;
-
-    await fs.writeFile(path.join(defaultConfigDirectory, 'lyrics.json'), JSON.stringify(lyricMapperSignal[0](), null, 2), 'utf-8').catch(() => null);
-  }, 1000);
-};
 
 /* Games */
 export interface GameList {
@@ -172,24 +175,14 @@ export interface GameList {
 
 let gameListFileTimeout: NodeJS.Timeout | null = null;
 const gameListSignal = createSignal<GameList>();
-void (async () => {
-  const str = await fs.readFile(path.join(defaultConfigDirectory, 'gameList.json'), 'utf-8').catch(() => '{}');
-  try {
-    const gameList = JSON.parse(str);
-    gameListSignal[1](gameList as GameList);
-  } catch {
-    setGameList({});
-  }
-})();
-
 export const gameList = gameListSignal[0];
 export const setGameList = (params: Partial<GameList>, useFallback = true) => {
   const value = {
     ...gameListSignal[0](),
     ...params,
-  };
+  } as GameList;
   
-  gameListSignal[1](useFallback ? value : params);
+  gameListSignal[1](useFallback ? value : params as GameList);
 
   if (gameListFileTimeout) clearTimeout(gameListFileTimeout);
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -199,3 +192,12 @@ export const setGameList = (params: Partial<GameList>, useFallback = true) => {
     await fs.writeFile(path.join(defaultConfigDirectory, 'gameList.json'), JSON.stringify(gameListSignal[0](), null, 2), 'utf-8').catch(() => null);
   }, 1000);
 };
+(async () => {
+  const str = await fs.readFile(path.join(defaultConfigDirectory, 'gameList.json'), 'utf-8').catch(() => '{}');
+  try {
+    const gameList = JSON.parse(str);
+    gameListSignal[1](gameList as GameList);
+  } catch {
+    setGameList({});
+  }
+})();

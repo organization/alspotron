@@ -29,7 +29,7 @@ const PositionContainer = () => {
           classList={{
             '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'top-left',
           }}
-          onClick={() => void setConfig({ windowPosition: { anchor: 'top-left' } })}
+          onClick={() => setConfig({ windowPosition: { anchor: 'top-left' } })}
         >
           왼쪽 위
         </Card>
@@ -38,7 +38,7 @@ const PositionContainer = () => {
           classList={{
             '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'top',
           }}
-          onClick={() => void setConfig({ windowPosition: { anchor: 'top' } })}
+          onClick={() => setConfig({ windowPosition: { anchor: 'top' } })}
         >
           위
         </Card>
@@ -47,7 +47,7 @@ const PositionContainer = () => {
           classList={{
             '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'top-right',
           }}
-          onClick={() => void setConfig({ windowPosition: { anchor: 'top-right' } })}
+          onClick={() => setConfig({ windowPosition: { anchor: 'top-right' } })}
         >
           오른쪽 위
         </Card>
@@ -56,7 +56,7 @@ const PositionContainer = () => {
           classList={{
             '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'left',
           }}
-          onClick={() => void setConfig({ windowPosition: { anchor: 'left' } })}
+          onClick={() => setConfig({ windowPosition: { anchor: 'left' } })}
         >
           왼쪽
         </Card>
@@ -65,7 +65,7 @@ const PositionContainer = () => {
           classList={{
             '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'center',
           }}
-          onClick={() => void setConfig({ windowPosition: { anchor: 'center' } })}
+          onClick={() => setConfig({ windowPosition: { anchor: 'center' } })}
         >
           중앙
         </Card>
@@ -74,7 +74,7 @@ const PositionContainer = () => {
           classList={{
             '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'right',
           }}
-          onClick={() => void setConfig({ windowPosition: { anchor: 'right' } })}
+          onClick={() => setConfig({ windowPosition: { anchor: 'right' } })}
         >
           오른쪽
         </Card>
@@ -83,7 +83,7 @@ const PositionContainer = () => {
           classList={{
             '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'bottom-left',
           }}
-          onClick={() => void setConfig({ windowPosition: { anchor: 'bottom-left' } })}
+          onClick={() => setConfig({ windowPosition: { anchor: 'bottom-left' } })}
         >
           왼쪽 아래
         </Card>
@@ -92,7 +92,7 @@ const PositionContainer = () => {
           classList={{
             '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'bottom',
           }}
-          onClick={() => void setConfig({ windowPosition: { anchor: 'bottom' } })}
+          onClick={() => setConfig({ windowPosition: { anchor: 'bottom' } })}
         >
           아래
         </Card>
@@ -101,7 +101,7 @@ const PositionContainer = () => {
           classList={{
             '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'bottom-right',
           }}
-          onClick={() => void setConfig({ windowPosition: { anchor: 'bottom-right' } })}
+          onClick={() => setConfig({ windowPosition: { anchor: 'bottom-right' } })}
         >
           오른쪽 아래
         </Card>
@@ -114,7 +114,7 @@ const PositionContainer = () => {
         <Selector
           format={(value) => value === 'column' ? '위에서 아래로' : '아래에서 위로'}
           value={config()?.windowPosition?.direction ?? 'column'}
-          onChange={(value) => void setConfig({ windowPosition: { direction: value as 'column' | 'column-reverse' } })}
+          onChange={(value) => setConfig({ windowPosition: { direction: value as 'column' | 'column-reverse' } })}
           options={['column', 'column-reverse']}
           class={'select'}
           popupClass={'p-1 bg-gray-800 rounded'}
@@ -135,7 +135,7 @@ const PositionContainer = () => {
         <Selector
           format={(value) => value === 'true' ? '표시' : '표시안함'}
           value={config()?.style?.nowPlaying?.visible?.toString() ?? 'true'}
-          onChange={(value) => void setConfig({ style: { nowPlaying: { visible: value === 'true' } } })}
+          onChange={(value) => setConfig({ style: { nowPlaying: { visible: value === 'true' } } })}
           options={['true', 'false']}
           class={'select'}
           renderItem={(props, option) => <li
@@ -163,32 +163,32 @@ const PositionContainer = () => {
           type={'number'}
           class={'input'}
           placeholder={'위쪽 여백'}
-          value={config()?.windowPosition.top}
-          onChange={(event) => void setConfig({ windowPosition: { top: Number(event.target.value) } })}
+          value={config()?.windowPosition.top ?? undefined}
+          onChange={(event) => setConfig({ windowPosition: { top: Number(event.target.value) } })}
         />
         <div />
         <input
           type={'number'}
           class={'input'}
           placeholder={'왼쪽 여백'}
-          value={config()?.windowPosition.left}
-          onChange={(event) => void setConfig({ windowPosition: { left: Number(event.target.value) } })}
+          value={config()?.windowPosition.left ?? undefined}
+          onChange={(event) => setConfig({ windowPosition: { left: Number(event.target.value) } })}
         />
         <img src={icon} class={'w-12 h-12 object-contain self-center justify-self-center'} />
         <input
           type={'number'}
           class={'input'}
           placeholder={'오른쪽 여백'}
-          value={config()?.windowPosition.right}
-          onChange={(event) => void setConfig({ windowPosition: { right: Number(event.target.value) } })}
+          value={config()?.windowPosition.right ?? undefined}
+          onChange={(event) => setConfig({ windowPosition: { right: Number(event.target.value) } })}
         />
         <div />
         <input
           type={'number'}
           class={'input'}
           placeholder={'아래쪽 여백'}
-          value={config()?.windowPosition.bottom}
-          onChange={(event) => void setConfig({ windowPosition: { bottom: Number(event.target.value) } })}
+          value={config()?.windowPosition.bottom ?? undefined}
+          onChange={(event) => setConfig({ windowPosition: { bottom: Number(event.target.value) } })}
         />
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { For, JSX, Show, createEffect, createSignal } from 'solid-js';
+
 import Card from '../../components/Card';
 import Marquee from '../../components/Marquee';
 import useGameList from '../../hooks/useGameList';
@@ -32,25 +33,24 @@ const GameListContainer = (props: GameListContainerProps) => {
   };
 
   createEffect(() => {
-    void updateAvailableGameList();
+    updateAvailableGameList();
   });
 
   const onRemoveGame = (path: string) => {
     const list = { ...gameList() };
     delete list[path];
 
-    void setGameList(list, false);
+    setGameList(list, false);
   };
 
   const onSelectGame: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
     if (!event.target.files) return;
 
     const file = event.target.files.item(0);
-    const isEXE = file.path.match(/.*\.exe$/);
+    const isEXE = file?.path.match(/.*\.exe$/);
+    if (!isEXE || !file) return;
 
-    if (!isEXE) return;
-
-    void setGameList({
+    setGameList({
       [file.path]: file.name,
     });
   };
@@ -58,7 +58,7 @@ const GameListContainer = (props: GameListContainerProps) => {
   return (
     <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1 flex justify-start items-center gap-2'}>
-        <span class={'text-3xl opacity-80 hover:opacity-100 '} onClick={props.onBack}>
+        <span class={'text-3xl opacity-80 hover:opacity-100 '} onClick={() => props.onBack?.()}>
           게임
         </span>
         <svg class={'w-4 h-4'} fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

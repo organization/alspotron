@@ -3,6 +3,7 @@ import { useFloating } from 'solid-floating-ui';
 import { For, Show, createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js';
 
 import { Transition } from 'solid-transition-group';
+
 import { cx } from '../utils/classNames';
 
 import type { JSX } from 'solid-js/jsx-runtime';
@@ -62,10 +63,10 @@ const Selector = (props: SelectProps) => {
     const anchorDom = anchor();
     const popperDom = popper();
     
-    anchorDom.addEventListener('transitionstart', () => {
+    anchorDom?.addEventListener('transitionstart', () => {
       position.update();
     }, { once: true });
-    popperDom.addEventListener('transitionstart', () => {
+    popperDom?.addEventListener('transitionstart', () => {
       position.update();
     }, { once: true });
   })
@@ -87,7 +88,7 @@ const Selector = (props: SelectProps) => {
         {...leftProps}
         ref={setAnchor}
         class={cx('input', leftProps.class)}
-        value={keyword() ?? local.format?.(local.value) ?? local.value}
+        value={keyword() ?? local.format?.(local.value ?? '') ?? local.value}
         onInput={(event) => setKeyword(event.target.value)}
         onFocusIn={() => setOpen(true)}
       />
@@ -103,7 +104,7 @@ const Selector = (props: SelectProps) => {
         <Transition name={'selector'}>
           <Show when={open()}>
             <ul
-              style={`width: ${anchor()?.clientWidth}px; ${popup.popupStyle};`}
+              style={`width: ${anchor()?.clientWidth ? `${anchor()?.clientWidth ?? 0}px` : 'fit-content'}; ${popup.popupStyle ?? ''};`}
               class={cx(`
                 w-full max-h-[50vh]
                 flex flex-col justify-start items-start p-1 rounded-lg shadow-[0_0_0_1px_var(--tw-shadow-color),0_4px_8px_var(--tw-shadow-color)] shadow-black/25

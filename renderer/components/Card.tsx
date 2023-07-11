@@ -67,8 +67,8 @@ const Card = (props: CardProps) => {
               <Card
                 class={'hover:!bg-white/[7.5%]'}
                 classList={{
-                  '!rounded-none': index() !== local.subCards.length - 1,
-                  '!rounded-t-none rounded-b': index() === local.subCards.length - 1,
+                  '!rounded-none': index() !== local.subCards!.length - 1,
+                  '!rounded-t-none rounded-b': index() === local.subCards!.length - 1,
                 }}
               >
                 {element}

@@ -9,10 +9,10 @@ import Spinner from '../../components/Spinner';
 
 const InfoContainer = () => {
   const [updateData, setUpdateData] = createSignal<{
-    updateCheckResult: UpdateCheckResult,
+    updateCheckResult: UpdateCheckResult | null,
     compareResult: 0 | 1 | -1,
     currentVersion: string,
-  }>(null);
+  } | null>(null);
 
   const refreshUpdateData = async () => {
     const updateResult = await window.ipcRenderer.invoke('check-update') as UpdateCheckResult;
@@ -33,7 +33,7 @@ const InfoContainer = () => {
     });
   };
 
-  onMount(() => void refreshUpdateData());
+  onMount(() => refreshUpdateData());
 
   const onLink = (url: string) => {
     window.open(url);
@@ -64,7 +64,7 @@ const InfoContainer = () => {
       </Card>
       <Card
         class={'flex flex-row justify-start items-center gap-1'}
-        onClick={() => void refreshUpdateData()}
+        onClick={() => refreshUpdateData()}
         subCards={[
           <div class={'w-full h-full flex justify-start items-center'}>
             <svg class={'w-6 h-6 fill-none mr-4'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -79,26 +79,26 @@ const InfoContainer = () => {
                   </div>
                 )}
               >
-                <Match when={updateData()?.compareResult < 0}>
+                <Match when={(updateData()?.compareResult ?? 0) < 0}>
                   <div class={'text-md'}>
                     새로운 업데이트가 존재합니다
                   </div>
                   <div class={'text-xs text-white/75'}>
-                    최신 버전: {updateData().updateCheckResult.updateInfo.version}
+                    최신 버전: {updateData()?.updateCheckResult?.updateInfo.version}
                   </div>
                 </Match>
-                <Match when={updateData()?.compareResult >= 0}>
+                <Match when={(updateData()?.compareResult ?? 0) >= 0}>
                   <div class={'text-md'}>
                     최신 버전입니다
                   </div>
                   <div class={'text-xs text-white/75'}>
-                    현재 버전: {updateData().currentVersion}
+                    현재 버전: {updateData()?.currentVersion}
                   </div>
                 </Match>
               </Switch>
             </div>
             <div class={'flex-1'} />
-            <button class={'btn-primary'} onClick={() => void refreshUpdateData()}>
+            <button class={'btn-primary'} onClick={() => refreshUpdateData()}>
               새로고침
             </button>
           </div>,

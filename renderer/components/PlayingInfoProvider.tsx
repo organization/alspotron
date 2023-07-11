@@ -1,6 +1,7 @@
 import { OrderedMap } from '@js-sdsl/ordered-map';
 import alsong from 'alsong';
 import { Accessor, createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from 'solid-js';
+
 import IconMusic from '../../assets/icon_music.png';
 import useLyricMapper from '../hooks/useLyricMapper';
 import { UpdateData } from '../types';
@@ -22,7 +23,17 @@ type LyricInfo =
   | { useMapper: boolean, kind: 'alsong', data: Lyric }
   | { useMapper: boolean, kind: 'default', data: UpdateData };
 
-const PlayingInfoContext = createContext<PlayingInfo>();
+const PlayingInfoContext = createContext<PlayingInfo>({
+  progress: () => 0,
+  duration: () => 0,
+  title: () => 'Not Playing' as const,
+  artist: () => 'N/A' as const,
+  status: () => 'idle' as const,
+  coverUrl: () => IconMusic,
+  lyrics: () => null,
+  originalData: () => null,
+  originalLyric: () => null,
+});
 const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [progress, setProgress] = createSignal(0);
   const [duration, setDuration] = createSignal(0);

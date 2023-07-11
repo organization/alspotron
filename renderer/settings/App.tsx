@@ -1,13 +1,14 @@
 import { Match, Switch, createSignal } from 'solid-js';
 import { Transition } from 'solid-transition-group';
 
-import Layout from '../components/Layout';
 import ListView, { ListItemData } from './components/ListView';
 
 import GameContainer from './containers/GameContainer';
 import InfoContainer from './containers/InfoContainer';
 import PositionContainer from './containers/PositionContainer';
 import ThemeContainer from './containers/ThemeContainer';
+
+import Layout from '../components/Layout';
 
 const TAB_LIST: ListItemData[] = [
   {

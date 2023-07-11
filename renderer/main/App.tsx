@@ -1,12 +1,45 @@
 import { Show } from 'solid-js';
-import PlayingInfoProvider from '../components/PlayingInfoProvider';
-import useConfig from '../hooks/useConfig';
+
 import AnchoredView from './components/AnchoredView';
 import LyricProgressBar from './components/LyricProgressBar';
 import Lyrics from './components/Lyrics';
 
+import useConfig from '../hooks/useConfig';
+import PlayingInfoProvider from '../components/PlayingInfoProvider';
+
 const App = () => {
   const [config] = useConfig();
+
+  const style = () => {
+    const result: Record<string, string> = {};
+    const configData = config();
+    
+    if (configData?.style?.nowPlaying?.maxWidth) result['max-width'] = `${configData.style.nowPlaying.maxWidth}px`;
+    if (configData?.style?.font) result['font-family'] = configData?.style.font;
+    if (configData?.style?.fontWeight) result['font-weight'] = configData?.style.fontWeight;
+    if (configData?.style?.nowPlaying?.color) result['color'] = configData?.style.nowPlaying.color;
+    if (configData?.style?.nowPlaying?.background) result['background-color'] = configData?.style.nowPlaying.background;
+
+    return Object.entries(result).map(([key, value]) => `${key}: ${value};`).join(' ');
+  };
+
+  const textStyle = () => {
+    const result: Record<string, string> = {};
+    const configData = config();
+
+    if (configData?.style?.nowPlaying?.fontSize) result['font-size'] = `${configData.style.nowPlaying.fontSize}px`;
+    
+    return Object.entries(result).map(([key, value]) => `${key}: ${value};`).join(' ');
+  };
+
+  const progressStyle = () => {
+    const result: Record<string, string> = {};
+    const configData = config();
+
+    if (configData?.style?.nowPlaying?.backgroundProgress) result['background-color'] = configData.style.nowPlaying.backgroundProgress;
+
+    return Object.entries(result).map(([key, value]) => `${key}: ${value};`).join(' ');
+  };
 
   return (
     <PlayingInfoProvider>
@@ -14,19 +47,9 @@ const App = () => {
         <Lyrics />
         <Show when={config()?.style?.nowPlaying?.visible ?? true}>
           <LyricProgressBar
-            style={`
-              max-width: ${config()?.style.nowPlaying.maxWidth}px;
-              font-family: ${config()?.style.font};
-              font-weight: ${config()?.style.fontWeight};
-              color: ${config()?.style.nowPlaying.color};
-              background-color: ${config()?.style.nowPlaying.background};
-            `}
-            textStyle={`
-              font-size: ${config()?.style.nowPlaying.fontSize}px;
-            `}
-            progressStyle={`
-              background-color: ${config()?.style.nowPlaying.backgroundProgress};
-            `}
+            style={style()}
+            textStyle={textStyle()}
+            progressStyle={progressStyle()}
           />
         </Show>
       </AnchoredView>

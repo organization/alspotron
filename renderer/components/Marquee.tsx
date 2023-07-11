@@ -1,5 +1,7 @@
 import { Show, children, createSignal, mergeProps, onCleanup, onMount, splitProps } from 'solid-js';
+
 import { cx } from '../utils/classNames';
+
 import type { JSX } from 'solid-js/jsx-runtime';
 
 
@@ -12,12 +14,12 @@ const Marquee = (props: MarqueeProps) => {
   const child1 = children(() => props.children);
   const child2 = children(() => props.children);
 
-  let dom: HTMLDivElement;
+  let dom: HTMLDivElement | undefined;
   let ignore = false;
   const [useMarquee, setUseMarquee] = createSignal(false);
 
   const updateOverflow = () => {
-    const { scrollWidth, clientWidth } = dom;
+    const { scrollWidth, clientWidth } = dom!;
 
     const offset = useMarquee() ? 2 : 1;
     const gap = useMarquee() ? local.gap : 0;
@@ -35,12 +37,12 @@ const Marquee = (props: MarqueeProps) => {
   const observer = new MutationObserver(updateOverflow);
   onMount(() => {
     const limitTime = Date.now() + 3 * 1000;
-    const target = dom?.parentElement ?? dom;
+    const target = dom?.parentElement ?? dom!;
     const tryComputedOverflow = () => {
       if (Date.now() > limitTime) return;
 
       requestAnimationFrame(() => {
-        if (dom.clientWidth === 0) {
+        if (dom!.clientWidth === 0) {
           tryComputedOverflow();
         } else {
           updateOverflow();

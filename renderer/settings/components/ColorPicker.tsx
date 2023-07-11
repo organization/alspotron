@@ -12,11 +12,14 @@ export interface ColorPickerProps extends JSX.InputHTMLAttributes<HTMLInputEleme
 
 const ColorPicker = (props: ColorPickerProps) => {
   const [alpha, setAlpha] = createSignal(0);
+  // eslint-disable-next-line solid/reactivity
   const [color, setColor] = createSignal(props.value);
 
-  let slider: HTMLDivElement;
+  let slider: HTMLDivElement | undefined;
   let rect: DOMRect | null = null;
   const onMoveStart = (event: PointerEvent) => {
+    if (!slider) return;
+
     rect = slider.getBoundingClientRect();
     onMove(event);
 
