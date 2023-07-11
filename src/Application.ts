@@ -384,7 +384,7 @@ class Application {
     ipcMain.handle('get-registered-process-list', () => this.registeredPidList);
     ipcMain.handle('get-icon', (_, path: string) => {
       try {
-        const result = extractIcon(path, 'large');
+        const result = extractIcon(path, 'small');
 
         return `data:image/png;base64,${Buffer.from(result).toString('base64')}`; 
         // return result;
