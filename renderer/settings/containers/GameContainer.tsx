@@ -47,7 +47,7 @@ const GameContainer = () => {
   const onAddGame = (process: ProcessData) => {
     void setGameList({
       [process.path]: process.name,
-    });
+    }).then(() => void window.ipcRenderer.invoke('inject-overlay-to-process', process.pid));
   };
   const onRemoveGame = (path: string) => {
     const list = { ...gameList() };

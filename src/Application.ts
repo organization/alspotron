@@ -82,8 +82,8 @@ class Application {
         deletion: true,
         filterWindowsNoise: true,
       }).then((it) => {
-        it.on('creation', ([name, pid, filePath]) => this.onProcessCreation(name, pid, filePath));
-        it.on('deletion', ([name, pid]) => this.onProcessDeletion(name, pid));
+        it.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
+        it.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
       });
     }
   }
@@ -407,10 +407,10 @@ class Application {
         return;
       }
 
-      this.overlay.injectProcess({
-        processId,
-        windowId: hmc.getProcessHandle(processId).handle,
-      });
+      this.onProcessCreation(processId);
+    });
+    ipcMain.handle('remove-overlay-from-process', (_, processId: number) => {
+      this.onProcessDeletion(processId);
     });
     ipcMain.handle('get-current-version', () => {
       return autoUpdater.currentVersion.version;
@@ -653,7 +653,7 @@ class Application {
     }
   }
   
-  private onProcessCreation(name: string, pid: number, filePath?: string) {
+  private onProcessCreation(pid: number, name?: string, filePath?: string) {
     const gamePathList = Object.keys(gameList());
 
     if (gamePathList.includes(filePath)) {
@@ -694,7 +694,7 @@ class Application {
       tryToInject();
     }
   }
-  private onProcessDeletion(name: string, pid: number) {
+  private onProcessDeletion(pid: number, name?: string) {
     const index = this.registeredPidList.findIndex((it) => it === Number(pid));
     if (index >= 0) this.registeredPidList.splice(index, 1);
 
