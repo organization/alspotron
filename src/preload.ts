@@ -1,9 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // https://github.com/ch99q/vite-solid-electron/blob/master/packages/preload/index.ts
+
+import fs from 'fs';
 
 import { contextBridge, ipcRenderer } from 'electron';
 import { getFonts } from 'font-list';
 import { hmc } from 'hmc-win32';
-import fs from 'fs';
 
 const withPrototype = (obj: Record<string, any>) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

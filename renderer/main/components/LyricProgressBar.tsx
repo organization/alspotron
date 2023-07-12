@@ -1,8 +1,10 @@
 import { createEffect, createSignal, splitProps } from 'solid-js';
+
 import icon from '../../../assets/icon_music.png';
 import Marquee from '../../components/Marquee';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import { cx } from '../../utils/classNames';
+
 import type { JSX } from 'solid-js/jsx-runtime';
 
 interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
@@ -24,8 +26,8 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
   );
   const [progressTransition, setProgressTransition] = createSignal(false);
 
-  let percent: number = 0;
-  let oldPercent: number = 0;
+  let percent = 0;
+  let oldPercent = 0;
 
   createEffect(() => {
     oldPercent = percent;
@@ -44,7 +46,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
         --percent: ${progress() / duration() * 100}%;
         opacity: ${status() === 'stopped' ? 0.5 : 1};
         will-change: opacity, transform;
-        ${style.style}
+        ${style.style ?? ''}
       `}
       class={cx(
         `

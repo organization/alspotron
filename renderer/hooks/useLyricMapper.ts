@@ -1,10 +1,11 @@
 import { createSignal } from 'solid-js';
+
 import { LyricMapper } from '../../src/config';
 
 const useLyricMapper = () => {
   const [lyricMapper, setLyricMapper] = createSignal<LyricMapper>({});
 
-  void (async () => {
+  (async () => {
     const result = await window.ipcRenderer.invoke('get-lyric-mapper') as LyricMapper;
 
     setLyricMapper(result || {});

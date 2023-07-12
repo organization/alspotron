@@ -1,7 +1,8 @@
+import fs from 'fs';
+
 import { ipcRenderer as electronIpcRenderer } from 'electron';
 import { getFonts } from 'font-list';
 import hmc from 'hmc-win32';
-import fs from 'fs';
 
 declare global {
   interface Window {

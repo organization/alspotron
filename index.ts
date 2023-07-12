@@ -4,7 +4,7 @@ import Application from './src/Application';
 
 const application = new Application();
 
-void (async () => {
+(async () => {
   await app.whenReady();
 
   application.initAutoUpdater();

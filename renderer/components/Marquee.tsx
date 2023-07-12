@@ -1,5 +1,7 @@
 import { Show, children, createSignal, mergeProps, onCleanup, onMount, splitProps } from 'solid-js';
+
 import { cx } from '../utils/classNames';
+
 import type { JSX } from 'solid-js/jsx-runtime';
 
 
@@ -12,7 +14,7 @@ const Marquee = (props: MarqueeProps) => {
   const child1 = children(() => props.children);
   const child2 = children(() => props.children);
 
-  let dom: HTMLDivElement;
+  let dom!: HTMLDivElement;
   let ignore = false;
   const [useMarquee, setUseMarquee] = createSignal(false);
 
@@ -27,14 +29,14 @@ const Marquee = (props: MarqueeProps) => {
     ignore = false;
 
     if (newValue !== useMarquee() && shouldChange) {
-      setUseMarquee(!!newValue);
+      setUseMarquee(newValue);
 
       ignore = true;
     }
   }
   const observer = new MutationObserver(updateOverflow);
   onMount(() => {
-    const limitTime = Date.now() + 3 * 1000;
+    const limitTime = Date.now() + (3 * 1000);
     const target = dom?.parentElement ?? dom;
     const tryComputedOverflow = () => {
       if (Date.now() > limitTime) return;

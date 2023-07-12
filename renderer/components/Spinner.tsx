@@ -1,5 +1,7 @@
 import { mergeProps, splitProps } from 'solid-js';
+
 import { cx } from '../utils/classNames'
+
 import type { JSX } from 'solid-js/jsx-runtime';
 
 export interface SpinnerProps extends JSX.HTMLAttributes<HTMLDivElement> {

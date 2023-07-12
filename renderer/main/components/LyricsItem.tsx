@@ -1,4 +1,4 @@
-import { createSignal, onMount, splitProps } from 'solid-js';
+import { createMemo, createSignal, mergeProps, onMount, splitProps } from 'solid-js';
 
 import { cx } from '../../utils/classNames';
 
@@ -11,13 +11,17 @@ export interface LyricsItemProps extends JSX.HTMLAttributes<HTMLDivElement> {
 }
 
 const LyricsItem = (props: LyricsItemProps) => {
-  const [local, leftProps] = splitProps(props, ['status', 'delay']);
+  const [local, leftProps] = splitProps(
+    // eslint-disable-next-line solid/reactivity
+    mergeProps({ delay: 0 }, props),
+    ['status', 'delay'],
+  );
 
-  let dom: HTMLDivElement;
+  let dom!: HTMLDivElement;
 
   const [init, setInit] = createSignal(false);
 
-  const style = () => {
+  const style = createMemo(() => {
     if (!init()) return `transition-delay: ${225 + (local.delay * 75)}ms;`;
 
     return `
@@ -25,7 +29,7 @@ const LyricsItem = (props: LyricsItemProps) => {
       transition-delay: ${local.delay * 75}ms;
       scale: ${local.status === 'stopped' ? '0.95' : '1'};
     `;
-  };
+  });
 
   onMount(() => {
     dom.addEventListener('transitionend', () => {
@@ -38,7 +42,6 @@ const LyricsItem = (props: LyricsItemProps) => {
     <div
       {...leftProps}
       ref={dom}
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       style={local.status === 'stopped' ? `${style()} opacity: 0.5; ${props.style as string}` : `${style()}; ${props.style as string}`}
       class={cx(`
         py-1 px-2 whitespace-pre-line text-center

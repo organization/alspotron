@@ -28,7 +28,7 @@ const SideBar = () => {
   createEffect(() => {
     const time = lyricTime();
 
-    document.querySelector(`#lyric-${time}`)?.scrollIntoView({
+    document.querySelector(`#lyric-${time ?? '0'}`)?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
     });
@@ -39,7 +39,7 @@ const SideBar = () => {
       [`${title()}:${coverUrl()}`]: undefined,
     };
 
-    void setLyricMapper(newMapper);
+    setLyricMapper(newMapper);
   };
 
   const isMappedLyric = () => originalLyric()?.useMapper ?? false;

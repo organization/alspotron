@@ -1,6 +1,7 @@
 import { OrderedMap } from '@js-sdsl/ordered-map';
 import alsong from 'alsong';
 import { Accessor, createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from 'solid-js';
+
 import IconMusic from '../../assets/icon_music.png';
 import useLyricMapper from '../hooks/useLyricMapper';
 import { UpdateData } from '../types';
@@ -22,7 +23,17 @@ type LyricInfo =
   | { useMapper: boolean, kind: 'alsong', data: Lyric }
   | { useMapper: boolean, kind: 'default', data: UpdateData };
 
-const PlayingInfoContext = createContext<PlayingInfo>();
+const PlayingInfoContext = createContext<PlayingInfo>({
+  progress: () => 0,
+  duration: () => 0,
+  title: () => 'Not Playing' as const,
+  artist: () => 'N/A' as const,
+  status: () => 'idle' as const,
+  coverUrl: () => IconMusic,
+  lyrics: () => null,
+  originalData: () => null,
+  originalLyric: () => null,
+});
 const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [progress, setProgress] = createSignal(0);
   const [duration, setDuration] = createSignal(0);
@@ -42,9 +53,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     setOriginalData(data);
     setStatus(data.status);
 
-    if (typeof data.title === 'string') {
-      setTitle(data.title);
-    }
+    setTitle(data.title);
 
     if (Array.isArray(data.artists)) {
       setArtist(data.artists.join(', '));
@@ -77,17 +86,17 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     const id: number | undefined = mapper[`${data.title}:${data.cover_url}`];
     const lyricInfo = await (async () => {
       const alsongLyric = (
-        typeof id === 'number'
+        id
           ? await window.ipcRenderer.invoke('get-lyric-by-id', id) as (Lyric | null)
           : await window.ipcRenderer.invoke('get-lyric', data) as Lyric
       );
 
       if (alsongLyric) {
-        return { useMapper: typeof id === 'number', kind: 'alsong', data: alsongLyric } as const;
+        return { useMapper: !!id, kind: 'alsong', data: alsongLyric } as const;
       }
 
       if (data.lyric) {
-        return { useMapper: typeof id === 'number', kind: 'default', data } as const;
+        return { useMapper: !!id, kind: 'default', data } as const;
       }
 
       return null;

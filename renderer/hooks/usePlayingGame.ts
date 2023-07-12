@@ -3,7 +3,7 @@ import { createMemo, createSignal } from 'solid-js';
 const usePlayingGame = () => {
   const [gameList, setGameList] = createSignal<number[]>([]);
 
-  void (async () => {
+  (async () => {
     const result = await window.ipcRenderer.invoke('get-registered-process-list') as number[];
 
     setGameList(result || []);

@@ -1,9 +1,11 @@
-import { For } from 'solid-js';
+import { For, createMemo } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group'
+
+import LyricsItem from './LyricsItem'
+
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import useConfig from '../../hooks/useConfig';
 import useLyric from '../../hooks/useLyric';
-import LyricsItem from './LyricsItem'
 
 const Lyrics = () => {
   const [config] = useConfig();
@@ -12,6 +14,21 @@ const Lyrics = () => {
 
   const animation = () => config()?.style?.animation ?? 'pretty';
 
+  const style = createMemo(() => {
+    const result: Record<string, string> = {
+      'text-align': 'var(--text-align)',
+    };
+    const configData = config();
+    
+    if (configData?.style?.font) result['font-family'] = configData?.style.font;
+    if (configData?.style?.fontWeight) result['font-weight'] = configData?.style.fontWeight;
+    if (configData?.style?.lyric?.fontSize) result['font-size'] = `${configData.style.lyric.fontSize}px`;
+    if (configData?.style?.lyric?.color) result['color'] = configData?.style.lyric.color;
+    if (configData?.style?.lyric?.background) result['background-color'] = configData?.style.lyric.background;
+
+    return Object.entries(result).map(([key, value]) => `${key}: ${value};`).join(' ');
+  });
+
   return (
     <TransitionGroup name={`lyric-${animation()}`}>
       <For each={lyric() ?? []}>
@@ -19,14 +36,7 @@ const Lyrics = () => {
           <LyricsItem
             status={status()}
             delay={animation() === 'none' ? 0 : index()}
-            style={`
-              font-family: ${config()?.style.font};
-              font-weight: ${config()?.style.fontWeight};
-              font-size: ${config()?.style.lyric.fontSize}px;
-              color: ${config()?.style.lyric.color};
-              background-color: ${config()?.style.lyric.background};
-              text-align: var(--text-align);
-            `}
+            style={style()}
           >
             {item}
           </LyricsItem>
