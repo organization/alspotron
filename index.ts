@@ -17,4 +17,8 @@ void (async () => {
   application.mainWindow.show();
 
   console.log('[Alspotron] App is ready');
+
+  setTimeout(() => {
+    application.injectOverlay();
+  }, 10000);
 })();
