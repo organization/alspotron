@@ -37,7 +37,6 @@ app.commandLine.appendSwitch('enable-transparent-visuals');
 class Application {
   private tray: Tray;
   private app: Koa;
-  private electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
   private overlay!: Overlay;
   private markQuit = false;
   private scaleFactor = 1.0;
@@ -82,11 +81,13 @@ class Application {
         it.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
       });
 
+
+      const electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       this.overlay = require(
         app.isPackaged ?
-          path.join(process.resourcesPath, `./assets/overlay/${this.electronOverlayWithArch}`) :
-          path.join('../../', `./assets/overlay/${this.electronOverlayWithArch}`),
+          path.join(process.resourcesPath, `./assets/overlay/${electronOverlayWithArch}`) :
+          path.join('../../', `./assets/overlay/${electronOverlayWithArch}`),
       ) as Overlay;
     }
   }
