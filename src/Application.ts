@@ -38,12 +38,7 @@ class Application {
   private tray: Tray;
   private app: Koa;
   private electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  private overlay: Overlay = require(
-    app.isPackaged ?
-      path.join(process.resourcesPath, `./assets/overlay/${this.electronOverlayWithArch}`) :
-      path.join('../../', `./assets/overlay/${this.electronOverlayWithArch}`),
-  ) as Overlay;
+  private overlay!: Overlay;
   private markQuit = false;
   private scaleFactor = 1.0;
 
@@ -86,6 +81,13 @@ class Application {
         it.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
         it.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
       });
+
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      this.overlay = require(
+        app.isPackaged ?
+          path.join(process.resourcesPath, `./assets/overlay/${this.electronOverlayWithArch}`) :
+          path.join('../../', `./assets/overlay/${this.electronOverlayWithArch}`),
+      ) as Overlay;
     }
   }
 
