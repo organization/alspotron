@@ -45,7 +45,6 @@ class Application {
   ) as Overlay;
   private markQuit = false;
   private scaleFactor = 1.0;
-  private isOverlayRunning = false;
 
   public mainWindow: BrowserWindow;
   public overlayWindow: BrowserWindow;
@@ -362,13 +361,11 @@ class Application {
   initOverlay() {
     this.initOverlayWindow();
     this.overlay.start();
-    this.isOverlayRunning = true;
   }
 
   stopOverlay() {
     this.removeOverlayWindow();
     this.overlay.stop();
-    this.isOverlayRunning = false;
   }
 
   broadcast<T>(event: string, ...args: T[]) {
