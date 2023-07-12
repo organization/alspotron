@@ -75,7 +75,7 @@ class Application {
 
   constructor() {
     if (process.platform === 'win32') {
-      void WQLAsync.subscribe({
+      WQLAsync.subscribe({
         creation: true,
         deletion: true,
         filterWindowsNoise: true,
