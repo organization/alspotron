@@ -37,11 +37,12 @@ app.commandLine.appendSwitch('enable-transparent-visuals');
 class Application {
   private tray: Tray;
   private app: Koa;
+  private electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   private overlay: Overlay = require(
     app.isPackaged ?
-      path.join(process.resourcesPath, './assets/overlay/electron-overlay.node') :
-      path.join('../../', './assets/overlay/electron-overlay.node'),
+      path.join(process.resourcesPath, `./assets/overlay/${this.electronOverlayWithArch}`) :
+      path.join('../../', `./assets/overlay/${this.electronOverlayWithArch}`),
   ) as Overlay;
   private markQuit = false;
   private scaleFactor = 1.0;
