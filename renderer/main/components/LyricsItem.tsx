@@ -17,7 +17,7 @@ const LyricsItem = (props: LyricsItemProps) => {
     ['status', 'delay'],
   );
 
-  let dom: HTMLDivElement | undefined;
+  let dom!: HTMLDivElement;
 
   const [init, setInit] = createSignal(false);
 
@@ -25,15 +25,15 @@ const LyricsItem = (props: LyricsItemProps) => {
     if (!init()) return `transition-delay: ${225 + (local.delay * 75)}ms;`;
 
     return `
-      top: ${dom!.offsetTop}px;
+      top: ${dom.offsetTop}px;
       transition-delay: ${local.delay * 75}ms;
       scale: ${local.status === 'stopped' ? '0.95' : '1'};
     `;
   });
 
   onMount(() => {
-    dom!.addEventListener('transitionend', () => {
-      dom!.style.willChange = 'auto';
+    dom.addEventListener('transitionend', () => {
+      dom.style.willChange = 'auto';
       setInit(true);
     }, { once: true });
   });

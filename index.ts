@@ -14,7 +14,7 @@ const application = new Application();
 
   application.initMainWindow();
 
-  application.mainWindow?.show();
+  application.mainWindow.show();
 
   console.log('[Alspotron] App is ready');
 })();

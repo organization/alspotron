@@ -38,8 +38,8 @@ const micaOptions = {
 app.commandLine.appendSwitch('enable-transparent-visuals');
 
 class Application {
-  private tray: Tray | null = null;
-  private app: Koa | null = null;
+  private tray!: Tray;
+  private app!: Koa;
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   private overlay: Overlay = require(
@@ -50,7 +50,7 @@ class Application {
   private markQuit = false;
   private scaleFactor = 1.0;
 
-  public mainWindow: BrowserWindow | null = null;
+  public mainWindow!: BrowserWindow;
   public overlayWindow: BrowserWindow | null = null;
   public settingsWindow: BrowserWindow | null = null;
   public lyricsWindow: BrowserWindow | null = null;
@@ -175,7 +175,7 @@ class Application {
           {
             label: '가사 표시기 창',
             click: () => {
-              this.mainWindow?.webContents.openDevTools({ mode: 'detach' });
+              this.mainWindow.webContents.openDevTools({ mode: 'detach' });
             },
           },
           {
@@ -303,7 +303,7 @@ class Application {
     });
 
     window.webContents.on('cursor-changed', (_, type) => {
-      let cursor: string;
+      let cursor: string | null;
 
       if (type === 'default') cursor = 'IDC_ARROW';
       else if (type === 'pointer') cursor = 'IDC_HAND';
@@ -316,7 +316,8 @@ class Application {
       else if (type === 'nesw-resize') cursor = 'IDC_SIZENESW';
       else if (type === 'ns-resize') cursor = 'IDC_SIZENS';
       else if (type === 'ew-resize') cursor = 'IDC_SIZEWE';
-      else cursor = '';
+      else if (type === 'none') cursor = '';
+      else cursor = null;
 
       if (cursor) this.overlay.sendCommand({ command: 'cursor', cursor });
     });

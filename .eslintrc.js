@@ -49,6 +49,7 @@ module.exports = {
       },
     ],
     'max-len': 'off',
+    'no-mixed-operators': 'error',
     'no-multi-spaces': ['error', { ignoreEOLComments: true }],
     'no-tabs': 'error',
     'no-void': 'error',

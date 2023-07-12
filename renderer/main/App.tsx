@@ -13,12 +13,21 @@ const App = () => {
   const style = () => {
     const result: Record<string, string> = {};
     const configData = config();
-    
-    if (configData?.style?.nowPlaying?.maxWidth) result['max-width'] = `${configData.style.nowPlaying.maxWidth}px`;
-    if (configData?.style?.font) result['font-family'] = configData?.style.font;
-    if (configData?.style?.fontWeight) result['font-weight'] = configData?.style.fontWeight;
-    if (configData?.style?.nowPlaying?.color) result['color'] = configData?.style.nowPlaying.color;
-    if (configData?.style?.nowPlaying?.background) result['background-color'] = configData?.style.nowPlaying.background;
+
+    if (configData?.style) {
+      const styleData = configData.style;
+
+      if (styleData.nowPlaying) {
+        const nowPlayingData = styleData.nowPlaying;
+
+        if (nowPlayingData.maxWidth) result['max-width'] = `${nowPlayingData.maxWidth}px`;
+        if (nowPlayingData.color) result['color'] = nowPlayingData.color;
+        if (nowPlayingData.background) result['background-color'] = nowPlayingData.background;
+      }
+
+      if (styleData.font) result['font-family'] = styleData.font;
+      if (styleData.fontWeight) result['font-weight'] = styleData.fontWeight;
+    }
 
     return Object.entries(result).map(([key, value]) => `${key}: ${value};`).join(' ');
   };
