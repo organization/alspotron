@@ -173,6 +173,15 @@ export interface GameList {
 let gameListFileTimeout: NodeJS.Timeout | null = null;
 const gameListSignal = createSignal<GameList>();
 
+(() => {
+  try {
+    const gameList = JSON.parse(readFileSync(path.join(defaultConfigDirectory, 'gameList.json'), 'utf-8'));
+    gameListSignal[1](gameList as GameList);
+  } catch {
+    setGameList({});
+  }
+})();
+
 export const gameList = gameListSignal[0];
 export const setGameList = (params: Partial<GameList>, useFallback = true) => {
   const value = {
@@ -190,10 +199,3 @@ export const setGameList = (params: Partial<GameList>, useFallback = true) => {
     await fs.writeFile(path.join(defaultConfigDirectory, 'gameList.json'), JSON.stringify(gameListSignal[0](), null, 2), 'utf-8').catch(() => null);
   }, 1000);
 };
-
-try {
-  const gameList = JSON.parse(readFileSync(path.join(defaultConfigDirectory, 'gameList.json'), 'utf-8'));
-  gameListSignal[1](gameList as GameList);
-} catch {
-  setGameList({});
-}
