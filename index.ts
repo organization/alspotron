@@ -15,6 +15,7 @@ const application = new Application();
   application.initMainWindow();
 
   application.mainWindow.show();
+  application.injectOverlay();
 
   console.log('[Alspotron] App is ready');
 })();

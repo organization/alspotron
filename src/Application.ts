@@ -40,13 +40,7 @@ app.commandLine.appendSwitch('enable-transparent-visuals');
 class Application {
   private tray!: Tray;
   private app!: Koa;
-
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  private overlay: Overlay = require(
-    app.isPackaged ?
-      path.join(process.resourcesPath, './assets/overlay/electron-overlay.node') :
-      path.join('../../', './assets/overlay/electron-overlay.node'),
-  ) as Overlay;
+  private overlay!: Overlay;
   private markQuit = false;
   private scaleFactor = 1.0;
 
@@ -81,16 +75,22 @@ class Application {
 
   constructor() {
     if (process.platform === 'win32') {
-      (async () => {
-        const listener = await WQLAsync.subscribe({
-          creation: true,
-          deletion: true,
-          filterWindowsNoise: true,
-        });
+      void WQLAsync.subscribe({
+        creation: true,
+        deletion: true,
+        filterWindowsNoise: true,
+      }).then((it) => {
+        it.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
+        it.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
+      });
 
-        listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
-        listener.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
-      })();
+      const electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      this.overlay = require(
+        app.isPackaged ?
+          path.join(process.resourcesPath, `./assets/overlay/${electronOverlayWithArch}`) :
+          path.join('../../', `./assets/overlay/${electronOverlayWithArch}`),
+      ) as Overlay;
     }
   }
 
@@ -281,12 +281,7 @@ class Application {
       );
     });
 
-    window.on('ready-to-show', () => {
-      window.focusOnWebView();
-    });
-
     window.on('resize', () => {
-      console.log(`${name} resizing`)
       this.overlay.sendWindowBounds(window.id, {
         rect: {
           x: window.getBounds().x,
@@ -410,7 +405,12 @@ class Application {
       this.broadcast('config', config());
 
       this.updateWindowConfig(this.mainWindow);
-      if (process.platform === 'win32') this.updateWindowConfig(this.overlayWindow);
+      if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
+        this.overlayWindow.close();
+        this.updateWindowConfig(this.overlayWindow);
+        this.initOverlayWindow();
+        this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
+      }
     });
     ipcMain.handle('get-config', () => config());
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
@@ -610,6 +610,15 @@ class Application {
     }
   }
 
+  injectOverlay() {
+    const windowList = this.overlay.getTopWindows(true);
+    hmc.getDetailsProcessList()
+      .filter(({ pid }) => windowList.some((window) => window.processId === pid))
+      .forEach(({ pid, name, path }) => {
+        this.onProcessCreation(pid, name, path);
+      })
+  }
+  
   private onProcessCreation(pid: number, name?: string, filePath?: string) {
     const gamePathList = Object.keys(gameList() ?? {});
 
@@ -620,7 +629,7 @@ class Application {
         tryCount += 1;
         if (tryCount > 20) return;
 
-        const isInit = Number(hmc.getForegroundWindowProcessID()) === Number(pid);
+        const isInit = this.overlay.getTopWindows(true).some((window) => window.processId == pid);
         if (isInit) {
           if (this.registeredPidList.length == 0) {
             this.scaleFactor = screen.getDisplayNearestPoint({
