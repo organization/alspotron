@@ -53,9 +53,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     setOriginalData(data);
     setStatus(data.status);
 
-    if (typeof data.title === 'string') {
-      setTitle(data.title);
-    }
+    setTitle(data.title);
 
     if (Array.isArray(data.artists)) {
       setArtist(data.artists.join(', '));
@@ -88,17 +86,17 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     const id: number | undefined = mapper[`${data.title}:${data.cover_url}`];
     const lyricInfo = await (async () => {
       const alsongLyric = (
-        typeof id === 'number'
+        id
           ? await window.ipcRenderer.invoke('get-lyric-by-id', id) as (Lyric | null)
           : await window.ipcRenderer.invoke('get-lyric', data) as Lyric
       );
 
       if (alsongLyric) {
-        return { useMapper: typeof id === 'number', kind: 'alsong', data: alsongLyric } as const;
+        return { useMapper: !!id, kind: 'alsong', data: alsongLyric } as const;
       }
 
       if (data.lyric) {
-        return { useMapper: typeof id === 'number', kind: 'default', data } as const;
+        return { useMapper: !!id, kind: 'default', data } as const;
       }
 
       return null;

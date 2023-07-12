@@ -60,12 +60,24 @@ export declare namespace IOverlay {
         injectSucceed: boolean;
     }
 
+    export interface ITranslateInputEvent {
+      type: 'keyDown' | 'keyUp' | 'char' | 'mouseDown' | 'mouseUp' | 'mouseMove' | 'mouseWheel';
+      keyCode?: string;
+      modifiers: string[];
+      clickCount?: number;
+      deltaY?: number;
+      canScroll?: boolean;
+      x?: number;
+      y?: number;
+      button?: 'left' | 'right' | 'middle';
+    }
+
     export function getTopWindows(includeMinimized?: boolean): IWindow[];
     export function injectProcess(process: IWindow): IInjectResult;
 
     export function start(): void;
     export function stop(): void;
-    export function setEventCallback(cb: (event: string, ...args: any[]) => void): void;
+    export function setEventCallback<T extends unknown[]>(cb: (event: string, ...args: T) => void): void;
     export function setHotkeys(hotkeys: IHotkey[]): void;
     export function sendCommand(arg: {command: 'cursor', cursor: string}): void;
     export function sendCommand(arg: {command: 'fps', showfps: boolean, position: FpsPosition}): void;
@@ -74,5 +86,5 @@ export declare namespace IOverlay {
     export function closeWindow(windowId: number): void;
     export function sendWindowBounds(windowId: number, details: {rect: IRectangle}): void;
     export function sendFrameBuffer(windowId: number, buffer: Buffer, width: number, height: number): void;
-    export function translateInputEvent(event: {windowId: number, msg: number, wparam: number, lparam: number}): any;
+    export function translateInputEvent(event: {windowId: number, msg: number, wparam: number, lparam: number}): ITranslateInputEvent | undefined;
 }

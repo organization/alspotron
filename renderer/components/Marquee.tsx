@@ -29,7 +29,7 @@ const Marquee = (props: MarqueeProps) => {
     ignore = false;
 
     if (newValue !== useMarquee() && shouldChange) {
-      setUseMarquee(!!newValue);
+      setUseMarquee(newValue);
 
       ignore = true;
     }
