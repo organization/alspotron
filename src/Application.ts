@@ -577,7 +577,6 @@ class Application {
     if (this.settingsWindow instanceof MicaBrowserWindow) {
       this.settingsWindow.setDarkTheme();
       this.settingsWindow.setMicaEffect();
-      this.settingsWindow.show();
     }
 
     this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -591,6 +590,8 @@ class Application {
     } else {
       this.settingsWindow.loadURL('http://localhost:5173/settings.html');
     }
+
+    this.settingsWindow.show();
   }
 
   initLyricsWindow() {
@@ -614,7 +615,6 @@ class Application {
     if (this.lyricsWindow instanceof MicaBrowserWindow) {
       this.lyricsWindow.setDarkTheme();
       this.lyricsWindow.setMicaEffect();
-      this.lyricsWindow.show();
     }
 
     if (app.isPackaged) {
@@ -622,6 +622,8 @@ class Application {
     } else {
       this.lyricsWindow.loadURL('http://localhost:5173/lyrics.html');
     }
+
+    this.lyricsWindow.show();
   }
 
   injectOverlay() {
