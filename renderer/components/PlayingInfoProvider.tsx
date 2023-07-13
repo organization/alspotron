@@ -1,4 +1,4 @@
-import { OrderedMap } from '@js-sdsl/ordered-map';
+import tstl from 'tstl';
 import alsong from 'alsong';
 import { Accessor, createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from 'solid-js';
 
@@ -14,7 +14,7 @@ type PlayingInfo = {
   artist: Accessor<string>;
   status: Accessor<'idle' | 'playing' | 'stopped'>;
   coverUrl: Accessor<string>;
-  lyrics: Accessor<OrderedMap<number, string[]> | null>;
+  lyrics: Accessor<tstl.experimental.FlatMap<number, string[]> | null>;
   originalData: Accessor<UpdateData | null>;
   originalLyric: Accessor<LyricInfo | null>;
 };
@@ -41,7 +41,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [artist, setArtist] = createSignal('N/A');
   const [status, setStatus] = createSignal('idle');
   const [coverUrl, setCoverUrl] = createSignal<string>();
-  const [lyrics, setLyrics] = createSignal<OrderedMap<number, string[]> | null>(null);
+  const [lyrics, setLyrics] = createSignal<tstl.experimental.FlatMap<number, string[]> | null>(null);
   const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
   const [originalLyric, setOriginalLyric] = createSignal<LyricInfo | null>(null);
 
@@ -104,11 +104,10 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
 
     setOriginalLyric(lyricInfo);
     if (lyricInfo?.data.lyric) {
-      const treeMap = new OrderedMap<number, string[]>();
-      const iter = treeMap.begin();
+      const treeMap = new tstl.experimental.FlatMap<number, string[]>();
 
       for (const key in lyricInfo.data.lyric) {
-        treeMap.setElement(~~key, lyricInfo.data.lyric[key], iter);
+        treeMap.emplace(~~key, lyricInfo.data.lyric[key]);
       }
 
       setLyrics(treeMap);

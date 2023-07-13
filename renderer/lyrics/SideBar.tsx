@@ -20,7 +20,12 @@ const SideBar = () => {
   const lyricItems = createMemo(() => {
     const items: [number, string[]][] = [];
 
-    lyrics()?.forEach((item) => items.push(item));
+    const tempLyrics = lyrics();
+    if (tempLyrics !== null) {
+      for (let it = tempLyrics.begin(); it !== tempLyrics.end(); it = it.next()) {
+        items.push([it.first, it.second]);
+      }
+    }
 
     return items;
   });
