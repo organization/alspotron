@@ -102,8 +102,8 @@ class Application {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       this.overlay = require(
         app.isPackaged ?
-          path.join(process.resourcesPath, `./assets/overlay/${electronOverlayWithArch}`) :
-          path.join('../../', `./assets/overlay/${electronOverlayWithArch}`),
+          path.join(process.resourcesPath, `./assets/${electronOverlayWithArch}`) :
+          path.join('../../', `./assets/${electronOverlayWithArch}`),
       ) as Overlay;
     }
   }
