@@ -13,7 +13,7 @@ const useLyric = () => {
 
     const last = tempLyrics.lower_bound(progress() + (BIAS + TRANSITION_DURATION));
 
-    if (!last.equals(tempLyrics.begin()) && last !== tempLyrics.begin()) {
+    if (!last.equals(tempLyrics.begin())) {
       return last.prev();
     }
 

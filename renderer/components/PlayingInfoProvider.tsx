@@ -1,4 +1,4 @@
-import tstl from 'tstl';
+import { FlatMap } from 'tstl/experimental';
 import alsong from 'alsong';
 import { Accessor, createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from 'solid-js';
 
@@ -14,7 +14,7 @@ type PlayingInfo = {
   artist: Accessor<string>;
   status: Accessor<'idle' | 'playing' | 'stopped'>;
   coverUrl: Accessor<string>;
-  lyrics: Accessor<tstl.experimental.FlatMap<number, string[]> | null>;
+  lyrics: Accessor<FlatMap<number, string[]> | null>;
   originalData: Accessor<UpdateData | null>;
   originalLyric: Accessor<LyricInfo | null>;
 };
@@ -41,7 +41,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [artist, setArtist] = createSignal('N/A');
   const [status, setStatus] = createSignal('idle');
   const [coverUrl, setCoverUrl] = createSignal<string>();
-  const [lyrics, setLyrics] = createSignal<tstl.experimental.FlatMap<number, string[]> | null>(null);
+  const [lyrics, setLyrics] = createSignal<FlatMap<number, string[]> | null>(null);
   const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
   const [originalLyric, setOriginalLyric] = createSignal<LyricInfo | null>(null);
 
@@ -104,7 +104,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
 
     setOriginalLyric(lyricInfo);
     if (lyricInfo?.data.lyric) {
-      const treeMap = new tstl.experimental.FlatMap<number, string[]>();
+      const treeMap = new FlatMap<number, string[]>();
 
       for (const key in lyricInfo.data.lyric) {
         treeMap.emplace(~~key, lyricInfo.data.lyric[key]);

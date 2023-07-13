@@ -17,18 +17,7 @@ const SideBar = () => {
     return lyricInfo?.kind === 'alsong' ? lyricInfo.data : null;
   };
 
-  const lyricItems = createMemo(() => {
-    const items: [number, string[]][] = [];
-
-    const tempLyrics = lyrics();
-    if (tempLyrics !== null) {
-      for (let it = tempLyrics.begin(); it !== tempLyrics.end(); it = it.next()) {
-        items.push([it.first, it.second]);
-      }
-    }
-
-    return items;
-  });
+  const lyricItems = createMemo(() => lyrics()?.toJSON() ?? []);
 
   createEffect(() => {
     const time = lyricTime();
@@ -104,7 +93,7 @@ const SideBar = () => {
       </Card>
       <div class={'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto will-change-scroll'}>
         <For each={lyricItems()}>
-          {([time, value]) => (
+          {({ first: time, second: lyrics }) => (
             <div
               id={`lyric-${time}`}
               class={'my-4 whitespace-pre-line'}
@@ -112,7 +101,7 @@ const SideBar = () => {
                 'text-primary-500': lyricTime() === time,
               }}
             >
-              {value.join('\n')}
+              {lyrics.join('\n')}
             </div>
           )}
         </For>

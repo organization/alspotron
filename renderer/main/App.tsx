@@ -11,7 +11,7 @@ const App = () => {
   const [config] = useConfig();
 
   const style = () => {
-    const result: Record<string, string> = {};
+    let result = '';
     const configData = config();
 
     if (configData?.style) {
@@ -20,34 +20,34 @@ const App = () => {
       if (styleData.nowPlaying) {
         const nowPlayingData = styleData.nowPlaying;
 
-        if (nowPlayingData.maxWidth) result['max-width'] = `${nowPlayingData.maxWidth}px`;
-        if (nowPlayingData.color) result['color'] = nowPlayingData.color;
-        if (nowPlayingData.background) result['background-color'] = nowPlayingData.background;
+        if (nowPlayingData.maxWidth) result += `max-width: ${nowPlayingData.maxWidth}px;`;
+        if (nowPlayingData.color) result += `color: ${nowPlayingData.color};`;
+        if (nowPlayingData.background) result += `background-color: ${nowPlayingData.background};`;
       }
 
-      if (styleData.font) result['font-family'] = styleData.font;
-      if (styleData.fontWeight) result['font-weight'] = styleData.fontWeight;
+      if (styleData.font) result += `font-family: ${styleData.font};`;
+      if (styleData.fontWeight) result += `font-weight: ${styleData.fontWeight};`;
     }
 
-    return Object.entries(result).map(([key, value]) => `${key}: ${value};`).join(' ');
+    return result;
   };
 
   const textStyle = () => {
-    const result: Record<string, string> = {};
+    let result = '';
     const configData = config();
 
-    if (configData?.style?.nowPlaying?.fontSize) result['font-size'] = `${configData.style.nowPlaying.fontSize}px`;
+    if (configData?.style?.nowPlaying?.fontSize) result += `font-size: ${configData.style.nowPlaying.fontSize}px;`;
     
-    return Object.entries(result).map(([key, value]) => `${key}: ${value};`).join(' ');
+    return result;
   };
 
   const progressStyle = () => {
-    const result: Record<string, string> = {};
+    let result = '';
     const configData = config();
 
-    if (configData?.style?.nowPlaying?.backgroundProgress) result['background-color'] = configData.style.nowPlaying.backgroundProgress;
+    if (configData?.style?.nowPlaying?.backgroundProgress) result += `background-color: ${configData.style.nowPlaying.backgroundProgress};`;
 
-    return Object.entries(result).map(([key, value]) => `${key}: ${value};`).join(' ');
+    return result;
   };
 
   return (
