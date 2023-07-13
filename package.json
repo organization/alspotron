@@ -55,7 +55,6 @@
   },
   "dependencies": {
     "@floating-ui/dom": "^1.4.3",
-    "@js-sdsl/ordered-map": "^4.4.1",
     "@koa/cors": "^4.0.0",
     "@popperjs/core": "^2.11.8",
     "alsong": "^3.0.1",
