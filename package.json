@@ -96,6 +96,7 @@
     "asar": true,
     "appId": "me.suyong.alspotron",
     "extends": null,
+    "electronLanguages": ["ko"],
     "files": [
       "dist",
       "!node_modules",
