@@ -8,13 +8,22 @@ import Router from 'koa-router';
 import bodyParser from 'koa-bodyparser';
 import { hmc } from 'hmc-win32';
 import { autoUpdater } from 'electron-updater';
-import { extractIcon } from 'exe-icon-extractor';
-import { promises as WQLAsync } from '@jellybrick/wql-process-monitor';
-import { MicaBrowserWindow, IS_WINDOWS_11 } from 'mica-electron';
+import { IS_WINDOWS_11, MicaBrowserWindow } from 'mica-electron';
 import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
-import { app, BrowserWindow, Menu, dialog, screen, shell, Tray, ipcMain, nativeImage } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, screen, shell, Tray } from 'electron';
 
-import { Config, config, DEFAULT_CONFIG, GameList, gameList, LyricMapper, lyricMapper, setConfig, setGameList, setLyricMapper } from './config';
+import {
+  Config,
+  config,
+  DEFAULT_CONFIG,
+  GameList,
+  gameList,
+  LyricMapper,
+  lyricMapper,
+  setConfig,
+  setGameList,
+  setLyricMapper
+} from './config';
 
 import { getFile } from '../utils/resource';
 
@@ -89,22 +98,27 @@ class Application {
 
   constructor() {
     if (process.platform === 'win32') {
-      WQLAsync.subscribe({
+      // HACK: import statement is not work because Electron's threading model is different from Windows COM's
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const wql = require('@jellybrick/wql-process-monitor') as typeof import('@jellybrick/wql-process-monitor');
+      wql.promises.subscribe({
         creation: true,
         deletion: true,
         filterWindowsNoise: true,
-      }).then((it) => {
-        it.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
-        it.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
+      }).then((listener) => {
+        listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
+        listener.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
       });
 
       const electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      this.overlay = require(
+      const module = { exports: {} };
+      (process as NodeJS.Process & { dlopen: (module: { exports: unknown }, path: string, flags?: unknown) => void }).dlopen(
+        module,
         app.isPackaged ?
           path.join(process.resourcesPath, `./assets/${electronOverlayWithArch}`) :
           path.join(__dirname, '..', `./assets/${electronOverlayWithArch}`),
-      ) as Overlay;
+      );
+      this.overlay = module.exports as Overlay;
     }
   }
 
@@ -114,11 +128,6 @@ class Application {
     autoUpdater.autoDownload = false;
     autoUpdater.on('update-available', async (it) => {
       const downloadLink = 'https://github.com/organization/alspotron/releases/latest';
-      const releaseNote = (
-        typeof it.releaseNotes === 'string'
-          ? it.releaseNotes
-          : it.releaseNotes?.map((it) => it.note)?.join('\n')
-      ) ?? '';
 
       const { response } = await dialog.showMessageBox({
         type: 'info',
@@ -347,14 +356,17 @@ class Application {
 
   initHook() {
     ipcMain.handle('get-registered-process-list', () => this.registeredPidList);
-    ipcMain.handle('get-icon', (_, path: string) => {
-      try {
-        const result = extractIcon(path, 'small');
+    ipcMain.handle('get-icon', async (_, path: string) => {
+      if (process.platform === 'win32') {
+        try {
+          const result = (await import('exe-icon-extractor')).extractIcon(path, 'small');
 
-        return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
-      } catch {}
+          return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
+        } catch {
+        }
 
-      return null;
+        return null;
+      }
     });
     ipcMain.handle('start-overlay', () => {
       this.initOverlay();
