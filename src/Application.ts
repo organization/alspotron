@@ -66,7 +66,7 @@ class Application {
   private overlay!: Overlay;
   private markQuit = false;
   private scaleFactor = 1.0;
-  private lastUpdate: RequestBody;
+  private lastUpdate: RequestBody | null = null;
 
   public mainWindow!: BrowserWindow;
   public overlayWindow: BrowserWindow | null = null;

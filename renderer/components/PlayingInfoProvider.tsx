@@ -74,7 +74,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   };
 
   window.ipcRenderer.on('update', onUpdate);
-  void window.ipcRenderer.invoke('get-last-update').then((update?: { data: UpdateData }) => {
+  window.ipcRenderer.invoke('get-last-update').then((update?: { data: UpdateData }) => {
     if (update) {
       onUpdate(null, update);
     }
