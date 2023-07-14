@@ -107,9 +107,9 @@ const LyricsTransition = (props: LyricTransitionProps) => {
   const LyricsTransitionGroup = (transitionProps: LyricsTransitionGroupProps) => (
     <Show
       when={config()?.style.animationAtOnce}
-      fallback={<LyricsTransitionGroupAllAtOnce {...transitionProps} />}
+      fallback={<LyricsTransitionGroupSequential {...transitionProps} />}
     >
-      <LyricsTransitionGroupSequential {...transitionProps} />
+      <LyricsTransitionGroupAllAtOnce {...transitionProps} />
     </Show>
   );
 

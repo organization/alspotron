@@ -46,20 +46,25 @@ const ThemeContainer = () => {
     return `알 수 없음(${value})`;
   };
 
-  const [animationPreview, setAnimationPreview] = createSignal([
+  const PREVIEW_TEXT_A = [
     '가사 전환 애니메이션 미리보기용 가사입니다',
     'https://github.com/organization/alspotron',
-    '가사 전환 애니메이션을 바꾸는 중간에는 끊길수 있습니다'
-  ]);
+    '가사 전환 애니메이션을 바꾸는 중간에는 끊길수 있습니다',
+  ];
+
+  const PREVIEW_TEXT_B = [
+    '계절이 지나가는 하늘에는',
+    '가을로 가득 차 있습니다.',
+    '나는 아무 걱정도 없이'
+  ];
+
+  const [animationPreview, setAnimationPreview] = createSignal(PREVIEW_TEXT_A);
 
   let interval: NodeJS.Timer | null = null;
   onMount(() => {
     let isTick = false;
     interval = setInterval(() => {
-      const nextPreview = untrack(() => animationPreview()
-        .slice()
-        .map((lyric) => `${lyric}${isTick ? ' ' : ''}`)
-      );
+      const nextPreview = untrack(() => isTick ? PREVIEW_TEXT_A : PREVIEW_TEXT_B);
 
       isTick = !isTick;
       setAnimationPreview(nextPreview);
@@ -166,7 +171,7 @@ const ThemeContainer = () => {
               미리보기
             </div>
             <div class={'relative w-full h-32 flex flex-col justify-start items-start gap-4'}>
-              <LyricsTransition lyrics={animationPreview()} status="playing" />
+              <LyricsTransition class={'w-full'} lyrics={animationPreview()} status="playing" />
             </div>
           </div>,
           <div class={'w-full h-full flex justify-start items-center'}>
@@ -189,7 +194,19 @@ const ThemeContainer = () => {
                 {getAnimationName(option)}
               </li>}
             />
-          </div>
+          </div>,
+          <div class={'w-full h-full flex justify-start items-center'}>
+            <div class={'text-md'}>
+              한번에 전환
+            </div>
+            <div class={'flex-1'} />
+            <input
+              class={'checkbox'}
+              type="checkbox" 
+              checked={config()?.style?.animationAtOnce}
+              onChange={({ target: { checked } }) => setConfig({ style: { animationAtOnce: checked } })}
+            />
+          </div>,
         ]}
       >
         <div class={'text-md'}>

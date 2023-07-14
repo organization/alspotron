@@ -13,7 +13,6 @@ export interface LyricsItemProps extends JSX.HTMLAttributes<HTMLDivElement> {
 }
 
 const LyricsItem = (props: LyricsItemProps) => {
-  const [config] = useConfig();
   const [local, leftProps] = splitProps(props, ['status']);
 
   let dom!: HTMLDivElement;
@@ -27,7 +26,6 @@ const LyricsItem = (props: LyricsItemProps) => {
       top: ${dom.offsetTop}px;
       transition-delay: calc(var(--order) * 75ms);
       scale: ${local.status === 'stopped' ? '0.95' : '1'};
-      opacity: ${local.status !== 'playing' ? config()?.style.lyric.stoppedOpacity : 1};
     `;
   });
 
