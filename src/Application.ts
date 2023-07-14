@@ -409,7 +409,7 @@ class Application {
       return await alsong.getLyricById(metadata[0].lyricId).catch(() => ({ lyric: data.lyrics }));
     });
     ipcMain.handle('search-lyric', async (_, data: { artist: string; title: string; duration?: number; }) => {
-      const result: LyricMetadata[] = await alsong(data.artist, data.title, { playtime: data.duration }).catch(() => []);
+      const result: LyricMetadata[] = await alsong(data.artist, data.title, { playtime: data.duration }).catch((e) => { console.error(e); return []; });
       console.log('search-lyric', result);
 
       return result.map((it) => ({
