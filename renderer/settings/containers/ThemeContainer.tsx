@@ -213,7 +213,18 @@ const ThemeContainer = () => {
           type={'number'}
           class={'input w-48'}
           value={config()?.style.proximityOpacity}
-          onChange={(event) => void setConfig({ style: { proximityOpacity: event.target.valueAsNumber } })}
+          onChange={(event) => setConfig({ style: { proximityOpacity: event.target.valueAsNumber } })}
+        />
+      </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <div class={'text-md'}>
+          마우스 커서 근접 민감도
+        </div>
+        <input
+          type={'number'}
+          class={'input w-48'}
+          value={config()?.style.proximitySensitivity}
+          onChange={(event) => setConfig({ style: { proximitySensitivity: event.target.valueAsNumber } })}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
