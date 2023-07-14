@@ -177,8 +177,7 @@
       "createDesktopShortcut": true
     },
     "publish": {
-      "provider": "github",
-      "repo": "organization/alspotron"
+      "provider": "github"
     },
     "linux": {
       "icon": "assets/icon256.png",
