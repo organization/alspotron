@@ -14,6 +14,8 @@ export interface Config {
     font: string;
     fontWeight: string;
     animation: string;
+    maxHeight: number;
+    proximityOpacity: number;
 
     nowPlaying: {
       color: string;
@@ -22,13 +24,18 @@ export interface Config {
       fontSize: number;
       maxWidth: number;
       visible: boolean;
+      stoppedOpacity: number;
     };
+
     lyric: {
       color: string;
       background: string;
       fontSize: number;
       maxWidth: number;
+      stoppedOpacity: number;
     };
+
+    userCSS: string | null;
   };
 
   windowPosition: {
@@ -48,6 +55,8 @@ export const DEFAULT_CONFIG = {
     font: 'KoPubWorldDotum',
     fontWeight: '400',
     animation: 'pretty',
+    maxHeight: 400,
+    proximityOpacity: 0,
 
     nowPlaying: {
       color: '#FFFFFF',
@@ -56,6 +65,7 @@ export const DEFAULT_CONFIG = {
       fontSize: 11,
       maxWidth: 300,
       visible: true,
+      stoppedOpacity: 0.5,
     },
 
     lyric: {
@@ -63,7 +73,10 @@ export const DEFAULT_CONFIG = {
       background: 'rgba(29, 29, 29, .70)',
       fontSize: 12,
       maxWidth: 700,
-    }
+      stoppedOpacity: 0.5,
+    },
+
+    userCSS: null,
   },
 
   windowPosition: {

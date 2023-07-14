@@ -1,4 +1,4 @@
-import { For, createMemo } from 'solid-js';
+import { createMemo, For, splitProps } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group'
 
 import LyricsItem from './LyricsItem'
@@ -6,13 +6,25 @@ import LyricsItem from './LyricsItem'
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import useConfig from '../../hooks/useConfig';
 import useLyric from '../../hooks/useLyric';
+import { cx } from '../../utils/classNames';
+import { userCSSSelectors, userCSSTransitions } from '../../utils/userCSSSelectors';
 
-const Lyrics = () => {
+import type { JSX } from 'solid-js/jsx-runtime';
+
+const Lyrics = (props: JSX.HTMLAttributes<HTMLDivElement>) => {
   const [config] = useConfig();
+  const [, containerProps] = splitProps(props, ['class']);
   const { status } = usePlayingInfo();
   const [lyric] = useLyric();
 
-  const animation = () => config()?.style?.animation ?? 'pretty';
+  const animation = () => {
+    const configuredName = config()?.style?.animation ?? 'pretty';
+    if (configuredName === 'custom') {
+      return userCSSTransitions['transition-lyric'];
+    }
+
+    return `lyric-${configuredName}`;
+  };
 
   const style = createMemo(() => {
     const result: Record<string, string> = {
@@ -30,19 +42,22 @@ const Lyrics = () => {
   });
 
   return (
-    <TransitionGroup name={`lyric-${animation()}`}>
-      <For each={lyric() ?? []}>
-        {(item, index) => item && (
-          <LyricsItem
-            status={status()}
-            delay={animation() === 'none' ? 0 : index()}
-            style={style()}
-          >
-            {item}
-          </LyricsItem>
-        )}
-      </For>
-    </TransitionGroup>
+    <div class={cx('flex flex-col gap-4', userCSSSelectors.lyrics, props.class)} {...containerProps}>
+      <TransitionGroup name={`lyric-${animation()}`}>
+        <For each={lyric() ?? []}>
+          {(item, index) => item && (
+            <LyricsItem
+              class={userCSSSelectors['lyrics-item']}
+              status={status()}
+              delay={animation() === 'none' ? 0 : index()}
+              style={style()}
+            >
+              {item}
+            </LyricsItem>
+          )}
+        </For>
+      </TransitionGroup>
+    </div>
   );
 };
 

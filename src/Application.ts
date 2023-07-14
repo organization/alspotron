@@ -66,6 +66,7 @@ class Application {
   private overlay!: Overlay;
   private markQuit = false;
   private scaleFactor = 1.0;
+  private lastUpdate: RequestBody;
 
   public mainWindow!: BrowserWindow;
   public overlayWindow: BrowserWindow | null = null;
@@ -230,7 +231,8 @@ class Application {
     router.post('/', async (ctx, next) => {
       ctx.status = 200;
 
-      this.broadcast('update', ctx.request.body as RequestBody);
+      this.lastUpdate = ctx.request.body as RequestBody;
+      this.broadcast('update', this.lastUpdate);
 
       await next();
     });
@@ -391,6 +393,7 @@ class Application {
     ipcMain.handle('get-current-version', () => autoUpdater.currentVersion.version);
     ipcMain.handle('compare-with-current-version', (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion));
     ipcMain.handle('check-update', async () => autoUpdater.checkForUpdatesAndNotify());
+    ipcMain.handle('get-last-update', () => this.lastUpdate);
     ipcMain.handle('get-lyric-by-id', async (_, id: number) => {
       const lyric = await alsong.getLyricById(id).catch(() => null);
       if (lyric) delete lyric.registerDate;
@@ -525,7 +528,7 @@ class Application {
       ?? screen.getPrimaryDisplay();
 
     const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
-    const windowHeight = 300;
+    const windowHeight = style.maxHeight;
 
     const anchorX = (() => {
       if (windowPosition.anchor.includes('left')) {
