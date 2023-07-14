@@ -27,7 +27,7 @@ const LyricsItem = (props: LyricsItemProps) => {
       top: ${dom.offsetTop}px;
       transition-delay: ${(local.delay ?? 0) * 75}ms;
       scale: ${local.status === 'stopped' ? '0.95' : '1'};
-      opacity: ${local.status === 'stopped' ? config()?.style.lyric.stoppedOpacity : 1};
+      opacity: ${local.status !== 'playing' ? config()?.style.lyric.stoppedOpacity : 1};
     `;
   });
 
