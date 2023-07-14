@@ -198,19 +198,25 @@ class Application {
           {
             label: '가사 표시기 창',
             click: () => {
-              this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+              if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+                this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+              }
             },
           },
           {
             label: '가사 선택 창',
             click: () => {
-              this.lyricsWindow?.webContents.openDevTools({ mode: 'detach' });
+              if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
+                this.lyricsWindow.webContents.openDevTools({ mode: 'detach' });
+              }
             },
           },
           {
             label: '설정 창',
             click: () => {
-              this.settingsWindow?.webContents.openDevTools({ mode: 'detach' });
+              if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
+                this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
+              }
             },
           }
         ]
@@ -588,6 +594,7 @@ class Application {
       this.settingsWindow.setMicaEffect();
     }
 
+    this.settingsWindow.show();
     this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
       shell.openExternal(url);
 
@@ -626,6 +633,7 @@ class Application {
       this.lyricsWindow.setMicaEffect();
     }
 
+    this.lyricsWindow.show();
     if (app.isPackaged) {
       this.lyricsWindow.loadFile(path.join(__dirname, './lyrics.html'));
     } else {
