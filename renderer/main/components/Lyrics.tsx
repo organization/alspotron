@@ -42,8 +42,8 @@ const Lyrics = (props: JSX.HTMLAttributes<HTMLDivElement>) => {
   });
 
   return (
-    <div class={cx('flex flex-col gap-4', userCSSSelectors.lyrics, props.class)} {...containerProps}>
-      <TransitionGroup name={`lyric-${animation()}`}>
+    <div class={cx('flex flex-col items-end gap-4', userCSSSelectors.lyrics, props.class)} {...containerProps}>
+      <TransitionGroup name={`${animation()}`}>
         <For each={lyric() ?? []}>
           {(item, index) => item && (
             <LyricsItem
