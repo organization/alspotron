@@ -21,6 +21,10 @@ export default defineConfig({
   base: './',
   build: {
     outDir: '../dist/',
+    minify: 'terser',
+    terserOptions: {
+      ecma: 2020,
+    },
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'renderer/index.html'),

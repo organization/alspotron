@@ -102,8 +102,8 @@ class Application {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       this.overlay = require(
         app.isPackaged ?
-          path.join(process.resourcesPath, `./assets/overlay/${electronOverlayWithArch}`) :
-          path.join('../../', `./assets/overlay/${electronOverlayWithArch}`),
+          path.join(process.resourcesPath, `./assets/${electronOverlayWithArch}`) :
+          path.join(__dirname, '..', `./assets/${electronOverlayWithArch}`),
       ) as Overlay;
     }
   }
@@ -458,7 +458,7 @@ class Application {
     this.mainWindow.setIgnoreMouseEvents(true, { forward: true });
 
     if (app.isPackaged) {
-      this.mainWindow.loadFile(path.join(__dirname, '../index.html'));
+      this.mainWindow.loadFile(path.join(__dirname, './index.html'));
     } else {
       this.mainWindow.loadURL('http://localhost:5173');
     }
@@ -482,7 +482,7 @@ class Application {
       });
       this.overlayWindow.setIgnoreMouseEvents(true, { forward: true });
       if (app.isPackaged) {
-        this.overlayWindow.loadFile(path.join(__dirname, '../index.html'));
+        this.overlayWindow.loadFile(path.join(__dirname, './index.html'));
       } else {
         this.overlayWindow.loadURL('http://localhost:5173');
       }
@@ -586,7 +586,7 @@ class Application {
     });
 
     if (app.isPackaged) {
-      this.settingsWindow.loadFile(path.join(__dirname, '../settings.html'));
+      this.settingsWindow.loadFile(path.join(__dirname, './settings.html'));
     } else {
       this.settingsWindow.loadURL('http://localhost:5173/settings.html');
     }
@@ -618,7 +618,7 @@ class Application {
     }
 
     if (app.isPackaged) {
-      this.lyricsWindow.loadFile(path.join(__dirname, '../lyrics.html'));
+      this.lyricsWindow.loadFile(path.join(__dirname, './lyrics.html'));
     } else {
       this.lyricsWindow.loadURL('http://localhost:5173/lyrics.html');
     }
