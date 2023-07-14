@@ -1,5 +1,5 @@
 import { createMemo, createRenderEffect, onCleanup, onMount } from 'solid-js';
-import { compile, serialize, stringify, middleware, Middleware } from 'stylis';
+import { compile, serialize, stringify, prefixer, middleware, Middleware } from 'stylis';
 import useConfig from '../hooks/useConfig';
 import { userCSSSelectors, userCSSTransitions } from '../utils/userCSSSelectors';
 
@@ -9,7 +9,7 @@ const userCSSMiddleware: Middleware = (element) => {
   }
 
   const props = Array.isArray(element.props) ? element.props : [element.props];
-  const mappedProps = props.map((prop) => prop.replace(/alspotron-([a-z-]+)/, (match, selectorName: string) => {
+  const mappedProps = props.map((prop) => prop.replace(/alspotron-([a-z-]+)/g, (match, selectorName: string) => {
     if (Object.hasOwn(userCSSSelectors, selectorName)) {
       return `.${userCSSSelectors[selectorName as keyof typeof userCSSSelectors]}`;
     }
@@ -33,7 +33,7 @@ const UserCSS = () => {
   const compiledCSS = createMemo(
     () => serialize(
       compile(userCSS()),
-      middleware([userCSSMiddleware, stringify])
+      middleware([userCSSMiddleware, prefixer, stringify])
     )
   );
 
