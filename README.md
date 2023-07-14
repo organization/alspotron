@@ -3,7 +3,7 @@
 ### 커스텀이 편리한 *Spotify*, *YouTube Music* 가사 표시기
 
 > `스포티파이` 혹은 `유튜브 뮤직`등의 `뮤직 플레이어`에서 재생중인 노래의 알송 가사를 화면에 표시해줍니다.\
-> 알송 가사가 존재하지 않는 경우, 스포티파이의 내장 가사를 표시합니다. (**스포티파이로 재생하는 경우만 해당**)\
+> 알송 가사가 존재하지 않는 경우, 스포티파이의 내장 가사를 표시합니다. (**스포티파이로 재생하는 경우만 해당**)
 
 ### Screenshot
 
@@ -26,6 +26,7 @@
 2.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases) 
 
     -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
+    -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
 
 3.  Alspotron Companion 설치  
 
@@ -44,6 +45,7 @@
 3.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)  
 
     -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
+    -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
 
 #### YouTube Music 사용자는 주의!
 
@@ -54,6 +56,7 @@
 1.  [tuna-obs](https://github.com/univrsal/tuna)를 참고하여 관련 설정을 마쳐주세요.
 2.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)
     -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
+    -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
 
 ### (모든 뮤직 플레이어 해당) 마지막 단계
 
