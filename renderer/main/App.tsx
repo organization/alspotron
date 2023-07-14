@@ -60,7 +60,8 @@ const useProximityStyle = (element: Accessor<HTMLDivElement>) => {
     }
 
     const fullDimmedOpacity = config()?.style.proximityOpacity ?? 1;
-    const blendRate = 1 - (distance() * 2);
+    const sensitivity = config()?.style.proximitySensitivity ?? 1;
+    const blendRate = Math.max(0, Math.min((1 - (distance() * 2)) * sensitivity, 1));
     return (fullDimmedOpacity * blendRate) + (1 - blendRate);
   };
 

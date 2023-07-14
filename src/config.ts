@@ -16,6 +16,7 @@ export interface Config {
     animation: string;
     maxHeight: number;
     proximityOpacity: number;
+    proximitySensitivity: number;
 
     nowPlaying: {
       color: string;
@@ -57,6 +58,7 @@ export const DEFAULT_CONFIG = {
     animation: 'pretty',
     maxHeight: 400,
     proximityOpacity: 0,
+    proximitySensitivity: 2,
 
     nowPlaying: {
       color: '#FFFFFF',
