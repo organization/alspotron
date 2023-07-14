@@ -560,7 +560,7 @@ class Application {
   }
 
   initSettingsWindow() {
-    this.settingsWindow = new (IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow)({
+    this.settingsWindow = new (process.platform === 'win32' && IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow)({
       ...glassOptions,
       ...micaOptions,
       width: 800,
@@ -598,7 +598,7 @@ class Application {
   }
 
   initLyricsWindow() {
-    this.lyricsWindow = new (IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow)({
+    this.lyricsWindow = new (process.platform === 'win32' && IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow)({
       ...glassOptions,
       ...micaOptions,
       width: 1000,
@@ -630,12 +630,14 @@ class Application {
   }
 
   injectOverlay() {
-    const windowList = this.overlay.getTopWindows(true);
-    hmc.getDetailsProcessList()
-      .filter(({ pid }) => windowList.some((window) => window.processId === pid))
-      .forEach(({ pid, name, path }) => {
-        this.onProcessCreation(pid, name, path);
-      })
+    if (process.platform === 'win32') {
+      const windowList = this.overlay.getTopWindows(true);
+      hmc.getDetailsProcessList()
+        .filter(({ pid }) => windowList.some((window) => window.processId === pid))
+        .forEach(({ pid, name, path }) => {
+          this.onProcessCreation(pid, name, path);
+        });
+    }
   }
   
   private onProcessCreation(pid: number, name?: string, filePath?: string) {
