@@ -7,20 +7,23 @@ import type { JSX } from 'solid-js/jsx-runtime';
 
 export interface CardProps extends JSX.HTMLAttributes<HTMLDivElement> {
   expand?: boolean;
+  setExpand?: (expand: boolean) => void;
   onExpand?: (expand: boolean) => void;
 
   subCards?: JSX.Element[];
 }
 const Card = (props: CardProps) => {
-  const [local, leftProps] = splitProps(props, ['expand', 'onExpand', 'subCards']);
+  const [local, leftProps] = splitProps(props, ['expand', 'setExpand', 'onExpand', 'subCards']);
   
-  const [expand, setExpand] = local.onExpand ? [() => local.expand, local.onExpand] : createSignal(local.expand);
+  const [expand, setExpand] = local.setExpand ? [() => local.expand, local.setExpand] : createSignal(local.expand);
 
   const isSubCard = () => 'subCards' in local;
 
   const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = (event) => {
     if (isSubCard()) {
-      setExpand(!(expand() ?? false));
+      const isExpand = !(expand() ?? false);
+      setExpand(isExpand);
+      local.onExpand?.(isExpand);
     }
 
     if (typeof leftProps.onClick === 'function') return leftProps.onClick(event);
