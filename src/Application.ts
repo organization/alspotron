@@ -125,7 +125,7 @@ class Application {
         buttons: ['다운로드 & 설치 후 재실행'],
         title: `Alspotron 업데이트 알림 (${it.version})`,
         message: `새로운 ${it.version} 버전이 ${it.releaseDate}에 출시되었어요.`,
-        detail: `릴리즈 노트: ${releaseNote}` ?? `${downloadLink}에서 다운로드 할 수 있어요.`,
+        detail: `${downloadLink}에서 다운로드 할 수 있어요.`,
       });
       
       if (response === 1) {
@@ -141,9 +141,8 @@ class Application {
 
   initTray() {
     const trayIcon = nativeImage.createFromPath(getFile('./assets/icon_square.png'));
-    trayIcon.resize({ width: 16, height: 16 });
 
-    this.tray = new Tray(trayIcon);
+    this.tray = new Tray(trayIcon.resize({ width: 16, height: 16 }));
     const contextMenu = Menu.buildFromTemplate([
       {
         type: 'normal',
@@ -225,14 +224,6 @@ class Application {
       this.broadcast('update', ctx.request.body as RequestBody);
 
       await next();
-    });
-
-    router.get('/config', () => {
-      // TODO: get config
-    });
-
-    router.post('/config', () => {
-      // TODO: set config
     });
 
     router.post('/shutdown', () => {

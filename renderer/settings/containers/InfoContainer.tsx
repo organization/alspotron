@@ -33,8 +33,6 @@ const InfoContainer = () => {
     });
   };
 
-  onMount(() => refreshUpdateData());
-
   const onLink = (url: string) => {
     window.open(url);
   };
@@ -65,6 +63,7 @@ const InfoContainer = () => {
       <Card
         class={'flex flex-row justify-start items-center gap-1'}
         onClick={() => refreshUpdateData()}
+        onExpand={() => refreshUpdateData()}
         subCards={[
           <div class={'w-full h-full flex justify-start items-center'}>
             <svg class={'w-6 h-6 fill-none mr-4'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
