@@ -572,7 +572,7 @@ class Application {
       title: 'Alspotron 설정',
       titleBarStyle: 'hiddenInset',
       frame: false,
-      vibrancy: 'sidebar',
+      vibrancy: 'ultra-dark',
       autoHideMenuBar: true,
       icon: iconPath,
     });
@@ -610,7 +610,7 @@ class Application {
       title: '가사 선택',
       titleBarStyle: 'hiddenInset',
       frame: false,
-      vibrancy: 'sidebar',
+      vibrancy: 'ultra-dark',
       autoHideMenuBar: true,
       icon: iconPath,
     });
