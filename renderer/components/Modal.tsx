@@ -1,7 +1,12 @@
 import { createSignal, JSX, Show } from 'solid-js'
 import { Portal } from 'solid-js/web'
 
-const Modal = (props: { open?: boolean, closer?: () => void, children: JSX.Element, }) => {
+interface ModalProps extends JSX.HTMLAttributes<HTMLDivElement> {
+  open?: boolean;
+  onClose?: () => void;
+}
+
+const Modal = (props: ModalProps) => {
 
   const [isOpen, setIsOpen] = createSignal(true)
 
