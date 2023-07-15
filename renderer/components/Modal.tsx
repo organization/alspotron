@@ -17,10 +17,9 @@ const Modal = (props: ModalProps) => {
         <div class={'fixed inset-0 backdrop-grayscale bg-slate-400/25 w-full h-full'}>
           <div
             class={'flex w-full h-full justify-center items-center'}
-            onClick={(e) => {
-              if(e.currentTarget == e.target) {
-                if(props.closer != null) props.closer();
-                else setIsOpen(false);
+            onClick={(event) => {
+              if(event.currentTarget === event.target) {
+                props.onClose?.() ?? setIsOpen(false);
               }
             }}
           >
