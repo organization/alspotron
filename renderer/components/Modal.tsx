@@ -5,7 +5,6 @@ const Modal = (props: { open?: boolean, closer?: () => void, children: JSX.Eleme
 
   const [isOpen, setIsOpen] = createSignal(true)
 
-  if(document.getElementById('Modal') != null) setIsOpen(false)
 
   return (
     <Show when={props.open && isOpen()}>
