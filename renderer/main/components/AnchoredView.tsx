@@ -19,7 +19,7 @@ const AnchoredView = (props: AnchoredViewProps) => {
 
   return (
       <div
-        class={`fixed w-full h-fit ${props.class}`}
+        class={cx(`fixed w-full h-fit`, props.class)}
         classList={{
           'top-0': config()?.windowPosition.anchor.includes('top'),
           'bottom-0': config()?.windowPosition.anchor.includes('bottom'),
