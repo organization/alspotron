@@ -22,9 +22,13 @@ const ANIMATION_LIST = [
 ];
 
 const ThemeContainer = () => {
-  // eslint-disable-next-line prefer-const
-  let presetContainer: HTMLDivElement | null = null;
-  onMount(() => presetContainer && useHorizontalScroll(presetContainer));
+  const [presetContainer, setPresetContainer] = createSignal<HTMLDivElement | null>(null);
+  onMount(() => {
+    const container = presetContainer();
+    if (container) {
+      useHorizontalScroll(container);
+    }
+  });
 
   const [config, setConfig] = useConfig();
   const [fontList, setFontList] = createSignal<string[]>([]);
@@ -81,7 +85,7 @@ const ThemeContainer = () => {
         프리셋
       </div>
       <div
-        ref={presetContainer}
+        ref={setPresetContainer}
         class={'min-h-[128px] flex flex-row justify-start items-center gap-1 fluent-scrollbar px-4'}
       >
         <Card class={'min-w-[128px] h-[128px]'}>
