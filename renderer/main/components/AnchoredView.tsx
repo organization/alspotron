@@ -1,5 +1,7 @@
 import { splitProps } from 'solid-js';
 
+import { cx } from '../../utils/classNames';
+
 import useConfig from '../../hooks/useConfig';
 
 import type { JSX } from 'solid-js/jsx-runtime';
@@ -19,7 +21,7 @@ const AnchoredView = (props: AnchoredViewProps) => {
 
   return (
       <div
-        class={cx(`fixed w-full h-fit`, props.class)}
+        class={cx('fixed w-full h-fit', props.class)}
         classList={{
           'top-0': config()?.windowPosition.anchor.includes('top'),
           'bottom-0': config()?.windowPosition.anchor.includes('bottom'),
