@@ -6,6 +6,7 @@ import cors from '@koa/cors';
 import alsong from 'alsong';
 import Router from 'koa-router';
 import bodyParser from 'koa-bodyparser';
+import ProgressBar from 'electron-progressbar';
 import { hmc } from 'hmc-win32';
 import { autoUpdater } from 'electron-updater';
 import { IS_WINDOWS_11, MicaBrowserWindow } from 'mica-electron';
@@ -135,11 +136,38 @@ class Application {
         title: `Alspotron 업데이트 알림 (${it.version})`,
         message: `새로운 ${it.version} 버전이 ${it.releaseDate}에 출시되었어요.`,
         detail: `${downloadLink}에서 다운로드 할 수 있어요.`,
+        defaultId: 0,
       });
       
-      if (response === 1) {
+      if (response === 0) {
+        const updateProgressBar = new ProgressBar({
+          indeterminate: false,
+          title: 'Alspotron 업데이트',
+          text: '업데이트를 다운로드 중입니다...',
+          initialValue: 0,
+        });
+
+        // What The F @types/electron-progressbar
+        updateProgressBar
+          .on('progress', ((value: number) => {
+            updateProgressBar.detail = `다운로드 중... (${value.toFixed(2)}%)`;
+          }) as () => void)
+          .on('aborted', ((value: number) => {
+            updateProgressBar.detail = `업데이트가 취소되었습니다. ${value.toFixed(2)}%`;
+          }) as () => void)
+          .on('completed', () => {
+            updateProgressBar.detail = '다운로드가 완료되었습니다.';
+            autoUpdater.quitAndInstall(false);
+          });
+
+        autoUpdater.on('download-progress', (it) => {
+          if (!updateProgressBar.isCompleted()) {
+            updateProgressBar.value = it.percent;
+            updateProgressBar.text = `업데이트를 다운로드 중입니다... (${it.percent.toFixed(2)}%, ${it.transferred} / ${it.total})`;
+          }
+        });
+
         await autoUpdater.downloadUpdate();
-        autoUpdater.quitAndInstall(true, true);
       }
     });
 
