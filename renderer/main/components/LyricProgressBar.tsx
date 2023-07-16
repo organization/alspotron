@@ -97,13 +97,27 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
             class={cx(
               'w-fit flex flex-row justify-start items-center gap-2',
               userCSSSelectors['nowplaying-playing-text'],
-              style.textClass
             )}
             style={style.textStyle}
           >
-            <span class={userCSSSelectors['nowplaying-artist']}>{artist()}</span>
-            <span class={userCSSSelectors['nowplaying-divider']}>{' - '}</span>
-            <span class={userCSSSelectors['nowplaying-title']}>{title()}</span>
+            <span
+              class={cx(userCSSSelectors['nowplaying-artist'], style.textClass)}
+              style={style.textStyle}
+            >
+              {artist()}
+            </span>
+            <span
+              class={cx(userCSSSelectors['nowplaying-divider'], style.textClass)}
+              style={style.textStyle}
+            >
+              {' - '}
+            </span>
+            <span
+              class={cx(userCSSSelectors['nowplaying-title'], style.textClass)}
+              style={style.textStyle}
+            >
+              {title()}
+            </span>
           </div>
         </Marquee>
       </div>
