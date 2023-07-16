@@ -21,7 +21,8 @@
     "release:mac": "npm run clean && npm run build && electron-builder --mac -p always",
     "release:win": "npm run clean && npm run build && electron-builder --win -p always",
     "release:linux": "npm run clean && npm run build && electron-builder --linux -p always -c.snap.publish=github",
-    "dist:only": "electron-builder"
+    "dist:only": "electron-builder",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [],
   "author": "Su-Yong <simssy2205@gmail.com>",
