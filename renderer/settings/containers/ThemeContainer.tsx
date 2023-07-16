@@ -207,7 +207,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          마우스 커서 근접 시 투명도
+          마우스 커서 근접 시 불투명도
         </div>
         <input
           type={'number'}
@@ -235,7 +235,7 @@ const ThemeContainer = () => {
           type={'number'}
           class={'input w-48'}
           value={config()?.style.maxHeight}
-          onChange={(event) => void setConfig({ style: { maxHeight: event.target.valueAsNumber } })}
+          onChange={(event) => setConfig({ style: { maxHeight: event.target.valueAsNumber } })}
         />
       </Card>
     </div>
@@ -294,13 +294,13 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          일시정지 시 투명도
+          일시정지 시 불투명도
         </div>
         <input
           type={'number'}
           class={'input w-48'}
           value={config()?.style.nowPlaying.stoppedOpacity}
-          onChange={(event) => void setConfig({ style: { nowPlaying: { stoppedOpacity: event.target.valueAsNumber } } })}
+          onChange={(event) => setConfig({ style: { nowPlaying: { stoppedOpacity: event.target.valueAsNumber } } })}
         />
       </Card>
     </div>
@@ -339,13 +339,13 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          일시정지 시 투명도
+          일시정지 시 불투명도
         </div>
         <input
           type={'number'}
           class={'input w-48'}
           value={config()?.style.lyric.stoppedOpacity}
-          onChange={(event) => void setConfig({ style: { lyric: { stoppedOpacity: event.target.valueAsNumber } } })}
+          onChange={(event) => setConfig({ style: { lyric: { stoppedOpacity: event.target.valueAsNumber } } })}
         />
       </Card>
     </div>
