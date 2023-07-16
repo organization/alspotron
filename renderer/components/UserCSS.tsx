@@ -1,5 +1,6 @@
 import { createMemo, createRenderEffect, onCleanup, onMount } from 'solid-js';
 import { compile, serialize, stringify, prefixer, middleware, Middleware } from 'stylis';
+
 import useConfig from '../hooks/useConfig';
 import { userCSSSelectors, userCSSTransitions } from '../utils/userCSSSelectors';
 
@@ -38,8 +39,10 @@ const UserCSS = () => {
   );
 
   const stylesheet = new CSSStyleSheet();
-  createRenderEffect(() => void stylesheet.replace(compiledCSS()));
-  onMount(() => document.adoptedStyleSheets.push(stylesheet));
+  createRenderEffect(() => stylesheet.replace(compiledCSS()));
+  onMount(() => {
+    document.adoptedStyleSheets = document.adoptedStyleSheets.concat([stylesheet]);
+  });
   onCleanup(() => {
     document.adoptedStyleSheets = document.adoptedStyleSheets.filter(
       (adoptedStyleSheet) => adoptedStyleSheet !== stylesheet
