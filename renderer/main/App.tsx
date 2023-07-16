@@ -13,7 +13,7 @@ import { cx } from '../utils/classNames';
 import { userCSSSelectors } from '../utils/userCSSSelectors';
 
 
-const useProximityStyle = (element: Accessor<HTMLDivElement>) => {
+const useProximityStyle = () => {
   const [config] = useConfig();
   const [distance, setDistance] = createSignal(1);
 
@@ -65,11 +65,13 @@ const useProximityStyle = (element: Accessor<HTMLDivElement>) => {
     return (fullDimmedOpacity * blendRate) + (1 - blendRate);
   };
 
+  const [element, elementRef] = createSignal<HTMLDivElement | null>(null);
   createRenderEffect(on([proximityOpacity], () => {
     element()?.animate([{ opacity: proximityOpacity() }], { duration: 500, fill: 'forwards' });
   }));
 
   return {
+    ref: elementRef,
     onMouseMove,
     onMouseLeave,
   };
@@ -118,15 +120,13 @@ const App = () => {
     return result;
   };
 
-  let anchoredView: HTMLDivElement;
-  const handles = useProximityStyle(() => anchoredView);
+  const proximityHandles = useProximityStyle();
 
   return (
     <PlayingInfoProvider>
       <AnchoredView
-        ref={anchoredView}
         class={cx('flex flex-col gap-8', userCSSSelectors.wrapper)}
-        {...handles}
+        {...proximityHandles}
       >
         <Lyrics />
         <Show when={config()?.style?.nowPlaying?.visible ?? true}>
