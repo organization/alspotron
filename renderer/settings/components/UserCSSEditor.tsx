@@ -5,6 +5,7 @@ import { CodeMirror } from '@solid-codemirror/codemirror';
 import { githubDarkInit } from '@uiw/codemirror-theme-github';
 import { basicSetup, EditorView } from 'codemirror';
 import { createEffect, createSignal, For, untrack } from 'solid-js';
+
 import useConfig from '../../hooks/useConfig';
 import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
 
@@ -35,7 +36,7 @@ const UserCSSEditor = () => {
     }
   });
 
-  const onUpdate = (value: string) => void setConfig({ style: { userCSS: value } });
+  const onUpdate = (value: string) => setConfig({ style: { userCSS: value } });
   const onUpdateDebounced = debounce(onUpdate, 1000);
 
   const [editor, setEditor] = createSignal<EditorView | null>(null);
