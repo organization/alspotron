@@ -1,5 +1,6 @@
 import { createMemo, createSignal, onMount, splitProps } from 'solid-js';
 
+import { Status } from '../../components/PlayingInfoProvider';
 import useConfig from '../../hooks/useConfig';
 import { cx } from '../../utils/classNames';
 
@@ -8,26 +9,23 @@ import type { JSX } from 'solid-js/jsx-runtime';
 export interface LyricsItemProps extends JSX.HTMLAttributes<HTMLDivElement> {
   children: JSX.Element;
   style?: string;
-  status?: string;
-  delay?: number;
+  status?: Status;
 }
 
 const LyricsItem = (props: LyricsItemProps) => {
-  const [config] = useConfig();
-  const [local, leftProps] = splitProps(props, ['status', 'delay']);
+  const [local, leftProps] = splitProps(props, ['status']);
 
   let dom!: HTMLDivElement;
 
   const [init, setInit] = createSignal(false);
 
   const style = createMemo(() => {
-    if (!init()) return `transition-delay: ${225 + ((local.delay ?? 0) * 75)}ms;`;
+    if (!init()) return 'transition-delay: calc(255ms + var(--order) * 75ms);';
 
     return `
       top: ${dom.offsetTop}px;
-      transition-delay: ${(local.delay ?? 0) * 75}ms;
+      transition-delay: calc(var(--order) * 75ms);
       scale: ${local.status === 'stopped' ? '0.95' : '1'};
-      opacity: ${local.status !== 'playing' ? config()?.style.lyric.stoppedOpacity : 1};
     `;
   });
 

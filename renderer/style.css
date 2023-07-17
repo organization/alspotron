@@ -33,6 +33,15 @@
       outline-none select-none;
   }
 
+  .checkbox {
+    @apply appearance-none w-[20px] h-[20px] bg-gray-100/5 rounded-[4px] hover:bg-gray-100/10 focus:bg-black/10
+    border-[1px] border-gray-100/20
+  }
+
+  .checkbox:checked {
+    @apply shadow-[inset_0_0_0_3px] shadow-primary-600
+  }
+
   .input {
     @apply bg-gray-100/5 text-white rounded-[4px] hover:bg-gray-100/10 focus:bg-black/10
     border-[1px] border-gray-100/[2%] border-b-gray-100/20 focus:border-b-2 focus:border-b-primary-500 focus:border-gray-100/10

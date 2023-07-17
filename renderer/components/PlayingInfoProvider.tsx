@@ -6,9 +6,9 @@ import IconMusic from '../../assets/icon_music.png';
 import useLyricMapper from '../hooks/useLyricMapper';
 import { UpdateData } from '../types';
 
-type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
-type Status = 'idle' | 'playing' | 'stopped';
-type PlayingInfo = {
+export type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
+export type Status = 'idle' | 'playing' | 'stopped';
+export type PlayingInfo = {
   progress: Accessor<number>;
   duration: Accessor<number>;
   title: Accessor<string>;
@@ -20,7 +20,7 @@ type PlayingInfo = {
   originalLyric: Accessor<LyricInfo | null>;
 };
 
-type LyricInfo =
+export type LyricInfo =
   | { useMapper: boolean, kind: 'alsong', data: Lyric }
   | { useMapper: boolean, kind: 'default', data: UpdateData };
 

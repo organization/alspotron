@@ -1,64 +1,37 @@
-import { createMemo, For, splitProps } from 'solid-js';
-import { TransitionGroup } from 'solid-transition-group'
 
-import LyricsItem from './LyricsItem'
+import { splitProps } from 'solid-js';
+
+import LyricsTransition from './LyricsTransition';
 
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
-import useConfig from '../../hooks/useConfig';
 import useLyric from '../../hooks/useLyric';
+
 import { cx } from '../../utils/classNames';
-import { userCSSSelectors, userCSSTransitions } from '../../utils/userCSSSelectors';
+import { userCSSSelectors } from '../../utils/userCSSSelectors';
+
+import useConfig from '../../hooks/useConfig';
 
 import type { JSX } from 'solid-js/jsx-runtime';
 
-const Lyrics = (props: JSX.HTMLAttributes<HTMLDivElement>) => {
+type LyricsProps = {
+  style?: string;
+} & JSX.HTMLAttributes<HTMLDivElement>;
+
+const Lyrics = (props: LyricsProps) => {
   const [config] = useConfig();
-  const [, containerProps] = splitProps(props, ['class']);
+  const [, containerProps] = splitProps(props, ['class', 'style']);
   const { status } = usePlayingInfo();
-  const [lyric] = useLyric();
-
-  const animation = () => {
-    const configuredName = config()?.style?.animation ?? 'pretty';
-    if (configuredName === 'custom') {
-      return userCSSTransitions['transition-lyric'];
-    }
-
-    return `lyric-${configuredName}`;
-  };
-
-  const style = createMemo(() => {
-    const result: Record<string, string> = {
-      'text-align': 'var(--text-align)',
-    };
-    const configData = config();
-    
-    if (configData?.style?.font) result['font-family'] = configData?.style.font;
-    if (configData?.style?.fontWeight) result['font-weight'] = configData?.style.fontWeight;
-    if (configData?.style?.lyric?.fontSize) result['font-size'] = `${configData.style.lyric.fontSize}px`;
-    if (configData?.style?.lyric?.color) result['color'] = configData?.style.lyric.color;
-    if (configData?.style?.lyric?.background) result['background-color'] = configData?.style.lyric.background;
-
-    return Object.entries(result).map(([key, value]) => `${key}: ${value};`).join(' ');
-  });
+  const [lyrics] = useLyric();
 
   return (
-    <div class={cx('flex flex-col items-end gap-4', userCSSSelectors.lyrics, props.class)} {...containerProps}>
-      <TransitionGroup name={`${animation()}`}>
-        <For each={lyric() ?? []}>
-          {(item, index) => item && (
-            <LyricsItem
-              class={userCSSSelectors['lyrics-item']}
-              status={status()}
-              delay={animation() === 'none' ? 0 : index()}
-              style={style()}
-            >
-              {item}
-            </LyricsItem>
-          )}
-        </For>
-      </TransitionGroup>
+    <div
+      class={cx('w-full flex flex-col items-end', props.class, userCSSSelectors['lyrics-wrapper'])}
+      style={`opacity: ${status() !== 'playing' ? config()?.style.lyric.stoppedOpacity : 1}; ${props.style ?? ''};`}
+      {...containerProps}
+    >
+      <LyricsTransition lyrics={lyrics() ?? []} status={status()} {...containerProps} />
     </div>
   );
-};
+}
 
 export default Lyrics;

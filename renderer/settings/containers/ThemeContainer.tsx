@@ -1,5 +1,4 @@
-import { Show, createSignal, onCleanup, onMount } from 'solid-js';
-import { TransitionGroup } from 'solid-transition-group';
+import { Show, createSignal, onCleanup, onMount, untrack } from 'solid-js';
 
 import { Config } from '../../../src/config';
 import Card from '../../components/Card';
@@ -7,7 +6,7 @@ import Selector from '../../components/Select';
 
 import useConfig from '../../hooks/useConfig';
 import useHorizontalScroll from '../../hooks/useHorizontalScroll';
-import LyricsItem from '../../main/components/LyricsItem';
+import LyricsTransition from '../../main/components/LyricsTransition';
 import ColorPicker from '../components/ColorPicker';
 import UserCSSEditor from '../components/UserCSSEditor';
 
@@ -24,25 +23,15 @@ const ANIMATION_LIST = [
 
 const ThemeContainer = () => {
   // eslint-disable-next-line prefer-const
-  let presetContainer: HTMLDivElement | undefined;
-  let interval: NodeJS.Timer | null = null;
+  let presetContainer: HTMLDivElement | null = null;
+  onMount(() => presetContainer && useHorizontalScroll(presetContainer));
 
   const [config, setConfig] = useConfig();
   const [fontList, setFontList] = createSignal<string[]>([]);
-  const [preview, setPreview] = createSignal(false);
 
   (async () => {
     setFontList(await window.getFont({ disableQuoting: true }));
   })();
-
-  onMount(() => {
-    if (presetContainer) useHorizontalScroll(presetContainer);
-
-    interval = setInterval(() => setPreview(!preview()), 1500);
-  });
-  onCleanup(() => {
-    if (interval) clearInterval(interval);
-  });
 
   const getAnimationName = (value: string) => {
     if (value === 'none') return '없음';
@@ -56,6 +45,32 @@ const ThemeContainer = () => {
 
     return `알 수 없음(${value})`;
   };
+
+  const PREVIEW_TEXT_A = [
+    '가사 전환 애니메이션 미리보기용 가사입니다',
+    'https://github.com/organization/alspotron',
+    '가사 전환 애니메이션을 바꾸는 중간에는 끊길수 있습니다',
+  ];
+
+  const PREVIEW_TEXT_B = [
+    '계절이 지나가는 하늘에는',
+    '가을로 가득 차 있습니다.',
+    '나는 아무 걱정도 없이'
+  ];
+
+  const [animationPreview, setAnimationPreview] = createSignal(PREVIEW_TEXT_A);
+
+  let interval: NodeJS.Timer | null = null;
+  onMount(() => {
+    let isTick = false;
+    interval = setInterval(() => {
+      const nextPreview = untrack(() => isTick ? PREVIEW_TEXT_A : PREVIEW_TEXT_B);
+
+      isTick = !isTick;
+      setAnimationPreview(nextPreview);
+    }, 1500);
+  });
+  onCleanup(() => interval && clearInterval(interval));
 
   return <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
     <div class={'text-3xl mb-1 px-4'}>
@@ -156,22 +171,7 @@ const ThemeContainer = () => {
               미리보기
             </div>
             <div class={'relative w-full h-32 flex flex-col justify-start items-start gap-4'}>
-              <TransitionGroup name={`lyric-${config()?.style?.animation ?? 'pretty'}`}>
-                <Show when={preview()}>
-                  <LyricsItem delay={0}>
-                    가사 전환 애니메이션 미리보기용 가사입니다
-                  </LyricsItem>
-                  <LyricsItem
-                    delay={config()?.style?.animation === 'none' ? 0 : 1}>
-                    https://github.com/organization/alspotron
-                  </LyricsItem>
-                  <LyricsItem
-                    delay={config()?.style?.animation === 'none' ? 0 : 2}
-                  >
-                    가사 전환 애니메이션을 바꾸는 중간에는 끊길수 있습니다
-                  </LyricsItem>
-                </Show>
-              </TransitionGroup>
+              <LyricsTransition class={'w-full'} lyrics={animationPreview()} status="playing" />
             </div>
           </div>,
           <div class={'w-full h-full flex justify-start items-center'}>
@@ -194,7 +194,19 @@ const ThemeContainer = () => {
                 {getAnimationName(option)}
               </li>}
             />
-          </div>
+          </div>,
+          <div class={'w-full h-full flex justify-start items-center'}>
+            <div class={'text-md'}>
+              한번에 전환
+            </div>
+            <div class={'flex-1'} />
+            <input
+              class={'checkbox'}
+              type="checkbox" 
+              checked={config()?.style?.animationAtOnce}
+              onChange={({ target: { checked } }) => setConfig({ style: { animationAtOnce: checked } })}
+            />
+          </div>,
         ]}
       >
         <div class={'text-md'}>

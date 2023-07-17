@@ -2,6 +2,7 @@ export const userCSSSelectors = {
   'wrapper': 'alspotron-usercss-wrapper',
   'lyrics-item': 'alspotron-usercss-lyrics-item',
   'lyrics': 'alspotron-usercss-lyrics',
+  'lyrics-wrapper': 'alspotron-usercss-lyrics-wrapper',
   'nowplaying': 'alspotron-usercss-nowplaying',
   'nowplaying-progress': 'alspotron-usercss-nowplaying-progress',
   'nowplaying-progress-bar': 'alspotron-usercss-nowplaying-progress-bar',

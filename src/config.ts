@@ -14,6 +14,7 @@ export interface Config {
     font: string;
     fontWeight: string;
     animation: string;
+    animationAtOnce: boolean;
     maxHeight: number;
     proximityOpacity: number;
     proximitySensitivity: number;
@@ -56,6 +57,7 @@ export const DEFAULT_CONFIG = {
     font: 'KoPubWorldDotum',
     fontWeight: '400',
     animation: 'pretty',
+    animationAtOnce: false,
     maxHeight: 400,
     proximityOpacity: 0,
     proximitySensitivity: 2,
