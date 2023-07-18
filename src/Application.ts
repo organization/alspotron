@@ -274,7 +274,7 @@ class Application {
             progress: z.number().optional(),
             duration: z.number().optional(),
             cover_url: z.string().optional(),
-            lyrics: z.record(z.string(), z.array(z.string())).optional(),
+            lyrics: z.record(z.number(), z.array(z.string())).optional(),
           }),
         }),
       },

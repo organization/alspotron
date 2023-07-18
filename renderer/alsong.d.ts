@@ -1,7 +1,7 @@
 declare module 'alsong' {
   import * as stream from 'stream';
 
-  type LyricTimestamp = string;
+  type LyricTimestamp = number;
   type LyricRegister = {
     name: string,
     email: string,

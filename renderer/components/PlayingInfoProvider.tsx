@@ -53,17 +53,25 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     setOriginalData(data);
     setStatus(data.status);
 
-    setTitle(data.title);
+    if (typeof data.title === 'string') {
+      setTitle(data.title);
+    }
 
     if (Array.isArray(data.artists)) {
       setArtist(data.artists.join(', '));
     }
 
-    setProgress(data.progress);
-    setDuration(data.duration);
-    setCoverUrl(
-      data.cover_url.match(/^(?:file|https?):\/\//) ? data.cover_url : IconMusic,
-    );
+    if (typeof data.progress === 'number') {
+      setProgress(data.progress);
+    }
+    if (typeof data.duration === 'number') {
+      setDuration(data.duration);
+    }
+    if (typeof data.cover_url === 'string' && data.cover_url.match(/^(?:file|https?):\/\//)) {
+      setCoverUrl(data.cover_url);
+    } else {
+      setCoverUrl(IconMusic);
+    }
   };
 
   window.ipcRenderer.on('update', onUpdate);
