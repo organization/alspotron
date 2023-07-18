@@ -49,7 +49,7 @@
     "concurrently": "8.2.0",
     "del-cli": "5.0.0",
     "electron": "25.3.0",
-    "electron-builder": "24.5.2",
+    "electron-builder": "24.6.0",
     "eslint": "8.45.0",
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-prettier": "5.0.0",
