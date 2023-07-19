@@ -43,7 +43,12 @@ const useProximityStyle = () => {
     return 0.5;
   };
 
+  const fullDimmedOpacity = () => config()?.style.proximityOpacity ?? 0;
   const onMouseMove = (event: MouseEvent) => {
+    if (fullDimmedOpacity() === 1) {
+      return;
+    }
+
     const x = event.clientX / window.innerWidth;
     const y = event.clientY / window.innerHeight;
 
@@ -51,6 +56,10 @@ const useProximityStyle = () => {
   };
 
   const onMouseLeave = () => {
+    if (fullDimmedOpacity() === 1) {
+      return;
+    }
+
     setDistance(1);
   };
 
@@ -59,10 +68,9 @@ const useProximityStyle = () => {
       return 1;
     }
 
-    const fullDimmedOpacity = config()?.style.proximityOpacity ?? 1;
     const sensitivity = config()?.style.proximitySensitivity ?? 1;
     const blendRate = Math.max(0, Math.min((1 - (distance() * 2)) * sensitivity, 1));
-    return (fullDimmedOpacity * blendRate) + (1 - blendRate);
+    return (fullDimmedOpacity() * blendRate) + (1 - blendRate);
   };
 
   const [element, elementRef] = createSignal<HTMLDivElement | null>(null);
