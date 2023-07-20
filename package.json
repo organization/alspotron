@@ -21,13 +21,15 @@
     "release:mac": "npm run clean && npm run build && electron-builder --mac -p always",
     "release:win": "npm run clean && npm run build && electron-builder --win -p always",
     "release:linux": "npm run clean && npm run build && electron-builder --linux -p always -c.snap.publish=github",
-    "dist:only": "electron-builder"
+    "dist:only": "electron-builder",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [],
   "author": "Su-Yong <simssy2205@gmail.com>",
   "contributors": [
     "JellyBrick <shlee1503@naver.com>",
-    "SeongMin Park <smn@duck.com>"
+    "SeongMin Park <smn@duck.com>",
+    "nenw <khi@nenw.dev>"
   ],
   "license": "Apache-2.0",
   "devDependencies": {
@@ -43,6 +45,7 @@
     "@types/koa__cors": "4.0.0",
     "@types/koa-bodyparser": "4.3.10",
     "@types/koa-router": "7.4.4",
+    "@types/stylis": "4.2.0",
     "@types/node": "20.4.2",
     "@typescript-eslint/eslint-plugin": "6.1.0",
     "autoprefixer": "10.4.14",
@@ -64,10 +67,18 @@
     "vite-plugin-static-copy": "0.17.0"
   },
   "dependencies": {
+    "@codemirror/commands": "6.2.4",
+    "@codemirror/lang-css": "6.2.0",
+    "@codemirror/lang-sass": "6.0.2",
+    "@codemirror/state": "6.2.1",
+    "@codemirror/view": "6.14.0",
     "@floating-ui/dom": "1.4.5",
     "@koa/cors": "4.0.0",
     "@popperjs/core": "2.11.8",
+    "@solid-codemirror/codemirror": "1.0.4",
+    "@uiw/codemirror-theme-github": "4.21.7",
     "alsong": "3.0.1",
+    "codemirror": "6.0.1",
     "color": "4.2.3",
     "deepmerge": "4.3.1",
     "electron-progressbar": "2.1.0",
@@ -82,6 +93,7 @@
     "solid-floating-ui": "0.2.1",
     "solid-js": "1.7.8",
     "solid-transition-group": "0.2.2",
+    "stylis": "4.3.0",
     "tstl": "2.5.13"
   },
   "optionalDependencies": {

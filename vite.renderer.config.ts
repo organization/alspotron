@@ -33,4 +33,7 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    include: ['@codemirror/state', '@codemirror/view'],
+  }
 });

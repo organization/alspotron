@@ -2,6 +2,8 @@ import { Show, children, createSignal, mergeProps, onCleanup, onMount, splitProp
 
 import { cx } from '../utils/classNames';
 
+import { userCSSSelectors } from '../utils/userCSSSelectors';
+
 import type { JSX } from 'solid-js/jsx-runtime';
 
 
@@ -10,7 +12,7 @@ export interface MarqueeProps extends JSX.HTMLAttributes<HTMLDivElement> {
   gap?: number;
 }
 const Marquee = (props: MarqueeProps) => {
-  const [local, leftProps] = splitProps(mergeProps({ gap: 0 }, props), ['gap']);
+  const [local, leftProps] = splitProps(props, ['gap']);
   const child1 = children(() => props.children);
   const child2 = children(() => props.children);
 
@@ -22,7 +24,7 @@ const Marquee = (props: MarqueeProps) => {
     const { scrollWidth, clientWidth } = dom;
 
     const offset = useMarquee() ? 2 : 1;
-    const gap = useMarquee() ? local.gap : 0;
+    const gap = useMarquee() ? (local?.gap ?? 0) : 0;
     const newValue = (scrollWidth - gap) / offset > clientWidth;
 
     const shouldChange = !ignore;
@@ -70,11 +72,12 @@ const Marquee = (props: MarqueeProps) => {
       ref={dom}
       class={cx(
         'relative whitespace-nowrap overflow-auto flex flex-row justify-start items-center remove-scrollbar will-change-scroll',
-        props.class,
+        userCSSSelectors.marquee, props.class
       )}
       classList={{
         ...leftProps.classList,
         'overflow-hidden': useMarquee(),
+        [userCSSSelectors['marquee--disabled']]: !useMarquee(),
       }}
     >
       <div class={`${useMarquee() ? 'marquee ignore' : ''}`} style={`padding-right: ${useMarquee() ? local.gap : 0}px`}>
