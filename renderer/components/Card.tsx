@@ -1,5 +1,5 @@
-import { For, Match, Show, Switch, createSignal, getOwner, runWithOwner, splitProps } from 'solid-js';
-import { Transition, TransitionGroup } from 'solid-transition-group';
+import { For, Match, Show, Switch, createSignal, splitProps } from 'solid-js';
+import { TransitionGroup } from 'solid-transition-group';
 
 import { cx } from '../utils/classNames';
 
@@ -7,20 +7,23 @@ import type { JSX } from 'solid-js/jsx-runtime';
 
 export interface CardProps extends JSX.HTMLAttributes<HTMLDivElement> {
   expand?: boolean;
+  setExpand?: (expand: boolean) => void;
   onExpand?: (expand: boolean) => void;
 
   subCards?: JSX.Element[];
 }
 const Card = (props: CardProps) => {
-  const [local, leftProps] = splitProps(props, ['expand', 'onExpand', 'subCards']);
+  const [local, leftProps] = splitProps(props, ['expand', 'setExpand', 'onExpand', 'subCards']);
   
-  const [expand, setExpand] = local.onExpand ? [() => local.expand, local.onExpand] : createSignal(local.expand);
+  const [expand, setExpand] = local.setExpand ? [() => local.expand, local.setExpand] : createSignal(local.expand);
 
   const isSubCard = () => 'subCards' in local;
 
   const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = (event) => {
     if (isSubCard()) {
-      setExpand(!(expand() ?? false));
+      const isExpand = !(expand() ?? false);
+      setExpand(isExpand);
+      local.onExpand?.(isExpand);
     }
 
     if (typeof leftProps.onClick === 'function') return leftProps.onClick(event);
@@ -43,17 +46,14 @@ const Card = (props: CardProps) => {
       onClick={onClick}
     >
       {leftProps.children}
-      <Show when={isSubCard()}>
-        <div class={'flex-1'} />
-      </Show>
       <Switch>
         <Match when={expand() === true}>
-          <svg class={'w-4 h-4 fill-none'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg class={'w-4 h-4 fill-none ml-auto'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M4.293 15.707a1 1 0 0 0 1.414 0L12 9.414l6.293 6.293a1 1 0 0 0 1.414-1.414l-7-7a1 1 0 0 0-1.414 0l-7 7a1 1 0 0 0 0 1.414Z" class={'fill-white'} />
           </svg>
         </Match>
         <Match when={isSubCard()}>
-          <svg class={'w-4 h-4 fill-none'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg class={'w-4 h-4 fill-none ml-auto'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M4.293 8.293a1 1 0 0 1 1.414 0L12 14.586l6.293-6.293a1 1 0 1 1 1.414 1.414l-7 7a1 1 0 0 1-1.414 0l-7-7a1 1 0 0 1 0-1.414Z" class={'fill-white'} />
           </svg>
         </Match>
@@ -61,8 +61,7 @@ const Card = (props: CardProps) => {
     </div>
   );
 
-  return isSubCard() ? (
-    <div class={'flex flex-col justify-start itmes-stretch gap-[1px]'}>
+  return <Show when={isSubCard()} fallback={mainCard}><div class={'flex flex-col justify-start itmes-stretch gap-[1px]'}>
       {mainCard}
       <TransitionGroup name={'card'}>
         <Show when={expand()}>
@@ -81,8 +80,7 @@ const Card = (props: CardProps) => {
           </For>
         </Show>
       </TransitionGroup>
-    </div>
-  ) : mainCard;
+    </div></Show>;
 };
 
 export default Card;

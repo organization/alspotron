@@ -1,4 +1,4 @@
-import path from 'node:path';
+import * as path from 'node:path';
 
 import { defineConfig } from 'vite';
 
@@ -21,6 +21,10 @@ export default defineConfig({
   base: './',
   build: {
     outDir: '../dist/',
+    minify: 'terser',
+    terserOptions: {
+      ecma: 2020,
+    },
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'renderer/index.html'),
@@ -29,4 +33,7 @@ export default defineConfig({
       },
     },
   },
+  optimizeDeps: {
+    include: ['@codemirror/state', '@codemirror/view'],
+  }
 });

@@ -1,5 +1,6 @@
-import { usePlayingInfo } from '../components/PlayingInfoProvider';
 import { createMemo } from 'solid-js';
+
+import { usePlayingInfo } from '../components/PlayingInfoProvider';
 
 const BIAS = 1000; // ms
 const TRANSITION_DURATION = 225; // ms
@@ -10,17 +11,17 @@ const useLyric = () => {
     const tempLyrics = lyrics();
     if (tempLyrics === null) return null;
 
-    const last = tempLyrics.lowerBound(progress() + BIAS + TRANSITION_DURATION);
+    const last = tempLyrics.lower_bound(progress() + (BIAS + TRANSITION_DURATION));
 
-    if (!last.equals(tempLyrics.begin()) && last !== tempLyrics.begin()) {
-      return last.pre();
+    if (!last.equals(tempLyrics.begin())) {
+      return last.prev();
     }
 
     return last;
   };
 
-  const lyric = createMemo(() => lastIter()?.pointer[1]);
-  const index = createMemo(() => lastIter()?.pointer[0]);
+  const lyric = createMemo(() => lastIter()?.second);
+  const index = createMemo(() => lastIter()?.first);
 
   return [lyric, index] as const;
 };

@@ -14,6 +14,13 @@
       focus:outline-none;
   }
 
+  .btn-primary-disabled {
+    @apply min-w-[130px] px-3 py-2 rounded text-black
+    bg-primary-600
+    outline-none select-none cursor-pointer
+    focus:outline-none;
+  }
+
   .btn-text {
     @apply min-w-[130px] px-3 py-2 rounded text-white
     bg-white/[7.5%] hover:bg-white/10 active:bg-white/5
@@ -24,6 +31,15 @@
   .btn-disabled {
     @apply px-3 py-2 bg-gray-400 text-gray-100 dark:bg-gray-600 dark:text-gray-900 font-semibold rounded-lg
       outline-none select-none;
+  }
+
+  .checkbox {
+    @apply appearance-none w-[20px] h-[20px] bg-gray-100/5 rounded-[4px] hover:bg-gray-100/10 focus:bg-black/10
+    border-[1px] border-gray-100/20
+  }
+
+  .checkbox:checked {
+    @apply shadow-[inset_0_0_0_3px] shadow-primary-600
   }
 
   .input {
@@ -114,16 +130,22 @@ html, body, #app {
   overflow: auto;
 }
 .fluent-scrollbar::-webkit-scrollbar {
-  @apply w-[4px] h-[4px] p-[1px];
+  @apply w-[10px] h-[10px];
 }
 .fluent-scrollbar::-webkit-scrollbar-thumb {
-  @apply w-[2px] h-[2px] bg-gray-400 rounded-full border border-transparent border-solid bg-clip-padding;
+  @apply w-[10px] h-[10px] bg-gray-400 rounded-full border-[4px] border-transparent border-solid bg-clip-padding;
+}
+.fluent-scrollbar::-webkit-scrollbar-corner {
+  @apply hidden;
 }
 
 .remove-scrollbar::-webkit-scrollbar {
   @apply hidden;
 }
 .remove-scrollbar::-webkit-scrollbar-thumb {
+  @apply hidden;
+}
+.remove-scrollbar::-webkit-scrollbar-corner {
   @apply hidden;
 }
 
@@ -141,35 +163,6 @@ html, body, #app {
 }
 
 /* animations */
-.lyric-enter-active {
-  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-  transform-origin: 100% 50%;
-}
-.lyric-exit-active {
-  transition: all 0.3s cubic-bezier(0.5, 0, 0.75, 0);
-  transform-origin: 100% 50%;
-}
-.lyric-move {
-  transition: all 0.625s ease-in-out;
-  transform-origin: 100% 50%;
-}
-
-.lyric-enter {
-  transform: translateY(200%) scale(0.9);
-  opacity: 0;
-  filter: blur(4px);
-}
-
-.lyric-exit-active {
-  position: absolute;
-}
-
-.lyric-exit-to {
-  transform: translateY(-200%) scale(0.9);
-  opacity: 0;
-  filter: blur(4px);
-}
-
 .tab-enter-active {
   transition: all 0.225s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -199,5 +192,21 @@ html, body, #app {
 }
 
 .card-exit-to {
+  opacity: 0;
+}
+
+.selector-enter-active {
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.selector-exit-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.selector-enter {
+  transform: translateY(-50%) scaleY(0.1);
+  opacity: 0;
+}
+
+.selector-exit-to {
   opacity: 0;
 }

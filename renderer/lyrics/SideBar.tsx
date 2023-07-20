@@ -1,36 +1,42 @@
-import { Show, createMemo, For, createEffect } from 'solid-js';
+import { Show, createMemo, For, createEffect, Match, Switch } from 'solid-js';
 
 import Card from '../components/Card';
 import Marquee from '../components/Marquee';
-import LyricProgressBar from '../main/components/LyricProgressBar';
 import { usePlayingInfo } from '../components/PlayingInfoProvider';
 import useLyric from '../hooks/useLyric';
+import useLyricMapper from '../hooks/useLyricMapper';
+import LyricProgressBar from '../main/components/LyricProgressBar';
 
 const SideBar = () => {
-  const { lyrics, originalLyric } = usePlayingInfo();
+  const { coverUrl, title, lyrics, originalLyric } = usePlayingInfo();
   const [_, lyricTime] = useLyric();
+  const [__, setLyricMapper] = useLyricMapper();
 
   const alsongLyric = () => {
     const lyricInfo = originalLyric();
     return lyricInfo?.kind === 'alsong' ? lyricInfo.data : null;
   };
 
-  const lyricItems = createMemo(() => {
-    const items: [number, string[]][] = [];
-
-    lyrics()?.forEach((item) => items.push(item));
-
-    return items;
-  });
+  const lyricItems = createMemo(() => lyrics()?.toJSON() ?? []);
 
   createEffect(() => {
     const time = lyricTime();
 
-    document.querySelector(`#lyric-${time}`)?.scrollIntoView({
+    document.querySelector(`#lyric-${time ?? '0'}`)?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
     });
   });
+
+  const onResetLyric = () => {
+    const newMapper = {
+      [`${title()}:${coverUrl()}`]: undefined,
+    };
+
+    setLyricMapper(newMapper);
+  };
+
+  const isMappedLyric = () => originalLyric()?.useMapper ?? false;
 
   return (
     <div
@@ -47,30 +53,47 @@ const SideBar = () => {
       <div class={'text-xl mt-4'}>
         현재 적용중인 가사
       </div>
-      <Card class={'w-full flex flex-row justify-start items-start gap-1'}>
-        <div class={'w-full flex flex-col justify-center items-start'}>
+      <Card
+        class={'w-full flex flex-row justify-start items-center gap-1'}
+        subCards={[
+          <div class={'w-full h-full flex items-center'}>
+            <button class={isMappedLyric() ? 'btn-primary' : 'btn-primary-disabled disabled'} onClick={onResetLyric} disabled={!isMappedLyric()}>
+              <Switch fallback={'자동 인식 중'}>
+                <Match when={isMappedLyric()}>
+                  자동 인식으로 변경
+                </Match>
+              </Switch>
+            </button>
+          </div>,
+        ]}
+      >
+        <div class={'w-[calc(100%-24px)] flex flex-col justify-center items-start'}>
           <Show when={originalLyric()}>
-            <div class={'text-xs text-white/50'}>
-              ID: {alsongLyric()?.lyricId}
-             {' · '}
-              작성자: {alsongLyric()?.register?.name ?? 'N/A'}
-            </div>
+            <Marquee class={'w-full'} gap={32}>
+              <div class={'text-xs text-white/50'}>
+                ID: {alsongLyric()?.lyricId ?? 'N/A'}
+              {' · '}
+                작성자: {alsongLyric()?.register?.name ?? 'N/A'}
+              {' · '}
+                <Switch fallback={'자동 검색'}>
+                  <Match when={isMappedLyric()}>
+                    수동 설정
+                  </Match>
+                </Switch>
+              </div>
+            </Marquee>
           </Show>
-          <Marquee class={'w-full'}>
-            {alsongLyric()?.title ?? '자동'}
+          <Marquee class={'w-full'} gap={32}>
+            {alsongLyric()?.title ?? 'N/A'}
           </Marquee>
           <div class={'text-sm'}>
             {alsongLyric()?.artist ?? 'N/A'}
           </div>
         </div>
-        <div class={'flex-1'} />
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class={'self-center'}>
-          <path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff"/>
-        </svg>
       </Card>
-      <div class={'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto'}>
+      <div class={'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto will-change-scroll'}>
         <For each={lyricItems()}>
-          {([time, value]) => (
+          {({ first: time, second: lyrics }) => (
             <div
               id={`lyric-${time}`}
               class={'my-4 whitespace-pre-line'}
@@ -78,7 +101,7 @@ const SideBar = () => {
                 'text-primary-500': lyricTime() === time,
               }}
             >
-              {value.join('\n')}
+              {lyrics.join('\n')}
             </div>
           )}
         </For>

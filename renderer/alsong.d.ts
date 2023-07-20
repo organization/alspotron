@@ -1,7 +1,7 @@
 declare module 'alsong' {
   import * as stream from 'stream';
 
-  type LyricTimestamp = string;
+  type LyricTimestamp = number;
   type LyricRegister = {
     name: string,
     email: string,
@@ -74,11 +74,11 @@ declare module 'alsong' {
 
     getLyric(music: AlsongMusic): Promise<Lyric | null>;
 
-    getLyricById(lyricId: number | string): Promise<Lyric | null>;
+    getLyricById(lyricId: number | string): Promise<(Lyric & { registerDate?: Date }) | null>;
 
     getLyricByHash(hash: string): Promise<Lyric | null>;
 
-    getLyricListByArtistName(artist, title, option?: AlsongOption): Promise<LyricMetadata[]>;
+    getLyricListByArtistName(artist: string, title: string, option?: AlsongOption): Promise<LyricMetadata[]>;
 
     compat(resolver?: 'v1' | 'v2'): AlsongCompat;
   }

@@ -11,6 +11,9 @@
     "types": ["vite/client"],
     "baseUrl": ".",
     "outDir": "./dist",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictFunctionTypes": true
   },
   "exclude": [
     "*.config.ts",

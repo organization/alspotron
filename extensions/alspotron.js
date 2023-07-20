@@ -9,7 +9,7 @@
       return Spicetify.CosmosAsync
         .get(`hm://lyrics/v1/track/${uri.id}`)
         .then(payload => payload.lines)
-        .catch(err => {
+        .catch(() => {
           return [];
         });
     },

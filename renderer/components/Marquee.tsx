@@ -1,19 +1,22 @@
 import { Show, children, createSignal, mergeProps, onCleanup, onMount, splitProps } from 'solid-js';
-// eslint-disable-next-line import/no-unresolved
-import { JSX } from 'solid-js/jsx-runtime';
 
 import { cx } from '../utils/classNames';
+
+import { userCSSSelectors } from '../utils/userCSSSelectors';
+
+import type { JSX } from 'solid-js/jsx-runtime';
+
 
 export interface MarqueeProps extends JSX.HTMLAttributes<HTMLDivElement> {
   children: JSX.Element;
   gap?: number;
 }
 const Marquee = (props: MarqueeProps) => {
-  const [local, leftProps] = splitProps(mergeProps({ gap: 0 }, props), ['gap']);
+  const [local, leftProps] = splitProps(props, ['gap']);
   const child1 = children(() => props.children);
   const child2 = children(() => props.children);
 
-  let dom: HTMLDivElement;
+  let dom!: HTMLDivElement;
   let ignore = false;
   const [useMarquee, setUseMarquee] = createSignal(false);
 
@@ -21,24 +24,37 @@ const Marquee = (props: MarqueeProps) => {
     const { scrollWidth, clientWidth } = dom;
 
     const offset = useMarquee() ? 2 : 1;
-    const gap = useMarquee() ? local.gap : 0;
+    const gap = useMarquee() ? (local?.gap ?? 0) : 0;
     const newValue = (scrollWidth - gap) / offset > clientWidth;
 
     const shouldChange = !ignore;
     ignore = false;
 
     if (newValue !== useMarquee() && shouldChange) {
-      setUseMarquee(!!newValue);
+      setUseMarquee(newValue);
 
       ignore = true;
     }
   }
   const observer = new MutationObserver(updateOverflow);
   onMount(() => {
-    updateOverflow();
-    ignore = false;
+    const limitTime = Date.now() + (3 * 1000);
+    const target = dom?.parentElement ?? dom;
+    const tryComputedOverflow = () => {
+      if (Date.now() > limitTime) return;
 
-    observer.observe(dom, {
+      requestAnimationFrame(() => {
+        if (dom.clientWidth === 0) {
+          tryComputedOverflow();
+        } else {
+          updateOverflow();
+          ignore = false;
+        }
+      });
+    };
+    tryComputedOverflow();
+
+    observer.observe(target, {
       characterData: true,
       childList: true,
       subtree: true,
@@ -54,10 +70,14 @@ const Marquee = (props: MarqueeProps) => {
     <div
       {...leftProps}
       ref={dom}
-      class={cx('relative whitespace-nowrap overflow-auto flex flex-row justify-start items-center remove-scrollbar', props.class)}
+      class={cx(
+        'relative whitespace-nowrap overflow-auto flex flex-row justify-start items-center remove-scrollbar will-change-scroll',
+        userCSSSelectors.marquee, props.class
+      )}
       classList={{
         ...leftProps.classList,
         'overflow-hidden': useMarquee(),
+        [userCSSSelectors['marquee--disabled']]: !useMarquee(),
       }}
     >
       <div class={`${useMarquee() ? 'marquee ignore' : ''}`} style={`padding-right: ${useMarquee() ? local.gap : 0}px`}>

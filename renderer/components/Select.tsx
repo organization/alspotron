@@ -1,14 +1,16 @@
+import { Placement, offset } from '@floating-ui/dom';
+import { useFloating } from 'solid-floating-ui';
 import { For, Show, createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js';
-import usePopper from 'solid-popper';
+
+import { Transition } from 'solid-transition-group';
 
 import { cx } from '../utils/classNames';
 
-import type { Options } from '@popperjs/core';
 import type { JSX } from 'solid-js/jsx-runtime';
 
 export interface SelectProps extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
   placeholder?: string;
-  placement?: Options['placement'];
+  placement?: Placement;
 
   options: string[];
   value?: string;
@@ -34,16 +36,13 @@ const Selector = (props: SelectProps) => {
   const [options, setOptions] = createSignal(local.options);
 
   /* defines */
-  usePopper(anchor, popper, {
-    placement: local.placement ?? 'bottom-end',
+  const position = useFloating(anchor, popper, {
+    placement: local.placement ?? 'bottom-start',
+    strategy: 'absolute',
+    middleware: [
+      offset({ mainAxis: 8, crossAxis: 0 }),
+    ],
   });
-
-  /* callbacks */
-  const onSelect = (option: string) => {
-    setKeyword(null);
-    setOpen(false);
-    local.onChange?.(option);
-  };
 
   /* lifetimes */
   const listener = (event: MouseEvent) => {
@@ -57,11 +56,31 @@ const Selector = (props: SelectProps) => {
 
   createEffect(() => {
     setOptions(local.options.filter((option) => (local.format?.(option) ?? option).includes(keyword() ?? '')));
+    position.update();
+  });
+
+  createEffect(() => {
+    const anchorDom = anchor();
+    const popperDom = popper();
+    
+    anchorDom?.addEventListener('transitionstart', () => {
+      position.update();
+    }, { once: true });
+    popperDom?.addEventListener('transitionstart', () => {
+      position.update();
+    }, { once: true });
   })
 
   onCleanup(() => {
     window.removeEventListener('click', listener);
   });
+
+  /* callbacks */
+  const onSelect = (option: string) => {
+    setKeyword(null);
+    setOpen(false);
+    local.onChange?.(option);
+  };
 
   return (
     <>
@@ -69,29 +88,40 @@ const Selector = (props: SelectProps) => {
         {...leftProps}
         ref={setAnchor}
         class={cx('input', leftProps.class)}
-        value={keyword() ?? local.format?.(local.value) ?? local.value}
+        value={keyword() ?? local.format?.(local.value ?? '') ?? local.value}
         onInput={(event) => setKeyword(event.target.value)}
         onFocusIn={() => setOpen(true)}
       />
-      <Show when={open()}>
-        <ul
-          ref={setPopper}
-          style={`max-width: ${anchor()?.clientWidth}px; ${popup.popupStyle}`}
-          class={cx(`
-            max-h-[50vh]
-            flex flex-col justify-start items-start
-            bg-gray-900 z-50 fluent-scrollbar
-          `, popup.popupClass)}
-        >
-          <For each={options()}>
-            {(option) => local.renderItem?.({ onClick: () => onSelect(option) }, option) ?? (
-              <li class={'flex'} onClick={() => onSelect(option)}>
-                {option}
-              </li>
-            )}
-          </For>
-        </ul>
-      </Show>
+      <div
+        ref={setPopper}
+        style={{
+          position: position.strategy,
+          top: `${position.y ?? 0}px`,
+          left: `${position.x ?? 0}px`,
+        }}
+        class={'z-50'}
+      >
+        <Transition name={'selector'}>
+          <Show when={open()}>
+            <ul
+              style={`width: ${anchor()?.clientWidth ? `${anchor()?.clientWidth ?? 0}px` : 'fit-content'}; ${popup.popupStyle ?? ''};`}
+              class={cx(`
+                w-full max-h-[50vh]
+                flex flex-col justify-start items-start p-1 rounded-lg shadow-[0_0_0_1px_var(--tw-shadow-color),0_4px_8px_var(--tw-shadow-color)] shadow-black/25
+                bg-neutral-800/90 fluent-scrollbar backdrop-blur-xl
+              `, popup.popupClass)}
+            >
+              <For each={options()}>
+                {(option) => local.renderItem?.({ onClick: () => onSelect(option) }, option) ?? (
+                  <li class={'flex text-white hover:bg-white/10 rounded-lg'} onClick={() => onSelect(option)}>
+                    {local.format?.(option) ?? option}
+                  </li>
+                )}
+              </For>
+            </ul>
+          </Show>
+        </Transition>
+      </div>
     </>
   );
 };

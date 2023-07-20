@@ -22,3 +22,47 @@ index 3762f9b..0c61994 100644
  	}),
  	
  	converter: AlsongV2Converter,
+diff --git a/node_modules/alsong/src/utils/LyricUtils.js b/node_modules/alsong/src/utils/LyricUtils.js
+index 2a636c6..82b4ffd 100644
+--- a/node_modules/alsong/src/utils/LyricUtils.js
++++ b/node_modules/alsong/src/utils/LyricUtils.js
+@@ -1,18 +1,27 @@
+ const LyricUtils = {
+-	parseLyric(lyric) {
+-		const lyrics = {};
+-		lyric.split('<br>').forEach(v => {
+-			const match = v.match(/^\[(\d+):(\d\d).(\d\d)\](.*)$/);
+-			if (!match) return;
++  parseLyric(lyric) {
++    /**
++     * @type Record<number, string[]>
++     */
++    const lyrics = {};
++    const regex = /\[(\d+):(\d\d).(\d\d)\]([^<]+)/g;
++    let match;
+ 
+-			const timestamp = 10 * (parseInt(match[1]) * 60 * 100 + parseInt(match[2]) * 100 + parseInt(match[3]));
+-			if(!lyrics[timestamp]) lyrics[timestamp] = [];
++    while ((match = regex.exec(lyric))) {
++      const minutes = parseInt(match[1]);
++      const seconds = parseInt(match[2]);
++      const milliseconds = parseInt(match[3]);
++      const timestamp = 10 * (minutes * 60 * 100 + seconds * 100 + milliseconds);
+ 
+-			lyrics[timestamp].push(match[4]);
+-		});
++      if (!lyrics[timestamp]) {
++        lyrics[timestamp] = [];
++      }
+ 
+-		return lyrics;
+-	}
++      lyrics[timestamp].push(match[4]);
++    }
++
++    return lyrics;
++  },
+ };
+ 
+ module.exports = LyricUtils;
+\ No newline at end of file

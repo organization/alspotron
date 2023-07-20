@@ -17,9 +17,12 @@ module.exports = {
     ecmaVersion: 'latest'
   },
   rules: {
+    'arrow-parens': ['error', 'always'],
     'object-curly-spacing': ['error', 'always'],
-    // '@typescript-eslint/no-floating-promises': 'off',
+    '@typescript-eslint/no-floating-promises': 'off',
+    '@typescript-eslint/no-misused-promises': ['off', { checksVoidReturn: false }],
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    "@typescript-eslint/no-non-null-assertion": "off",
     'import/first': 'error',
     'import/newline-after-import': 'error',
     'import/no-default-export': 'off',
@@ -27,9 +30,9 @@ module.exports = {
     'import/order': [
       'error',
       {
-        'groups': ['external', 'internal', 'parent', 'index', 'sibling', 'type'],
-        'newlines-between': 'ignore',
-        'alphabetize': { order: 'asc', caseInsensitive: false }
+        'groups': ['builtin', 'external', ['internal', 'index', 'sibling'], 'parent', 'type'],
+        'newlines-between': 'always-and-inside-groups',
+        'alphabetize': { order: 'ignore', caseInsensitive: false }
       }
     ],
     'import/prefer-default-export': 'off',
@@ -49,6 +52,8 @@ module.exports = {
     'no-mixed-operators': 'error',
     'no-multi-spaces': ['error', { ignoreEOLComments: true }],
     'no-tabs': 'error',
+    'no-void': 'error',
+    'no-empty': 'off',
     'prefer-promise-reject-errors': 'off',
     'quotes': ['error', 'single', {
       avoidEscape: true,

@@ -1,5 +1,7 @@
 .eslintrc.js
 postcss.config.js
 tailwind.config.js
-vite.config.ts
+rollup.preload.config.ts
+rollup.main.config.ts
+vite.renderer.config.ts
 extensions/alspotron.js

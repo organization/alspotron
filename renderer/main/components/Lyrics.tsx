@@ -1,37 +1,37 @@
-import { createMemo, For } from 'solid-js';
-import { TransitionGroup } from 'solid-transition-group'
-import useConfig from '../../hooks/useConfig';
-import LyricsItem from './LyricsItem'
+
+import { splitProps } from 'solid-js';
+
+import LyricsTransition from './LyricsTransition';
+
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import useLyric from '../../hooks/useLyric';
 
-const Lyrics = () => {
+import { cx } from '../../utils/classNames';
+import { userCSSSelectors } from '../../utils/userCSSSelectors';
+
+import useConfig from '../../hooks/useConfig';
+
+import type { JSX } from 'solid-js/jsx-runtime';
+
+type LyricsProps = {
+  style?: string;
+} & JSX.HTMLAttributes<HTMLDivElement>;
+
+const Lyrics = (props: LyricsProps) => {
   const [config] = useConfig();
+  const [, containerProps] = splitProps(props, ['class', 'style']);
   const { status } = usePlayingInfo();
-  const [lyric] = useLyric();
+  const [lyrics] = useLyric();
 
   return (
-      <TransitionGroup name={'lyric'}>
-        <For each={lyric() ?? []}>
-          {(item, index) => item && (
-            <LyricsItem
-              status={status()}
-              delay={index()}
-              style={`
-                font-family: ${config()?.style.font};
-                font-weight: ${config()?.style.fontWeight};
-                font-size: ${config()?.style.lyric.fontSize}px;
-                color: ${config()?.style.lyric.color};
-                background-color: ${config()?.style.lyric.background};
-                text-align: var(--text-align);
-              `}
-            >
-              {item}
-            </LyricsItem>
-          )}
-        </For>
-      </TransitionGroup>
-    );
-};
+    <div
+      class={cx('w-full flex flex-col items-end', props.class, userCSSSelectors['lyrics-wrapper'])}
+      style={`opacity: ${status() !== 'playing' ? config()?.style.lyric.stoppedOpacity : 1}; ${props.style ?? ''};`}
+      {...containerProps}
+    >
+      <LyricsTransition lyrics={lyrics() ?? []} status={status()} {...containerProps} />
+    </div>
+  );
+}
 
 export default Lyrics;

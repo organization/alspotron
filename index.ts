@@ -4,7 +4,7 @@ import Application from './src/Application';
 
 const application = new Application();
 
-void (async () => {
+(async () => {
   await app.whenReady();
 
   application.initAutoUpdater();
@@ -15,6 +15,7 @@ void (async () => {
   application.initMainWindow();
 
   application.mainWindow.show();
+  application.injectOverlay();
 
   console.log('[Alspotron] App is ready');
 })();

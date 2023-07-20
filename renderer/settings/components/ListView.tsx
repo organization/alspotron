@@ -1,9 +1,10 @@
 import { For, Signal, createSignal, splitProps } from 'solid-js';
-// eslint-disable-next-line import/no-unresolved
-import { JSX } from 'solid-js/jsx-runtime';
+
+import ListItem from './ListItem';
 
 import { cx } from '../../utils/classNames';
-import ListItem from './ListItem';
+
+import type { JSX } from 'solid-js/jsx-runtime';
 
 
 export interface ListItemData {
@@ -22,6 +23,7 @@ export interface ListViewProps extends JSX.HTMLAttributes<HTMLUListElement> {
 const ListView = (props: ListViewProps) => {
   const [local, leftProps] = splitProps(props, ['items', 'onSelectItem', 'value']);
 
+  // eslint-disable-next-line solid/reactivity
   const [tab, setTab] = local.value ?? createSignal(props.initItem ?? local.items[0].id);
   const index = () => local.items.findIndex((item) => item.id === tab());
 

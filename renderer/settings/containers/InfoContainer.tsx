@@ -1,17 +1,18 @@
 import { UpdateCheckResult } from 'electron-updater';
-import { createSignal, Switch, Match } from 'solid-js';
+import { createSignal, Switch, Match, onMount } from 'solid-js';
 
+import MainIcon from '../../../assets/icon_music.png';
+import packageJson from '../../../package.json';
 import Card from '../../components/Card';
 import Spinner from '../../components/Spinner';
 
-import packageJson from '../../../package.json';
-import MainIcon from '../../../assets/icon_music.png';
 
 const InfoContainer = () => {
   const [updateData, setUpdateData] = createSignal<{
-    updateCheckResult: UpdateCheckResult,
+    updateCheckResult: UpdateCheckResult | null,
+    compareResult: 0 | 1 | -1,
     currentVersion: string,
-  }>(null);
+  } | null>(null);
 
   const refreshUpdateData = async () => {
     const updateResult = await window.ipcRenderer.invoke('check-update') as UpdateCheckResult;
@@ -19,17 +20,17 @@ const InfoContainer = () => {
     if (!updateResult) {
       setUpdateData({
         updateCheckResult: null,
+        compareResult: 0,
         currentVersion,
       });
       return;
     }
     const compareResult = await window.ipcRenderer.invoke('compare-with-current-version', updateResult.updateInfo.version) as 0 | 1 | -1;
-    if (compareResult < 0) {
-      setUpdateData({
-        updateCheckResult: updateResult,
-        currentVersion,
-      });
-    }
+    setUpdateData({
+      updateCheckResult: updateResult,
+      compareResult,
+      currentVersion,
+    });
   };
 
   const onLink = (url: string) => {
@@ -45,7 +46,7 @@ const InfoContainer = () => {
         지원
       </div>
       <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/organization/alspotron')}>
-        <img src={MainIcon} class={'w-6 h-6 mr-4 object-contain'} />
+        <img src={MainIcon} class={'w-6 h-6 mr-4 object-contain'} alt={'Main Icon'}/>
         <div class={'flex flex-col justify-center items-start'}>
           <div class={'text-md'}>
             Alspotron
@@ -61,7 +62,12 @@ const InfoContainer = () => {
       </Card>
       <Card
         class={'flex flex-row justify-start items-center gap-1'}
-        onClick={() => void refreshUpdateData()}
+        onClick={() => refreshUpdateData()}
+        onExpand={(expand) => {
+          if (expand) {
+            refreshUpdateData()
+          }
+        }}
         subCards={[
           <div class={'w-full h-full flex justify-start items-center'}>
             <svg class={'w-6 h-6 fill-none mr-4'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -76,26 +82,26 @@ const InfoContainer = () => {
                   </div>
                 )}
               >
-                <Match when={updateData()?.updateCheckResult}>
+                <Match when={(updateData()?.compareResult ?? 0) < 0}>
                   <div class={'text-md'}>
                     새로운 업데이트가 존재합니다
                   </div>
                   <div class={'text-xs text-white/75'}>
-                    최신 버전: {updateData().updateCheckResult.updateInfo.version}
+                    최신 버전: {updateData()?.updateCheckResult?.updateInfo.version}
                   </div>
                 </Match>
-                <Match when={updateData()}>
+                <Match when={(updateData()?.compareResult ?? 0) >= 0}>
                   <div class={'text-md'}>
                     최신 버전입니다
                   </div>
                   <div class={'text-xs text-white/75'}>
-                    현재 버전: {updateData().currentVersion}
+                    현재 버전: {updateData()?.currentVersion}
                   </div>
                 </Match>
               </Switch>
             </div>
             <div class={'flex-1'} />
-            <button class={'btn-primary'} onClick={() => void refreshUpdateData()}>
+            <button class={'btn-primary'} onClick={() => refreshUpdateData()}>
               새로고침
             </button>
           </div>,
@@ -130,7 +136,7 @@ const InfoContainer = () => {
             Khinenw
           </div>
           <div class={'text-xs text-white/75'}>
-            Alspotify 원작자
+            Alspotify 원작자, Alspotron 개발자
           </div>
         </div>
         <div class={'flex-1'} />
@@ -145,7 +151,7 @@ const InfoContainer = () => {
             Su-Yong
           </div>
           <div class={'text-xs text-white/75'}>
-            Alspotron 제작자
+            Alspotron 개발자
           </div>
         </div>
         <div class={'flex-1'} />
@@ -160,7 +166,22 @@ const InfoContainer = () => {
             JellyBrick
           </div>
           <div class={'text-xs text-white/75'}>
-            Alspotron 제작자
+            Alspotron 개발자
+          </div>
+        </div>
+        <div class={'flex-1'} />
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" class={'fill-white'} />
+        </svg>
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/smnis')}>
+        <img src={'https://avatars.githubusercontent.com/u/13712304?s=64&v=4'} class={'w-6 h-6 mr-4 rounded-full'} alt='smnis Profile Image'/>
+        <div class={'flex flex-col justify-center items-start'}>
+          <div class={''}>
+            SeongMin Park
+          </div>
+          <div class={'text-xs text-white/75'}>
+            Alspotron 개발자
           </div>
         </div>
         <div class={'flex-1'} />
