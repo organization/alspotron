@@ -65,13 +65,14 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
       setArtist(data.artists.join(', '));
     }
 
-    if (typeof data.progress === 'number' && typeof data.duration === 'number') {
+    if (typeof data.progress === 'number') {
       setProgress(data.progress);
+    }
+    if (typeof data.duration === 'number') {
       setDuration(data.duration);
     }
-
     if (typeof data.cover_url === 'string' && data.cover_url.match(/^(?:file|https?):\/\//)) {
-      setCoverUrl(data.cover_url)
+      setCoverUrl(data.cover_url);
     } else {
       setCoverUrl(IconMusic);
     }

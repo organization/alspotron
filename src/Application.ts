@@ -4,7 +4,8 @@ import { release } from 'os';
 import Koa from 'koa';
 import cors from '@koa/cors';
 import alsong from 'alsong';
-import Router from 'koa-router';
+import zodRouter from 'koa-zod-router';
+import { z } from 'zod';
 import bodyParser from 'koa-bodyparser';
 import ProgressBar from 'electron-progressbar';
 import { hmc } from 'hmc-win32';
@@ -260,16 +261,32 @@ class Application {
     this.app.use(cors());
     this.app.use(bodyParser());
 
-    const router = new Router();
+    const router = zodRouter();
 
-    router.post('/', async (ctx, next) => {
-      ctx.status = 200;
+    router.post(
+      '/',
+      async (ctx, next) => {
+        ctx.status = 200;
 
-      this.lastUpdate = ctx.request.body as RequestBody;
-      this.broadcast('update', this.lastUpdate);
+        this.lastUpdate = ctx.request.body;
+        this.broadcast('update', this.lastUpdate);
 
-      await next();
-    });
+        await next();
+      },
+      {
+        body: z.object({
+          data: z.object({
+            status: z.string(),
+            title: z.string().optional(),
+            artists: z.array(z.string()).optional(),
+            progress: z.number().optional(),
+            duration: z.number().optional(),
+            cover_url: z.string().optional(),
+            lyrics: z.record(z.number(), z.array(z.string())).optional(),
+          }),
+        }),
+      },
+    );
 
     router.post('/shutdown', () => {
       app.quit();
