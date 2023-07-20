@@ -30,7 +30,7 @@
 
 3.  Alspotron Companion 설치  
 
-    -   Spicetify 설치 위치의 Extensions 폴더에 Alspotron/extensions 폴더 안에 있는 `alspotron.js` 를 복사해 붙여넣어주세요.  
+    -   [Spicetify 설치 위치의 Extensions 폴더에](https://spicetify.app/docs/advanced-usage/extensions/) [`alspotron.js`를 다운로드 받아](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) 넣어주세요.
     -   이후 `spicetify config extensions alspotron.js` 명령어로 `alspotron.js`를 추가해주세요.  
     -   `spicetify apply` 명령어로 적용하면 스포티파이가 꺼졌다 켜지면서 적용됩니다.
 
