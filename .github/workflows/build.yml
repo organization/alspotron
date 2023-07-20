@@ -29,7 +29,7 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          npm ci
+          npm i
 
       # Build and release if it's the main repository
       - name: Build and release on Mac
