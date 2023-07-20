@@ -1,12 +1,27 @@
-import { JSX } from 'solid-js';
+import { splitProps } from 'solid-js';
+
+import { cx } from '../../utils/classNames';
 
 import useConfig from '../../hooks/useConfig';
 
-const AnchoredView = (props: { children: JSX.Element }) => {
+import type { JSX } from 'solid-js/jsx-runtime';
+
+interface AnchoredViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
+  class?: string;
+  style?: string;
+  children: JSX.Element;
+}
+
+const AnchoredView = (props: AnchoredViewProps) => {
   const [config] = useConfig();
+  const [, containerProps] = splitProps(
+    props,
+    ['class', 'style', 'children'],
+  );
+
   return (
       <div
-        class="fixed w-full h-fit flex flex-col gap-4"
+        class={cx('fixed w-full h-fit', props.class)}
         classList={{
           'top-0': config()?.windowPosition.anchor.includes('top'),
           'bottom-0': config()?.windowPosition.anchor.includes('bottom'),
@@ -22,10 +37,12 @@ const AnchoredView = (props: { children: JSX.Element }) => {
           'items-center': ['top', 'bottom', 'center'].includes(config()?.windowPosition.anchor ?? 'bottom-right'),
           'items-end': config()?.windowPosition.anchor.includes('right'),
         }}
-        style={{
-          '--text-align': config()?.windowPosition.anchor.match(/left|right|center/)?.at(0) ?? 'center',
-          'flex-direction': config()?.windowPosition?.direction ?? 'column',
-        }}
+        style={`
+          --text-align: ${config()?.windowPosition.anchor.match(/left|right|center/)?.at(0) ?? 'center'};
+          flex-direction: ${config()?.windowPosition?.direction ?? 'column'},
+          ${props.style}
+        `}
+        {...containerProps}
       >
       {props.children}
     </div>

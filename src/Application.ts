@@ -68,6 +68,7 @@ class Application {
   private overlay!: Overlay;
   private markQuit = false;
   private scaleFactor = 1.0;
+  private lastUpdate: RequestBody | null = null;
 
   public mainWindow!: BrowserWindow;
   public overlayWindow: BrowserWindow | null = null;
@@ -226,19 +227,25 @@ class Application {
           {
             label: '가사 표시기 창',
             click: () => {
-              this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+              if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+                this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+              }
             },
           },
           {
             label: '가사 선택 창',
             click: () => {
-              this.lyricsWindow?.webContents.openDevTools({ mode: 'detach' });
+              if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
+                this.lyricsWindow.webContents.openDevTools({ mode: 'detach' });
+              }
             },
           },
           {
             label: '설정 창',
             click: () => {
-              this.settingsWindow?.webContents.openDevTools({ mode: 'detach' });
+              if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
+                this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
+              }
             },
           }
         ]
@@ -261,7 +268,8 @@ class Application {
       async (ctx, next) => {
         ctx.status = 200;
 
-        this.broadcast('update', ctx.request.body);
+        this.lastUpdate = ctx.request.body;
+        this.broadcast('update', this.lastUpdate);
 
         await next();
       },
@@ -436,6 +444,7 @@ class Application {
     ipcMain.handle('get-current-version', () => autoUpdater.currentVersion.version);
     ipcMain.handle('compare-with-current-version', (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion));
     ipcMain.handle('check-update', async () => autoUpdater.checkForUpdatesAndNotify());
+    ipcMain.handle('get-last-update', () => this.lastUpdate);
     ipcMain.handle('get-lyric-by-id', async (_, id: number) => {
       const lyric = await alsong.getLyricById(id).catch(() => null);
       if (lyric) delete lyric.registerDate;
@@ -570,7 +579,7 @@ class Application {
       ?? screen.getPrimaryDisplay();
 
     const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
-    const windowHeight = 300;
+    const windowHeight = style.maxHeight;
 
     const anchorX = (() => {
       if (windowPosition.anchor.includes('left')) {
@@ -630,6 +639,7 @@ class Application {
       this.settingsWindow.setMicaEffect();
     }
 
+    this.settingsWindow.show();
     this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
       shell.openExternal(url);
 
@@ -668,6 +678,7 @@ class Application {
       this.lyricsWindow.setMicaEffect();
     }
 
+    this.lyricsWindow.show();
     if (app.isPackaged) {
       this.lyricsWindow.loadFile(path.join(__dirname, './lyrics.html'));
     } else {

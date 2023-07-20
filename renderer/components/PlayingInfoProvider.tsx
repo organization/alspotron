@@ -6,20 +6,21 @@ import IconMusic from '../../assets/icon_music.png';
 import useLyricMapper from '../hooks/useLyricMapper';
 import { UpdateData } from '../types';
 
-type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
-type PlayingInfo = {
+export type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
+export type Status = 'idle' | 'playing' | 'stopped';
+export type PlayingInfo = {
   progress: Accessor<number>;
   duration: Accessor<number>;
   title: Accessor<string>;
   artist: Accessor<string>;
-  status: Accessor<'idle' | 'playing' | 'stopped'>;
+  status: Accessor<Status>;
   coverUrl: Accessor<string>;
   lyrics: Accessor<FlatMap<number, string[]> | null>;
   originalData: Accessor<UpdateData | null>;
   originalLyric: Accessor<LyricInfo | null>;
 };
 
-type LyricInfo =
+export type LyricInfo =
   | { useMapper: boolean, kind: 'alsong', data: Lyric }
   | { useMapper: boolean, kind: 'default', data: UpdateData };
 
@@ -51,10 +52,13 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     const data: UpdateData = message.data;
 
     setOriginalData(data);
-    setStatus(data.status);
 
     if (typeof data.title === 'string') {
       setTitle(data.title);
+    }
+
+    if (['idle', 'playing', 'stopped'].includes(data.status as string)) {
+      setStatus(data.status as Status);
     }
 
     if (Array.isArray(data.artists)) {
@@ -75,6 +79,12 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   };
 
   window.ipcRenderer.on('update', onUpdate);
+  window.ipcRenderer.invoke('get-last-update').then((update?: { data: UpdateData }) => {
+    if (update) {
+      onUpdate(null, update);
+    }
+  });
+
   onMount(() => {
     setInterval(() => {
       if (status() === 'playing') {
