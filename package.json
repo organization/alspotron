@@ -71,7 +71,7 @@
     "@codemirror/lang-css": "6.2.0",
     "@codemirror/lang-sass": "6.0.2",
     "@codemirror/state": "6.2.1",
-    "@codemirror/view": "6.14.0",
+    "@codemirror/view": "6.15.3",
     "@floating-ui/dom": "1.4.5",
     "@koa/cors": "4.0.0",
     "@popperjs/core": "2.11.8",
