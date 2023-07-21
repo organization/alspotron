@@ -49,6 +49,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
   return (
     <div
       style={`
+        --percent: ${progress() / duration() * 100}%;
         ${userCSSVariables['var-nowplaying-percent']}: var(--percent);
         ${userCSSVariables['var-nowplaying-duration']}: '${formatTime(duration())}';
         ${userCSSVariables['var-nowplaying-progress']}: '${formatTime(progress())}';
