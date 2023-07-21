@@ -101,7 +101,7 @@
   "optionalDependencies": {
     "@jellybrick/wql-process-monitor": "1.4.5",
     "exe-icon-extractor": "1.0.8",
-    "hmc-win32": "1.3.6",
+    "hmc-win32": "1.3.7",
     "mica-electron": "1.4.9"
   },
   "overrides": {
