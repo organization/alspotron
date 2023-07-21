@@ -26,6 +26,11 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Update node-gyp
+        shell: bash
+        run: |
+          npm i -g node-gyp
+
       - name: Install dependencies
         shell: bash
         run: |
