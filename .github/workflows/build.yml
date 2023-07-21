@@ -26,10 +26,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Update node-gyp
-        shell: bash
+      # https://github.com/actions/setup-node/issues/280#issuecomment-1139455898
+      - name: Update node-gyp (windows only)
+        if: startsWith(matrix.os, 'windows')
         run: |
-          npm i -g node-gyp
+          $WhereNode = Get-Command node | Select-Object -ExpandProperty Definition
+          $NodeDirPath = Split-Path $WhereNode -Parent
+          $NodeModulesPath = $NodeDirPath + "\node_modules\npm\node_modules\@npmcli\run-script"
+          cd $NodeModulesPath
+          npm install node-gyp@latest
 
       - name: Install dependencies
         shell: bash
