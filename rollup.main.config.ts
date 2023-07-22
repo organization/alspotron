@@ -32,7 +32,7 @@ export default defineConfig({
     'mica-electron',
     'glasstron',
     'hmc-win32',
-    'exe-icon-extractor',
+    '@bitdisaster/exe-icon-extractor',
     ...builtinModules,
   ],
 });

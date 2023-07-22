@@ -24,7 +24,11 @@
     "dist:only": "electron-builder",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
-  "keywords": [],
+  "keywords": [
+    "lyric",
+    "youtube-music",
+    "spotify"
+  ],
   "author": "Su-Yong <simssy2205@gmail.com>",
   "contributors": [
     "JellyBrick <shlee1503@naver.com>",
@@ -99,8 +103,8 @@
     "tstl": "2.5.13"
   },
   "optionalDependencies": {
+    "@bitdisaster/exe-icon-extractor": "1.0.10",
     "@jellybrick/wql-process-monitor": "1.4.5",
-    "exe-icon-extractor": "1.0.8",
     "hmc-win32": "1.3.7",
     "mica-electron": "1.4.9"
   },

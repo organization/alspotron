@@ -412,7 +412,7 @@ class Application {
     ipcMain.handle('get-icon', async (_, path: string) => {
       if (process.platform === 'win32') {
         try {
-          const result = (await import('exe-icon-extractor')).extractIcon(path, 'small');
+          const result = (await import('@bitdisaster/exe-icon-extractor')).extractIcon(path, 'small');
 
           return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
         } catch {
