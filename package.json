@@ -109,7 +109,7 @@
     "mica-electron": "1.4.9"
   },
   "overrides": {
-    "xml2js": "0.6.0",
+    "xml2js": "0.6.1",
     "simple-update-notifier": "2.0.0",
     "@electron/get": "2.0.2",
     "electron": "25.3.1",
