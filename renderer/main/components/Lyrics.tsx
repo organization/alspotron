@@ -17,6 +17,16 @@ type LyricsProps = {
   style?: string;
 } & JSX.HTMLAttributes<HTMLDivElement>;
 
+const anchorTypeToItemsAlignType = (anchor?: string) => {
+  if (anchor?.includes('right')) {
+    return 'flex-end';
+  } else if (anchor?.includes('left')) {
+    return 'flex-start';
+  } else {
+    return 'center';
+  }
+};
+
 const Lyrics = (props: LyricsProps) => {
   const [config] = useConfig();
   const [, containerProps] = splitProps(props, ['class', 'style']);
@@ -25,11 +35,18 @@ const Lyrics = (props: LyricsProps) => {
 
   return (
     <div
-      class={cx('w-full flex flex-col items-end', props.class, userCSSSelectors['lyrics-wrapper'])}
+      class={cx('w-full flex flex-col', props.class, userCSSSelectors['lyrics-wrapper'])}
       style={`opacity: ${status() !== 'playing' ? config()?.style.lyric.stoppedOpacity : 1}; ${props.style ?? ''};`}
       {...containerProps}
     >
-      <LyricsTransition lyrics={lyrics() ?? []} status={status()} {...containerProps} />
+      <LyricsTransition
+        lyrics={lyrics() ?? []}
+        status={status()}
+        style={`
+          align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
+          flex-direction: ${config()?.windowPosition?.direction ?? 'column'};
+        `}
+        {...containerProps} />
     </div>
   );
 }

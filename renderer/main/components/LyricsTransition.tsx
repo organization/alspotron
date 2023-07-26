@@ -95,11 +95,10 @@ const LyricsTransition = (props: LyricTransitionProps) => {
       color: ${configData.style.lyric.color};
       background-color: ${configData.style.lyric.background};
     ` : ''};
-    text-align: var(--text-align);
   `));
 
   const Container = (containerProps: { children: JSX.Element }) => (
-    <div class={cx('flex flex-col items-end gap-4', userCSSSelectors.lyrics, props.class)} {...passedProps}>
+    <div class={cx('flex flex-col gap-4', userCSSSelectors.lyrics, props.class)} {...passedProps}>
       {containerProps.children}
     </div>
   );
