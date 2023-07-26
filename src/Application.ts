@@ -486,10 +486,10 @@ class Application {
       setConfig(data);
       this.broadcast('config', config());
 
-      this.updateWindowConfig(this.mainWindow);
+      this.updateWindowConfig(this.mainWindow, false);
       if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
         this.overlayWindow.close();
-        this.updateWindowConfig(this.overlayWindow);
+        this.updateWindowConfig(this.overlayWindow, true);
         this.initOverlayWindow();
         this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
       }
@@ -531,7 +531,7 @@ class Application {
       this.mainWindow.loadURL('http://localhost:5173');
     }
 
-    const onMainWindowUpdate = () => this.updateWindowConfig(this.mainWindow);
+    const onMainWindowUpdate = () => this.updateWindowConfig(this.mainWindow, false);
     screen.on('display-metrics-changed', onMainWindowUpdate);
     screen.on('display-added', onMainWindowUpdate);
     screen.on('display-removed', onMainWindowUpdate);
@@ -555,7 +555,7 @@ class Application {
         this.overlayWindow.loadURL('http://localhost:5173');
       }
 
-      this.onOverlayWindowUpdate = () => this.updateWindowConfig(this.overlayWindow);
+      this.onOverlayWindowUpdate = () => this.updateWindowConfig(this.overlayWindow, true);
       screen.on('display-metrics-changed', this.onOverlayWindowUpdate);
       screen.on('display-added', this.onOverlayWindowUpdate);
       screen.on('display-removed', this.onOverlayWindowUpdate);
@@ -578,13 +578,14 @@ class Application {
     }
   }
 
-  updateWindowConfig(window: BrowserWindow | null) {
+  updateWindowConfig(window: BrowserWindow | null, isOverlay: boolean) {
     if (!window) return;
 
     const { windowPosition, style } = config();
-    const activeDisplay =
-      screen.getAllDisplays().find((display) => display.id === windowPosition.display)
-      ?? screen.getPrimaryDisplay();
+    const activeDisplay = isOverlay ? screen.getDisplayNearestPoint({
+      x: 0,
+      y: 0,
+    }) : screen.getAllDisplays().find((display) => display.id === windowPosition.display) ?? screen.getPrimaryDisplay();
 
     const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
     const windowHeight = style.maxHeight;
