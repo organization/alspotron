@@ -408,6 +408,12 @@ class Application {
   }
 
   initHook() {
+    ipcMain.on('get-all-screens', (event) => {
+      event.returnValue = screen.getAllDisplays();
+    });
+    ipcMain.on('get-primary-screen', (event) => {
+      event.returnValue = screen.getPrimaryDisplay();
+    });
     ipcMain.handle('get-registered-process-list', () => this.registeredPidList);
     ipcMain.handle('get-icon', (_, path: string) => {
       if (process.platform === 'win32') {
