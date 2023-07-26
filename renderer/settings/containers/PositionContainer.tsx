@@ -121,10 +121,12 @@ const PositionContainer = () => {
         <div class={'flex-1'} />
         <Selector
           value={
-            !config()?.windowPosition.display || !displays.find((display) => display.id === config()?.windowPosition.display) ?
-                '기본 모니터 사용' :
-                `${displays.findIndex((display) => display.id === getCurrentDisplay().id) + 1} - ${getCurrentDisplay().label}`
-        }
+            !config()?.windowPosition.display ?
+              '기본 모니터 사용' :
+              displays.find((display) => display.id === config()?.windowPosition.display) ?
+                `${displays.findIndex((display) => display.id === getCurrentDisplay().id) + 1} - ${getCurrentDisplay().label}` :
+                `알 수 없는 모니터 (code ${config()?.windowPosition.display})`
+          }
           onChange={(value, index) => {
             if (value === '기본 모니터 사용') {
               setConfig({ windowPosition: { display: null } });
