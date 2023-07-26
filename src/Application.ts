@@ -409,10 +409,12 @@ class Application {
 
   initHook() {
     ipcMain.handle('get-registered-process-list', () => this.registeredPidList);
-    ipcMain.handle('get-icon', async (_, path: string) => {
+    ipcMain.handle('get-icon', (_, path: string) => {
       if (process.platform === 'win32') {
         try {
-          const result = (await import('@bitdisaster/exe-icon-extractor')).extractIcon(path, 'small');
+          // HACK: import statement is not work after packaging
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const result = (require('@bitdisaster/exe-icon-extractor') as typeof import('@bitdisaster/exe-icon-extractor')).extractIcon(path, 'small');
 
           return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
         } catch {
