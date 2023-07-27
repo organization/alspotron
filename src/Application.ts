@@ -306,7 +306,12 @@ class Application {
   ) {
     this.markQuit = false;
 
-    const display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
+    const display = screen.getDisplayNearestPoint(
+      <Electron.Point>windowManager.getWindows().find((window) => window.processId == this.registeredPidList[0])?.getBounds() ??
+      screen.getCursorScreenPoint()
+    );
 
     const resizable = window.isResizable();
     this.overlay.addWindow(window.id, {
@@ -727,6 +732,7 @@ class Application {
 
         const isInit = this.overlay.getTopWindows(true).some((window) => window.processId == pid);
         if (isInit) {
+          let isFirstRun = false;
           if (this.registeredPidList.length == 0) {
             const window = windowManager.getWindows().find((window) => window.processId == pid);
 
@@ -735,15 +741,7 @@ class Application {
             }
 
             this.initOverlay();
-            if (this.overlayWindow) {
-              this.addOverlayWindow(
-                'StatusBar',
-                this.overlayWindow,
-                0,
-                0,
-                true,
-              );
-            }
+            isFirstRun = true;
           }
 
           for (const window of this.overlay.getTopWindows(true)) {
@@ -753,6 +751,16 @@ class Application {
               this.registeredPidList.push(pid);
               this.broadcast('registered-process-list', this.registeredPidList);
             }
+          }
+
+          if (this.overlayWindow && isFirstRun) {
+            this.addOverlayWindow(
+              'StatusBar',
+              this.overlayWindow,
+              0,
+              0,
+              true,
+            );
           }
         } else {
           setTimeout(tryToInject, 1000);
