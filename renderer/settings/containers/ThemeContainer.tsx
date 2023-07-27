@@ -175,7 +175,7 @@ const ThemeContainer = () => {
               미리보기
             </div>
             <div class={'relative w-full h-32 flex flex-col justify-start items-start gap-4'}>
-              <LyricsTransition class={'w-full'} lyrics={animationPreview()} status="playing" />
+              <LyricsTransition class={'w-full items-end'} lyrics={animationPreview()} status="playing" />
             </div>
           </div>,
           <div class={'w-full h-full flex justify-start items-center'}>
@@ -192,7 +192,6 @@ const ThemeContainer = () => {
               onChange={(value) => setConfig({ style: { animation: value } })}
               renderItem={(props, option) => <li
                 {...props}
-                style={{ 'font-weight': option }}
                 class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
               >
                 {getAnimationName(option)}

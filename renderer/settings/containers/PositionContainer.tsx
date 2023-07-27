@@ -4,10 +4,18 @@ import Selector from '../../components/Select';
 
 import useConfig from '../../hooks/useConfig';
 
+import type { screen as electronScreen } from 'electron';
 
+type ElectronScreenDisplay = ReturnType<typeof electronScreen.getPrimaryDisplay>;
+
+const getAllDisplays = () => window.ipcRenderer.sendSync('get-all-screens') as ElectronScreenDisplay[];
+const getPrimaryDisplay = () => window.ipcRenderer.sendSync('get-primary-screen') as ElectronScreenDisplay;
 
 const PositionContainer = () => {
   const [config, setConfig] = useConfig();
+
+  const displays = getAllDisplays();
+  const getCurrentDisplay = () => (displays.find((it) => it.id === config()?.windowPosition.display) ?? getPrimaryDisplay());
 
   return (
     <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
@@ -108,6 +116,37 @@ const PositionContainer = () => {
       </div>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
         <div class={'font-md'}>
+          가사를 표시할 모니터
+        </div>
+        <div class={'flex-1'} />
+        <Selector
+          value={
+            !config()?.windowPosition.display ?
+              '기본 모니터 사용' :
+              displays.find((display) => display.id === config()?.windowPosition.display) ?
+                `${displays.findIndex((display) => display.id === getCurrentDisplay().id) + 1} - ${getCurrentDisplay().label}` :
+                `알 수 없는 모니터 (code ${config()?.windowPosition.display})`
+          }
+          onChange={(value, index) => {
+            if (value === '기본 모니터 사용') {
+              setConfig({ windowPosition: { display: null } });
+            } else {
+              setConfig({ windowPosition: { display: displays[index - 1].id } });
+            }
+          }}
+          options={['기본 모니터 사용'].concat(displays.map((display, index) => `${index + 1} - ${display.label}`))}
+          class={'select'}
+          popupClass={'p-1 bg-gray-800 rounded'}
+          renderItem={(props, option) => <li
+            {...props}
+            class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
+          >
+            {option}
+          </li>}
+        />
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'}>
+        <div class={'font-md'}>
           가사 표시 방향
         </div>
         <div class={'flex-1'} />
@@ -120,7 +159,6 @@ const PositionContainer = () => {
           popupClass={'p-1 bg-gray-800 rounded'}
           renderItem={(props, option) => <li
             {...props}
-            style={{ 'font-weight': option }}
             class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
           >
             {option === 'column' ? '위에서 아래로' : '아래에서 위로'}
@@ -140,14 +178,13 @@ const PositionContainer = () => {
           class={'select'}
           renderItem={(props, option) => <li
             {...props}
-            style={{ 'font-weight': option }}
             class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
           >
             {option === 'true' ? '표시' : '표시안함'}
           </li>}
         />
       </Card>
-      
+
       <div class={'text-md mt-8 mb-1'}>
         여백 조절
       </div>
@@ -174,7 +211,7 @@ const PositionContainer = () => {
           value={config()?.windowPosition.left ?? undefined}
           onChange={(event) => setConfig({ windowPosition: { left: Number(event.target.value) } })}
         />
-        <img src={icon} class={'w-12 h-12 object-contain self-center justify-self-center'} />
+        <img src={icon} class={'w-12 h-12 object-contain self-center justify-self-center'} alt={'아이콘'}/>
         <input
           type={'number'}
           class={'input'}

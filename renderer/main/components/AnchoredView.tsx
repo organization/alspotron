@@ -37,11 +37,7 @@ const AnchoredView = (props: AnchoredViewProps) => {
           'items-center': ['top', 'bottom', 'center'].includes(config()?.windowPosition.anchor ?? 'bottom-right'),
           'items-end': config()?.windowPosition.anchor.includes('right'),
         }}
-        style={`
-          --text-align: ${config()?.windowPosition.anchor.match(/left|right|center/)?.at(0) ?? 'center'};
-          flex-direction: ${config()?.windowPosition?.direction ?? 'column'},
-          ${props.style}
-        `}
+        style={`flex-direction: ${config()?.windowPosition?.direction ?? 'column'}; ${props.style}`}
         {...containerProps}
       >
       {props.children}
