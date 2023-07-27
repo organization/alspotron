@@ -306,7 +306,12 @@ class Application {
   ) {
     this.markQuit = false;
 
-    const display = screen.getDisplayNearestPoint(screen.getCursorScreenPoint());
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
+    const display = screen.getDisplayNearestPoint(
+      <Electron.Point>windowManager.getWindows().find((window) => window.processId == this.registeredPidList[0])?.getBounds() ??
+      screen.getCursorScreenPoint()
+    );
 
     const resizable = window.isResizable();
     this.overlay.addWindow(window.id, {
@@ -323,8 +328,8 @@ class Application {
       minHeight: resizable ? 100 : window.getBounds().height,
       nativeHandle: window.getNativeWindowHandle().readUInt32LE(0),
       rect: {
-        x: window.getBounds().x,
-        y: window.getBounds().y,
+        x: Math.floor(window.getBounds().x * this.scaleFactor),
+        y: Math.floor(window.getBounds().y * this.scaleFactor),
         width: Math.floor(window.getBounds().width * this.scaleFactor),
         height: Math.floor(window.getBounds().height * this.scaleFactor),
       },
@@ -408,13 +413,18 @@ class Application {
   }
 
   initHook() {
+    ipcMain.on('get-all-screens', (event) => {
+      event.returnValue = screen.getAllDisplays();
+    });
+    ipcMain.on('get-primary-screen', (event) => {
+      event.returnValue = screen.getPrimaryDisplay();
+    });
     ipcMain.handle('get-registered-process-list', () => this.registeredPidList);
-    ipcMain.handle('get-icon', (_, path: string) => {
+    ipcMain.handle('get-icon', async (_, path: string) => {
       if (process.platform === 'win32') {
         try {
-          // HACK: import statement is not work after packaging
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const result = (require('@bitdisaster/exe-icon-extractor') as typeof import('@bitdisaster/exe-icon-extractor')).extractIcon(path, 'small');
+          const extractIcon = (await import('extract-file-icon')).default;
+          const result = extractIcon(path, 32);
 
           return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
         } catch {
@@ -483,7 +493,7 @@ class Application {
       this.updateWindowConfig(this.mainWindow);
       if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
         this.overlayWindow.close();
-        this.updateWindowConfig(this.overlayWindow);
+        this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
         this.initOverlayWindow();
         this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
       }
@@ -549,7 +559,7 @@ class Application {
         this.overlayWindow.loadURL('http://localhost:5173');
       }
 
-      this.onOverlayWindowUpdate = () => this.updateWindowConfig(this.overlayWindow);
+      this.onOverlayWindowUpdate = () => this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
       screen.on('display-metrics-changed', this.onOverlayWindowUpdate);
       screen.on('display-added', this.onOverlayWindowUpdate);
       screen.on('display-removed', this.onOverlayWindowUpdate);
@@ -572,13 +582,20 @@ class Application {
     }
   }
 
-  updateWindowConfig(window: BrowserWindow | null) {
+  updateWindowConfig(window: BrowserWindow | null, options?: { isOverlay: boolean, gameProcessId?: number }) {
     if (!window) return;
 
     const { windowPosition, style } = config();
-    const activeDisplay =
-      screen.getAllDisplays().find((display) => display.id === windowPosition.display)
-      ?? screen.getPrimaryDisplay();
+    let activeDisplay: Electron.Display;
+    if (options && options.isOverlay && process.platform === 'win32') {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
+      activeDisplay = screen.getDisplayNearestPoint(
+        <Electron.Point>windowManager.getWindows().find((window) => window.processId == options.gameProcessId)?.getBounds() ?? screen.getCursorScreenPoint()
+      );
+    } else {
+      activeDisplay = screen.getAllDisplays().find((display) => display.id === windowPosition.display) ?? screen.getPrimaryDisplay();
+    }
 
     const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
     const windowHeight = style.maxHeight;
@@ -706,6 +723,8 @@ class Application {
 
     if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
       let tryCount = 0;
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
 
       const tryToInject = () => {
         tryCount += 1;
@@ -713,22 +732,16 @@ class Application {
 
         const isInit = this.overlay.getTopWindows(true).some((window) => window.processId == pid);
         if (isInit) {
+          let isFirstRun = false;
           if (this.registeredPidList.length == 0) {
-            this.scaleFactor = screen.getDisplayNearestPoint({
-              x: 0,
-              y: 0,
-            }).scaleFactor;
+            const window = windowManager.getWindows().find((window) => window.processId == pid);
+
+            if (window) {
+              this.scaleFactor = window.getMonitor().getScaleFactor();
+            }
 
             this.initOverlay();
-            if (this.overlayWindow) {
-              this.addOverlayWindow(
-                'StatusBar',
-                this.overlayWindow,
-                0,
-                0,
-                true,
-              );
-            }
+            isFirstRun = true;
           }
 
           for (const window of this.overlay.getTopWindows(true)) {
@@ -738,6 +751,16 @@ class Application {
               this.registeredPidList.push(pid);
               this.broadcast('registered-process-list', this.registeredPidList);
             }
+          }
+
+          if (this.overlayWindow && isFirstRun) {
+            this.addOverlayWindow(
+              'StatusBar',
+              this.overlayWindow,
+              0,
+              0,
+              true,
+            );
           }
         } else {
           setTimeout(tryToInject, 1000);

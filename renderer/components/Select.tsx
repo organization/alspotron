@@ -14,7 +14,7 @@ export interface SelectProps extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 
 
   options: string[];
   value?: string;
-  onChange?: (value: string) => void;
+  onChange?: (value: string, index: number) => void;
   format?: (value: string) => string;
 
   popupClass?: string;
@@ -76,10 +76,10 @@ const Selector = (props: SelectProps) => {
   });
 
   /* callbacks */
-  const onSelect = (option: string) => {
+  const onSelect = (option: string, index: number) => {
     setKeyword(null);
     setOpen(false);
-    local.onChange?.(option);
+    local.onChange?.(option, index);
   };
 
   return (
@@ -112,8 +112,8 @@ const Selector = (props: SelectProps) => {
               `, popup.popupClass)}
             >
               <For each={options()}>
-                {(option) => local.renderItem?.({ onClick: () => onSelect(option) }, option) ?? (
-                  <li class={'flex text-white hover:bg-white/10 rounded-lg'} onClick={() => onSelect(option)}>
+                {(option, index) => local.renderItem?.({ onClick: () => onSelect(option, index()) }, option) ?? (
+                  <li class={'flex text-white hover:bg-white/10 rounded-lg'} onClick={() => onSelect(option, index())}>
                     {local.format?.(option) ?? option}
                   </li>
                 )}
