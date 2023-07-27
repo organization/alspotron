@@ -309,7 +309,7 @@ class Application {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
     const display = screen.getDisplayNearestPoint(
-      <Electron.Point>windowManager.getWindows().find((window) => window.processId == this.registeredPidList[0])?.getBounds() ??
+      windowManager.getWindows().find((window) => window.processId == this.registeredPidList[0])?.getBounds() as Electron.Point ??
       screen.getCursorScreenPoint()
     );
 
@@ -593,7 +593,8 @@ class Application {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
       activeDisplay = screen.getDisplayNearestPoint(
-        <Electron.Point>windowManager.getWindows().find((window) => window.processId == options.gameProcessId)?.getBounds() ?? screen.getCursorScreenPoint()
+        windowManager.getWindows().find((window) => window.processId == options.gameProcessId)?.getBounds() as Electron.Point ??
+        screen.getCursorScreenPoint()
       );
     } else {
       activeDisplay = screen.getAllDisplays().find((display) => display.id === windowPosition.display) ?? screen.getPrimaryDisplay();
