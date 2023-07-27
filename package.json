@@ -78,7 +78,6 @@
     "@codemirror/view": "6.15.3",
     "@floating-ui/dom": "1.4.5",
     "@koa/cors": "4.0.0",
-    "@popperjs/core": "2.11.8",
     "@solid-codemirror/codemirror": "1.0.4",
     "@uiw/codemirror-theme-github": "4.21.8",
     "alsong": "3.0.1",
