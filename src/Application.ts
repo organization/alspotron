@@ -420,10 +420,12 @@ class Application {
       event.returnValue = screen.getPrimaryDisplay();
     });
     ipcMain.handle('get-registered-process-list', () => this.registeredPidList);
-    ipcMain.handle('get-icon', async (_, path: string) => {
+    ipcMain.handle('get-icon', (_, path: string) => {
       if (process.platform === 'win32') {
         try {
-          const extractIcon = (await import('extract-file-icon')).default;
+          // HACK: dynamic import is not working
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const extractIcon = (require('extract-file-icon') as typeof import('extract-file-icon'));
           const result = extractIcon(path, 32);
 
           return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
