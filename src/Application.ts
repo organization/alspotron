@@ -323,8 +323,8 @@ class Application {
       minHeight: resizable ? 100 : window.getBounds().height,
       nativeHandle: window.getNativeWindowHandle().readUInt32LE(0),
       rect: {
-        x: window.getBounds().x,
-        y: window.getBounds().y,
+        x: Math.floor(window.getBounds().x * this.scaleFactor),
+        y: Math.floor(window.getBounds().y * this.scaleFactor),
         width: Math.floor(window.getBounds().width * this.scaleFactor),
         height: Math.floor(window.getBounds().height * this.scaleFactor),
       },
