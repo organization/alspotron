@@ -79,7 +79,7 @@
     "@floating-ui/dom": "1.4.5",
     "@koa/cors": "4.0.0",
     "@solid-codemirror/codemirror": "1.0.4",
-    "@uiw/codemirror-theme-github": "4.21.8",
+    "@uiw/codemirror-theme-github": "4.21.9",
     "alsong": "3.0.1",
     "codemirror": "6.0.1",
     "color": "4.2.3",
