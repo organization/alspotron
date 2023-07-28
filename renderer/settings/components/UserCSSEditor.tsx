@@ -36,7 +36,9 @@ const UserCSSEditor = () => {
     }
   });
 
-  const onUpdate = (value: string) => setConfig({ style: { userCSS: value } });
+  const onUpdate = (value: string) => {
+    setConfig({ style: { userCSS: value } });
+  };
   const onUpdateDebounced = debounce(onUpdate, 1000);
 
   const [editor, setEditor] = createSignal<EditorView | null>(null);

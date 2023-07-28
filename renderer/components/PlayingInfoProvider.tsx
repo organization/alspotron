@@ -1,6 +1,16 @@
 import { FlatMap } from 'tstl/experimental';
 import alsong from 'alsong';
-import { Accessor, createContext, createEffect, createSignal, JSX, on, onCleanup, onMount, useContext } from 'solid-js';
+import {
+  Accessor,
+  createContext,
+  createEffect,
+  createSignal,
+  JSX,
+  on,
+  onCleanup,
+  onMount,
+  useContext
+} from 'solid-js';
 
 import IconMusic from '../../assets/icon_music.png';
 import useLyricMapper from '../hooks/useLyricMapper';
@@ -57,7 +67,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
       setTitle(data.title);
     }
 
-    if (['idle', 'playing', 'stopped'].includes(data.status as string)) {
+    if (['idle', 'playing', 'stopped'].includes(data.status)) {
       setStatus(data.status as Status);
     }
 
@@ -71,7 +81,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     if (typeof data.duration === 'number') {
       setDuration(data.duration);
     }
-    if (typeof data.cover_url === 'string' && data.cover_url.match(/^(?:file|https?):\/\//)) {
+    if (typeof data.cover_url === 'string' && /^(?:file|https?):\/\//.exec(data.cover_url)) {
       setCoverUrl(data.cover_url);
     } else {
       setCoverUrl(IconMusic);

@@ -1,4 +1,4 @@
-import { Show, children, createSignal, mergeProps, onCleanup, onMount, splitProps } from 'solid-js';
+import { Show, children, createSignal, onCleanup, onMount, splitProps } from 'solid-js';
 
 import { cx } from '../utils/classNames';
 

@@ -1,7 +1,6 @@
 import { createMemo, createSignal, onMount, splitProps } from 'solid-js';
 
 import { Status } from '../../components/PlayingInfoProvider';
-import useConfig from '../../hooks/useConfig';
 import { cx } from '../../utils/classNames';
 
 import type { JSX } from 'solid-js/jsx-runtime';

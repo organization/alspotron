@@ -502,13 +502,13 @@ class Application {
     });
     ipcMain.handle('get-config', () => config());
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
-    ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>, useFallback = true) => {
-      setLyricMapper(data, useFallback as boolean); // SUPER WEIRD TypeScript
+    ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
+      setLyricMapper(data, useFallback);
       this.broadcast('lyric-mapper', lyricMapper());
     });
     ipcMain.handle('get-lyric-mapper', () => lyricMapper());
-    ipcMain.handle('set-game-list', (_, data: Partial<GameList>, useFallback = true) => {
-      setGameList(data, useFallback as boolean);
+    ipcMain.handle('set-game-list', (_, data: Partial<GameList>, useFallback: boolean = true) => {
+      setGameList(data, useFallback);
       this.broadcast('game-list', gameList());
     });
     ipcMain.handle('get-game-list', () => gameList());
@@ -589,7 +589,7 @@ class Application {
 
     const { windowPosition, style } = config();
     let activeDisplay: Electron.Display;
-    if (options && options.isOverlay && process.platform === 'win32') {
+    if (options?.isOverlay && process.platform === 'win32') {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
       activeDisplay = screen.getDisplayNearestPoint(
@@ -721,7 +721,7 @@ class Application {
     }
   }
   
-  private onProcessCreation(pid: number, name?: string, filePath?: string) {
+  private onProcessCreation(pid: number, _?: string, filePath?: string) {
     const gamePathList = Object.keys(gameList() ?? {});
 
     if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
