@@ -47,7 +47,7 @@ const GameListContainer = (props: GameListContainerProps) => {
     if (!event.target.files) return;
 
     const file = event.target.files.item(0);
-    const isEXE = file?.path.match(/.*\.exe$/);
+    const isEXE = file?.path && /\.(exe)$/i.test(file.path);
     if (!isEXE || !file) return;
 
     setGameList({
