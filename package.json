@@ -61,7 +61,7 @@
     "eslint-plugin-import": "2.28.0",
     "eslint-plugin-prettier": "5.0.0",
     "eslint-plugin-solid": "0.12.1",
-    "patch-package": "7.0.2",
+    "patch-package": "8.0.0",
     "postcss": "8.4.27",
     "tailwindcss": "3.3.3",
     "terser": "5.19.2",
