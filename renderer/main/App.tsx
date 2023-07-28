@@ -1,9 +1,7 @@
 import { Show, createRenderEffect, createSignal, on } from 'solid-js';
 
 import AnchoredView from './components/AnchoredView';
-
 import LyricProgressBar from './components/LyricProgressBar';
-
 import Lyrics from './components/Lyrics';
 
 import PlayingInfoProvider from '../components/PlayingInfoProvider';

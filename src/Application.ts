@@ -500,7 +500,9 @@ class Application {
         this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
       }
     });
-    ipcMain.handle('get-config', () => config());
+    ipcMain.on('get-config', (event) => {
+      event.returnValue = config();
+    });
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
     ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
       setLyricMapper(data, useFallback);

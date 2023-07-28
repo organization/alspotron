@@ -1,0 +1,14 @@
+{
+  "lyrics.lyric-search-not-found": "검색결과가 없습니다.",
+  "lyrics.playtime": "재생시간",
+  "lyrics.artist": "아티스트 명",
+  "lyrics.title": "제목",
+  "lyrics.current-playing-track": "현재 재생 중인 음악",
+  "lyrics.current-applied-lyric": "현재 적용된 가사",
+  "lyrics.auto-recognizing": "자동 인식 중",
+  "lyrics.change-to-auto-recognize-mode": "자동 인식 모드로 변경",
+  "lyrics.lyric-id": "ID",
+  "lyrics.lyric-author": "작성자",
+  "lyrics.auto-recognized": "자동 검색",
+  "lyrics.manually-specified": "수동 설정"
+}

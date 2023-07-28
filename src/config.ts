@@ -53,8 +53,13 @@ export interface Config {
   };
 
   syncThrottle: number;
+
+  language: 'ko' | 'en' | 'ja' | 'de';
 }
-export const DEFAULT_CONFIG = {
+
+const getCurrentLocale = () => (/en|ko|ja|de/.exec(app.getLocale())?.at(0)) as 'ko' | 'en' | 'ja' | 'de' | undefined ?? 'ja';
+
+export const DEFAULT_CONFIG: Config = {
   style: {
     font: 'KoPubWorldDotum',
     fontWeight: '400',
@@ -98,7 +103,13 @@ export const DEFAULT_CONFIG = {
   },
 
   syncThrottle: 1000 * 3,
+
+  language: 'ko',
 } satisfies Config;
+
+app.on('ready', () => {
+  DEFAULT_CONFIG.language = getCurrentLocale();
+}); // to get the correct locale
 
 const defaultConfigDirectory = app.getPath('userData');
 
@@ -149,7 +160,7 @@ export const setConfig = (params: DeepPartial<Config>) => {
 try {
   const str = readFileSync(path.join(defaultConfigDirectory, 'config.json'), 'utf-8');
   const config = JSON.parse(str);
-  configSignal[1](deepmerge(DEFAULT_CONFIG, config as Config));
+  setConfig(deepmerge(DEFAULT_CONFIG, config as Config)); // to upgrade config
 } catch {
   setConfig(DEFAULT_CONFIG);
 }

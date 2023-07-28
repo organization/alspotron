@@ -5,10 +5,10 @@ import { Config } from '../../src/config';
 const useConfig = () => {
   const [config, setConfig] = createSignal<Config | null>(null);
 
-  (async () => {
+  (() => {
     if (config()) return;
 
-    const result = await window.ipcRenderer.invoke('get-config') as Config;
+    const result = window.ipcRenderer.sendSync('get-config') as Config;
 
     setConfig(result);
   })();

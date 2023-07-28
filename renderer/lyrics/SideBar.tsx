@@ -1,5 +1,7 @@
 import { Show, createMemo, For, createEffect, Match, Switch } from 'solid-js';
 
+import { Trans, useTransContext } from '@jellybrick/solid-i18next';
+
 import Card from '../components/Card';
 import Marquee from '../components/Marquee';
 import { usePlayingInfo } from '../components/PlayingInfoProvider';
@@ -9,8 +11,9 @@ import LyricProgressBar from '../main/components/LyricProgressBar';
 
 const SideBar = () => {
   const { coverUrl, title, lyrics, originalLyric } = usePlayingInfo();
-  const [_, lyricTime] = useLyric();
-  const [__, setLyricMapper] = useLyricMapper();
+  const [, lyricTime] = useLyric();
+  const [, setLyricMapper] = useLyricMapper();
+  const [t] = useTransContext();
 
   const alsongLyric = () => {
     const lyricInfo = originalLyric();
@@ -47,20 +50,20 @@ const SideBar = () => {
       `}
     >
       <div class={'text-xl'}>
-        현재 재생중인 음악
+        <Trans key='lyrics.current-playing-track' />
       </div>
       <LyricProgressBar class={'!w-[280px]'} />
       <div class={'text-xl mt-4'}>
-        현재 적용중인 가사
+        <Trans key='lyrics.current-applied-lyric' />
       </div>
       <Card
         class={'w-full flex flex-row justify-start items-center gap-1'}
         subCards={[
           <div class={'w-full h-full flex items-center'}>
             <button class={isMappedLyric() ? 'btn-primary' : 'btn-primary-disabled disabled'} onClick={onResetLyric} disabled={!isMappedLyric()}>
-              <Switch fallback={'자동 인식 중'}>
+              <Switch fallback={t('lyrics.auto-recognizing')}>
                 <Match when={isMappedLyric()}>
-                  자동 인식으로 변경
+                  <Trans key='lyrics.change-to-auto-recognize-mode' />
                 </Match>
               </Switch>
             </button>
@@ -71,13 +74,13 @@ const SideBar = () => {
           <Show when={originalLyric()}>
             <Marquee class={'w-full'} gap={32}>
               <div class={'text-xs text-white/50'}>
-                ID: {alsongLyric()?.lyricId ?? 'N/A'}
+                <Trans key='lyrics.lyric-id' />: {alsongLyric()?.lyricId ?? 'N/A'}
               {' · '}
-                작성자: {alsongLyric()?.register?.name ?? 'N/A'}
+                <Trans key='lyrics.lyric-author' />: {alsongLyric()?.register?.name ?? 'N/A'}
               {' · '}
-                <Switch fallback={'자동 검색'}>
+                <Switch fallback={t('lyrics.auto-recognized')}>
                   <Match when={isMappedLyric()}>
-                    수동 설정
+                    <Trans key='lyrics.manually-specified' />
                   </Match>
                 </Switch>
               </div>
