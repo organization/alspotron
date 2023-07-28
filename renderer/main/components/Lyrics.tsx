@@ -43,6 +43,7 @@ const Lyrics = (props: LyricsProps) => {
         lyrics={lyrics() ?? []}
         status={status()}
         style={`
+          row-gap: ${config()?.style.lyric.containerRowGap}rem;
           align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
           flex-direction: ${config()?.windowPosition?.direction ?? 'column'};
         `}

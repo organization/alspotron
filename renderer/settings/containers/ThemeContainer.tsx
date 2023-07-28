@@ -253,6 +253,17 @@ const ThemeContainer = () => {
           onChange={(event) => setConfig({ style: { maxHeight: event.target.valueAsNumber } })}
         />
       </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <div class={'text-md'}>
+          가사와 NowPlaying 간 간격
+        </div>
+        <input
+          type={'number'}
+          class={'input w-48'}
+          value={config()?.style.rowGap}
+          onChange={(event) => setConfig({ style: { rowGap: event.target.valueAsNumber } })}
+        />
+      </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
       Now Playing 테마 설정
@@ -361,6 +372,17 @@ const ThemeContainer = () => {
           class={'input w-48'}
           value={config()?.style.lyric.stoppedOpacity}
           onChange={(event) => setConfig({ style: { lyric: { stoppedOpacity: event.target.valueAsNumber } } })}
+        />
+      </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <div class={'text-md'}>
+          가사 컨테이너 간 간격
+        </div>
+        <input
+          type={'number'}
+          class={'input w-48'}
+          value={config()?.style.lyric.containerRowGap}
+          onChange={(event) => setConfig({ style: { lyric: { containerRowGap: event.target.valueAsNumber } } })}
         />
       </Card>
     </div>

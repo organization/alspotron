@@ -133,7 +133,8 @@ const App = () => {
   return (
     <PlayingInfoProvider>
       <AnchoredView
-        class={cx('flex flex-col gap-8', userCSSSelectors.wrapper)}
+        class={cx('flex flex-col', userCSSSelectors.wrapper)}
+        style={`row-gap: ${config()?.style?.rowGap ?? 2}rem;`}
         {...proximityHandles}
       >
         <Lyrics />

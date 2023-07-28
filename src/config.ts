@@ -18,6 +18,7 @@ export interface Config {
     maxHeight: number;
     proximityOpacity: number;
     proximitySensitivity: number;
+    rowGap: number;
 
     nowPlaying: {
       color: string;
@@ -35,6 +36,7 @@ export interface Config {
       fontSize: number;
       maxWidth: number;
       stoppedOpacity: number;
+      containerRowGap: number;
     };
 
     userCSS: string | null;
@@ -61,6 +63,7 @@ export const DEFAULT_CONFIG = {
     maxHeight: 400,
     proximityOpacity: 0,
     proximitySensitivity: 2,
+    rowGap: 2,
 
     nowPlaying: {
       color: '#FFFFFF',
@@ -78,6 +81,7 @@ export const DEFAULT_CONFIG = {
       fontSize: 12,
       maxWidth: 700,
       stoppedOpacity: 0.5,
+      containerRowGap: 1,
     },
 
     userCSS: null,

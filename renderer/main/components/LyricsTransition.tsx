@@ -98,7 +98,7 @@ const LyricsTransition = (props: LyricTransitionProps) => {
   `));
 
   const Container = (containerProps: { children: JSX.Element }) => (
-    <div class={cx('flex flex-col gap-4', userCSSSelectors.lyrics, props.class)} {...passedProps}>
+    <div class={cx('flex flex-col', userCSSSelectors.lyrics, props.class)} {...passedProps}>
       {containerProps.children}
     </div>
   );
