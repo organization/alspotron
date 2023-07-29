@@ -179,7 +179,12 @@ const ThemeContainer = () => {
               <Trans key={'setting.theme.preview'} />
             </div>
             <div class={'relative w-full h-32 flex flex-col justify-start items-start gap-4'}>
-              <LyricsTransition class={'w-full items-end'} lyrics={animationPreview()} status="playing" />
+              <LyricsTransition
+                class={'w-full items-end'}
+                style={`row-gap: ${config()?.style.lyric.containerRowGap}rem;`}
+                lyrics={animationPreview()}
+                status="playing"
+              />
             </div>
           </div>,
           <div class={'w-full h-full flex justify-start items-center'}>
@@ -190,7 +195,7 @@ const ThemeContainer = () => {
             <Selector
               format={getAnimationName}
               placeholder={t('setting.theme.animation.placeholder')}
-              class={'select w-48 font-select'}
+              class={'select w-48'}
               options={ANIMATION_LIST}
               value={config()?.style?.animation ?? 'pretty'}
               onChange={(value) => setConfig({ style: { animation: value } })}

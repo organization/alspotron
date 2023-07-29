@@ -1,5 +1,5 @@
 {
-  "language.name": "Korean (한국어)",
+  "language.name": "English",
 
   "lyrics.lyric-search-not-found": "검색결과가 없습니다.",
   "lyrics.playtime": "재생시간",
@@ -16,7 +16,7 @@
 
   "setting.title.position": "위치",
   "setting.title.theme": "테마",
-  "setting.title.language": "언어",
+  "setting.title.language": "Language",
   "setting.title.game-overlay": "게임 오버레이",
   "setting.title.about": "정보",
 
@@ -136,14 +136,14 @@
   "updater.popup.download-aborted": "다운로드가 중단되었습니다.",
   "updater.popup.download-completed": "다운로드가 완료되었습니다.",
 
-  "tray.lyrics.label": "가사 선택",
-  "tray.setting.label": "설정",
-  "tray.exit.label": "종료",
-  "tray.devtools.label": "개발자 도구",
-  "tray.devtools.lyric-viewer.label": "가사 표시기 창",
-  "tray.devtools.lyrics.label": "가사 선택 창",
-  "tray.devtools.setting.label": "설정 창",
+  "tray.lyrics.label": "Lyric Selector",
+  "tray.setting.label": "Setting",
+  "tray.exit.label": "Exit",
+  "tray.devtools.label": "DevTools",
+  "tray.devtools.lyric-viewer.label": "Lyric Viewer",
+  "tray.devtools.lyrics.label": "Lyric Selector",
+  "tray.devtools.setting.label": "Setting",
 
-  "title.lyrics": "가사 선택",
-  "title.setting": "Alspotron 설정"
+  "title.lyrics": "Lyric Selector",
+  "title.setting": "Alspotron Setting"
 }

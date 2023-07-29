@@ -57,7 +57,7 @@ export interface Config {
   language: 'ko' | 'en' | 'ja' | 'de';
 }
 
-const getCurrentLocale = () => (/en|ko|ja|de/.exec(app.getLocale())?.at(0)) as 'ko' | 'en' | 'ja' | 'de' | undefined ?? 'ja';
+const getCurrentLocale = () => (/en|ko|ja|de/.exec(app.getLocale())?.at(0)) as 'ko' | 'en' | 'ja' | 'de' | undefined ?? 'ko';
 
 export const DEFAULT_CONFIG: Config = {
   style: {
