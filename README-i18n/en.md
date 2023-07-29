@@ -1,10 +1,9 @@
 # Alspotron <a href="https://github.com/organization/alspotron/releases/latest"><img src="https://img.shields.io/github/downloads/organization/alspotron/total.svg"/></a>
 
-### 커스텀이 편리한 *Spotify*, *YouTube Music* 가사 표시기
 ### Fully-customizable *Spotify*, *YouTube Music* lyrics viewer [(English README)](https://github.com/organization/alspotron/blob/master/README-i18n/en.md)
 
-> `스포티파이` 혹은 `유튜브 뮤직`등의 `뮤직 플레이어`에서 재생중인 노래의 알송 가사를 화면에 표시해줍니다.\
-> 알송 가사가 존재하지 않는 경우, 스포티파이의 내장 가사를 표시합니다. (**스포티파이로 재생하는 경우만 해당**)
+> Shows the lyrics of the song playing on a music player like `Spotify` or `YouTube Music`.
+> If the lyric doesn't exist, `Alspotron` will display `Spotify`'s built-in lyrics. (**Only when playing with `Spotify`**)
 
 ### Screenshot
 
@@ -20,33 +19,33 @@
 
 ### Spotify
 
-1.  [Spicetify 설치](https://github.com/khanhas/spicetify-cli)  
+1.  [Spicetify 설치](https://github.com/khanhas/spicetify-cli)
 
-    -   다음 링크의 지시사항에 따라 `Spicetify`를 설치해주세요.
+  -   다음 링크의 지시사항에 따라 `Spicetify`를 설치해주세요.
 
-2.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases) 
+2.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)
 
-    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
-    -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
+  -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
+  -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
 
-3.  Alspotron Companion 설치  
+3.  Alspotron Companion 설치
 
-    -   [Spicetify 설치 위치의 Extensions 폴더에](https://spicetify.app/docs/advanced-usage/extensions/) [`alspotron.js`를 다운로드 받아](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) 넣어주세요.
-    -   이후 `spicetify config extensions alspotron.js` 명령어로 `alspotron.js`를 추가해주세요.  
-    -   `spicetify apply` 명령어로 적용하면 스포티파이가 꺼졌다 켜지면서 적용됩니다.
+  -   [Spicetify 설치 위치의 Extensions 폴더에](https://spicetify.app/docs/advanced-usage/extensions/) [`alspotron.js`를 다운로드 받아](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) 넣어주세요.
+  -   이후 `spicetify config extensions alspotron.js` 명령어로 `alspotron.js`를 추가해주세요.
+  -   `spicetify apply` 명령어로 적용하면 스포티파이가 꺼졌다 켜지면서 적용됩니다.
 
 ### YouTube Music
 
 1.  [YouTube Music Desktop 설치](https://github.com/th-ch/youtube-music/releases)
 
-    -   다음 링크의 지시사항에 따라 `Youtube Music Desktop`을 설치해주세요.
+  -   다음 링크의 지시사항에 따라 `Youtube Music Desktop`을 설치해주세요.
 
 2.  `Youtube Music Desktop`을 실행하고, 상단 메뉴의 `plugins`를 클릭한 뒤 `tuna-obs`를 활성화해주세요.
 
-3.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)  
+3.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)
 
-    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
-    -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
+  -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
+  -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
 
 #### YouTube Music 사용자는 주의!
 
@@ -56,8 +55,8 @@
 
 1.  [tuna-obs](https://github.com/univrsal/tuna)를 참고하여 관련 설정을 마쳐주세요.
 2.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)
-    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
-    -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
+  -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
+  -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
 
 ### (모든 뮤직 플레이어 해당) 마지막 단계
 
@@ -71,7 +70,7 @@
 
 ## Config
 
-1.  설정 
+1.  설정
 
 |                                                   위치 설정                                                  |                                                   테마 설정                                                  |
 | :------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------: |
