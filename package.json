@@ -110,7 +110,7 @@
     "extract-file-icon": "0.3.2",
     "hmc-win32": "1.3.7",
     "mica-electron": "1.4.9",
-    "node-window-manager": "^2.2.4"
+    "node-window-manager": "2.2.4"
   },
   "overrides": {
     "xml2js": "0.6.2",
@@ -126,7 +126,11 @@
     "appId": "me.suyong.alspotron",
     "extends": null,
     "electronLanguages": [
-      "ko"
+      "ko",
+      "en-US",
+      "en-GB",
+      "ja",
+      "de"
     ],
     "files": [
       "dist",
