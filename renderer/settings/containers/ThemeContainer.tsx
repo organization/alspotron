@@ -259,7 +259,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          가사와 NowPlaying 간 간격
+          <Trans key={'setting.theme.margin-between-lyrics-and-progressbar'} />
         </div>
         <input
           type={'number'}
@@ -380,7 +380,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          가사 컨테이너 간 간격
+          <Trans key={'setting.theme.margin-between-lyrics-containers'} />
         </div>
         <input
           type={'number'}
