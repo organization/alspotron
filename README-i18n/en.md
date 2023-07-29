@@ -58,9 +58,9 @@
 ---
 ### etc. (e.g. Apple Music)
 
-1.  Follow [link](https://github.com/univrsal/tuna) to install browser extension.
-2.  [Download Alspotron](https://github.com/organization/alspotron/releases)
-3.  
+#### 1.  Follow [link](https://github.com/univrsal/tuna) to install browser extension.
+#### 2.  [Download Alspotron](https://github.com/organization/alspotron/releases)
+#### 3.  Install Alspotron Companion
   -   Install latest version of Alspotron from Releases. (warning : Portable version can't save settings.)
   -   for Windows users, there is `Alspotron-Web-Setup-[version].exe` for Windows.
 
