@@ -2,7 +2,7 @@
 
 ### Fully-customizable *Spotify*, *YouTube Music* lyrics viewer [(English README)](https://github.com/organization/alspotron/blob/master/README-i18n/en.md)
 
-> Shows the lyrics of the song playing on a music player like `Spotify` or `YouTube Music`.
+> Shows the lyrics of the song playing on a music player like `Spotify` or `YouTube Music`. \
 > If the lyric doesn't exist, `Alspotron` will display `Spotify`'s built-in lyrics. (**Only when playing with `Spotify`**)
 
 ### Screenshot
