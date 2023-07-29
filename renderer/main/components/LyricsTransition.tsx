@@ -45,15 +45,17 @@ const LyricsTransitionGroupAllAtOnce = (props: LyricsTransitionGroupProps) => {
   const Container = untrack(() => props.container);
 
   return (
-    <TransitionGroup name={props.animation} appear>
-      <For each={lyricTransitionGroup()}>
-        {(lyrics) => (
-          <Container>
-            <Lyrics lyrics={lyrics} style={props.lyricsStyle} status={props.lyricsStatus} />
-          </Container>
-        )}
-      </For>
-    </TransitionGroup>
+    <Container>
+      <TransitionGroup name={props.animation} appear>
+        <For each={lyricTransitionGroup()}>
+          {(lyrics) => (
+            <Container>
+              <Lyrics lyrics={lyrics} style={props.lyricsStyle} status={props.lyricsStatus} />
+            </Container>
+          )}
+        </For>
+      </TransitionGroup>
+    </Container>
   );
 };
 
