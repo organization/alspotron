@@ -19,16 +19,16 @@
 
 ### Spotify
 
-1.  [Spicetify インストール](https://github.com/khanhas/spicetify-cli)
+#### 1.  [Spicetify インストール](https://github.com/khanhas/spicetify-cli)
 
   -   上記リンクの指示に従って「`Spicetify`」をインストールしてください。
 
-2.  [Alspotronのダウンロード](https://github.com/organization/alspotron/releases)
+#### 2.  [Alspotronのダウンロード](https://github.com/organization/alspotron/releases)
 
   -   上記リンクから最新バージョンの「Alspotron」をダウンロードして実行してください。 (ポータブル バージョンは設定が保存されません)
   -   Windows ユーザの場合は、「`Alspotron-Web-Setup-[version].exe`」をダウンロードしてください。
 
-3.  Alspotron Companion インストール
+#### 3.  Alspotron Companion インストール
 
   -   Spicetifyの「[`Extensions`](https://spicetify.app/docs/advanced-usage/extensions/)」フォルダに「[`alspotron.js`](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js)」をダウンロードしてください。
   -   次に、「`specity config extensions alspotron.js`」コマンドを実行して、「`alspotron.js`」を追加します
@@ -38,13 +38,13 @@
 
 ### YouTube Music
 
-1.  [YouTube Music Desktop インストール](https://github.com/th-ch/youtube-music/releases)
+#### 1.  [YouTube Music Desktop インストール](https://github.com/th-ch/youtube-music/releases)
 
   -   上記リンクの指示に従って「`Youtube Music Desktop`」をインストールしてください。
 
-2.  「`YouTube Music Desktop`」を実行し、トップメニューから「`plugins`」を選択し、「`tuna-obs`」をアクティブにします。
+#### 2.  「`YouTube Music Desktop`」を実行し、トップメニューから「`plugins`」を選択し、「`tuna-obs`」をアクティブにします。
 
-3.  [Alspotronのダウンロード](https://github.com/organization/alspotron/releases)
+#### 3.  [Alspotronのダウンロード](https://github.com/organization/alspotron/releases)
 
 -   上記リンクから最新バージョンの「Alspotron」をダウンロードして実行してください。 (ポータブル バージョンは設定が保存されません)
 -   Windows ユーザの場合は、「`Alspotron-Web-Setup-[version].exe`」をダウンロードしてください。
@@ -57,8 +57,8 @@
 
 ### 以外のプレーヤー (e.g. Apple Music)
 
-1.  [tuna-obs](https://github.com/univrsal/tuna)を参考に設定を完了してください。
-2.  [Alspotronのダウンロード](https://github.com/organization/alspotron/releases)
+#### 1.  [tuna-obs](https://github.com/univrsal/tuna)を参考に設定を完了してください。
+#### 2.  [Alspotronのダウンロード](https://github.com/organization/alspotron/releases)
   -   上記リンクから最新バージョンの「Alspotron」をダウンロードして実行してください。 (ポータブル バージョンは設定が保存されません)
   -   Windows ユーザの場合は、「`Alspotron-Web-Setup-[version].exe`」をダウンロードしてください。
 

@@ -1,6 +1,6 @@
 # Alspotron <a href="https://github.com/organization/alspotron/releases/latest"><img src="https://img.shields.io/github/downloads/organization/alspotron/total.svg"/></a>
 
-### Fully-customizable *Spotify*, *YouTube Music* lyrics viewer [(English README)](https://github.com/organization/alspotron/blob/master/README-i18n/en.md)
+### Fully-customizable *Spotify*, *YouTube Music* lyrics viewer
 
 > Shows the lyrics of the song playing on a music player like `Spotify` or `YouTube Music`. \
 > If the lyric doesn't exist, `Alspotron` will display `Spotify`'s built-in lyrics. (**Only when playing with `Spotify`**)
