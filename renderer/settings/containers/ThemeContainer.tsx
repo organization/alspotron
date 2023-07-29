@@ -1,6 +1,7 @@
 import { Show, createSignal, onCleanup, onMount, untrack } from 'solid-js';
+import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
-import { Config } from '../../../src/config';
+import { Config } from '../../../common/config';
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
 
@@ -32,34 +33,37 @@ const ThemeContainer = () => {
 
   const [config, setConfig] = useConfig();
   const [fontList, setFontList] = createSignal<string[]>([]);
+  const [t] = useTransContext();
 
   (async () => {
     setFontList(await window.getFont({ disableQuoting: true }));
   })();
 
   const getAnimationName = (value: string) => {
-    if (value === 'none') return '없음';
-    if (value === 'fade') return '페이드';
-    if (value === 'pretty') return '예쁘게';
-    if (value === 'slide') return '슬라이드';
-    if (value === 'show-up') return 'Show Up';
-    if (value === 'scale') return '크기조절';
-    if (value === 'slime') return '슬라임';
-    if (value === 'custom') return '사용자 CSS';
+    if (value === 'none') return t('setting.theme.animation.none');
+    if (value === 'fade') return t('setting.theme.animation.fade');
+    if (value === 'pretty') return t('setting.theme.animation.pretty');
+    if (value === 'slide') return t('setting.theme.animation.slide');
+    if (value === 'show-up') return t('setting.theme.animation.show-up');
+    if (value === 'scale') return t('setting.theme.animation.scale');
+    if (value === 'slime') return t('setting.theme.animation.slime');
+    if (value === 'custom') return t('setting.theme.animation.custom-css');
 
-    return `알 수 없음(${value})`;
+    return t('setting.theme.animation.unknown', {
+      code: value,
+    });
   };
 
   const PREVIEW_TEXT_A = [
-    '가사 전환 애니메이션 미리보기용 가사입니다',
-    'https://github.com/organization/alspotron',
-    '가사 전환 애니메이션을 바꾸는 중간에는 끊길수 있습니다',
+    t('setting.theme.animation.preview-text-a.0'),
+    t('setting.theme.animation.preview-text-a.1'),
+    t('setting.theme.animation.preview-text-a.2'),
   ];
 
   const PREVIEW_TEXT_B = [
-    '계절이 지나가는 하늘에는',
-    '가을로 가득 차 있습니다.',
-    '나는 아무 걱정도 없이'
+    t('setting.theme.animation.preview-text-b.0'),
+    t('setting.theme.animation.preview-text-b.1'),
+    t('setting.theme.animation.preview-text-b.2'),
   ];
 
   const [animationPreview, setAnimationPreview] = createSignal(PREVIEW_TEXT_A);
@@ -78,46 +82,46 @@ const ThemeContainer = () => {
 
   return <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
     <div class={'text-3xl mb-1 px-4'}>
-      테마
+      <Trans key={'setting.title.theme'} />
     </div>
     <Show when={false}>
       <div class={'text-md mt-4 mb-1 px-4'}>
-        프리셋
+        <Trans key={'setting.theme.preset'} />
       </div>
       <div
         ref={setPresetContainer}
         class={'min-h-[128px] flex flex-row justify-start items-center gap-1 fluent-scrollbar px-4'}
       >
         <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋1
+          Preset1
         </Card>
         <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋2
+          Preset2
         </Card>
         <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋3
+          Preset3
         </Card>
         <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋4
+          Preset4
         </Card>
         <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋5
+          Preset5
         </Card>
         <Card class={'min-w-[128px] h-[128px]'}>
-          대충 프리셋6
+          Preset6
         </Card>
       </div>
     </Show>
     <div class={'text-md mt-4 mb-1 px-4'}>
-      일반 테마 설정
+      <Trans key={'setting.theme.generic-theme-settings'} />
     </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          폰트
+          <Trans key={'setting.theme.font'} />
         </div>
         <Selector
-          placeholder={'폰트 선택'}
+          placeholder={t('setting.theme.font.placeholder')}
           class={'select min-w-[210px] font-select'}
           style={{
             'font-family': config()?.style?.font,
@@ -136,7 +140,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          폰트 두께
+          <Trans key={'setting.theme.font-weight'} />
         </div>
         <Selector
           placeholder={'1-100'}
@@ -163,7 +167,7 @@ const ThemeContainer = () => {
             style={{ 'font-weight': option }}
             class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
           >
-            {option} - 다람쥐 헌 쳇바퀴에 타고파
+            <Trans key={'setting.theme.font-weight.option'} options={{ weight: option }} />
           </li>}
         />
       </Card>
@@ -172,7 +176,7 @@ const ThemeContainer = () => {
         subCards={[
           <div class={'flex flex-col justify-start items-stretch gap-1'}>
             <div class={'text-md'}> 
-              미리보기
+              <Trans key={'setting.theme.preview'} />
             </div>
             <div class={'relative w-full h-32 flex flex-col justify-start items-start gap-4'}>
               <LyricsTransition class={'w-full items-end'} lyrics={animationPreview()} status="playing" />
@@ -180,12 +184,12 @@ const ThemeContainer = () => {
           </div>,
           <div class={'w-full h-full flex justify-start items-center'}>
             <div class={'text-md'}>
-              애니메이션 선택
+              <Trans key={'setting.theme.select-animation'} />
             </div>
             <div class={'flex-1'} />
             <Selector
               format={getAnimationName}
-              placeholder={'가사 전환 애니메이션'}
+              placeholder={t('setting.theme.animation.placeholder')}
               class={'select w-48 font-select'}
               options={ANIMATION_LIST}
               value={config()?.style?.animation ?? 'pretty'}
@@ -200,7 +204,7 @@ const ThemeContainer = () => {
           </div>,
           <div class={'w-full h-full flex justify-start items-center'}>
             <div class={'text-md'}>
-              한번에 전환
+              <Trans key={'setting.theme.animation.at-once'} />
             </div>
             <div class={'flex-1'} />
             <input
@@ -213,7 +217,7 @@ const ThemeContainer = () => {
         ]}
       >
         <div class={'text-md'}>
-          가사 전환 애니메이션
+          <Trans key={'setting.theme.animation'} />
         </div>
         <div class={'flex-1'} />
         <div class={'text-md text-white/80 mr-2'}>
@@ -222,7 +226,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          마우스 커서 근접 시 불투명도
+          <Trans key={'setting.theme.proximity-opacity'} />
         </div>
         <input
           type={'number'}
@@ -233,7 +237,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          마우스 커서 근접 민감도
+          <Trans key={'setting.theme.proximity-sensitivity'} />
         </div>
         <input
           type={'number'}
@@ -244,7 +248,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          최대 높이
+          <Trans key={'setting.theme.max-height'} />
         </div>
         <input
           type={'number'}
@@ -266,12 +270,12 @@ const ThemeContainer = () => {
       </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
-      Now Playing 테마 설정
+      <Trans key={'setting.theme.now-playing'} />
     </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          글씨 크기
+          <Trans key={'setting.theme.font-size'} />
         </div>
         <input
           type={'number'}
@@ -282,7 +286,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          글씨 색상
+          <Trans key={'setting.theme.font-color'} />
         </div>
         <ColorPicker
           value={config()?.style.nowPlaying.color}
@@ -291,7 +295,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          배경 색상
+          <Trans key={'setting.theme.background-color'} />
         </div>
         <ColorPicker
           value={config()?.style.nowPlaying.background}
@@ -300,7 +304,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          재생바 색상
+          <Trans key={'setting.theme.progressbar-color'} />
         </div>
         <ColorPicker
           value={config()?.style.nowPlaying.backgroundProgress}
@@ -309,7 +313,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          최대 크기
+          <Trans key={'setting.theme.max-width'} />
         </div>
         <input
           type={'number'}
@@ -320,7 +324,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          일시정지 시 불투명도
+          <Trans key={'setting.theme.stopped-opacity'} />
         </div>
         <input
           type={'number'}
@@ -331,12 +335,12 @@ const ThemeContainer = () => {
       </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
-      가사 테마 설정
+      <Trans key={'setting.theme.lyric'} />
     </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          글씨 크기
+          <Trans key={'setting.theme.font-size'} />
         </div>
         <input
           type={'number'}
@@ -347,7 +351,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          글씨 색상
+          <Trans key={'setting.theme.font-color'} />
         </div>
         <ColorPicker
           value={config()?.style.lyric.color}
@@ -356,7 +360,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          배경 색상
+          <Trans key={'setting.theme.background-color'} />
         </div>
         <ColorPicker
           value={config()?.style.lyric.background}
@@ -365,7 +369,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          일시정지 시 불투명도
+          <Trans key={'setting.theme.stopped-opacity'} />
         </div>
         <input
           type={'number'}
@@ -387,7 +391,7 @@ const ThemeContainer = () => {
       </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
-      테마 설정
+      <Trans key={'setting.theme.theme'} />
     </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card
@@ -398,7 +402,7 @@ const ThemeContainer = () => {
       >
         <div class={'w-full h-full flex flex-col justify-center items-start gap-0'}>
           <div class={'text-md'}>
-            사용자 CSS
+            <Trans key={'setting.theme.user-css'} />
           </div>
         </div>
       </Card>
@@ -414,17 +418,17 @@ const ThemeContainer = () => {
                 await setConfig(await window.ipcRenderer.invoke('get-default-config') as Config)
               })}
               >
-              초기화
+              <Trans key={'setting.theme.reset'} />
             </button>
           </div>,
         ]}
       >
         <div class={'w-full h-full flex flex-col justify-center items-start gap-0'}>
           <div class={'text-md'}>
-            테마 초기화
+            <Trans key={'setting.theme.theme-reset'} />
           </div>
           <div class={'text-xs mt-[-2px] text-white/80'}>
-            테마를 초기화 하게 되면 원상 복구 할 수 없습니다.
+            <Trans key={'setting.theme.theme-reset-warning'} />
           </div>
         </div>
       </Card>

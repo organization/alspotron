@@ -33,7 +33,9 @@
   "contributors": [
     "JellyBrick <shlee1503@naver.com>",
     "SeongMin Park <smn@duck.com>",
-    "nenw <khi@nenw.dev>"
+    "nenw <khi@nenw.dev>",
+    "alvin0319 <alvin7810@naver.com>",
+    "STGR <scgtdy7151@gmail.com>"
   ],
   "license": "Apache-2.0",
   "devDependencies": {

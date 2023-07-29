@@ -5,6 +5,7 @@ import { CodeMirror } from '@solid-codemirror/codemirror';
 import { githubDarkInit } from '@uiw/codemirror-theme-github';
 import { basicSetup, EditorView } from 'codemirror';
 import { createEffect, createSignal, For, untrack } from 'solid-js';
+import { Trans } from '@jellybrick/solid-i18next';
 
 import useConfig from '../../hooks/useConfig';
 import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
@@ -104,10 +105,10 @@ const UserCSSEditor = () => {
   return (
     <>
       <div>
-        <b>주의!</b> 제공된 셀렉터, 변수 외의 다른 셀렉터 등을 사용하실 경우 업데이트 시 CSS가 깨질 확률이 높습니다.
+        <b><Trans key={'setting.user-css-warning.bold'} /></b> <Trans key={'setting.user-css-warning.0'} />
         <br />
         <br />
-        사용자 CSS는 어디까지나 실험기능으로, Alspotron 팀에서는 업데이트 시 스타일의 안정성을 보장하지 않습니다.
+        <Trans key={'setting.user-css-warning.1'} />
       </div>
 
       <div class="overflow-auto fluent-scrollbar pb-2 mt-10">

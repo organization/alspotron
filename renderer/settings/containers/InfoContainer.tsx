@@ -1,5 +1,6 @@
 import { UpdateCheckResult } from 'electron-updater';
-import { createSignal, Switch, Match, onMount } from 'solid-js';
+import { createSignal, Switch, Match } from 'solid-js';
+import { Trans } from '@jellybrick/solid-i18next';
 
 import MainIcon from '../../../assets/icon_music.png';
 import packageJson from '../../../package.json';
@@ -40,10 +41,10 @@ const InfoContainer = () => {
   return (
     <div class={'flex-1 p-4 flex flex-col justify-start items-stretch gap-1'}>
       <div class={'text-3xl mb-1'}>
-        정보
+        <Trans key={'setting.title.about'} />
       </div>
       <div class={'text-md mt-4 mb-1'}>
-        지원
+        <Trans key={'setting.about.support'} />
       </div>
       <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/organization/alspotron')}>
         <img src={MainIcon} class={'w-6 h-6 mr-4 object-contain'} alt={'Main Icon'}/>
@@ -78,35 +79,38 @@ const InfoContainer = () => {
                 fallback={(
                   <div class={'w-full h-full flex flex-row justify-start items-center gap-6'}>
                     <Spinner class={'w-4 h-4 stroke-primary-500'} />
-                    업데이트를 확인중입니다...
+                    <Trans key={'setting.about.checking-for-updates'} />
                   </div>
                 )}
               >
                 <Match when={(updateData()?.compareResult ?? 0) < 0}>
                   <div class={'text-md'}>
-                    새로운 업데이트가 존재합니다
+                    <Trans key={'setting.about.update-available'} />
                   </div>
                   <div class={'text-xs text-white/75'}>
-                    최신 버전: {updateData()?.updateCheckResult?.updateInfo.version}
+                    <Trans
+                      key={'setting.about.latest-version'}
+                      options={{ version: updateData()?.updateCheckResult?.updateInfo.version }}
+                    />
                   </div>
                 </Match>
                 <Match when={(updateData()?.compareResult ?? 0) >= 0}>
                   <div class={'text-md'}>
-                    최신 버전입니다
+                    <Trans key={'setting.about.already-up-to-date'} />
                   </div>
                   <div class={'text-xs text-white/75'}>
-                    현재 버전: {updateData()?.currentVersion}
+                    <Trans key={'setting.about.current-version'} options={{ version:updateData()?.currentVersion }} />
                   </div>
                 </Match>
               </Switch>
             </div>
             <div class={'flex-1'} />
             <button class={'btn-primary'} onClick={() => refreshUpdateData()}>
-              새로고침
+              <Trans key={'setting.about.refresh'} />
             </button>
           </div>,
           <div class={'w-full h-full flex justify-start items-center'} onClick={() => onLink('https://github.com/organization/alspotron/releases')}>
-            릴리즈 보러가기
+            <Trans key={'setting.about.visit-releases-page'} />
             <div class={'flex-1'} />
             <svg class={'w-[16px] h-[16px] fill-none'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" class={'fill-white'} />
@@ -119,7 +123,7 @@ const InfoContainer = () => {
         </svg>
         <div class={'flex flex-col justify-center items-start'}>
           <div class={'text-md'}>
-            Alspotron 버전
+            <Trans key={'setting.about.version'} />
           </div>
           <div class={'text-xs text-white/75'}>
             {packageJson.version}
@@ -127,7 +131,7 @@ const InfoContainer = () => {
         </div>
       </Card>
       <div class={'text-md mt-8 mb-1'}>
-        제작자
+        <Trans key={'setting.about.developer'} />
       </div>
       <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/HelloWorld017')}>
         <img src={'https://avatars.githubusercontent.com/u/3919433?s=64&v=4'} class={'w-6 h-6 mr-4 rounded-full'} alt='Khinenw Profile Image'/>
@@ -136,7 +140,7 @@ const InfoContainer = () => {
             Khinenw
           </div>
           <div class={'text-xs text-white/75'}>
-            Alspotify 원작자, Alspotron 개발자
+            <Trans key={'setting.about.alspotify-developer'} />, <Trans key={'setting.about.alspotron-developer'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -151,7 +155,7 @@ const InfoContainer = () => {
             Su-Yong
           </div>
           <div class={'text-xs text-white/75'}>
-            Alspotron 개발자
+            <Trans key={'setting.about.alspotron-developer'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -166,7 +170,7 @@ const InfoContainer = () => {
             JellyBrick
           </div>
           <div class={'text-xs text-white/75'}>
-            Alspotron 개발자
+            <Trans key={'setting.about.alspotron-developer'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -181,7 +185,37 @@ const InfoContainer = () => {
             SeongMin Park
           </div>
           <div class={'text-xs text-white/75'}>
-            Alspotron 개발자
+            <Trans key={'setting.about.alspotron-developer'} />
+          </div>
+        </div>
+        <div class={'flex-1'} />
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" class={'fill-white'} />
+        </svg>
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/alvin0319')}>
+        <img src={'https://avatars.githubusercontent.com/u/32565818?s=64&v=4'} class={'w-6 h-6 mr-4 rounded-full'} alt='alvin0319 Profile Image'/>
+        <div class={'flex flex-col justify-center items-start'}>
+          <div class={''}>
+            alvin0319
+          </div>
+          <div class={'text-xs text-white/75'}>
+            <Trans key={'setting.about.alspotron-contributor'} />
+          </div>
+        </div>
+        <div class={'flex-1'} />
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" class={'fill-white'} />
+        </svg>
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/SemteulGaram')}>
+        <img src={'https://avatars.githubusercontent.com/u/6727533?s=64&v=4'} class={'w-6 h-6 mr-4 rounded-full'} alt='STGR Profile Image'/>
+        <div class={'flex flex-col justify-center items-start'}>
+          <div class={''}>
+            STGR
+          </div>
+          <div class={'text-xs text-white/75'}>
+            <Trans key={'setting.about.alspotron-contributor'} />
           </div>
         </div>
         <div class={'flex-1'} />

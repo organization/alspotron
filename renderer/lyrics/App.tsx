@@ -11,7 +11,7 @@ import UserCSS from '../components/UserCSS';
 import useLyricMapper from '../hooks/useLyricMapper';
 import useConfig from '../hooks/useConfig';
 import { formatTime } from '../utils/formatTime';
-import { LangResource } from '../intl';
+import { LangResource } from '../../common/intl';
 
 import type alsong from 'alsong';
 
@@ -105,7 +105,7 @@ const LyricsMapEditor = () => {
             </Show>
             <Show when={!loading() && lyricMetadata().length === 0}>
               <div class={'text-white/30'}>
-                <Trans key='lyrics.lyric-search-not-found'/>
+                <Trans key={'lyrics.lyric-search-not-found'}/>
               </div>
             </Show>
             <For each={lyricMetadata()}>

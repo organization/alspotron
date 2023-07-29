@@ -25,9 +25,10 @@ import {
   setConfig,
   setGameList,
   setLyricMapper
-} from './config';
+} from '../common/config';
 
 import { getFile } from '../utils/resource';
+import { getTranslation } from '../common/intl';
 
 import type { RequestBody } from './types';
 import type { IOverlay } from './electron-overlay';
@@ -134,38 +135,38 @@ class Application {
 
       const { response } = await dialog.showMessageBox({
         type: 'info',
-        buttons: ['다운로드 & 설치 후 재실행'],
-        title: `Alspotron 업데이트 알림 (${it.version})`,
-        message: `새로운 ${it.version} 버전이 ${it.releaseDate}에 출시되었어요.`,
-        detail: `${downloadLink}에서 다운로드 할 수 있어요.`,
+        buttons: [getTranslation('updater.download-and-auto-install', config().language)],
+        title: `${getTranslation('updater.update-alert', config().language)} (${it.version})`,
+        message: getTranslation('updater.update-available', config().language).replace('{{version}}', it.version),
+        detail: getTranslation('updater.download-at', config().language).replace('{{link}}', downloadLink),
         defaultId: 0,
       });
       
       if (response === 0) {
         const updateProgressBar = new ProgressBar({
           indeterminate: false,
-          title: 'Alspotron 업데이트',
-          text: '업데이트를 다운로드 중입니다...',
+          title: getTranslation('updater.popup.title', config().language),
+          text: getTranslation('updater.popup.text', config().language),
           initialValue: 0,
         });
 
         // What The F @types/electron-progressbar
         updateProgressBar
           .on('progress', ((value: number) => {
-            updateProgressBar.detail = `다운로드 중... (${value.toFixed(2)}%)`;
+            updateProgressBar.detail = `${getTranslation('updater.popup.percent', config().language)} (${value.toFixed(2)}%)`;
           }) as () => void)
           .on('aborted', ((value: number) => {
-            updateProgressBar.detail = `업데이트가 취소되었습니다. ${value.toFixed(2)}%`;
+            updateProgressBar.detail = `${getTranslation('updater.popup.download-aborted', config().language)} ${value.toFixed(2)}%`;
           }) as () => void)
           .on('completed', () => {
-            updateProgressBar.detail = '다운로드가 완료되었습니다.';
+            updateProgressBar.detail = getTranslation('updater.popup.download-completed', config().language);
             autoUpdater.quitAndInstall(false);
           });
 
         autoUpdater.on('download-progress', (it) => {
           if (!updateProgressBar.isCompleted()) {
             updateProgressBar.value = it.percent;
-            updateProgressBar.text = `업데이트를 다운로드 중입니다... (${it.percent.toFixed(2)}%, ${it.transferred} / ${it.total})`;
+            updateProgressBar.text = `${getTranslation('updater.popup.percent', config().language)} (${it.percent.toFixed(2)}%, ${it.transferred} / ${it.total})`;
           }
         });
 
@@ -185,7 +186,7 @@ class Application {
     const contextMenu = Menu.buildFromTemplate([
       {
         type: 'normal',
-        label: '가사 선택',
+        label: getTranslation('tray.lyrics.label', config().language),
         click: () => {
           if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
             if (this.lyricsWindow.isMinimized()) this.lyricsWindow.restore();
@@ -197,7 +198,7 @@ class Application {
       },
       {
         type: 'normal',
-        label: '설정',
+        label: getTranslation('tray.setting.label', config().language),
         click: () => {
           if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
             if (this.settingsWindow.isMinimized()) this.settingsWindow.restore();
@@ -212,7 +213,7 @@ class Application {
       },
       {
         type: 'normal',
-        label: '종료',
+        label: getTranslation('tray.exit.label', config().language),
         click: () => {
           this.markQuit = true;
           app.quit();
@@ -222,10 +223,10 @@ class Application {
         type: 'separator',
       },
       {
-        label: '개발자 도구',
+        label: getTranslation('tray.devtools.label', config().language),
         submenu: [
           {
-            label: '가사 표시기 창',
+            label: getTranslation('tray.devtools.lyric-viewer.label', config().language),
             click: () => {
               if (this.mainWindow && !this.mainWindow.isDestroyed()) {
                 this.mainWindow.webContents.openDevTools({ mode: 'detach' });
@@ -233,7 +234,7 @@ class Application {
             },
           },
           {
-            label: '가사 선택 창',
+            label: getTranslation('tray.devtools.lyrics.label', config().language),
             click: () => {
               if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
                 this.lyricsWindow.webContents.openDevTools({ mode: 'detach' });
@@ -241,7 +242,7 @@ class Application {
             },
           },
           {
-            label: '설정 창',
+            label: getTranslation('tray.devtools.setting.label', config().language),
             click: () => {
               if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
                 this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
@@ -650,7 +651,7 @@ class Application {
         preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
       },
-      title: 'Alspotron 설정',
+      title: getTranslation('title.setting', config().language),
       titleBarStyle: 'hiddenInset',
       frame: false,
       vibrancy: 'dark',
@@ -689,7 +690,7 @@ class Application {
         preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
       },
-      title: '가사 선택',
+      title: getTranslation('title.lyrics', config().language),
       titleBarStyle: 'hiddenInset',
       frame: false,
       vibrancy: 'dark',
