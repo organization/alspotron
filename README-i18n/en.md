@@ -23,12 +23,12 @@
 
 #### 2.  [Download Alspotron](https://github.com/organization/alspotron/releases)
 
-  -   Install latest version of Alspotron from Releases. (warning : Portable version can't save settings.)
+  -   Install latest version of Alspotron from Releases. (**WARNING** : Portable version can't save settings.)
   -   for Windows users, there is `Alspotron-Web-Setup-[version].exe` for Windows.
 
 #### 3.  Install Alspotron Companion
-  -   [Download `alsptron.js`](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) and place it in [Extensions folder in install location of Spicetify.](https://spicetify.app/docs/advanced-usage/extensions/)
-  -   Add `alspotron.js` extension to spicetify with command.
+  -   [Download `alsptron.js`](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) and place it in [Extensions folder in install location of `Spicetify`.](https://spicetify.app/docs/advanced-usage/extensions/)
+  -   Add `alspotron.js` extension to `Spicetify` with command.
       ```
       spicetify config extensions alspotron.js
       ```
@@ -46,7 +46,7 @@
 #### 2.  Start `Youtube Music Desktop`, Enter `plugins` in menu and enable `tuna-obs`
 #### 3.  [Download Alspotron](https://github.com/organization/alspotron/releases)
 
-  -   Install latest version of Alspotron from Releases. (warning : Portable version can't save settings.)
+  -   Install latest version of Alspotron from Releases. (**WARNING** : Portable version can't save settings.)
   -   for Windows users, there is `Alspotron-Web-Setup-[version].exe` for Windows.
 
 
@@ -61,7 +61,7 @@
 #### 1.  Follow [link](https://github.com/univrsal/tuna) to install browser extension.
 #### 2.  [Download Alspotron](https://github.com/organization/alspotron/releases)
 #### 3.  Install Alspotron Companion
-  -   Install latest version of Alspotron from Releases. (warning : Portable version can't save settings.)
+  -   Install latest version of Alspotron from Releases. (**WARNING** : Portable version can't save settings.)
   -   for Windows users, there is `Alspotron-Web-Setup-[version].exe` for Windows.
 
 ### How to use
