@@ -34,6 +34,8 @@
   -   次に、「`specity config extensions alspotron.js`」コマンドを実行して、「`alspotron.js`」を追加します
   -   "`specify apply`" コマンドを使用すれば、「Spotify」がリブートして `alspotron extension` を有効にします。
 
+---
+
 ### YouTube Music
 
 1.  [YouTube Music Desktop インストール](https://github.com/th-ch/youtube-music/releases)
@@ -50,6 +52,8 @@
 #### 「`YouTube Music Desktop`」のユーザーは以下の説明を読んでください。
 
 [このリンク](https://github.com/organization/alspotron/issues/1)を参照してかならず「`adblocker`」を無効にするか、「`in-player adblock`」に切り替えりしてください。
+
+---
 
 ### 以外のプレーヤー (e.g. Apple Music)
 
