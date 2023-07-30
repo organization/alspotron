@@ -78,13 +78,13 @@
 
 |                                                   位置設定                                                   |                                                  テーマ設定                                                   |
 |:--------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------:|
-| ![image](https://github.com/organization/alspotron/assets/16558115/d09cc0ec-cab7-4fd4-89fe-0836699e352a) | ![image](https://github.com/organization/alspotron/assets/16558115/2e4ae98b-559e-4e8d-b3bb-f5e3081bcf88) |
+| ![Alspotron Settings 2023-07-31 오전 8_08_01](https://github.com/organization/alspotron/assets/16558115/66ddaf45-e46a-47da-b474-b67420300c29) | ![image](https://github.com/organization/alspotron/assets/16558115/46bfb308-8821-414e-a57c-e875ebe8fc99) |
 
 2.  トレイ アイコンの「`歌詞選択`」を選択して、現在再生中の曲の歌詞を別の歌詞に置き換えることができます。
 
 |                                          タイトルを検索した後、別の歌詞を適用した例                                           |
 |:--------------------------------------------------------------------------------------------------------:|
-| ![image](https://github.com/organization/alspotron/assets/16558115/0315c44e-27cb-4882-a7d8-e6e91531790a) |
+| ![image](https://github.com/organization/alspotron/assets/16558115/9a28d479-b59d-4ea8-8564-4694dde5157a) |
 
 ## Migration from Alspotify
 
