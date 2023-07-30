@@ -45,17 +45,18 @@ const LyricsMapEditor = () => {
 
   const onSelect = async (metadata: LyricMetadata) => {
     const data = originalData();
-    if (!data?.title || !data?.cover_url) return;
+    if (!data?.title) return;
 
     setLoading(true);
 
-    const newMapper = {
-      [`${data.title}:${data.cover_url}`]: metadata.lyricId,
-    };
+    let coverUrl = data.cover_url;
+    if (!coverUrl) {
+      coverUrl = 'unknown';
+    }
 
-    await setLyricMapper(newMapper);
-    setLoading(false);
-  };
+    const newMapper = {
+      [`${data.title}:${coverUrl}`]: metadata.lyricId,
+    };
 
   return (
     <Layout>
