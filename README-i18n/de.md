@@ -89,13 +89,13 @@
 
 |                                        Position der Lyrics anpassen                                         |                                         Theme-Einstellung anpassen                                         |
 |:--------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------:|
-| ![image](https://github.com/organization/alspotron/assets/16558115/d09cc0ec-cab7-4fd4-89fe-0836699e352a) | ![image](https://github.com/organization/alspotron/assets/16558115/2e4ae98b-559e-4e8d-b3bb-f5e3081bcf88) |
+| ![image](https://github.com/organization/alspotron/assets/16558115/28b64547-70df-4c32-9ee4-df8528be9f72) | ![image](https://github.com/organization/alspotron/assets/16558115/2f8b3420-c235-4747-8a68-79ee46d85e45) |
 
 2.  Zum Auswählen anderer Lyrics für den aktuell abgespielten Song wählen Sie das Menü `Liedtext auswählen` auf dem Tray-Symbol.
 
 |                         Suchen Sie andere Lyrics für den aktuell abgespielten Song.                         |
 |:--------------------------------------------------------------------------------------------------------:|
-| ![image](https://github.com/organization/alspotron/assets/16558115/0315c44e-27cb-4882-a7d8-e6e91531790a) |
+| ![image](https://github.com/organization/alspotron/assets/16558115/1de5703a-1bde-4152-8c17-092463750246) |
 
 ## Migration von Alspotify
 
