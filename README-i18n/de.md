@@ -3,7 +3,7 @@
 ### Vollständig anpassbarer Lyrics-Viewer für *Spotify* und *YouTube Music* 
 
 > Alspotron zeigt Lyrics von Musik an, die auf Musik-Streaming-Plattformen wie `Spotify` oder `YouTube Music` abgespielt werden. \
-> Falls keine Lyrics in den Suchergebnissen vorhanden ist, wird Alpostron die built-in-Lyrics von Spotify anzeigen (nur bei der Wiedergabe mit `Spotify`)
+> Falls keine Lyrics in den Suchergebnissen vorhanden sind, wird Alpostron die built-in-Lyrics von Spotify anzeigen (nur bei der Wiedergabe mit `Spotify`)
 
 ### Screenshots
 
