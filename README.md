@@ -93,13 +93,13 @@
 
 |                                                   위치 설정                                                  |                                                   테마 설정                                                  |
 | :------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------: |
-| ![image](https://github.com/organization/alspotron/assets/16558115/d09cc0ec-cab7-4fd4-89fe-0836699e352a) | ![image](https://github.com/organization/alspotron/assets/16558115/2e4ae98b-559e-4e8d-b3bb-f5e3081bcf88) |
+| ![image](https://github.com/organization/alspotron/assets/16558115/9dd2d0c5-ff55-423d-b9bb-589a7c4bb658) | ![image](https://github.com/organization/alspotron/assets/16558115/b70f646a-ae67-4cab-b065-32c6c3664850) |
 
 2.  트레이 아이콘의 `가사 선택`을 선택하여 현재 재생 중인 노래의 가사를 다른 가사로 교체할 수 있습니다.
 
 |                                          곡을 검색하고, 다른 가사를 적용한 예제                                          |
 | :------------------------------------------------------------------------------------------------------: |
-| ![image](https://github.com/organization/alspotron/assets/16558115/0315c44e-27cb-4882-a7d8-e6e91531790a) |
+| ![image](https://github.com/organization/alspotron/assets/16558115/171d97b3-79ff-4ede-b7a6-9905b7993b42) |
 
 ## Migration from Alspotify
 
