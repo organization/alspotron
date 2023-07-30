@@ -90,7 +90,7 @@
   "setting.theme.animation.unknown": "Unknown ({{code}})",
   "setting.theme.animation.preview-text-a.0": "This is an example lyrics for Lyrics changing animation",
   "setting.theme.animation.preview-text-a.1": "https://github.com/organization/alspotron",
-  "setting.theme.animation.preview-text-a.2": "Lyrics changing animation can stutter",
+  "setting.theme.animation.preview-text-a.2": "Lyrics changing animation can stutter when changing it",
   "setting.theme.animation.preview-text-b.0": "Never gonna give you up",
   "setting.theme.animation.preview-text-b.1": "Never gonna let you down",
   "setting.theme.animation.preview-text-b.2": "Never gonna run around and desert you",
