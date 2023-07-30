@@ -110,8 +110,12 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     const mapper = lyricMapper();
 
     if (!data) return;
+    let coverUrl = data.cover_url;
+    if (!coverUrl) {
+      coverUrl = 'unknown';
+    }
 
-    const id: number | undefined = mapper[`${data.title}:${data.cover_url}`];
+    const id: number | undefined = mapper[`${data.title}:${coverUrl}`];
     const lyricInfo = await (async () => {
       const alsongLyric = (
         id

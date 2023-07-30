@@ -45,6 +45,7 @@ const LyricsMapEditor = () => {
 
   const onSelect = async (metadata: LyricMetadata) => {
     const data = originalData();
+    console.log(data);
     if (!data?.title) return;
 
     setLoading(true);
@@ -57,6 +58,10 @@ const LyricsMapEditor = () => {
     const newMapper = {
       [`${data.title}:${coverUrl}`]: metadata.lyricId,
     };
+
+    await setLyricMapper(newMapper);
+    setLoading(false);
+  };
 
   return (
     <Layout>
