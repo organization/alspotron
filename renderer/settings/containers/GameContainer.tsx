@@ -1,4 +1,5 @@
 import { For, Match, Show, Switch, createEffect, createSignal } from 'solid-js';
+import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
 import GameListContainer from './GameListContainer';
 
@@ -22,6 +23,7 @@ const GameContainer = () => {
 
   const [gameList, setGameList] = useGameList();
   const playingGame = usePlayingGame();
+  const [t] = useTransContext();
 
   createEffect(() => {
     updateProcessList(showOnlyAvailable());
@@ -63,10 +65,10 @@ const GameContainer = () => {
       <Match when={pageState() === 'default'}>
         <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
           <div class={'text-3xl mb-1'}>
-            게임
+            <Trans key={'setting.title.game-overlay'} />
           </div>
           <div class={'text-md mt-4 mb-1'}>
-            현재 실행중인 게임
+            <Trans key={'setting.game.current-playing-game'} />
           </div>
           <For each={playingGame()}>
             {(game) => (
@@ -84,19 +86,19 @@ const GameContainer = () => {
           </For>
           <Show when={playingGame().length === 0}>
             <Card class={'w-full flex justify-start items-center gap-4'}>
-              실행중인 게임 없음
+              <Trans key={'setting.game.not-detected'} />
             </Card>
           </Show>
           <div class={'text-md mt-4 mb-1'}>
-            저장된 게임 목록
+            <Trans key={'setting.game.list-of-registered-games'} />
           </div>
           <Card class={'w-full flex justify-start items-center gap-4'} onClick={() => setPageState('list')}>
             <div class={'w-0 flex flex-col justify-center items-start flex-1'}>
               <div class={'w-full'}>
-                저장된 게임들
+                <Trans key={'setting.game.registered-games'} />
               </div>
               <div class={'text-sm text-gray-400'}>
-                {(Object.keys(gameList())?.length ?? 0).toString()}개
+                <Trans key={'setting.game.registered-games-count'} options={{ count: (Object.keys(gameList())?.length ?? 0) }} />
               </div>
             </div>
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -105,7 +107,7 @@ const GameContainer = () => {
           </Card>
           <div class={'flex mt-4 mb-1 gap-1'}>
             <span class={'text-md'}>
-              게임 찾기
+              <Trans key={'setting.game.search-game'} />
             </span>
             <button class={'hover:!bg-white/[7.5%] rounded'} onClick={() => updateProcessList()}>
               <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -132,12 +134,12 @@ const GameContainer = () => {
                   when={gameList()[process.path]}
                   fallback={(
                     <button class={'btn-primary'} onClick={() => onAddGame(process)}>
-                      게임 등록
+                      <Trans key={'setting.game.register-game'} />
                     </button>
                   )}
                 >
                   <button class={'btn-text'} onClick={() => onRemoveGame(process.path)}>
-                    등록 취소
+                    <Trans key={'setting.game.unregister-game'} />
                   </button>
                 </Show>
               </Card>
@@ -157,7 +159,11 @@ const GameContainer = () => {
             >
               <path d="M4.22 8.47a.75.75 0 0 1 1.06 0L12 15.19l6.72-6.72a.75.75 0 1 1 1.06 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L4.22 9.53a.75.75 0 0 1 0-1.06Z" class={'fill-white'} />
             </svg>
-            {showOnlyAvailable() ? '백그라운드에서 실행중인 프로그램 모두 보기' : '포그라운드에서 실행중인 프로그램만 보기'}
+            {
+              showOnlyAvailable() ?
+                t('setting.game.show-all-programs-running-in-the-background') :
+                t('setting.game.show-only-programs-running-in-the-foreground')
+            }
           </button>
         </div>
       </Match>

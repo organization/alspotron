@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js';
 
-import { LyricMapper } from '../../src/config';
+import { LyricMapper } from '../../common/config';
 
 const useLyricMapper = () => {
   const [lyricMapper, setLyricMapper] = createSignal<LyricMapper>({});

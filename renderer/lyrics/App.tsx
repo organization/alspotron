@@ -1,4 +1,5 @@
 import { For, Show, createSignal, createEffect, on, startTransition } from 'solid-js';
+import { Trans, TransProvider, useTransContext } from '@jellybrick/solid-i18next';
 
 import SideBar from './SideBar';
 
@@ -8,7 +9,9 @@ import PlayingInfoProvider, { usePlayingInfo } from '../components/PlayingInfoPr
 import Spinner from '../components/Spinner';
 import UserCSS from '../components/UserCSS';
 import useLyricMapper from '../hooks/useLyricMapper';
+import useConfig from '../hooks/useConfig';
 import { formatTime } from '../utils/formatTime';
+import { LangResource } from '../../common/intl';
 
 import type alsong from 'alsong';
 
@@ -23,6 +26,7 @@ const LyricsMapEditor = () => {
   const [loading, setLoading] = createSignal(false);
   const [lyricMetadata, setLyricMetadata] = createSignal<LyricMetadata[]>([]);
   const [, setLyricMapper] = useLyricMapper();
+  const [t] = useTransContext();
 
   createEffect(on([playingTitle, playingArtist, status], async () => {
     if (status() !== 'idle' && status() !== 'stopped') {
@@ -85,13 +89,13 @@ const LyricsMapEditor = () => {
           >
             <input
               class={'input'}
-              placeholder={'아티스트 명'}
+              placeholder={t('lyrics.artist')}
               value={artist()}
               onInput={(event) => setArtist(event.target.value)}
             />
             <input
               class={'input flex-1'}
-              placeholder={'제목'}
+              placeholder={t('lyrics.title')}
               value={title()}
               onInput={(event) => setTitle(event.target.value)}
             />
@@ -107,7 +111,7 @@ const LyricsMapEditor = () => {
             </Show>
             <Show when={!loading() && lyricMetadata().length === 0}>
               <div class={'text-white/30'}>
-                검색결과가 없습니다.
+                <Trans key={'lyrics.lyric-search-not-found'}/>
               </div>
             </Show>
             <For each={lyricMetadata()}>
@@ -117,7 +121,7 @@ const LyricsMapEditor = () => {
                     <div class={'h-fit text-xs text-white/50'}>
                       ID: {metadata.lyricId}
                     </div>
-                    <div class={''}>
+                    <div>
                       {metadata.title}
                     </div>
                     <div class={'text-sm'}>
@@ -136,7 +140,7 @@ const LyricsMapEditor = () => {
                     </div>
                     <Show when={metadata.playtime >= 0}>
                       <div class={'h-fit text-sm text-right text-white/50'}>
-                        재생시간: {formatTime(metadata.playtime)}
+                        <Trans key={'lyrics.playtime'} />: {formatTime(metadata.playtime)}
                       </div>
                     </Show>
                   </div>
@@ -153,11 +157,15 @@ const LyricsMapEditor = () => {
   );
 };
 
+const [config] = useConfig();
+
 const App = () => (
-  <PlayingInfoProvider>
-    <LyricsMapEditor />
-    <UserCSS />
-  </PlayingInfoProvider>
+  <TransProvider options={{ resources: LangResource, lng: config()?.language }}>
+    <PlayingInfoProvider>
+      <LyricsMapEditor />
+      <UserCSS />
+    </PlayingInfoProvider>
+  </TransProvider>
 );
 
 export default App;

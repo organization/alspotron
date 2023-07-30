@@ -1,3 +1,5 @@
+import { Trans, useTransContext } from '@jellybrick/solid-i18next';
+
 import icon from '../../../assets/icon_music.png';
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
@@ -13,6 +15,7 @@ const getPrimaryDisplay = () => window.ipcRenderer.sendSync('get-primary-screen'
 
 const PositionContainer = () => {
   const [config, setConfig] = useConfig();
+  const [t] = useTransContext();
 
   const displays = getAllDisplays();
   const getCurrentDisplay = () => (displays.find((it) => it.id === config()?.windowPosition.display) ?? getPrimaryDisplay());
@@ -20,10 +23,10 @@ const PositionContainer = () => {
   return (
     <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1'}>
-        위치
+        <Trans key={'setting.title.position'} />
       </div>
       <div class={'text-md mt-4 mb-1'}>
-        가사 표시 위치
+        <Trans key={'setting.position.select-position-to-display-lyrics'} />
       </div>
       <div
         class={`
@@ -39,7 +42,7 @@ const PositionContainer = () => {
           }}
           onClick={() => setConfig({ windowPosition: { anchor: 'top-left' } })}
         >
-          왼쪽 위
+          <Trans key={'setting.position.left-top'} />
         </Card>
         <Card
           class={'flex justify-center items-start'}
@@ -48,7 +51,7 @@ const PositionContainer = () => {
           }}
           onClick={() => setConfig({ windowPosition: { anchor: 'top' } })}
         >
-          위
+          <Trans key={'setting.position.center-top'} />
         </Card>
         <Card
           class={'flex justify-end items-start'}
@@ -57,7 +60,7 @@ const PositionContainer = () => {
           }}
           onClick={() => setConfig({ windowPosition: { anchor: 'top-right' } })}
         >
-          오른쪽 위
+          <Trans key={'setting.position.right-top'} />
         </Card>
         <Card
           class={'flex justify-start items-center'}
@@ -66,7 +69,7 @@ const PositionContainer = () => {
           }}
           onClick={() => setConfig({ windowPosition: { anchor: 'left' } })}
         >
-          왼쪽
+          <Trans key='setting.position.left-center' />
         </Card>
         <Card
           class={'flex justify-center items-center'}
@@ -75,7 +78,7 @@ const PositionContainer = () => {
           }}
           onClick={() => setConfig({ windowPosition: { anchor: 'center' } })}
         >
-          중앙
+          <Trans key={'setting.position.center-center'} />
         </Card>
         <Card
           class={'flex justify-end items-center'}
@@ -84,7 +87,7 @@ const PositionContainer = () => {
           }}
           onClick={() => setConfig({ windowPosition: { anchor: 'right' } })}
         >
-          오른쪽
+          <Trans key={'setting.position.right-center'} />
         </Card>
         <Card
           class={'flex justify-start items-end'}
@@ -93,7 +96,7 @@ const PositionContainer = () => {
           }}
           onClick={() => setConfig({ windowPosition: { anchor: 'bottom-left' } })}
         >
-          왼쪽 아래
+          <Trans key={'setting.position.left-bottom'} />
         </Card>
         <Card
           class={'flex justify-center items-end'}
@@ -102,7 +105,7 @@ const PositionContainer = () => {
           }}
           onClick={() => setConfig({ windowPosition: { anchor: 'bottom' } })}
         >
-          아래
+          <Trans key={'setting.position.center-bottom'} />
         </Card>
         <Card
           class={'flex justify-end items-end'}
@@ -111,30 +114,43 @@ const PositionContainer = () => {
           }}
           onClick={() => setConfig({ windowPosition: { anchor: 'bottom-right' } })}
         >
-          오른쪽 아래
+          <Trans key={'setting.position.right-bottom'} />
         </Card>
       </div>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
         <div class={'font-md'}>
-          가사를 표시할 모니터
+          <Trans key={'setting.position.select-monitor-to-display-lyrics'} />
         </div>
         <div class={'flex-1'} />
         <Selector
           value={
             !config()?.windowPosition.display ?
-              '기본 모니터 사용' :
+              t('setting.position.use-primary-monitor') :
               displays.find((display) => display.id === config()?.windowPosition.display) ?
-                `${displays.findIndex((display) => display.id === getCurrentDisplay().id) + 1} - ${getCurrentDisplay().label}` :
-                `알 수 없는 모니터 (code ${config()?.windowPosition.display})`
+                t(
+                  'setting.position.monitor-name-with-index',
+                  {
+                    index: (displays.findIndex((display) => display.id === getCurrentDisplay().id) + 1),
+                    name: getCurrentDisplay().label,
+                  },
+                ) :
+                t(
+                  'setting.position.unknown-monitor',
+                  {
+                    id: config()?.windowPosition.display,
+                  },
+                )
           }
           onChange={(value, index) => {
-            if (value === '기본 모니터 사용') {
+            if (index === 0) {
               setConfig({ windowPosition: { display: null } });
             } else {
               setConfig({ windowPosition: { display: displays[index - 1].id } });
             }
           }}
-          options={['기본 모니터 사용'].concat(displays.map((display, index) => `${index + 1} - ${display.label}`))}
+          options={[t('setting.position.use-primary-monitor')].concat(
+            displays.map((display, index) => `${index + 1} - ${display.label}`)
+          )}
           class={'select'}
           popupClass={'p-1 bg-gray-800 rounded'}
           renderItem={(props, option) => <li
@@ -147,11 +163,11 @@ const PositionContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
         <div class={'font-md'}>
-          가사 표시 방향
+          <Trans key={'setting.position.select-orientation-to-display-lyrics'} />
         </div>
         <div class={'flex-1'} />
         <Selector
-          format={(value) => value === 'column' ? '위에서 아래로' : '아래에서 위로'}
+          format={(value) => value === 'column' ? t('setting.position.from-top-to-bottom') : t('setting.position.from-bottom-to-top')}
           value={config()?.windowPosition?.direction ?? 'column'}
           onChange={(value) => setConfig({ windowPosition: { direction: value as 'column' | 'column-reverse' } })}
           options={['column', 'column-reverse']}
@@ -161,17 +177,17 @@ const PositionContainer = () => {
             {...props}
             class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
           >
-            {option === 'column' ? '위에서 아래로' : '아래에서 위로'}
+            {option === 'column' ? t('setting.position.from-top-to-bottom') : t('setting.position.from-bottom-to-top')}
           </li>}
         />
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
         <div class={'font-md'}>
-          현재 노래 표시하기
+          <Trans key={'setting.position.select-to-show-now-playing-panel'} />
         </div>
         <div class={'flex-1'} />
         <Selector
-          format={(value) => value === 'true' ? '표시' : '표시안함'}
+          format={(value) => value === 'true' ? t('setting.position.show-now-playing-panel') : t('setting.position.hide-now-playing-panel')}
           value={config()?.style?.nowPlaying?.visible?.toString() ?? 'true'}
           onChange={(value) => setConfig({ style: { nowPlaying: { visible: value === 'true' } } })}
           options={['true', 'false']}
@@ -180,13 +196,13 @@ const PositionContainer = () => {
             {...props}
             class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
           >
-            {option === 'true' ? '표시' : '표시안함'}
+            {option === 'true' ? t('setting.position.show-now-playing-panel') : t('setting.position.hide-now-playing-panel')}
           </li>}
         />
       </Card>
 
       <div class={'text-md mt-8 mb-1'}>
-        여백 조절
+        <Trans key={'setting.position.adjust-margin'} />
       </div>
       <div
         class={`
@@ -199,7 +215,7 @@ const PositionContainer = () => {
         <input
           type={'number'}
           class={'input'}
-          placeholder={'위쪽 여백'}
+          placeholder={t('setting.position.top-margin')}
           value={config()?.windowPosition.top ?? undefined}
           onChange={(event) => setConfig({ windowPosition: { top: Number(event.target.value) } })}
         />
@@ -207,15 +223,15 @@ const PositionContainer = () => {
         <input
           type={'number'}
           class={'input'}
-          placeholder={'왼쪽 여백'}
+          placeholder={t('setting.position.left-margin')}
           value={config()?.windowPosition.left ?? undefined}
           onChange={(event) => setConfig({ windowPosition: { left: Number(event.target.value) } })}
         />
-        <img src={icon} class={'w-12 h-12 object-contain self-center justify-self-center'} alt={'아이콘'}/>
+        <img src={icon} class={'w-12 h-12 object-contain self-center justify-self-center'} alt={'Icon'}/>
         <input
           type={'number'}
           class={'input'}
-          placeholder={'오른쪽 여백'}
+          placeholder={t('setting.position.right-margin')}
           value={config()?.windowPosition.right ?? undefined}
           onChange={(event) => setConfig({ windowPosition: { right: Number(event.target.value) } })}
         />
@@ -223,7 +239,7 @@ const PositionContainer = () => {
         <input
           type={'number'}
           class={'input'}
-          placeholder={'아래쪽 여백'}
+          placeholder={t('setting.position.bottom-margin')}
           value={config()?.windowPosition.bottom ?? undefined}
           onChange={(event) => setConfig({ windowPosition: { bottom: Number(event.target.value) } })}
         />

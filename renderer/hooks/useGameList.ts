@@ -1,6 +1,6 @@
 import { createSignal } from 'solid-js';
 
-import { GameList } from '../../src/config';
+import { GameList } from '../../common/config';
 
 const useGameList = () => {
   const [gameList, setGameList] = createSignal<GameList>({});
