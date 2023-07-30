@@ -3,6 +3,7 @@
 ### 커스텀이 편리한 *Spotify*, *YouTube Music* 가사 표시기
 ### Fully-customizable *Spotify*, *YouTube Music* lyrics viewer [(English README)](https://github.com/organization/alspotron/blob/master/README-i18n/en.md)
 ### カスタマイズしやすい「*Spotify*」・「*YouTube Music*」歌詞インジケータ [(日本語 README)](https://github.com/organization/alspotron/blob/master/README-i18n/ja.md)
+### Vollständig anpassbarer Spotify- und YouTube-Musik-Liedtext-Viewer [(Deutsch README)](https://github.com/organization/alspotron/blob/master/README-i18n/de.md)
 
 
 > `스포티파이` 혹은 `유튜브 뮤직`등의 `뮤직 플레이어`에서 재생중인 노래의 알송 가사를 화면에 표시해줍니다.\
@@ -12,8 +13,8 @@
 
 -   동영상 위에 가사가 표시되게 촬영한 예시 이미지이며, 실제로는 위치를 자유롭게 선택할 수 있습니다.
 
-|                         Spotify                        |                                                        Youtube Music                                                        |                         Game Overlay (tested game: Overwatch)                       |
-| :----------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------: |
+|                        Spotify                         |                                                        Youtube Music                                                        |                                         Game Overlay (tested game: Overwatch)                                         |
+|:------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------:|
 | ![Spotify Screenshot](https://i.imgur.com/0JJMhaU.png) | ![YouTube Music Screenshot](https://github.com/organization/alspotron/assets/16558115/fc22323e-d0b2-4abc-882e-2281c13f4cf4) | ![Overlay Screenshot](https://github.com/organization/alspotron/assets/16558115/7bb95071-b8f7-45e1-af59-02e1586d5dcc) |
 
 ## Installation
