@@ -2,12 +2,12 @@
 
 ### Fully-customizable *Spotify*, *YouTube Music* lyrics viewer
 
-> Shows the lyrics of the song playing on a music player like `Spotify` or `YouTube Music`. \
+> Shows the lyrics of the song playing on music players such as `Spotify` or `YouTube Music`. \
 > If the lyric doesn't exist, `Alspotron` will display `Spotify`'s built-in lyrics. (**Only when playing with `Spotify`**)
 
 ### Screenshot
 
--   This shows how Alspotron display lyrics to applications. location of lyrics can be freely adjusted.
+-   This shows how Alspotron displays lyrics to applications. You can freely adjust the position of the lyrics.
 
 |                         Spotify                        |                                                        Youtube Music                                                        |                         Game Overlay (tested game: Overwatch)                       |
 | :----------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------: |
@@ -24,7 +24,7 @@
 #### 2.  [Download Alspotron](https://github.com/organization/alspotron/releases)
 
   -   Install latest version of Alspotron from Releases. (**WARNING** : Portable version can't save settings.)
-  -   for Windows users, there is `Alspotron-Web-Setup-[version].exe` for Windows.
+  -   If you're a Windows user, you need to install `Alspotron-Web-Setup-[version].exe`.
 
 #### 3.  Install Alspotron Companion
   -   [Download `alsptron.js`](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) and place it in [Extensions folder in install location of `Spicetify`.](https://spicetify.app/docs/advanced-usage/extensions/)
@@ -47,7 +47,7 @@
 #### 3.  [Download Alspotron](https://github.com/organization/alspotron/releases)
 
   -   Install latest version of Alspotron from Releases. (**WARNING** : Portable version can't save settings.)
-  -   for Windows users, there is `Alspotron-Web-Setup-[version].exe` for Windows.
+  -   If you're a Windows user, you need to install `Alspotron-Web-Setup-[version].exe`.
 
 
 ### WARNING : For YouTube Music users
@@ -62,7 +62,7 @@
 #### 2.  [Download Alspotron](https://github.com/organization/alspotron/releases)
 #### 3.  Install Alspotron Companion
   -   Install latest version of Alspotron from Releases. (**WARNING** : Portable version can't save settings.)
-  -   for Windows users, there is `Alspotron-Web-Setup-[version].exe` for Windows.
+  -   If you're a Windows user, you need to install `Alspotron-Web-Setup-[version].exe`.
 
 ### How to use
 
