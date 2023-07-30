@@ -14,7 +14,15 @@ const useLyric = () => {
     const tempLyrics = lyrics();
     if (tempLyrics === null) return null;
 
-    const last = tempLyrics.lower_bound(progress() + (BIAS + (config()?.style?.animation !== 'none' ? TRANSITION_DURATION : 0)));
+    const last = tempLyrics.lower_bound(
+      progress() + (
+        BIAS + (
+          config()?.style?.animation !== 'none' && !config()?.style?.animationAtOnce ?
+            TRANSITION_DURATION :
+            0
+        )
+      ),
+    );
 
     if (!last.equals(tempLyrics.begin())) {
       return last.prev();
