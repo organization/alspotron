@@ -36,7 +36,9 @@
       ```bash
       spicetify apply
       ``` 
+      
 ---
+
 ### YouTube Music
 
 #### 1.  [Install YouTube Music Desktop](https://github.com/th-ch/youtube-music/releases)

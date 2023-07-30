@@ -24,19 +24,24 @@
 ### Spotify
 
 #### 1.  [Spicetify 설치](https://github.com/khanhas/spicetify-cli)  
-
-    -   다음 링크의 지시사항에 따라 `Spicetify`를 설치해주세요.
+  -   다음 링크의 지시사항에 따라 `Spicetify`를 설치해주세요.
 
 #### 2.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases) 
 
-    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
-    -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
+  -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
+  -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
 
 #### 3.  Alspotron Companion 설치  
 
-    -   [Spicetify 설치 위치의 Extensions 폴더에](https://spicetify.app/docs/advanced-usage/extensions/) [`alspotron.js`를 다운로드 받아](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) 넣어주세요.
-    -   이후 `spicetify config extensions alspotron.js` 명령어로 `alspotron.js`를 추가해주세요.  
-    -   `spicetify apply` 명령어로 적용하면 스포티파이가 꺼졌다 켜지면서 적용됩니다.
+  -   [Spicetify 설치 위치의 Extensions 폴더에](https://spicetify.app/docs/advanced-usage/extensions/) [`alspotron.js`를 다운로드 받아](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) 넣어주세요.
+  -   아래 명령어를 사용하여 `alspotron.js` 확장을 `Spicetify`에 추가합니다. 
+      ```bash
+      spicetify config extensions alspotron.js
+      ```
+  -   그 뒤, 아래 명령을 사용하면 `Spotify`가 다시 시작되고 `alspotron.js` 확장 프로그램이 적용됩니다.
+      ```bash
+      spicetify apply
+      ``` 
 
 ---
 
@@ -50,7 +55,7 @@
 
 3.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)  
 
-    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
+    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요.
     -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
 
 #### YouTube Music 사용자는 주의!
@@ -61,12 +66,14 @@
 
 ### 그 외 플레이어 (e.g. Apple Music)
 
-#### 1.  [tuna-obs](https://github.com/univrsal/tuna)를 참고하여 관련 설정을 마쳐주세요.
+#### 1.  [tuna-obs](https://github.com/univrsal/tuna)를 참고하여 브라우저 확장 프로그램을 (tempermonkey script) 설치해주세요.
 #### 2.  [Alspotron 다운로드](https://github.com/organization/alspotron/releases)
-    -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
-    -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
+  -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. 
+  -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
 
-### (모든 뮤직 플레이어 해당) 마지막 단계
+---
+
+### 마지막 단계
 
 #### Windows, Linux
 
@@ -74,7 +81,11 @@
 
 #### macOS
 
--   `xattr -cr /Applications/Alspotron.app` 혹은 [해당 링크](https://archivers.tistory.com/74)를 참고하여 실행하세요.
+-   `손상되었기 때문에 열 수 없습니다.` 메시지가 뜨고 앱이 실행되지 않는다면, 다음 명령어를 터미널에 입력하세요.
+    ```bash
+    xattr -cr /Applications/Alspotron.app
+    ```
+-   혹은 [해당 링크](https://archivers.tistory.com/74)를 참고하여 실행하세요.
 
 ## Config
 
