@@ -7,7 +7,7 @@
 
 ### Screenshot
 
--   This shows how Alspotron displays lyrics to applications. You can freely adjust the position of the lyrics.
+-   These are how Alspotron displays lyrics to applications. You can freely adjust the position of the lyrics.
 
 |                         Spotify                        |                                                        Youtube Music                                                        |                         Game Overlay (tested game: Overwatch)                       |
 | :----------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------: |
@@ -49,11 +49,10 @@
   -   Install latest version of Alspotron from Releases. (**WARNING** : Portable version can't save settings.)
   -   If you're a Windows user, you need to install `Alspotron-Web-Setup-[version].exe`.
 
-
 ### WARNING : For YouTube Music users
 
   -  There is [issue](https://github.com/organization/alspotron/issues/1) about adblocker.
-  -  **Must** disable `adblocker` plugin or change adblocker to `in-player`.
+  -  You **MUST** disable `adblocker` plugin or change adblocker to `in-player`.
 
 ---
 ### etc. (e.g. Apple Music)
