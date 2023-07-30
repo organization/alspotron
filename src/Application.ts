@@ -269,7 +269,6 @@ class Application {
         ctx.status = 200;
 
         this.lastUpdate = ctx.request.body;
-        console.log(this.lastUpdate);
         this.broadcast('update', this.lastUpdate);
 
         await next();
