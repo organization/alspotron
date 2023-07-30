@@ -86,13 +86,13 @@
 
 |                                          Change Lyrics Location                                          |                                           Change Theme Setting                                           |
 |:--------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------:|
-| ![image](https://github.com/organization/alspotron/assets/16558115/d09cc0ec-cab7-4fd4-89fe-0836699e352a) | ![image](https://github.com/organization/alspotron/assets/16558115/2e4ae98b-559e-4e8d-b3bb-f5e3081bcf88) |
+| ![image](https://github.com/organization/alspotron/assets/16558115/e770250a-d76d-4ba8-9765-774d0ac9b1af) | ![image](https://github.com/organization/alspotron/assets/16558115/3b049940-6ad9-48c0-8370-7773c8e33f82) |
 
 2.  You can choose a different lyrics for now playing song via `Select Lyrics` menu on the tray icon.
 
 |                                Search other lyrics on now playing songs.                                 |
 |:--------------------------------------------------------------------------------------------------------:|
-| ![image](https://github.com/organization/alspotron/assets/16558115/0315c44e-27cb-4882-a7d8-e6e91531790a) |
+| ![Editing alspotron_README-i18n_en md at feat_i18n · organization_alspotron - Chrome 2023-07-31 오전 8_02_09](https://github.com/organization/alspotron/assets/16558115/6604d1b5-74c5-48c8-8912-afdbcdfa3700) |
 
 ## Migration from Alspotify
 
