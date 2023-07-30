@@ -2,12 +2,12 @@
 
 ### Fully-customizable *Spotify*, *YouTube Music* lyrics viewer
 
-> Shows the lyrics of the song playing on music players such as `Spotify` or `YouTube Music`. \
-> If the lyric doesn't exist, `Alspotron` will display `Spotify`'s built-in lyrics. (**Only when playing with `Spotify`**)
+> Alspotron shows lyrics of music played on music streaming platforms such as `Spotify` or `YouTube Music`. \
+> If the lyrics don't exist, `Alspotron` will display `Spotify`'s built-in lyrics. (**Only when playing with `Spotify`**)
 
-### Screenshot
+### Screenshots
 
--   These are how Alspotron displays lyrics to applications. You can freely adjust the position of the lyrics.
+-   Here are some example screenshots of lyrics displayed with Alspotron. You can freely adjust the position of the lyrics.
 
 |                         Spotify                        |                                                        Youtube Music                                                        |                         Game Overlay (tested game: Overwatch)                       |
 | :----------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------: |
@@ -19,20 +19,20 @@
 
 #### 1.  [Install Spicetify](https://github.com/khanhas/spicetify-cli)
 
-  -   Follow the link's description to install `Spicetify`.
+  -   Follow the above link to install `Spicetify`.
 
 #### 2.  [Download Alspotron](https://github.com/organization/alspotron/releases)
 
-  -   Install latest version of Alspotron from Releases. (**WARNING** : Portable version can't save settings.)
-  -   If you're a Windows user, you need to install `Alspotron-Web-Setup-[version].exe`.
+  -   Install the latest version of Alspotron from Releases. (**WARNING** : Portable version can't save settings.)
+  -   If you're using Windows, you need to install `Alspotron-Web-Setup-[version].exe`.
 
 #### 3.  Install Alspotron Companion
   -   [Download `alsptron.js`](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) and place it in [Extensions folder in install location of `Spicetify`.](https://spicetify.app/docs/advanced-usage/extensions/)
-  -   Add `alspotron.js` extension to `Spicetify` with command.
+  -   Add `alspotron.js` extension to `Spicetify` with below command.
       ```
       spicetify config extensions alspotron.js
       ```
-  -   After apply command below, Spotify will restart and extension will be applied.
+  -   After using the command below, Spotify will restart and alspotron.js extension will be applied.
       ```
       spicetify apply
       ``` 
@@ -41,27 +41,27 @@
 
 #### 1.  [Install YouTube Music Desktop](https://github.com/th-ch/youtube-music/releases)
 
-  -   Follow the link's description to install `Youtube Music Desktop`.
+  -   Follow the above link to install `Youtube Music Desktop`.
 
-#### 2.  Start `Youtube Music Desktop`, Enter `plugins` in menu and enable `tuna-obs`
+#### 2.  Start `Youtube Music Desktop`, select `plugins` in menu and enable `tuna-obs`
 #### 3.  [Download Alspotron](https://github.com/organization/alspotron/releases)
 
   -   Install latest version of Alspotron from Releases. (**WARNING** : Portable version can't save settings.)
-  -   If you're a Windows user, you need to install `Alspotron-Web-Setup-[version].exe`.
+  -   If you're using Windows, you need to install `Alspotron-Web-Setup-[version].exe`.
 
 ### WARNING : For YouTube Music users
 
-  -  There is [issue](https://github.com/organization/alspotron/issues/1) about adblocker.
+  -  There is an [issue](https://github.com/organization/alspotron/issues/1) related to adblocker.
   -  You **MUST** disable `adblocker` plugin or change adblocker to `in-player`.
 
 ---
-### etc. (e.g. Apple Music)
+### Other platforms (e.g. Apple Music)
 
 #### 1.  Follow [link](https://github.com/univrsal/tuna) to install browser extension.
 #### 2.  [Download Alspotron](https://github.com/organization/alspotron/releases)
 #### 3.  Install Alspotron Companion
   -   Install latest version of Alspotron from Releases. (**WARNING** : Portable version can't save settings.)
-  -   If you're a Windows user, you need to install `Alspotron-Web-Setup-[version].exe`.
+  -   If you're using Windows, you need to install `Alspotron-Web-Setup-[version].exe`.
 
 ### How to use
 
@@ -79,15 +79,15 @@
 
 ## Config
 
-1.  Preference
+1.  Preferences
 
 |                                        Change Lyrics Location                                            |                                                   Change Theme                                           |
 | :------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------: |
 | ![image](https://github.com/organization/alspotron/assets/16558115/d09cc0ec-cab7-4fd4-89fe-0836699e352a) | ![image](https://github.com/organization/alspotron/assets/16558115/2e4ae98b-559e-4e8d-b3bb-f5e3081bcf88) |
 
-2.  Other lyrics for current playing song can be selected by `Select Lyrics` on tray icon.
+2.  You can choose a different lyrics for now playing song via `Select Lyrics` menu on the tray icon.
 
-|                                  Search other lyrics on current songs.                                   |
+|                                  Search other lyrics on now playing songs.                                   |
 | :------------------------------------------------------------------------------------------------------: |
 | ![image](https://github.com/organization/alspotron/assets/16558115/0315c44e-27cb-4882-a7d8-e6e91531790a) |
 
