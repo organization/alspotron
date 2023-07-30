@@ -1,6 +1,6 @@
 # Alspotron <a href="https://github.com/organization/alspotron/releases/latest"><img src="https://img.shields.io/github/downloads/organization/alspotron/total.svg"/></a>
 
-### Vollständig anpassbarer Spotify- und YouTube-Musik-Liedtext-Viewer
+### Vollständig anpassbarer *Spotify-* und *YouTube Music* Liedtext-Viewer
 
 > Alspotron zeigt Liedtexte von Musik an, die auf Musik-Streaming-Plattformen wie `Spotify` oder `YouTube Music` abgespielt wird. \
 > Wenn kein Liedtext in den Suchergebnissen vorhanden ist, die in Spotify integrierten Liedtexte anzeigen (nur bei der Wiedergabe mit `Spotify`)
