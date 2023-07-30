@@ -21,12 +21,12 @@
 
   -   Bitte folgen Sie den Anweisungen unter dem folgenden Link, um `Spicetify` zu installieren.
 
-2.  [Alspotron herunterladen](https://github.com/organization/alspotron/releases)
+#### 2.  [Alspotron herunterladen](https://github.com/organization/alspotron/releases)
 
   -   Laden Sie die neueste Version von Alspotron von der Registerkarte Release herunter und installieren Sie sie
   -   Wenn Sie Windows verwenden, müssen Sie `Alspotron-Web-Setup-[Version].exe` installieren.
 
-3.  Alspotron Companion installieren
+#### 3.  Alspotron Companion installieren
 
   -   Laden Sie [`alspotron.js`](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) herunter und legen Sie es im Ordner Extensions im [Installationsverzeichnis von Spicetify](https://spicetify.app/docs/advanced-usage/extensions/) ab.
   -   Fügen Sie die Erweiterung alspotron.js mit dem folgenden Befehl zu Spicetify hinzu.
