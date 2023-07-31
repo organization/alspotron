@@ -39,7 +39,7 @@ const InfoContainer = () => {
   };
 
   return (
-    <div class={'flex-1 p-4 flex flex-col justify-start items-stretch gap-1'}>
+    <div class={'flex-1 p-4 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1'}>
         <Trans key={'setting.title.about'} />
       </div>
@@ -216,6 +216,81 @@ const InfoContainer = () => {
           </div>
           <div class={'text-xs text-white/75'}>
             <Trans key={'setting.about.alspotron-contributor'} />
+          </div>
+        </div>
+        <div class={'flex-1'} />
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" class={'fill-white'} />
+        </svg>
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/Flaplim')}>
+        <img src={'https://avatars.githubusercontent.com/u/6704921?s=64&v=4'} class={'w-6 h-6 mr-4 rounded-full'} alt='Hyeseo Lee Profile Image'/>
+        <div class={'flex flex-col justify-center items-start'}>
+          <div class={''}>
+            Hyeseo Lee
+          </div>
+          <div class={'text-xs text-white/75'}>
+            <Trans key={'setting.about.alspotron-translator.german'} />
+          </div>
+        </div>
+        <div class={'flex-1'} />
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" class={'fill-white'} />
+        </svg>
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/hwangseonu')}>
+        <img src={'https://avatars.githubusercontent.com/u/30190259?s=64&v=4'} class={'w-6 h-6 mr-4 rounded-full'} alt='mocha Profile Image'/>
+        <div class={'flex flex-col justify-center items-start'}>
+          <div class={''}>
+            mocha
+          </div>
+          <div class={'text-xs text-white/75'}>
+            <Trans key={'setting.about.alspotron-translator.japanese'} />
+          </div>
+        </div>
+        <div class={'flex-1'} />
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" class={'fill-white'} />
+        </svg>
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/ReturnToFirst')}>
+        <img src={'https://avatars.githubusercontent.com/u/19341560?s=64&v=4'} class={'w-6 h-6 mr-4 rounded-full'} alt='ReturnToFirst Profile Image'/>
+        <div class={'flex flex-col justify-center items-start'}>
+          <div class={''}>
+            ReturnToFirst
+          </div>
+          <div class={'text-xs text-white/75'}>
+            <Trans key={'setting.about.alspotron-translator.english'} />
+          </div>
+        </div>
+        <div class={'flex-1'} />
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" class={'fill-white'} />
+        </svg>
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/sbaik2')}>
+        <img src={'https://avatars.githubusercontent.com/u/16580092?s=64&v=4'} class={'w-6 h-6 mr-4 rounded-full'} alt='Seungho Baik Profile Image'/>
+        <div class={'flex flex-col justify-center items-start'}>
+          <div class={''}>
+            Seungho Baik
+          </div>
+          <div class={'text-xs text-white/75'}>
+            <Trans key={'setting.about.alspotron-translator.english'} />
+          </div>
+        </div>
+        <div class={'flex-1'} />
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" class={'fill-white'} />
+        </svg>
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/Aden1126')}>
+        <img src={'https://avatars.githubusercontent.com/u/129780719?s=64&v=4'} class={'w-6 h-6 mr-4 rounded-full'} alt='Aden1126 Profile Image'/>
+        <div class={'flex flex-col justify-center items-start'}>
+          <div class={''}>
+            Aden1126
+          </div>
+          <div class={'text-xs text-white/75'}>
+            <Trans key={'setting.about.alspotron-translator.english'} />
           </div>
         </div>
         <div class={'flex-1'} />

@@ -47,6 +47,10 @@
   "setting.about.alspotify-developer": "Alspotify developer",
   "setting.about.alspotron-developer": "Alspotron developer",
   "setting.about.alspotron-contributor": "Alspotron contributor",
+  "setting.about.alspotron-translator.korean": "Alspotron Korean translator",
+  "setting.about.alspotron-translator.english": "Alspotron English translator",
+  "setting.about.alspotron-translator.japanese": "Alspotron Japanese translator",
+  "setting.about.alspotron-translator.german": "Alspotron German translator",
 
   "setting.language.select-language-menu": "Language preference",
   "setting.language.select-language": "Change language",

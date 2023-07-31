@@ -47,6 +47,10 @@
   "setting.about.alspotify-developer": "Entwickler von Alspotify",
   "setting.about.alspotron-developer": "Entwickler von Alspotron",
   "setting.about.alspotron-contributor": "Mitwirkender an Alspotron",
+  "setting.about.alspotron-translator.korean": "Koreanische Übersetzer von Alspotify",
+  "setting.about.alspotron-translator.english": "Englische Übersetzung von Alspotify",
+  "setting.about.alspotron-translator.japanese": "Japanische Übersetzung von Alspotify",
+  "setting.about.alspotron-translator.german": "Deutsche Übersetzung von Alspotify",
 
   "setting.language.select-language-menu": "Spracheinstellungen",
   "setting.language.select-language": "Sprache ändern",
