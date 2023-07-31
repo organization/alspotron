@@ -57,7 +57,7 @@
 
 ### 以外のプレーヤー (e.g. Apple Music)
 
-#### 1.  [tuna-obs](https://github.com/univrsal/tuna)を参考に設定を完了してください。
+#### 1.  [tuna-obs](https://github.com/univrsal/tuna)を参考にブラウザ拡張機能の設定を完了してください。
 #### 2.  [Alspotronのダウンロード](https://github.com/organization/alspotron/releases)
   -   上記リンクから最新バージョンの「Alspotron」をダウンロードして実行してください。
   -   Windows ユーザの場合は、「`Alspotron-Web-Setup-[version].exe`」をダウンロードしてください。
