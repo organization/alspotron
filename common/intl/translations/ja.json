@@ -21,7 +21,7 @@
   "setting.title.about": "情報",
 
   "setting.game.current-playing-game": "現在プレイ中のゲーム",
-  "setting.game.not-detected": "現在プレイしているゲームかありません",
+  "setting.game.not-detected": "現在プレイしているゲームがありません",
   "setting.game.list-of-registered-games": "登録ゲーム一覧",
   "setting.game.registered-games": "登録ゲーム",
   "setting.game.registered-games-count": "{{count}}",
