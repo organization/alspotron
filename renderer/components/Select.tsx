@@ -1,6 +1,6 @@
 import { Placement, offset } from '@floating-ui/dom';
 import { useFloating } from 'solid-floating-ui';
-import { For, Show, createEffect, createSignal, onCleanup, onMount, splitProps } from 'solid-js';
+import { For, Show, createEffect, createSignal, mergeProps, onCleanup, onMount, splitProps } from 'solid-js';
 
 import { Transition } from 'solid-transition-group';
 
@@ -9,6 +9,8 @@ import { cx } from '../utils/classNames';
 import type { JSX } from 'solid-js/jsx-runtime';
 
 export interface SelectProps extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
+  mode?: 'select' | 'autocomplete';
+
   placeholder?: string;
   placement?: Placement;
 
@@ -20,12 +22,12 @@ export interface SelectProps extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 
   popupClass?: string;
   popupStyle?: string;
 
-  renderItem?: (props: JSX.HTMLAttributes<HTMLLIElement>, option: string) => JSX.Element;
+  renderItem?: (props: JSX.HTMLAttributes<HTMLLIElement>, option: string, isSelected: boolean) => JSX.Element;
 }
 const Selector = (props: SelectProps) => {
   const [local, popup, leftProps] = splitProps(
-    props,
-    ['format', 'options', 'value', 'onChange', 'renderItem', 'placement'],
+    mergeProps({ mode: 'select' }, props),
+    ['format', 'options', 'value', 'onChange', 'renderItem', 'placement', 'mode'],
     ['popupClass', 'popupStyle']
   );
 
@@ -33,14 +35,30 @@ const Selector = (props: SelectProps) => {
   const [open, setOpen] = createSignal(false);
   const [anchor, setAnchor] = createSignal<HTMLInputElement>();
   const [popper, setPopper] = createSignal<HTMLUListElement>();
+  const [input, setInput] = createSignal<HTMLInputElement>();
   const [options, setOptions] = createSignal(local.options);
+
+  /* properties */
+  const itemHeight = () => (popper()?.scrollHeight ?? popper()?.clientHeight ?? 0) / local.options.length;
+  const selectIndex = () => local.options.findIndex((option) => option === local.value);
 
   /* defines */
   const position = useFloating(anchor, popper, {
     placement: local.placement ?? 'bottom-start',
     strategy: 'absolute',
     middleware: [
-      offset({ mainAxis: 8, crossAxis: 0 }),
+      offset(() => {
+        const offset = (
+          local.mode === 'select'
+            ? (-1 * (anchor()?.clientHeight ?? 0)) - (itemHeight() * selectIndex())
+            : 8
+        );
+
+        return {
+          mainAxis: offset,
+          crossAxis: 0,
+        };
+      }),
     ],
   });
 
@@ -48,10 +66,13 @@ const Selector = (props: SelectProps) => {
   const listener = (event: MouseEvent) => {
     if (event.target instanceof Node && !popper()?.contains(event.target) && !anchor()?.contains(event.target)) {
       setOpen(false);
+
+      position.update();
     }
   };
   onMount(() => {
-    window.addEventListener('click', listener);
+    window.addEventListener('mousedown', listener);
+    position.update();
   });
 
   createEffect(() => {
@@ -69,10 +90,10 @@ const Selector = (props: SelectProps) => {
     popperDom?.addEventListener('transitionstart', () => {
       position.update();
     }, { once: true });
-  })
+  });
 
   onCleanup(() => {
-    window.removeEventListener('click', listener);
+    window.removeEventListener('mousedown', listener);
   });
 
   /* callbacks */
@@ -81,23 +102,41 @@ const Selector = (props: SelectProps) => {
     setOpen(false);
     local.onChange?.(option, index);
   };
+  const onOpen = () => {
+    position.update();
+    setOpen(true);
+  };
 
   return (
     <>
-      <input
-        {...leftProps}
+      <div
         ref={setAnchor}
-        class={cx('input', leftProps.class)}
-        value={keyword() ?? local.format?.(local.value ?? '') ?? local.value}
-        onInput={(event) => setKeyword(event.target.value)}
-        onFocusIn={() => setOpen(true)}
-      />
+        class={'select-container'}
+        onClick={() => input()?.focus()}
+      >
+        <input
+          {...leftProps}
+          ref={setInput}
+          class={cx('select', leftProps.class)}
+          value={keyword() ?? local.format?.(local.value ?? '') ?? local.value}
+          onInput={(event) => setKeyword(event.target.value)}
+          onFocusIn={onOpen}
+        />
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class={'w-4 h-4 fill-none'}>
+          <path d="M4.293 8.293a1 1 0 0 1 1.414 0L12 14.586l6.293-6.293a1 1 0 1 1 1.414 1.414l-7 7a1 1 0 0 1-1.414 0l-7-7a1 1 0 0 1 0-1.414Z" class={'fill-white'} />
+        </svg>
+      </div>
       <div
         ref={setPopper}
         style={{
-          position: position.strategy,
-          top: `${position.y ?? 0}px`,
-          left: `${position.x ?? 0}px`,
+          'position': position.strategy,
+          'top': `${position.y ?? 0}px`,
+          'left': `${position.x ?? 0}px`,
+          '--percent': (
+            local.mode === 'select'
+              ? `${((itemHeight() * selectIndex()) + (itemHeight() / 2)) / Math.max(popper()?.clientHeight ?? 0, 1) * 100}%`
+              : '0%'
+          ),
         }}
         class={'z-50'}
       >
@@ -107,14 +146,25 @@ const Selector = (props: SelectProps) => {
               style={`width: ${anchor()?.clientWidth ? `${anchor()?.clientWidth ?? 0}px` : 'fit-content'}; ${popup.popupStyle ?? ''};`}
               class={cx(`
                 w-full max-h-[50vh]
-                flex flex-col justify-start items-start p-1 rounded-lg shadow-[0_0_0_1px_var(--tw-shadow-color),0_4px_8px_var(--tw-shadow-color)] shadow-black/25
-                bg-neutral-800/90 fluent-scrollbar backdrop-blur-xl
+                flex flex-col justify-start items-start p-1 rounded-lg shadow-[0_0_0_1px_var(--tw-shadow-color),0_8px_16px_var(--tw-shadow-color)] shadow-black/50
+                bg-neutral-800 fluent-scrollbar backdrop-blur-xl
               `, popup.popupClass)}
             >
               <For each={options()}>
-                {(option, index) => local.renderItem?.({ onClick: () => onSelect(option, index()) }, option) ?? (
-                  <li class={'flex text-white hover:bg-white/10 rounded-lg'} onClick={() => onSelect(option, index())}>
+                {(option, index) => local.renderItem?.({ onClick: () => onSelect(option, index()) }, option, option === local.value) ?? (
+                  <li
+                    class={cx(
+                      'w-full py-2 hover:bg-white/10 rounded-lg truncate flex items-center',
+                      option === local.value && 'bg-white/10',
+                    )}
+                    onClick={() => onSelect(option, index())}
+                  >
+                    <Show when={option === local.value}>
+                      <div class={'bg-primary-500 rounded w-1 h-4'} />
+                    </Show>
+                    <div class={'px-2'}>
                     {local.format?.(option) ?? option}
+                    </div>
                   </li>
                 )}
               </For>

@@ -33,12 +33,7 @@ const LanguageContainer = () => {
               changeLanguage(value);
               alert(t('setting.language.alert'));
             }}
-            renderItem={(props, option) => <li
-              {...props}
-              class={'w-full p-2 hover:bg-white/10 rounded-lg'}
-            >
-              {getTranslation('language.name', option)}
-            </li>}
+            format={(str) => getTranslation('language.name', str)}
           />
         </Card>
       </div>

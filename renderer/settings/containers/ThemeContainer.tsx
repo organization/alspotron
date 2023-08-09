@@ -10,6 +10,7 @@ import useHorizontalScroll from '../../hooks/useHorizontalScroll';
 import LyricsTransition from '../../main/components/LyricsTransition';
 import ColorPicker from '../components/ColorPicker';
 import UserCSSEditor from '../components/UserCSSEditor';
+import { cx } from '../../utils/classNames';
 
 const ANIMATION_LIST = [
   'none',
@@ -121,6 +122,7 @@ const ThemeContainer = () => {
           <Trans key={'setting.theme.font'} />
         </div>
         <Selector
+          mode={'autocomplete'}
           placeholder={t('setting.theme.font.placeholder')}
           class={'select min-w-[210px] font-select'}
           style={{
@@ -129,13 +131,23 @@ const ThemeContainer = () => {
           options={fontList()}
           value={config()?.style?.font}
           onChange={(value) => setConfig({ style: { font: value } })}
-          renderItem={(props, option) => <li
-            {...props}
-            style={{ 'font-family': option }}
-            class={'w-full p-2 hover:bg-white/10 rounded-lg'}
-          >
-            {option}
-          </li>}
+          renderItem={(props, option, isSelected) => (
+            <li
+              {...props}
+              class={cx(
+                'w-full py-2 hover:bg-white/10 rounded-lg truncate flex items-center shrink-0',
+                isSelected && 'bg-white/10',
+              )}
+              style={{ 'font-weight': option }}
+            >
+              <Show when={isSelected}>
+                <div class={'bg-primary-500 rounded w-1 h-4'} />
+              </Show>
+              <div class={'px-2'}>
+                {option}
+              </div>
+            </li>
+          )}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -162,13 +174,23 @@ const ThemeContainer = () => {
           ]}
           value={config()?.style?.fontWeight ?? '400'}
           onChange={(value) => setConfig({ style: { fontWeight: value } })}
-          renderItem={(props, option) => <li
-            {...props}
-            style={{ 'font-weight': option }}
-            class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
-          >
-            <Trans key={'setting.theme.font-weight.option'} options={{ weight: option }} />
-          </li>}
+          renderItem={(props, option, isSelected) => (
+            <li
+              {...props}
+              class={cx(
+                'w-full py-2 hover:bg-white/10 rounded-lg truncate flex items-center',
+                isSelected && 'bg-white/10',
+              )}
+              style={{ 'font-weight': option }}
+            >
+              <Show when={isSelected}>
+                <div class={'bg-primary-500 rounded w-1 h-4'} />
+              </Show>
+              <div class={'px-2'}>
+                <Trans key={'setting.theme.font-weight.option'} options={{ weight: option }} />
+              </div>
+            </li>
+          )}
         />
       </Card>
       <Card
@@ -199,12 +221,6 @@ const ThemeContainer = () => {
               options={ANIMATION_LIST}
               value={config()?.style?.animation ?? 'pretty'}
               onChange={(value) => setConfig({ style: { animation: value } })}
-              renderItem={(props, option) => <li
-                {...props}
-                class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
-              >
-                {getAnimationName(option)}
-              </li>}
             />
           </div>,
           <div class={'w-full h-full flex justify-start items-center'}>
