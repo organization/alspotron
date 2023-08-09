@@ -1,6 +1,9 @@
 {
   "language.name": "English",
 
+  "common.close": "Close",
+  "common.okay": "Ok",
+
   "lyrics.lyric-search-not-found": "No lyrics Found!",
   "lyrics.playtime": "Song playtime",
   "lyrics.artist": "Artist name",
@@ -44,6 +47,7 @@
   "setting.about.refresh": "Refresh",
   "setting.about.visit-releases-page": "Release page",
   "setting.about.developer": "Developer",
+  "setting.about.translator": "Translator",
   "setting.about.alspotify-developer": "Alspotify developer",
   "setting.about.alspotron-developer": "Alspotron developer",
   "setting.about.alspotron-contributor": "Alspotron contributor",

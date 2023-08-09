@@ -1,10 +1,14 @@
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
+import { Show } from 'solid-js';
+
 import icon from '../../../assets/icon_music.png';
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
 
 import useConfig from '../../hooks/useConfig';
+
+import { cx } from '../../utils/classNames';
 
 import type { screen as electronScreen } from 'electron';
 
@@ -152,13 +156,7 @@ const PositionContainer = () => {
             displays.map((display, index) => `${index + 1} - ${display.label}`)
           )}
           class={'select'}
-          popupClass={'p-1 bg-gray-800 rounded'}
-          renderItem={(props, option) => <li
-            {...props}
-            class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
-          >
-            {option}
-          </li>}
+          popupClass={'p-1 bg-gray-800 rounded gap-1'}
         />
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
@@ -172,13 +170,7 @@ const PositionContainer = () => {
           onChange={(value) => setConfig({ windowPosition: { direction: value as 'column' | 'column-reverse' } })}
           options={['column', 'column-reverse']}
           class={'select'}
-          popupClass={'p-1 bg-gray-800 rounded'}
-          renderItem={(props, option) => <li
-            {...props}
-            class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
-          >
-            {option === 'column' ? t('setting.position.from-top-to-bottom') : t('setting.position.from-bottom-to-top')}
-          </li>}
+          popupClass={'p-1 bg-gray-800 rounded gap-1'}
         />
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
@@ -192,12 +184,7 @@ const PositionContainer = () => {
           onChange={(value) => setConfig({ style: { nowPlaying: { visible: value === 'true' } } })}
           options={['true', 'false']}
           class={'select'}
-          renderItem={(props, option) => <li
-            {...props}
-            class={'w-full p-2 hover:bg-white/10 rounded-lg truncate'}
-          >
-            {option === 'true' ? t('setting.position.show-now-playing-panel') : t('setting.position.hide-now-playing-panel')}
-          </li>}
+          popupClass={'p-1 bg-gray-800 rounded gap-1'}
         />
       </Card>
 

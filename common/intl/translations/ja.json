@@ -1,6 +1,9 @@
 {
   "language.name": "Japanese (日本語)",
 
+  "common.close": "Close",
+  "common.okay": "Ok",
+
   "lyrics.lyric-search-not-found": "検索結果がありません。",
   "lyrics.playtime": "再生時間",
   "lyrics.artist": "アーティスト名",
@@ -44,6 +47,7 @@
   "setting.about.refresh": "再確認",
   "setting.about.visit-releases-page": "リリースページを開く",
   "setting.about.developer": "デベロッパ",
+  "setting.about.translator": "翻訳者",
   "setting.about.alspotify-developer": "Alspotify 原作者",
   "setting.about.alspotron-developer": "Alspotron デベロッパ",
   "setting.about.alspotron-contributor": "Alspotron コントリビュータ",

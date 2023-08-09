@@ -1,6 +1,9 @@
 {
   "language.name": "Korean (한국어)",
 
+  "common.close": "닫기",
+  "common.okay": "확인",
+
   "lyrics.lyric-search-not-found": "검색결과가 없습니다.",
   "lyrics.playtime": "재생시간",
   "lyrics.artist": "아티스트 명",
@@ -44,6 +47,7 @@
   "setting.about.refresh": "새로고침",
   "setting.about.visit-releases-page": "릴리즈 보러가기",
   "setting.about.developer": "제작자",
+  "setting.about.translator": "번역자",
   "setting.about.alspotify-developer": "Alspotify 원작자",
   "setting.about.alspotron-developer": "Alspotron 개발자",
   "setting.about.alspotron-contributor": "Alspotron 기여자",
