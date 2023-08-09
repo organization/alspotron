@@ -223,6 +223,9 @@ const InfoContainer = () => {
           <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" class={'fill-white'} />
         </svg>
       </Card>
+      <div class={'text-md mt-8 mb-1'}>
+        <Trans key={'setting.about.translator'} />
+      </div>
       <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/Flaplim')}>
         <img src={'https://avatars.githubusercontent.com/u/6704921?s=64&v=4'} class={'w-6 h-6 mr-4 rounded-full'} alt='Hyeseo Lee Profile Image'/>
         <div class={'flex flex-col justify-center items-start'}>

@@ -65,8 +65,8 @@ const Selector = (props: SelectProps) => {
   /* lifetimes */
   const listener = (event: MouseEvent) => {
     if (event.target instanceof Node && !popper()?.contains(event.target) && !anchor()?.contains(event.target)) {
+      input()?.blur();
       setOpen(false);
-
       position.update();
     }
   };
@@ -98,8 +98,10 @@ const Selector = (props: SelectProps) => {
 
   /* callbacks */
   const onSelect = (option: string, index: number) => {
+    input()?.blur();
     setKeyword(null);
     setOpen(false);
+    position.update();
     local.onChange?.(option, index);
   };
   const onOpen = () => {

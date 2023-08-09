@@ -1,14 +1,19 @@
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
+import { createSignal } from 'solid-js';
+
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
 
 import useConfig from '../../hooks/useConfig';
 import { getTranslation } from '../../../common/intl';
+import Modal from '../../components/Modal';
 
 const LanguageContainer = () => {
   const [t, { changeLanguage }] = useTransContext();
   const [config, setConfig] = useConfig();
+
+  const [open, setOpen] = createSignal(false);
   
   return (
     <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
@@ -24,19 +29,35 @@ const LanguageContainer = () => {
             <Trans key={'setting.language.select-language'} />
           </div>
           <Selector
+          mode='select'
             placeholder={t('setting.language.placeholder')}
             class={'select min-w-[210px]'}
             options={['ko', 'en', 'ja', 'de']}
-            value={getTranslation('language.name', config()?.language ?? 'ko')}
+            value={config()?.language ?? 'ko'}
             onChange={(value) => {
               setConfig({ language: value as 'ko' | 'en' | 'ja' | 'de' });
               changeLanguage(value);
-              alert(t('setting.language.alert'));
+              setOpen(true);
             }}
             format={(str) => getTranslation('language.name', str)}
           />
         </Card>
       </div>
+      <Modal
+        open={open()}
+        onClose={() => setOpen(false)}
+        buttons={[
+          {
+            type: 'positive',
+            name: t('common.okay'),
+            onClick: () => setOpen(false),
+          },
+        ]}
+      >
+        <div class={'text-white text-lg'}>
+          {t('setting.language.alert')}
+        </div>
+      </Modal>
     </div>
   )
 };
