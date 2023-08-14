@@ -1,8 +1,8 @@
 import { For, JSX, Show, createEffect, createSignal } from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
+import { Marquee } from '@suyongs/solid-utility';
 
 import Card from '../../components/Card';
-import Marquee from '../../components/Marquee';
 import useGameList from '../../hooks/useGameList';
 
 export interface GameListContainerProps {

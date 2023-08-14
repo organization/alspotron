@@ -2,8 +2,9 @@ import { Show, createMemo, For, createEffect, Match, Switch } from 'solid-js';
 
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
+import { Marquee } from '@suyongs/solid-utility';
+
 import Card from '../components/Card';
-import Marquee from '../components/Marquee';
 import { usePlayingInfo } from '../components/PlayingInfoProvider';
 import useLyric from '../hooks/useLyric';
 import useLyricMapper from '../hooks/useLyricMapper';

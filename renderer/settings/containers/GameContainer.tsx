@@ -1,10 +1,10 @@
 import { For, Match, Show, Switch, createEffect, createSignal } from 'solid-js';
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
+import { Marquee } from '@suyongs/solid-utility';
 
 import GameListContainer from './GameListContainer';
 
 import Card from '../../components/Card';
-import Marquee from '../../components/Marquee';
 import useGameList from '../../hooks/useGameList';
 import usePlayingGame from '../../hooks/usePlayingGame';
 

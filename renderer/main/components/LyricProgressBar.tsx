@@ -1,7 +1,8 @@
 import { createEffect, createSignal, splitProps } from 'solid-js';
 
+import { Marquee } from '@suyongs/solid-utility';
+
 import icon from '../../../assets/icon_music.png';
-import Marquee from '../../components/Marquee';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import useConfig from '../../hooks/useConfig';
 import { cx } from '../../utils/classNames';
