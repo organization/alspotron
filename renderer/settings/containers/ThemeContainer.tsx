@@ -138,7 +138,7 @@ const ThemeContainer = () => {
                 'w-full py-2 hover:bg-white/10 rounded-lg truncate flex items-center shrink-0',
                 isSelected && 'bg-white/10',
               )}
-              style={{ 'font-weight': option }}
+              style={{ 'font-family': option }}
             >
               <Show when={isSelected}>
                 <div class={'bg-primary-500 rounded w-1 h-4'} />
