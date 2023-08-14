@@ -69,7 +69,7 @@ const ThemeContainer = () => {
 
   const [animationPreview, setAnimationPreview] = createSignal(PREVIEW_TEXT_A);
 
-  let interval: NodeJS.Timer | null = null;
+  let interval: ReturnType<typeof setInterval> | null = null;
   onMount(() => {
     let isTick = false;
     interval = setInterval(() => {

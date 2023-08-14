@@ -49,7 +49,6 @@ const LyricsMapEditor = () => {
 
   const onSelect = async (metadata: LyricMetadata) => {
     const data = originalData();
-    console.log(data);
     if (!data?.title) return;
 
     setLoading(true);
