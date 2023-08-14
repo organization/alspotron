@@ -19,7 +19,7 @@
 
   "setting.title.position": "위치",
   "setting.title.theme": "테마",
-  "setting.title.language": "언어",
+  "setting.title.general": "일반",
   "setting.title.game-overlay": "게임 오버레이",
   "setting.title.about": "정보",
 
@@ -56,9 +56,11 @@
   "setting.about.alspotron-translator.japanese": "Alspotron 일본어 번역자",
   "setting.about.alspotron-translator.german": "Alspotron 독일어 번역자",
 
-  "setting.language.select-language-menu": "언어 관련 설정",
-  "setting.language.select-language": "언어 변경",
-  "setting.language.alert": "일부 설정은 재시작 후 적용됩니다.",
+  "setting.general.select-language-menu": "언어 관련 설정",
+  "setting.general.select-language": "언어 변경",
+  "setting.general.alert": "일부 설정은 재시작 후 적용됩니다.",
+  "setting.general.developer-menu": "개발자 설정",
+  "setting.general.developer": "개발자 활성화",
 
   "setting.position.select-position-to-display-lyrics": "가사를 표시할 위치",
   "setting.position.left-top": "왼쪽 상단",

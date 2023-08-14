@@ -55,6 +55,7 @@ export interface Config {
   syncThrottle: number;
 
   language: 'ko' | 'en' | 'ja' | 'de';
+  developer: boolean;
 }
 
 const getCurrentLocale = () => (/en|ko|ja|de/.exec(app.getLocale())?.at(0)) as 'ko' | 'en' | 'ja' | 'de' | undefined ?? 'ko';
@@ -105,6 +106,7 @@ export const DEFAULT_CONFIG: Config = {
   syncThrottle: 1000 * 3,
 
   language: 'ko',
+  developer: false,
 } satisfies Config;
 
 app.on('ready', () => {

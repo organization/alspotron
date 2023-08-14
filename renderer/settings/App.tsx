@@ -8,7 +8,7 @@ import ListView, { ListItemData } from './components/ListView';
 
 import GameContainer from './containers/GameContainer';
 import InfoContainer from './containers/InfoContainer';
-import LanguageContainer from './containers/LanguageContainer';
+import GeneralContainer from './containers/GeneralContainer';
 import PositionContainer from './containers/PositionContainer';
 import ThemeContainer from './containers/ThemeContainer';
 
@@ -27,6 +27,18 @@ const getTabList = (t: TFunction) => {
   ];
 
   TAB_LIST.push(
+    {
+      id: 'general',
+      label: t('setting.title.general'),
+      icon: (
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M12.012 2.25c.734.008 1.465.093 2.182.253a.75.75 0 0 1 .582.649l.17 1.527a1.384 1.384 0 0 0 1.927 1.116l1.401-.615a.75.75 0 0 1 .85.174 9.792 9.792 0 0 1 2.204 3.792.75.75 0 0 1-.271.825l-1.242.916a1.381 1.381 0 0 0 0 2.226l1.243.915a.75.75 0 0 1 .272.826 9.797 9.797 0 0 1-2.204 3.792.75.75 0 0 1-.848.175l-1.407-.617a1.38 1.38 0 0 0-1.926 1.114l-.169 1.526a.75.75 0 0 1-.572.647 9.518 9.518 0 0 1-4.406 0 .75.75 0 0 1-.572-.647l-.168-1.524a1.382 1.382 0 0 0-1.926-1.11l-1.406.616a.75.75 0 0 1-.849-.175 9.798 9.798 0 0 1-2.204-3.796.75.75 0 0 1 .272-.826l1.243-.916a1.38 1.38 0 0 0 0-2.226l-1.243-.914a.75.75 0 0 1-.271-.826 9.793 9.793 0 0 1 2.204-3.792.75.75 0 0 1 .85-.174l1.4.615a1.387 1.387 0 0 0 1.93-1.118l.17-1.526a.75.75 0 0 1 .583-.65c.717-.159 1.45-.243 2.201-.252Zm0 1.5a9.135 9.135 0 0 0-1.354.117l-.109.977A2.886 2.886 0 0 1 6.525 7.17l-.898-.394a8.293 8.293 0 0 0-1.348 2.317l.798.587a2.881 2.881 0 0 1 0 4.643l-.799.588c.32.842.776 1.626 1.348 2.322l.905-.397a2.882 2.882 0 0 1 4.017 2.318l.11.984c.889.15 1.798.15 2.687 0l.11-.984a2.881 2.881 0 0 1 4.018-2.322l.905.396a8.296 8.296 0 0 0 1.347-2.318l-.798-.588a2.881 2.881 0 0 1 0-4.643l.796-.587a8.293 8.293 0 0 0-1.348-2.317l-.896.393a2.884 2.884 0 0 1-4.023-2.324l-.11-.976a8.988 8.988 0 0 0-1.333-.117ZM12 8.25a3.75 3.75 0 1 1 0 7.5 3.75 3.75 0 0 1 0-7.5Zm0 1.5a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z"
+            fill="#ffffff"
+          />
+        </svg>
+      )
+    },
     {
       id: 'position',
       label: t('setting.title.position'),
@@ -49,17 +61,6 @@ const getTabList = (t: TFunction) => {
         </svg>
       )
     },
-    {
-      id: 'language',
-      label: t('setting.title.language'),
-      icon: (
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="m9.563 7.505.056.117 5.307 13.005a1 1 0 0 1-1.802.86l-.05-.105L11.693 18H5.407l-1.49 3.407a1 1 0 0 1-1.208.555l-.11-.04a1 1 0 0 1-.556-1.208l.04-.11L7.778 7.6c.336-.77 1.394-.795 1.786-.094ZM19 2a1 1 0 0 1 .993.883L20 3v4h1a1 1 0 0 1 .993.883L22 8a1 1 0 0 1-.883.993L21 9h-1v7a1 1 0 0 1-.883.993L19 17a1 1 0 0 1-.993-.883L18 16V3a1 1 0 0 1 1-1ZM8.66 10.567 6.282 16h4.595L8.66 10.567ZM11 2h5a1 1 0 0 1 .993.883L17 3v2.975a4 4 0 0 1-4 4 1 1 0 1 1 0-2 2 2 0 0 0 1.995-1.85l.005-.15V4h-4a1 1 0 0 1-.117-1.993L11 2h5-5Z"
-            fill="#ffffff"/>
-        </svg>
-      )
-    }
   );
 
   if (window.isWindows) {
@@ -93,7 +94,7 @@ const getTabList = (t: TFunction) => {
 };
 
 const App = () => {
-  const [tabId, setTabId] = createSignal('position');
+  const [tabId, setTabId] = createSignal('general');
 
   return (
     <TransProvider options={{ resources: LangResource, lng: useConfig()[0]()?.language }}>
@@ -122,8 +123,8 @@ const App = () => {
               <Match when={tabId() === 'about'}>
                 <InfoContainer />
               </Match>
-              <Match when={tabId() === 'language'}>
-                <LanguageContainer />
+              <Match when={tabId() === 'general'}>
+                <GeneralContainer />
               </Match>
               <Match when={tabId() === 'theme'}>
                 <ThemeContainer />

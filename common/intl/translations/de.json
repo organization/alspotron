@@ -19,7 +19,7 @@
 
   "setting.title.position": "Position",
   "setting.title.theme": "Theme",
-  "setting.title.language": "Sprache",
+  "setting.title.general": "General",
   "setting.title.game-overlay": "Spiel-Overlay",
   "setting.title.about": "Informationen",
 
@@ -56,9 +56,11 @@
   "setting.about.alspotron-translator.japanese": "Japanische Übersetzung von Alspotify",
   "setting.about.alspotron-translator.german": "Deutsche Übersetzung von Alspotify",
 
-  "setting.language.select-language-menu": "Spracheinstellungen",
-  "setting.language.select-language": "Sprache ändern",
-  "setting.language.alert": "Einige Einstellungen werden erst nach Neustart angewendet.",
+  "setting.general.select-language-menu": "Spracheinstellungen",
+  "setting.general.select-language": "Sprache ändern",
+  "setting.general.alert": "Einige Einstellungen werden erst nach Neustart angewendet.",
+  "setting.general.developer-menu": "Developer options",
+  "setting.general.developer": "Enable developer",
 
   "setting.position.select-position-to-display-lyrics": "Anzeigeposition für Lyrics auswählen",
   "setting.position.left-top": "links oben",

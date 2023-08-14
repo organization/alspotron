@@ -19,7 +19,7 @@
 
   "setting.title.position": "position",
   "setting.title.theme": "Theme",
-  "setting.title.language": "Language",
+  "setting.title.general": "General",
   "setting.title.game-overlay": "Game Overlay",
   "setting.title.about": "About",
 
@@ -56,9 +56,11 @@
   "setting.about.alspotron-translator.japanese": "Alspotron Japanese translator",
   "setting.about.alspotron-translator.german": "Alspotron German translator",
 
-  "setting.language.select-language-menu": "Language preference",
-  "setting.language.select-language": "Change language",
-  "setting.language.alert": "Some settings requires an app restart to show changes in effect.",
+  "setting.general.select-language-menu": "Language preference",
+  "setting.general.select-language": "Change language",
+  "setting.general.alert": "Some settings requires an app restart to show changes in effect.",
+  "setting.general.developer-menu": "Developer options",
+  "setting.general.developer": "Enable developer",
 
   "setting.position.select-position-to-display-lyrics": "Lyrics Position",
   "setting.position.left-top": "Left top",

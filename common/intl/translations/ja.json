@@ -19,7 +19,7 @@
 
   "setting.title.position": "位置",
   "setting.title.theme": "テーマ",
-  "setting.title.language": "言語",
+  "setting.title.general": "General",
   "setting.title.game-overlay": "ゲームオーバーレイ",
   "setting.title.about": "情報",
 
@@ -56,9 +56,11 @@
   "setting.about.alspotron-translator.japanese": "Alspotron 日本語翻訳者",
   "setting.about.alspotron-translator.german": "Alspotron ドイツ語翻訳者",
 
-  "setting.language.select-language-menu": "言語設定",
-  "setting.language.select-language": "言語を選択",
-  "setting.language.alert": "Alspotronを再起動すると言語設定が適用されます。",
+  "setting.general.select-language-menu": "言語設定",
+  "setting.general.select-language": "言語を選択",
+  "setting.general.alert": "Alspotronを再起動すると言語設定が適用されます。",
+  "setting.general.developer-menu": "Developer options",
+  "setting.general.developer": "Enable developer",
 
   "setting.position.select-position-to-display-lyrics": "歌詞を表示する位置",
   "setting.position.left-top": "左上",

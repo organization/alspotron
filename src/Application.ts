@@ -12,7 +12,9 @@ import { hmc } from 'hmc-win32';
 import { autoUpdater } from 'electron-updater';
 import { IS_WINDOWS_11, MicaBrowserWindow } from 'mica-electron';
 import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
-import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, screen, shell, Tray } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructorOptions, nativeImage, screen, shell, Tray } from 'electron';
+
+import { createEffect, on } from 'solid-js';
 
 import {
   Config,
@@ -70,6 +72,7 @@ class Application {
   private markQuit = false;
   private scaleFactor = 1.0;
   private lastUpdate: RequestBody | null = null;
+  private contextMenu: Menu | null = null;
 
   public mainWindow!: BrowserWindow;
   public overlayWindow: BrowserWindow | null = null;
@@ -179,11 +182,9 @@ class Application {
     }, 2000);
   }
 
-  initTray() {
-    const trayIcon = nativeImage.createFromPath(getFile('./assets/icon_square.png'));
+  initMenu() {
 
-    this.tray = new Tray(trayIcon.resize({ width: 16, height: 16 }));
-    const contextMenu = Menu.buildFromTemplate([
+    const menu: (MenuItemConstructorOptions | MenuItem)[] = [
       {
         type: 'normal',
         label: getTranslation('tray.lyrics.label', config().language),
@@ -219,42 +220,64 @@ class Application {
           app.quit();
         }
       },
-      {
-        type: 'separator',
-      },
-      {
-        label: getTranslation('tray.devtools.label', config().language),
-        submenu: [
-          {
-            label: getTranslation('tray.devtools.lyric-viewer.label', config().language),
-            click: () => {
-              if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-                this.mainWindow.webContents.openDevTools({ mode: 'detach' });
-              }
+    ];
+
+    if (config().developer) {
+      menu.push(
+        {
+          type: 'separator',
+        },
+        {
+          label: getTranslation('tray.devtools.label', config().language),
+          submenu: [
+            {
+              label: getTranslation('tray.devtools.lyric-viewer.label', config().language),
+              click: () => {
+                if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+                  this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+                }
+              },
             },
-          },
-          {
-            label: getTranslation('tray.devtools.lyrics.label', config().language),
-            click: () => {
-              if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
-                this.lyricsWindow.webContents.openDevTools({ mode: 'detach' });
-              }
+            {
+              label: getTranslation('tray.devtools.lyrics.label', config().language),
+              click: () => {
+                if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
+                  this.lyricsWindow.webContents.openDevTools({ mode: 'detach' });
+                }
+              },
             },
-          },
-          {
-            label: getTranslation('tray.devtools.setting.label', config().language),
-            click: () => {
-              if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
-                this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
-              }
-            },
-          }
-        ]
-      },
-    ]);
+            {
+              label: getTranslation('tray.devtools.setting.label', config().language),
+              click: () => {
+                if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
+                  this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
+                }
+              },
+            }
+          ]
+        },
+      );
+    }
+
+    this.contextMenu = Menu.buildFromTemplate(menu);
+  }
+
+  initTray() {
+    const trayIcon = nativeImage.createFromPath(getFile('./assets/icon_square.png'));
+
+    this.tray = new Tray(trayIcon.resize({ width: 16, height: 16 }));
+    this.initMenu();
 
     this.tray.setToolTip('Alspotron');
-    this.tray.setContextMenu(contextMenu);
+    this.tray.setContextMenu(this.contextMenu);
+    this.tray.on('click', () => {
+      if (this.contextMenu) this.tray.popUpContextMenu(this.contextMenu);
+    });
+
+    createEffect(on(() => config().developer, () => {
+      this.initMenu();
+      this.tray.setContextMenu(this.contextMenu);
+    }));
   }
 
   initServer() {
@@ -522,6 +545,23 @@ class Application {
       else BrowserWindow.getFocusedWindow()?.maximize();
     })
     ipcMain.on('window-close', () => BrowserWindow.getFocusedWindow()?.close());
+    ipcMain.handle('open-devtool', (_, target: string) => {
+      if (target === 'main') {
+        if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+          this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+        }
+      }
+      if (target === 'lyrics') {
+        if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
+          this.lyricsWindow.webContents.openDevTools({ mode: 'detach' });
+        }
+      }
+      if (target === 'settings') {
+        if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
+          this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
+        }
+      }
+    });
   }
 
   initMainWindow() {
