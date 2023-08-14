@@ -1,5 +1,5 @@
 import { defineConfig } from 'rollup';
-import { builtinModules } from 'module';
+import builtinModules from 'builtin-modules';
 import typescript from '@rollup/plugin-typescript';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from "@rollup/plugin-node-resolve";

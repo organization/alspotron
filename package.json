@@ -55,6 +55,7 @@
     "@types/stylis": "4.2.0",
     "@typescript-eslint/eslint-plugin": "6.3.0",
     "autoprefixer": "10.4.15",
+    "builtin-modules": "3.3.0",
     "concurrently": "8.2.0",
     "del-cli": "5.0.0",
     "electron": "25.5.0",
