@@ -1,4 +1,4 @@
-import { For, Signal, createSignal, splitProps } from 'solid-js';
+import { For, Signal, createSignal, onMount, splitProps } from 'solid-js';
 
 import ListItem from './ListItem';
 
@@ -25,7 +25,26 @@ const ListView = (props: ListViewProps) => {
 
   // eslint-disable-next-line solid/reactivity
   const [tab, setTab] = local.value ?? createSignal(props.initItem ?? local.items[0].id);
+  const [tabHeight, setTabHeight] = createSignal<number[]>([]);
   const index = () => local.items.findIndex((item) => item.id === tab());
+
+  let listParent: HTMLUListElement | undefined;
+
+  onMount(() => {
+    const newTabHeight: number[] = [];
+
+    console.log(listParent);
+    const offset = listParent?.getBoundingClientRect()?.y ?? 0;
+    Array.from(listParent?.children ?? [])
+      .forEach((item) => {
+        if (!item.classList.contains('list-view-item')) return;
+
+        const rect = item.getBoundingClientRect();
+        newTabHeight.push(rect.y - offset);
+      });
+
+    setTabHeight(newTabHeight);
+  });
 
   const onSelect = (item: ListItemData) => {
     setTab(item.id);
@@ -35,10 +54,11 @@ const ListView = (props: ListViewProps) => {
   return (
     <ul
       {...leftProps}
+      ref={listParent}
       class={cx('relative flex flex-col justify-start items-start p-4 gap-1', leftProps.class)}
     >
       <div
-        style={`translate: 0px ${16 + (index() * 40)}px;`}
+        style={`translate: 0px ${tabHeight()[index()]}px;`}
         class={'absolute w-[3px] h-4 bg-primary-500 rounded-full left-4 top-[10px] bottom-[10px] transition-all duration-300 ease-[cubic-bezier(0.87, 0, 0.13, 1)]'}
       />
       <For each={local.items}>
@@ -47,6 +67,7 @@ const ListView = (props: ListViewProps) => {
             selected={tab() === item.id}
             icon={item.icon}
             title={item.label}
+            class={'list-view-item'}
             onClick={() => onSelect(item)}
           />
         )}
