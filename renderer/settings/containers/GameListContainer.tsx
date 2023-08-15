@@ -1,9 +1,8 @@
-import { For, JSX, Show, createEffect, createSignal } from 'solid-js';
+import { For, JSX, createEffect, createSignal } from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
-import { Marquee } from '@suyongs/solid-utility';
 
-import Card from '../../components/Card';
 import useGameList from '../../hooks/useGameList';
+import GameCard from '../components/GameCard';
 
 export interface GameListContainerProps {
   onBack?: () => void;
@@ -72,24 +71,18 @@ const GameListContainer = (props: GameListContainerProps) => {
       <div class={'text-md mt-4 mb-1'}>
         <Trans key={'setting.game.registered-game-list.description'} />
       </div>
+      
       <For each={availableGameList()}>
         {(game) => (
-          <Card class={'w-full flex justify-start items-center gap-4'}>
-            <Show when={!!game.icon} fallback={<div class={'w-6 h-6 aspect-square'} />}>
-              <img src={game.icon} class={'w-6 h-6 object-cover'} alt={'Game Icon'}/>
-            </Show>
-            <div class={'w-0 flex flex-col justify-center items-stretch flex-1'}>
-              <div class={'w-full'}>
-                {game.name}
-              </div>
-              <Marquee class={'text-sm text-gray-400'} gap={18}>
-                {game.path}
-              </Marquee>
-            </div>
+          <GameCard
+            icon={game.icon}
+            name={game.name}
+            path={game.path}
+          >
             <button class={'btn-text'} onClick={() => onRemoveGame(game.path)}>
               <Trans key={'setting.game.unregister-game'} />
             </button>
-          </Card>
+          </GameCard>
         )}
       </For>
       <label for={'game-selector'} class={'btn-primary text-center'}>

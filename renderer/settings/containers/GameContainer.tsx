@@ -7,6 +7,7 @@ import GameListContainer from './GameListContainer';
 import Card from '../../components/Card';
 import useGameList from '../../hooks/useGameList';
 import usePlayingGame from '../../hooks/usePlayingGame';
+import GameCard from '../components/GameCard';
 
 interface ProcessData {
   name: string;
@@ -118,18 +119,11 @@ const GameContainer = () => {
 
           <For each={processList()}>
             {(process) => (
-              <Card class={'w-full flex justify-start items-center gap-4'}>
-                <Show when={!!process.icon} fallback={<div class={'w-6 h-6 aspect-square'} />}>
-                  <img src={process.icon} class={'w-6 h-6 object-cover'} alt={'Icon'}/>
-                </Show>
-                <div class={'w-0 flex flex-col justify-center items-stretch flex-1'}>
-                  <div class={'w-full'}>
-                    {process.name}
-                  </div>
-                  <Marquee class={'text-sm text-gray-400'} gap={18}>
-                    {process.path}
-                  </Marquee>
-                </div>
+              <GameCard
+                icon={process.icon}
+                name={process.name}
+                path={process.path}
+              >
                 <Show
                   when={gameList()[process.path]}
                   fallback={(
@@ -142,7 +136,7 @@ const GameContainer = () => {
                     <Trans key={'setting.game.unregister-game'} />
                   </button>
                 </Show>
-              </Card>
+              </GameCard>
             )}
           </For>
           <button
