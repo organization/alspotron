@@ -8,15 +8,17 @@
   }
 
   .btn-primary {
-    @apply min-w-[130px] px-3 py-2 rounded text-black
-    bg-primary-500 hover:bg-primary-600 active:opacity-50
+    @apply min-w-[130px] px-3 py-2 rounded
+    text-black bg-primary-500 hover:bg-primary-600 active:opacity-50
+    dark:text-white dark:bg-primary-500 dark:hover:bg-primary-400
       outline-none select-none cursor-pointer
       focus:outline-none;
   }
 
   .btn-primary-disabled {
-    @apply min-w-[130px] px-3 py-2 rounded text-black
-    bg-primary-600
+    @apply min-w-[130px] px-3 py-2 rounded opacity-50
+    text-black/50 bg-primary-300
+    dark:text-white/50 dark:bg-primary-700
     outline-none select-none cursor-pointer
     focus:outline-none;
   }
