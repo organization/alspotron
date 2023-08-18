@@ -103,7 +103,6 @@ const App = () => {
           class={`
           w-full h-full
           flex flex-row justify-start items-stretch
-          text-white
           overflow-hidden
         `}
         >

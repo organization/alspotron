@@ -35,8 +35,9 @@ const Card = (props: CardProps) => {
       class={cx(
         `
           relative w-full min-h-[67px] px-4 py-3
-          shadow-sm bg-white/[7.5%] hover:bg-white/10 active:bg-white/5
-          select-none
+          shadow-sm select-none
+          bg-gray-100/60 hover:bg-gray-100/40 active:bg-gray-100/20
+          dark:bg-white/5 dark:hover:bg-white/10 dark:active:bg-white/[2.5%]
         `,
         leftProps.class,
         isSubCard() && 'rounded-t hover:shadow-[0_0_0_1px] hover:shadow-white/10',

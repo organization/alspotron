@@ -694,7 +694,8 @@ class Application {
       title: getTranslation('title.setting', config().language),
       titleBarStyle: 'hiddenInset',
       frame: false,
-      vibrancy: 'dark',
+      transparent: true,
+      vibrancy: 'fullscreen-ui',
       autoHideMenuBar: true,
       icon: iconPath,
     });
@@ -733,7 +734,8 @@ class Application {
       title: getTranslation('title.lyrics', config().language),
       titleBarStyle: 'hiddenInset',
       frame: false,
-      vibrancy: 'dark',
+      transparent: true,
+      vibrancy: 'fullscreen-ui',
       autoHideMenuBar: true,
       icon: iconPath,
     });
