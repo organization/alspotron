@@ -58,7 +58,7 @@ const ListView = (props: ListViewProps) => {
       class={cx('relative flex flex-col justify-start items-start p-4 gap-1', leftProps.class)}
     >
       <div
-        style={`translate: 0px ${tabHeight()[index()]}px;`}
+        style={`translate: 0px ${tabHeight()[index()] + 1}px;`}
         class={'absolute w-[3px] h-4 bg-primary-500 rounded-full left-4 top-[10px] bottom-[10px] transition-all duration-300 ease-[cubic-bezier(0.87, 0, 0.13, 1)]'}
       />
       <For each={local.items}>

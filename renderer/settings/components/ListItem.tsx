@@ -18,10 +18,11 @@ const ListItem = (props: ListItemProps) => {
         `
           relative w-full h-[36px] min-h-9 px-3
           flex flex-row justify-start items-center gap-1
-          rounded shadow-sm hover:bg-white/[7.5%] active:bg-white/5
-          select-none
+          hover:shadow-sm hover:bg-black/[7.5%] active:shadow-sm active:bg-black/5
+          dark:hover:bg-white/[7.5%] dark:active:bg-white/10
+          select-none rounded
         `,
-        local.selected && 'bg-white/10',
+        local.selected && 'bg-black/5 dark:bg-white/5',
         leftProps.class,
       )}
     >

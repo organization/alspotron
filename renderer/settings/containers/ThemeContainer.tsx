@@ -241,7 +241,7 @@ const ThemeContainer = () => {
           <Trans key={'setting.theme.animation'} />
         </div>
         <div class={'flex-1'} />
-        <div class={'text-md text-white/80 mr-2'}>
+        <div class={'text-md text-black/50 dark:text-white/80 mr-2'}>
           {getAnimationName(config()?.style?.animation ?? 'pretty')}
         </div>
       </Card>
@@ -448,7 +448,7 @@ const ThemeContainer = () => {
           <div class={'text-md'}>
             <Trans key={'setting.theme.theme-reset'} />
           </div>
-          <div class={'text-xs mt-[-2px] text-white/80'}>
+          <div class={'text-xs mt-[-2px] text-black/50 dark:text-white/80'}>
             <Trans key={'setting.theme.theme-reset-warning'} />
           </div>
         </div>

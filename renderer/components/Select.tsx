@@ -115,6 +115,7 @@ const Selector = (props: SelectProps) => {
         ref={setAnchor}
         class={'select-container'}
         onClick={() => input()?.focus()}
+        data-active={open()}
       >
         <input
           {...leftProps}
@@ -124,8 +125,15 @@ const Selector = (props: SelectProps) => {
           onInput={(event) => setKeyword(event.target.value)}
           onFocusIn={onOpen}
         />
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class={'w-4 h-4 fill-none'}>
-          <path d="M4.293 8.293a1 1 0 0 1 1.414 0L12 14.586l6.293-6.293a1 1 0 1 1 1.414 1.414l-7 7a1 1 0 0 1-1.414 0l-7-7a1 1 0 0 1 0-1.414Z" class={'fill-white'} />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          class={cx('w-4 h-4 fill-none transition-transform', open() && 'rotate-180')}
+        >
+          <path
+            d="M4.293 8.293a1 1 0 0 1 1.414 0L12 14.586l6.293-6.293a1 1 0 1 1 1.414 1.414l-7 7a1 1 0 0 1-1.414 0l-7-7a1 1 0 0 1 0-1.414Z"
+            class={'fill-black dark:fill-white'}
+          />
         </svg>
       </div>
       <div
@@ -148,15 +156,16 @@ const Selector = (props: SelectProps) => {
               style={`width: ${anchor()?.clientWidth ? `${anchor()?.clientWidth ?? 0}px` : 'fit-content'}; ${popup.popupStyle ?? ''};`}
               class={cx(`
                 w-full max-h-[50vh]
-                flex flex-col justify-start items-start p-1 rounded-lg shadow-[0_0_0_1px_var(--tw-shadow-color),0_8px_16px_var(--tw-shadow-color)] shadow-black/50
-                bg-neutral-800 fluent-scrollbar backdrop-blur-xl
+                flex flex-col justify-start items-start p-1 rounded-lg shadow-[0_0_0_1px_var(--tw-shadow-color),0_8px_16px_var(--tw-shadow-color)]
+                
+                bg-gray-100/60 shadow-gray-300/50 dark:bg-gray-800/60 dark:shadow-black/50 fluent-scrollbar backdrop-blur-xl
               `, popup.popupClass)}
             >
               <For each={options()}>
                 {(option, index) => local.renderItem?.({ onClick: () => onSelect(option, index()) }, option, option === local.value) ?? (
                   <li
                     class={cx(
-                      'w-full py-2 hover:bg-white/10 rounded-lg truncate flex items-center',
+                      'w-full py-2 hover:bg-black/10 dark:hover:bg-white/10 rounded-lg truncate flex items-center',
                       option === local.value && 'bg-white/10',
                     )}
                     onClick={() => onSelect(option, index())}

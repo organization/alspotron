@@ -29,9 +29,10 @@
   }
 
   .btn-text {
-    @apply min-w-[130px] px-3 py-2 rounded text-white
-    bg-white/[7.5%] hover:bg-white/10 active:bg-white/5
-      outline-none select-none cursor-pointer
+    @apply min-w-[130px] px-3 py-2 rounded
+    text-black bg-white/60 hover:bg-white/40 active:bg-white/20
+    dark:text-white dark:bg-white/5 dark:hover:bg-white/10 dark:active:bg-white/[2.5%]
+      shadow-sm outline-none select-none cursor-pointer
       focus:outline-none;
   }
 
@@ -41,8 +42,9 @@
   }
 
   .checkbox {
-    @apply appearance-none w-[20px] h-[20px] bg-gray-100/5 rounded-[4px] hover:bg-gray-100/10 focus:bg-black/10
-    border-[1px] border-gray-100/20
+    @apply appearance-none w-[20px] h-[20px] bg-gray-100/5 rounded-[4px] border-[1px]
+    dark:border-gray-100/20 dark:hover:bg-gray-100/10 dark:focus:bg-black/10
+    border-black/20 hover:bg-black/10 focus:bg-white/10
   }
 
   .checkbox:checked {
@@ -50,9 +52,11 @@
   }
 
   .input {
-    @apply bg-gray-100/5 text-white rounded-[4px] hover:bg-gray-100/10 focus:bg-black/10
-    border-[1px] border-gray-100/[2%] border-b-gray-100/20 focus:border-b-2 focus:border-b-primary-500 focus:border-gray-100/10
-    outline-none py-1 px-3 mb-[1px] focus:mb-[0px]
+    @apply bg-white/60 text-black hover:bg-white/50 focus:bg-white/40
+    dark:bg-gray-600/60 dark:text-white dark:hover:bg-gray-600/50 dark:focus:bg-gray-600/40
+    border-[1px] border-black/10 border-b-black/30 focus:border-b-2 focus:border-b-primary-500
+    dark:border-white/5 dark:border-b-gray-400/50
+    outline-none py-1 px-3 mb-[1px] focus:mb-[0px] rounded-[4px]
   }
 
   .input.color {
@@ -64,9 +68,14 @@
   }
 
   .select-container {
-    @apply w-fit flex justify-start items-center
-    bg-white/[7.5%] hover:bg-white/10 active:bg-white/5
-    py-2 px-4 rounded-[4px];
+    @apply bg-white/60 text-black hover:bg-white/50 active:bg-white/40
+    dark:bg-gray-600/60 dark:text-white dark:hover:bg-gray-600/50
+    w-fit flex justify-start items-center py-2 px-4
+    rounded-[4px] border-[1px] border-black/10 border-b-black/30
+    dark:border-white/5 dark:border-b-gray-400/50;
+  }
+  .select-container[data-active="true"] {
+    @apply border-b-primary-500 border-b-2;
   }
   .select {
     @apply outline-none bg-transparent w-fit;
