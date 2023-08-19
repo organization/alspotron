@@ -33,38 +33,38 @@ const Button = (props: ButtonProps) => {
 const Titlebar = () => {
   return (
     <div
-      class={cx('w-full h-10 z-50')}
+      class={cx('w-full h-10 z-50 flex justify-end items-center')}
       style={{
         '-webkit-user-select': 'none',
         '-webkit-app-region': 'drag'
       }}
     >
-      <Show when={!isMac}>
-        <div
+        <button
           class={cx(
-            'relative flex h-full w-full justify-end items-center'
+            'flex justify-center items-center rounded ml-1 hover:bg-black/10 dark:hover:bg-white/10',
+            isMac ? 'w-6 h-6 ml-[70px] mt-[4px]' : 'w-8 h-8',
           )}
+          style={{
+            '-webkit-app-region': 'no-drag'
+          }}
+          onClick={() => history.back()}
         >
-          <button
-            class={'w-8 h-8 flex justify-center items-center rounded ml-1 hover:bg-black/10 dark:hover:bg-white/10'}
-            style={{
-              '-webkit-app-region': 'no-drag'
-            }}
-            onClick={() => {
-              
-            }}
+          <svg
+            class={cx(isMac ? 'w-4 h-4' : 'w-5 h-5')}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <svg class={'w-5 h-5'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M10.733 19.79a.75.75 0 0 0 1.034-1.086L5.516 12.75H20.25a.75.75 0 0 0 0-1.5H5.516l6.251-5.955a.75.75 0 0 0-1.034-1.086l-7.42 7.067a.995.995 0 0 0-.3.58.754.754 0 0 0 .001.289.995.995 0 0 0 .3.579l7.419 7.067Z"
-                class={`
-                  fill-slate-500 hover:fill-black text-slate-300 hover:text-black
-                  dark:fill-slate-300 dark:hover:fill-white dark:text-slate-300 dark:hover:text-white
-                `}
-              />
-            </svg>
-          </button>
-          <div class={'flex-1'} />
+            <path
+              d="M10.733 19.79a.75.75 0 0 0 1.034-1.086L5.516 12.75H20.25a.75.75 0 0 0 0-1.5H5.516l6.251-5.955a.75.75 0 0 0-1.034-1.086l-7.42 7.067a.995.995 0 0 0-.3.58.754.754 0 0 0 .001.289.995.995 0 0 0 .3.579l7.419 7.067Z"
+              class={`
+                fill-slate-500 hover:fill-black text-slate-300 hover:text-black
+                dark:fill-slate-300 dark:hover:fill-white dark:text-slate-300 dark:hover:text-white
+              `}
+            />
+          </svg>
+        </button>
+        <div class={'flex-1'} />
+        <Show when={!isMac}>
           <Button onClick={() => {
             window.ipcRenderer.send('window-minimize')
           }}>
@@ -90,8 +90,7 @@ const Titlebar = () => {
               />
             </svg>
           </Button>
-        </div>
-      </Show>
+        </Show>
     </div>
   )
 };

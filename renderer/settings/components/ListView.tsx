@@ -33,7 +33,6 @@ const ListView = (props: ListViewProps) => {
   onMount(() => {
     const newTabHeight: number[] = [];
 
-    console.log(listParent);
     const offset = listParent?.getBoundingClientRect()?.y ?? 0;
     Array.from(listParent?.children ?? [])
       .forEach((item) => {

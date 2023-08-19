@@ -1,8 +1,8 @@
-import { Match, Switch, createSignal } from 'solid-js';
+import { For, JSX, Setter } from 'solid-js';
 import { Transition } from 'solid-transition-group';
-import { TransProvider, useTransContext } from '@jellybrick/solid-i18next';
+import { useTransContext } from '@jellybrick/solid-i18next';
 
-import { TFunction } from 'i18next';
+import { Navigate, Route, Routes, useLocation, useNavigate } from '@solidjs/router';
 
 import ListView, { ListItemData } from './components/ListView';
 
@@ -12,24 +12,20 @@ import GeneralContainer from './containers/GeneralContainer';
 import PositionContainer from './containers/PositionContainer';
 import ThemeContainer from './containers/ThemeContainer';
 
+import GameListContainer from './containers/GameListContainer';
+
 import Layout from '../components/Layout';
-import { LangResource } from '../../common/intl';
-import useConfig from '../hooks/useConfig';
 
+export interface TabItemData extends Omit<ListItemData, 'label'> {
+  container: () => JSX.Element;
+}
 
-const getTabList = (t: TFunction) => {
+const TAB_LIST = (() => {
+  const result: TabItemData[] = [];
 
-  const TAB_LIST: ListItemData[] = [
-    // {
-    //   id: 'plugin',
-    //   label: '플러그인',
-    // },
-  ];
-
-  TAB_LIST.push(
+  result.push(
     {
       id: 'general',
-      label: t('setting.title.general'),
       icon: (
         <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -37,11 +33,11 @@ const getTabList = (t: TFunction) => {
             class={'fill-black dark:fill-white'}
           />
         </svg>
-      )
+      ),
+      container: GeneralContainer,
     },
     {
       id: 'position',
-      label: t('setting.title.position'),
       icon: (
         <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -49,11 +45,11 @@ const getTabList = (t: TFunction) => {
             class={'fill-black dark:fill-white'}
           />
         </svg>
-      )
+      ),
+      container: PositionContainer,
     },
     {
       id: 'theme',
-      label: t('setting.title.theme'),
       icon: (
         <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -61,14 +57,14 @@ const getTabList = (t: TFunction) => {
             class={'fill-black dark:fill-white'}
           />
         </svg>
-      )
+      ),
+      container: ThemeContainer,
     },
   );
 
   if (window.isWindows) {
-    TAB_LIST.push({
-      id: 'game',
-      label: t('setting.title.game-overlay'),
+    result.push({
+      id: 'game-overlay',
       icon: (
         <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path
@@ -76,13 +72,13 @@ const getTabList = (t: TFunction) => {
             class={'fill-black dark:fill-white'}
           />
         </svg>
-      )
+      ),
+      container: GameContainer
     });
   }
 
-  TAB_LIST.push({
+  result.push({
     id: 'about',
-    label: t('setting.title.about'),
     icon: (
       <svg width="18" height="18" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path
@@ -90,62 +86,58 @@ const getTabList = (t: TFunction) => {
           class={'fill-black dark:fill-white'}
         />
       </svg>
-    )
+    ),
+    container: InfoContainer,
   });
 
-  return TAB_LIST;
-
-};
+  return result;
+})();
 
 const App = () => {
-  const [tabId, setTabId] = createSignal('general');
+
+  const [t] = useTransContext();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  /* properties */
+  const tabId = () => location.pathname.slice(1);
+  const listItem = () => TAB_LIST.map((item) => ({
+    ...item,
+    label: t(`setting.title.${item.id}`),
+  }));
+
+  /* methods */
+  const setTabId = ((id: string) => {
+    navigate(`/${id}`);
+  }) as Setter<string>;
 
   return (
-    <TransProvider options={{ resources: LangResource, lng: useConfig()[0]()?.language }}>
-      <Layout>
-        <div
-          class={`
-          w-full h-full
-          flex flex-row justify-start items-stretch
-          overflow-hidden
-        `}
-        >
-          <ListView
-            value={[tabId, setTabId]}
-            class={'w-[312px] shrink-0'}
-            items={(() => {
-              const [t] = useTransContext();
-              return getTabList(t);
-            })()}
-          />
-          <Transition name={'tab'} mode={'outin'}>
-            <Switch>
-              <Match when={tabId() === 'position'}>
-                <PositionContainer />
-              </Match>
-              <Match when={tabId() === 'about'}>
-                <InfoContainer />
-              </Match>
-              <Match when={tabId() === 'general'}>
-                <GeneralContainer />
-              </Match>
-              <Match when={tabId() === 'theme'}>
-                <ThemeContainer />
-              </Match>
-              <Match when={tabId() === 'game'}>
-                <GameContainer />
-              </Match>
-              <Match when={tabId() === 'plugin'}>
-                <div class={'flex-1 fluent-scrollbar'}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                </div>
-              </Match>
-            </Switch>
-          </Transition>
-        </div>
-      </Layout>
-    </TransProvider>
-  )
+    <Layout>
+      <div
+        class={`
+        w-full h-full
+        flex flex-row justify-start items-stretch
+        overflow-hidden
+      `}
+      >
+        <ListView
+          value={[tabId, setTabId]}
+          class={'w-[312px] shrink-0'}
+          items={listItem()}
+          onSelectItem={(tab) => setTabId(tab.id)}
+        />
+        <Transition name={'tab'} mode={'outin'}>
+          <Routes>
+            <For each={TAB_LIST}>
+              {(tab) => <Route path={tab.id} component={tab.container} />}
+            </For>
+            <Route path={'/game-list'} component={GameListContainer} />
+            <Route path={'*'} element={<Navigate href={`/${TAB_LIST[0].id}`} />} />
+          </Routes>
+        </Transition>
+      </div>
+    </Layout>
+  );
 };
 
 export default App;
