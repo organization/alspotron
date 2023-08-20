@@ -175,7 +175,7 @@
       "./assets/**"
     ],
     "mac": {
-      "icon": "assets/icon_square.icns",
+      "icon": "build/icon.png",
       "identity": null,
       "target": [
         {
@@ -189,7 +189,8 @@
       "category": "public.app-category.music"
     },
     "dmg": {
-      "title": "Alspotron"
+      "title": "Alspotron",
+      "icon": "build/icon.png"
     },
     "win": {
       "icon": "assets/icon256.ico",
