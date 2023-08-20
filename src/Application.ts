@@ -50,6 +50,8 @@ const micaOptions = {
   show: false,
 };
 
+const PlatformBrowserWindow = process.platform === 'win32' && IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow;
+
 // Set application name for Windows 10+ notifications
 if (process.platform === 'win32') {
   app.setAppUserModelId(app.getName());
@@ -682,7 +684,7 @@ class Application {
   }
 
   initSettingsWindow() {
-    this.settingsWindow = new (process.platform === 'win32' && IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow)({
+    this.settingsWindow = new PlatformBrowserWindow({
       ...glassOptions,
       ...micaOptions,
       width: 800,
@@ -701,8 +703,8 @@ class Application {
     });
 
     if (this.settingsWindow instanceof MicaBrowserWindow) {
-      this.settingsWindow.setDarkTheme();
-      this.settingsWindow.setMicaEffect();
+      this.settingsWindow.setAutoTheme();
+      this.settingsWindow.setMicaAcrylicEffect();
     }
 
     this.settingsWindow.show();
@@ -722,7 +724,7 @@ class Application {
   }
 
   initLyricsWindow() {
-    this.lyricsWindow = new (process.platform === 'win32' && IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow)({
+    this.lyricsWindow = new PlatformBrowserWindow({
       ...glassOptions,
       ...micaOptions,
       width: 1000,
@@ -741,8 +743,8 @@ class Application {
     });
 
     if (this.lyricsWindow instanceof MicaBrowserWindow) {
-      this.lyricsWindow.setDarkTheme();
-      this.lyricsWindow.setMicaEffect();
+      this.lyricsWindow.setAutoTheme();
+      this.lyricsWindow.setMicaAcrylicEffect();
     }
 
     this.lyricsWindow.show();
