@@ -61,7 +61,7 @@ const GameContainer = () => {
     setGameList(list, false);
   };
   const onGameListPage = () => {
-    navigate('/game-list');
+    navigate('/game-overlay/list');
   };
 
   return (

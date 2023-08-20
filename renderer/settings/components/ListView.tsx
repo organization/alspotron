@@ -58,7 +58,10 @@ const ListView = (props: ListViewProps) => {
     >
       <div
         style={`translate: 0px ${tabHeight()[index()] + 1}px;`}
-        class={'absolute w-[3px] h-4 bg-primary-500 rounded-full left-4 top-[10px] bottom-[10px] transition-all duration-300 ease-[cubic-bezier(0.87, 0, 0.13, 1)]'}
+        class={cx(
+          'absolute w-[3px] h-4 bg-primary-500 rounded-full left-4 top-[10px] bottom-[10px] transition-all duration-300 ease-[cubic-bezier(0.87, 0, 0.13, 1)]',
+          typeof tabHeight()[index()] !== 'number' && 'opacity-0 scale-0',
+        )}
       />
       <For each={local.items}>
         {(item) => (

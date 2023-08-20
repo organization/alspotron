@@ -100,7 +100,7 @@ const App = () => {
   const location = useLocation();
 
   /* properties */
-  const tabId = () => location.pathname.slice(1);
+  const tabId = () => location.pathname.match(/(?<=\/)[^/]+/)?.[0] ?? '';
   const listItem = () => TAB_LIST.map((item) => ({
     ...item,
     label: t(`setting.title.${item.id}`),
@@ -131,7 +131,7 @@ const App = () => {
             <For each={TAB_LIST}>
               {(tab) => <Route path={tab.id} component={tab.container} />}
             </For>
-            <Route path={'/game-list'} component={GameListContainer} />
+            <Route path={'/game-overlay/list'} component={GameListContainer} />
             <Route path={'*'} element={<Navigate href={`/${TAB_LIST[0].id}`} />} />
           </Routes>
         </Transition>
