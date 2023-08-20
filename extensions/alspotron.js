@@ -2,7 +2,6 @@
 // AUTHOR: Khinenw
 // DESCRIPTION: Get current playing information to show in Alspotron
 
-
 (function Alspotron() {
   const LyricResolvers = {
     v2(uri) {
@@ -37,12 +36,18 @@
     }
 
     const uri = Spicetify.Player.data.track.uri;
+    let imageUrl = Spicetify.Player.data.track.metadata.image_xlarge_url;
+    if (imageUrl?.indexOf('localfile') === -1) {
+      imageUrl = `https://i.scdn.co/image/${imageUrl.substring(imageUrl.lastIndexOf(":") + 1)}`;
+    }
+
     if (previousInfo.uri !== uri) {
       return {
         status: 'playing',
         title: Spicetify.Player.data.track.metadata.title,
         artists: [Spicetify.Player.data.track.metadata.artist_name],
-        cover_url: uri,
+        cover_url: imageUrl,
+        uri: uri,
         duration: Spicetify.Player.getDuration(),
         progress: Spicetify.Player.getProgress(),
         lyrics: await getLyric()
@@ -51,7 +56,8 @@
 
     return {
       status: 'playing',
-      cover_url: uri,
+      uri: uri,
+      cover_url: imageUrl,
       duration: Spicetify.Player.getDuration(),
       progress: Spicetify.Player.getProgress()
     };
