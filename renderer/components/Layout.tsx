@@ -1,4 +1,4 @@
-import Titlebar from './Titlebar';
+import TitleBar from './TitleBar';
 
 import { cx } from '../utils/classNames';
 
@@ -19,7 +19,7 @@ const Layout = (props: LayoutProps) => {
         isWindow && 'bg-slate-100/80 dark:bg-gray-800/80'
       )}
     >
-      <Titlebar />
+      <TitleBar />
       <div class={'w-full min-h-0 flex-1'}>
         {props.children}
       </div>

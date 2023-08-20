@@ -1,5 +1,4 @@
-// import { BrowserWindow } from 'electron'
-import { Show } from 'solid-js';
+import { createSignal, Match, Show, Switch } from 'solid-js';
 
 import { cx } from '../utils/classNames';
 
@@ -30,7 +29,9 @@ const Button = (props: ButtonProps) => {
   );
 };
 
-const Titlebar = () => {
+const TitleBar = () => {
+  const [isMaximized, setMaximized] = createSignal(false);
+
   return (
     <div
       class={cx('w-full h-10 z-50 flex justify-end items-center')}
@@ -66,23 +67,35 @@ const Titlebar = () => {
         <div class={'flex-1'} />
         <Show when={!isMac}>
           <Button onClick={() => {
-            window.ipcRenderer.send('window-minimize')
+            window.ipcRenderer.invoke('window-minimize')
           }}>
             <svg class={'w-5 h-5'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M3.755 12.5h16.492a.75.75 0 0 0 0-1.5H3.755a.75.75 0 0 0 0 1.5Z" />
             </svg>
           </Button>
           <Button onClick={() => {
-            window.ipcRenderer.send('window-maximize')
+            window.ipcRenderer.invoke('window-maximize').then(async () => {
+              setMaximized(await window.ipcRenderer.invoke('window-is-maximized'));
+            });
           }}>
-            <svg class={'w-5 h-5'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path
-                d="M6 3h12a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H6Z"
-              />
-            </svg>
+            <Switch fallback={
+              <svg class={'w-5 h-5'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M3 2.905A3.24 3.24 0 0 0 2 5.25v8a3.23 3.23 0 0 0 .555 1.817A3.247 3.247 0 0 0 5.25 16.5H7.5v2.25A3.25 3.25 0 0 0 10.75 22h8A3.25 3.25 0 0 0 22 18.75v-8a3.25 3.25 0 0 0-3.25-3.25H16.5V5.25A3.25 3.25 0 0 0 13.25 2h-8A3.24 3.24 0 0 0 3 2.905Zm6 7.845C9 9.784 9.784 9 10.75 9h8c.966 0 1.75.784 1.75 1.75v8a1.75 1.75 0 0 1-1.75 1.75h-8A1.75 1.75 0 0 1 9 18.75v-8Z" fill="#ffffff"
+                />
+              </svg>
+            }>
+              <Match when={!isMaximized()}>
+                <svg class={'w-5 h-5'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M6 3h12a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Zm0 2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H6Z"
+                  />
+                </svg>
+              </Match>
+            </Switch>
           </Button>
           <Button onClick={() => {
-            window.ipcRenderer.send('window-close')
+            window.ipcRenderer.invoke('window-close')
           }}>
             <svg class={'w-5 h-5'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -95,4 +108,4 @@ const Titlebar = () => {
   )
 };
 
-export default Titlebar;
+export default TitleBar;

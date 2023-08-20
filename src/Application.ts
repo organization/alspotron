@@ -541,12 +541,13 @@ class Application {
     });
     ipcMain.handle('get-game-list', () => gameList());
 
-    ipcMain.on('window-minimize', () => BrowserWindow.getFocusedWindow()?.minimize());
-    ipcMain.on('window-maximize', () => {
-      if (BrowserWindow.getFocusedWindow()?.isMaximized()) BrowserWindow.getFocusedWindow()?.unmaximize();
-      else BrowserWindow.getFocusedWindow()?.maximize();
-    })
-    ipcMain.on('window-close', () => BrowserWindow.getFocusedWindow()?.close());
+    ipcMain.handle('window-minimize', () => BrowserWindow.getFocusedWindow()?.minimize());
+    ipcMain.handle('window-maximize', () => {
+      BrowserWindow.getFocusedWindow()?.isMaximized() ?
+        BrowserWindow.getFocusedWindow()?.unmaximize() : BrowserWindow.getFocusedWindow()?.maximize();
+    });
+    ipcMain.handle('window-is-maximized', () => BrowserWindow.getFocusedWindow()?.isMaximized());
+    ipcMain.handle('window-close', () => BrowserWindow.getFocusedWindow()?.close());
     ipcMain.handle('open-devtool', (_, target: string) => {
       if (target === 'main') {
         if (this.mainWindow && !this.mainWindow.isDestroyed()) {
