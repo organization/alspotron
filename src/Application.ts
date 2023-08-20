@@ -197,7 +197,8 @@ class Application {
           } else {
             this.initLyricsWindow();
           }
-        }
+        },
+        icon: nativeImage.createFromPath(getFile('./assets/empty.png')).resize({ width: 16, height: 16 }),
       },
       {
         type: 'normal',
@@ -216,6 +217,7 @@ class Application {
       },
       {
         type: 'normal',
+        role: 'quit',
         label: getTranslation('tray.exit.label', config().language),
         click: () => {
           this.markQuit = true;
@@ -230,6 +232,7 @@ class Application {
           type: 'separator',
         },
         {
+          type: 'submenu',
           label: getTranslation('tray.devtools.label', config().language),
           submenu: [
             {
