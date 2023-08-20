@@ -47,7 +47,7 @@ const SideBar = () => {
       class={`
         w-[312px] h-full p-4
         flex flex-col justify-start items-stretch gap-2
-        text-white
+        text-black dark:text-white
       `}
     >
       <div class={'text-xl'}>
@@ -74,7 +74,7 @@ const SideBar = () => {
         <div class={'w-[calc(100%-24px)] flex flex-col justify-center items-start'}>
           <Show when={originalLyric()}>
             <Marquee class={'w-full'} gap={32}>
-              <div class={'text-xs text-white/50'}>
+              <div class={'text-xs text-black/50 dark:text-white/50'}>
                 <Trans key={'lyrics.lyric-id'} />: {alsongLyric()?.lyricId ?? 'N/A'}
               {' · '}
                 <Trans key={'lyrics.lyric-author'} />: {alsongLyric()?.register?.name ?? 'N/A'}

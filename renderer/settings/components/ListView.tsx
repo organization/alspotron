@@ -33,7 +33,6 @@ const ListView = (props: ListViewProps) => {
   onMount(() => {
     const newTabHeight: number[] = [];
 
-    console.log(listParent);
     const offset = listParent?.getBoundingClientRect()?.y ?? 0;
     Array.from(listParent?.children ?? [])
       .forEach((item) => {
@@ -58,8 +57,11 @@ const ListView = (props: ListViewProps) => {
       class={cx('relative flex flex-col justify-start items-start p-4 gap-1', leftProps.class)}
     >
       <div
-        style={`translate: 0px ${tabHeight()[index()]}px;`}
-        class={'absolute w-[3px] h-4 bg-primary-500 rounded-full left-4 top-[10px] bottom-[10px] transition-all duration-300 ease-[cubic-bezier(0.87, 0, 0.13, 1)]'}
+        style={`translate: 0px ${tabHeight()[index()] + 1}px;`}
+        class={cx(
+          'absolute w-[3px] h-4 bg-primary-500 rounded-full left-4 top-[10px] bottom-[10px] transition-all duration-300 ease-[cubic-bezier(0.87, 0, 0.13, 1)]',
+          typeof tabHeight()[index()] !== 'number' && 'opacity-0 scale-0',
+        )}
       />
       <For each={local.items}>
         {(item) => (

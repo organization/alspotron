@@ -32,11 +32,10 @@ const PositionContainer = () => {
       <div class={'text-md mt-4 mb-1'}>
         <Trans key={'setting.position.select-position-to-display-lyrics'} />
       </div>
-      <div
+      <Card
         class={`
-          w-full aspect-video
+          w-full min-h-[unset] aspect-video
           grid grid-rows-3 grid-cols-3 gap-4
-          p-4 bg-white/5 rounded
         `}
       >
         <Card
@@ -120,7 +119,7 @@ const PositionContainer = () => {
         >
           <Trans key={'setting.position.right-bottom'} />
         </Card>
-      </div>
+      </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
         <div class={'font-md'}>
           <Trans key={'setting.position.select-monitor-to-display-lyrics'} />
@@ -156,7 +155,6 @@ const PositionContainer = () => {
             displays.map((display, index) => `${index + 1} - ${display.label}`)
           )}
           class={'select'}
-          popupClass={'p-1 bg-gray-800 rounded gap-1'}
         />
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
@@ -170,7 +168,6 @@ const PositionContainer = () => {
           onChange={(value) => setConfig({ windowPosition: { direction: value as 'column' | 'column-reverse' } })}
           options={['column', 'column-reverse']}
           class={'select'}
-          popupClass={'p-1 bg-gray-800 rounded gap-1'}
         />
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
@@ -184,18 +181,17 @@ const PositionContainer = () => {
           onChange={(value) => setConfig({ style: { nowPlaying: { visible: value === 'true' } } })}
           options={['true', 'false']}
           class={'select'}
-          popupClass={'p-1 bg-gray-800 rounded gap-1'}
         />
       </Card>
 
       <div class={'text-md mt-8 mb-1'}>
         <Trans key={'setting.position.adjust-margin'} />
       </div>
-      <div
+      <Card
         class={`
-          w-full aspect-video
+          w-full min-h-[unset] aspect-video
           grid grid-rows-3 grid-cols-3 gap-4
-          p-4 bg-white/5 rounded
+          p-4 rounded
         `}
       >
         <div />
@@ -230,7 +226,7 @@ const PositionContainer = () => {
           value={config()?.windowPosition.bottom ?? undefined}
           onChange={(event) => setConfig({ windowPosition: { bottom: Number(event.target.value) } })}
         />
-      </div>
+      </Card>
     </div>
   )
 };

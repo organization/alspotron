@@ -1,12 +1,10 @@
 import { For, JSX, createEffect, createSignal } from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
 
+import { useNavigate } from '@solidjs/router';
+
 import useGameList from '../../hooks/useGameList';
 import GameCard from '../components/GameCard';
-
-export interface GameListContainerProps {
-  onBack?: () => void;
-}
 
 interface GameList {
   path: string;
@@ -14,9 +12,10 @@ interface GameList {
   icon: string;
 }
 
-const GameListContainer = (props: GameListContainerProps) => {
+const GameListContainer = () => {
   const [availableGameList, setAvailableGameList] = createSignal<GameList[]>([]);
   const [gameList, setGameList] = useGameList();
+  const navigate = useNavigate();
 
   const updateAvailableGameList = async () => {
     const gamePathList = Object.entries(gameList())
@@ -54,15 +53,18 @@ const GameListContainer = (props: GameListContainerProps) => {
       [file.path]: file.name,
     });
   };
+  const onGamePage = () => {
+    navigate('/game-overlay');
+  };
 
   return (
     <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1 flex justify-start items-center gap-2'}>
-        <span class={'text-3xl opacity-80 hover:opacity-100 '} onClick={() => props.onBack?.()}>
+        <span class={'text-3xl opacity-80 hover:opacity-100 '} onClick={onGamePage}>
           <Trans key={'setting.title.game-overlay'} />
         </span>
         <svg class={'w-4 h-4'} fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8.47 4.22a.75.75 0 0 0 0 1.06L15.19 12l-6.72 6.72a.75.75 0 1 0 1.06 1.06l7.25-7.25a.75.75 0 0 0 0-1.06L9.53 4.22a.75.75 0 0 0-1.06 0Z" class={'fill-white'} />
+          <path d="M8.47 4.22a.75.75 0 0 0 0 1.06L15.19 12l-6.72 6.72a.75.75 0 1 0 1.06 1.06l7.25-7.25a.75.75 0 0 0 0-1.06L9.53 4.22a.75.75 0 0 0-1.06 0Z" class={'fill-black dark:fill-white'} />
         </svg>
         <span class={'text-3xl'}>
           <Trans key={'setting.game.list-of-registered-games'} />

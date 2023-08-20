@@ -50,6 +50,8 @@ const micaOptions = {
   show: false,
 };
 
+const PlatformBrowserWindow = process.platform === 'win32' && IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow;
+
 // Set application name for Windows 10+ notifications
 if (process.platform === 'win32') {
   app.setAppUserModelId(app.getName());
@@ -195,7 +197,8 @@ class Application {
           } else {
             this.initLyricsWindow();
           }
-        }
+        },
+        icon: nativeImage.createFromPath(getFile('./assets/empty.png')).resize({ width: 16, height: 16 }),
       },
       {
         type: 'normal',
@@ -214,6 +217,7 @@ class Application {
       },
       {
         type: 'normal',
+        role: 'quit',
         label: getTranslation('tray.exit.label', config().language),
         click: () => {
           this.markQuit = true;
@@ -228,6 +232,7 @@ class Application {
           type: 'separator',
         },
         {
+          type: 'submenu',
           label: getTranslation('tray.devtools.label', config().language),
           submenu: [
             {
@@ -539,12 +544,13 @@ class Application {
     });
     ipcMain.handle('get-game-list', () => gameList());
 
-    ipcMain.on('window-minimize', () => BrowserWindow.getFocusedWindow()?.minimize());
-    ipcMain.on('window-maximize', () => {
-      if (BrowserWindow.getFocusedWindow()?.isMaximized()) BrowserWindow.getFocusedWindow()?.unmaximize();
-      else BrowserWindow.getFocusedWindow()?.maximize();
-    })
-    ipcMain.on('window-close', () => BrowserWindow.getFocusedWindow()?.close());
+    ipcMain.handle('window-minimize', () => BrowserWindow.getFocusedWindow()?.minimize());
+    ipcMain.handle('window-maximize', () => {
+      BrowserWindow.getFocusedWindow()?.isMaximized() ?
+        BrowserWindow.getFocusedWindow()?.unmaximize() : BrowserWindow.getFocusedWindow()?.maximize();
+    });
+    ipcMain.handle('window-is-maximized', () => BrowserWindow.getFocusedWindow()?.isMaximized());
+    ipcMain.handle('window-close', () => BrowserWindow.getFocusedWindow()?.close());
     ipcMain.handle('open-devtool', (_, target: string) => {
       if (target === 'main') {
         if (this.mainWindow && !this.mainWindow.isDestroyed()) {
@@ -682,7 +688,7 @@ class Application {
   }
 
   initSettingsWindow() {
-    this.settingsWindow = new (process.platform === 'win32' && IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow)({
+    this.settingsWindow = new PlatformBrowserWindow({
       ...glassOptions,
       ...micaOptions,
       width: 800,
@@ -694,14 +700,15 @@ class Application {
       title: getTranslation('title.setting', config().language),
       titleBarStyle: 'hiddenInset',
       frame: false,
-      vibrancy: 'dark',
+      transparent: true,
+      vibrancy: 'fullscreen-ui',
       autoHideMenuBar: true,
       icon: iconPath,
     });
 
     if (this.settingsWindow instanceof MicaBrowserWindow) {
-      this.settingsWindow.setDarkTheme();
-      this.settingsWindow.setMicaEffect();
+      this.settingsWindow.setAutoTheme();
+      this.settingsWindow.setMicaAcrylicEffect();
     }
 
     this.settingsWindow.show();
@@ -721,7 +728,7 @@ class Application {
   }
 
   initLyricsWindow() {
-    this.lyricsWindow = new (process.platform === 'win32' && IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow)({
+    this.lyricsWindow = new PlatformBrowserWindow({
       ...glassOptions,
       ...micaOptions,
       width: 1000,
@@ -733,14 +740,15 @@ class Application {
       title: getTranslation('title.lyrics', config().language),
       titleBarStyle: 'hiddenInset',
       frame: false,
-      vibrancy: 'dark',
+      transparent: true,
+      vibrancy: 'fullscreen-ui',
       autoHideMenuBar: true,
       icon: iconPath,
     });
 
     if (this.lyricsWindow instanceof MicaBrowserWindow) {
-      this.lyricsWindow.setDarkTheme();
-      this.lyricsWindow.setMicaEffect();
+      this.lyricsWindow.setAutoTheme();
+      this.lyricsWindow.setMicaAcrylicEffect();
     }
 
     this.lyricsWindow.show();

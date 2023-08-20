@@ -72,7 +72,7 @@ const LyricsMapEditor = () => {
         class={`
           w-full h-full
           flex flex-row justify-start items-stretch gap-0
-          text-white
+          text-black dark:text-white
         `}
       >
         <PlayingInfoProvider>
@@ -100,7 +100,10 @@ const LyricsMapEditor = () => {
             />
             <button type={'submit'} class={'btn-text btn-icon !min-w-0'}>
               <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" fill="#ffffff" />
+                <path
+                  d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"
+                  class={'fill-black dark:fill-white'} 
+                />
               </svg>
             </button>
           </form>
@@ -109,7 +112,7 @@ const LyricsMapEditor = () => {
               <Spinner class={'w-8 h-8 stroke-primary-500'} />
             </Show>
             <Show when={!loading() && lyricMetadata().length === 0}>
-              <div class={'text-white/30'}>
+              <div class={'text-black/30 dark:text-white/30'}>
                 <Trans key={'lyrics.lyric-search-not-found'}/>
               </div>
             </Show>
@@ -117,7 +120,7 @@ const LyricsMapEditor = () => {
               {(metadata) => (
                 <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onSelect(metadata)}>
                   <div class={'flex flex-col justify-center items-start'}>
-                    <div class={'h-fit text-xs text-white/50'}>
+                    <div class={'h-fit text-xs text-black/50 dark:text-white/50'}>
                       ID: {metadata.lyricId}
                     </div>
                     <div>
@@ -129,7 +132,7 @@ const LyricsMapEditor = () => {
                   </div>
                   <div class={'flex-1'} />
                   <div class={'flex flex-col justify-end items-end mr-3 self-center'}>
-                    <div class={'w-[140px] text-sm text-right text-white/50'}>
+                    <div class={'w-[140px] text-sm text-right text-black/50 dark:text-white/50'}>
                       {metadata.registerDate ? new Date(metadata.registerDate).toLocaleString(undefined, {
                         timeZone: 'Asia/Seoul',
                         hour12: false,
@@ -138,13 +141,16 @@ const LyricsMapEditor = () => {
                       }) : 'Invalid Date'}
                     </div>
                     <Show when={metadata.playtime >= 0}>
-                      <div class={'h-fit text-sm text-right text-white/50'}>
+                      <div class={'h-fit text-sm text-right text-black/50 dark:text-white/50'}>
                         <Trans key={'lyrics.playtime'} />: {formatTime(metadata.playtime)}
                       </div>
                     </Show>
                   </div>
                   <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class={'self-center'}>
-                    <path d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z" fill="#ffffff"/>
+                    <path
+                      d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z"
+                      class={'fill-black dark:fill-white'}
+                    />
                   </svg>
                 </Card>
               )}

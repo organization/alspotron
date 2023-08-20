@@ -52,6 +52,7 @@
     "@types/koa-bodyparser": "4.3.10",
     "@types/koa-router": "7.4.4",
     "@types/node": "20.5.1",
+    "@types/react": "18.2.20",
     "@types/stylis": "4.2.0",
     "@typescript-eslint/eslint-plugin": "6.4.0",
     "autoprefixer": "10.4.15",
@@ -84,6 +85,7 @@
     "@jellybrick/solid-i18next": "1.2.2",
     "@koa/cors": "4.0.0",
     "@solid-codemirror/codemirror": "1.0.4",
+    "@solidjs/router": "0.8.3",
     "@suyongs/solid-utility": "0.3.0",
     "@uiw/codemirror-theme-github": "4.21.9",
     "alsong": "3.0.1",
@@ -174,7 +176,7 @@
       "./assets/**"
     ],
     "mac": {
-      "icon": "assets/icon_square.icns",
+      "icon": "build/icon.png",
       "identity": null,
       "target": [
         {
@@ -188,7 +190,8 @@
       "category": "public.app-category.music"
     },
     "dmg": {
-      "title": "Alspotron"
+      "title": "Alspotron",
+      "icon": "build/icon.png"
     },
     "win": {
       "icon": "assets/icon256.ico",

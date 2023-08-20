@@ -82,10 +82,13 @@ const ColorPicker = (props: ColorPickerProps) => {
           class={'absolute left-[4px] right-[4px] h-[4px] bg-primary-500 rounded-full -z-1 origin-left'}
         />
         <div
-          class={'w-[12px] h-[12px] rounded-full bg-primary-500 z-0'}
+          class={`
+            w-[16px] h-[16px] rounded-full shadow-[0_0_0_1px_var(--tw-shadow-color)] z-0
+            bg-primary-500 border-[3px] border-gray-100 shadow-gray-300
+            dark:border-gray-700 dark:shadow-gray-500
+          `}
           style={{
             'translate': 'var(--alpha) 0',
-            'box-shadow': `0 0 0 3px ${colors.gray[900]}, 0 0 0 4px ${colors.gray[500]}`
           }}
         />
       </div>
