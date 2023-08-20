@@ -11,6 +11,7 @@ import LyricsTransition from '../../main/components/LyricsTransition';
 import ColorPicker from '../components/ColorPicker';
 import UserCSSEditor from '../components/UserCSSEditor';
 import { cx } from '../../utils/classNames';
+import Switch from '../../components/Switch';
 
 const ANIMATION_LIST = [
   'none',
@@ -228,11 +229,9 @@ const ThemeContainer = () => {
               <Trans key={'setting.theme.animation.at-once'} />
             </div>
             <div class={'flex-1'} />
-            <input
-              class={'checkbox'}
-              type="checkbox" 
-              checked={config()?.style?.animationAtOnce}
-              onChange={({ target: { checked } }) => setConfig({ style: { animationAtOnce: checked } })}
+            <Switch
+              value={config()?.style?.animationAtOnce}
+              onChange={(checked) => setConfig({ style: { animationAtOnce: checked } })}
             />
           </div>,
         ]}

@@ -8,6 +8,7 @@ import Selector from '../../components/Select';
 import useConfig from '../../hooks/useConfig';
 import { getTranslation } from '../../../common/intl';
 import Modal from '../../components/Modal';
+import Switch from '../../components/Switch';
 
 const LanguageContainer = () => {
   const [t, { changeLanguage }] = useTransContext();
@@ -52,12 +53,7 @@ const LanguageContainer = () => {
             <Trans key={'setting.general.developer'} />
           </div>
           <div class={'flex-1'} />
-          <input
-            class={'checkbox'}
-            type="checkbox" 
-            checked={config()?.developer}
-            onChange={({ target: { checked } }) => setConfig({ developer: checked })}
-          />
+          <Switch value={config()?.developer} onChange={(checked) => setConfig({ developer: checked })} />
         </Card>
         <Card
           class={'flex flex-row justify-between items-center gap-1'}
