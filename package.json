@@ -67,7 +67,7 @@
     "eslint-plugin-solid": "0.13.0",
     "node-addon-api": "7.0.0",
     "patch-package": "8.0.0",
-    "postcss": "8.4.28",
+    "postcss": "8.4.29",
     "tailwindcss": "3.3.3",
     "terser": "5.19.3",
     "typescript": "5.2.2",
