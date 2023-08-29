@@ -198,7 +198,7 @@ class Application {
             this.initLyricsWindow();
           }
         },
-        icon: nativeImage.createFromPath(getFile('./assets/empty.png')).resize({ width: 16, height: 16 }),
+        icon: process.platform === 'win32' ? nativeImage.createFromPath(getFile('./assets/empty.png')).resize({ width: 16, height: 16 }) : undefined,
       },
       {
         type: 'normal',
