@@ -32,7 +32,7 @@ export type PlayingInfo = {
 
 export type LyricInfo =
   | { useMapper: boolean, kind: 'alsong', data: Lyric }
-  | { useMapper: boolean, kind: 'default', data: UpdateData };
+  | { useMapper: boolean, kind: 'default', data: UpdateData & { lyric: Record<number, string[]> } };
 
 const PlayingInfoContext = createContext<PlayingInfo>({
   progress: () => 0,
@@ -88,6 +88,18 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     }
   };
 
+  const getLyric = async (data: UpdateData): Promise<Lyric> => {
+    if (!Array.isArray(data.artists) || !data.title) return {} as Lyric;
+
+    const artist = data?.artists?.join(', ') ?? '';
+    const title = data?.title ?? '';
+
+    const metadata = await alsong(artist, title).catch(() => []);
+    if (metadata.length <= 0) return {} as Lyric;
+
+    return await alsong.getLyricById(metadata[0].lyricId).catch(() => ({ lyric: data.lyrics } as Lyric));
+  };
+
   window.ipcRenderer.on('update', onUpdate);
   window.ipcRenderer.invoke('get-last-update').then((update?: { data: UpdateData }) => {
     if (update) {
@@ -116,26 +128,33 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     }
 
     const id: number | undefined = mapper[`${data.title}:${coverUrl}`];
-    const lyricInfo = await (async () => {
+    const lyricInfo = await (async (): Promise<LyricInfo | null> => {
       const alsongLyric = (
         id
-          ? await window.ipcRenderer.invoke('get-lyric-by-id', id) as (Lyric | null)
-          : await window.ipcRenderer.invoke('get-lyric', data) as Lyric
+          ? await alsong.getLyricById(id).catch(() => null)
+          : await getLyric(data)
       );
 
       if (alsongLyric) {
         return { useMapper: !!id, kind: 'alsong', data: alsongLyric } as const;
       }
 
-      if (data.lyric) {
-        return { useMapper: !!id, kind: 'default', data } as const;
+      if (data.lyrics) {
+        return {
+          useMapper: !!id,
+          kind: 'default',
+          data: {
+            lyric: data.lyrics,
+            ...data
+          },
+        } as const;
       }
 
       return null;
     })();
 
     setOriginalLyric(lyricInfo);
-    if (lyricInfo?.data.lyric) {
+    if (lyricInfo?.data?.lyric) {
       const treeMap = new FlatMap<number, string[]>();
 
       for (const key in lyricInfo.data.lyric) {

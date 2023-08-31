@@ -3,7 +3,6 @@ import { release } from 'os';
 
 import Koa from 'koa';
 import cors from '@koa/cors';
-import alsong from 'alsong';
 import zodRouter from 'koa-zod-router';
 import { z } from 'zod';
 import bodyParser from 'koa-bodyparser';
@@ -35,7 +34,6 @@ import { getTranslation } from '../common/intl';
 import type { RequestBody } from './types';
 import type { IOverlay } from './electron-overlay';
 
-type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>[number];
 type Overlay = typeof IOverlay;
 
 const iconPath = getFile('./assets/icon_square.png');
@@ -198,7 +196,6 @@ class Application {
             this.initLyricsWindow();
           }
         },
-        icon: process.platform === 'win32' ? nativeImage.createFromPath(getFile('./assets/empty.png')).resize({ width: 16, height: 16 }) : undefined,
       },
       {
         type: 'normal',
@@ -488,34 +485,6 @@ class Application {
     ipcMain.handle('compare-with-current-version', (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion));
     ipcMain.handle('check-update', async () => autoUpdater.checkForUpdatesAndNotify());
     ipcMain.handle('get-last-update', () => this.lastUpdate);
-    ipcMain.handle('get-lyric-by-id', async (_, id: number) => {
-      const lyric = await alsong.getLyricById(id).catch(() => null);
-      if (lyric) delete lyric.registerDate;
-
-      return lyric;
-    });
-    ipcMain.handle('get-lyric', async (_, data: RequestBody['data']) => {
-      if (!Array.isArray(data.artists) || !data.title) return {};
-
-      const artist = data?.artists?.join(', ') ?? '';
-      const title = data?.title ?? '';
-
-      const metadata: LyricMetadata[] = await alsong(artist, title).catch(() => []);
-      if (metadata.length <= 0) return {};
-
-      return await alsong.getLyricById(metadata[0].lyricId).catch(() => ({ lyric: data.lyrics }));
-    });
-    ipcMain.handle('search-lyric', async (_, data: { artist: string; title: string; duration?: number; }) => {
-      const result: LyricMetadata[] = await alsong(data.artist, data.title, { playtime: data.duration }).catch((e) => {
-        console.error(e);
-        return [];
-      });
-
-      return result.map((it) => ({
-        ...it,
-        registerDate: it.registerDate.toISOString(),
-      }));
-    });
 
     ipcMain.handle('set-config', (_, data: DeepPartial<Config>) => {
       setConfig(data);
@@ -570,9 +539,49 @@ class Application {
     });
   }
 
+  setCorsHandler(window: BrowserWindow) {
+    window.webContents.session.webRequest.onBeforeSendHeaders(
+      (details, callback) => {
+        const isEgg = details.url.startsWith('https://lyric.altools.com');
+        if (isEgg) {
+          delete details.requestHeaders['Referer'];
+          delete details.requestHeaders['sec-ch-ua'];
+          delete details.requestHeaders['sec-ch-ua-mobile'];
+          delete details.requestHeaders['sec-ch-ua-platform'];
+          delete details.requestHeaders['Sec-Fetch-Dest'];
+          delete details.requestHeaders['Sec-Fetch-Mode'];
+          delete details.requestHeaders['Sec-Fetch-Site'];
+          callback({
+            requestHeaders: {
+              ...details.requestHeaders,
+              'Origin': '*',
+              'User-Agent': 'Dalvik/2.2.0 (Linux; U; Android 11; Pixel 4a Build/RQ3A.210805.001.A1)',
+            },
+          });
+        } else {
+          callback({});
+        }
+      },
+    );
+    window.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+      const isEgg = details.url.startsWith('https://lyric.altools.com');
+      if (isEgg) {
+        callback({
+          responseHeaders: {
+            'Access-Control-Allow-Origin': ['*'],
+            ...details.responseHeaders,
+          },
+        });
+      } else {
+        callback({});
+      }
+    });
+  }
+
   initMainWindow() {
     Menu.setApplicationMenu(null);
     this.mainWindow = new BrowserWindow(this.mainWindowOptions);
+    this.setCorsHandler(this.mainWindow);
 
     this.mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
     this.mainWindow.setVisibleOnAllWorkspaces(true, {
@@ -603,6 +612,7 @@ class Application {
           offscreen: true,
         }
       });
+      this.setCorsHandler(this.overlayWindow);
       this.overlayWindow.setIgnoreMouseEvents(true, { forward: true });
       if (app.isPackaged) {
         this.overlayWindow.loadFile(path.join(__dirname, './index.html'));
@@ -745,6 +755,7 @@ class Application {
       autoHideMenuBar: true,
       icon: iconPath,
     });
+    this.setCorsHandler(this.lyricsWindow);
 
     if (this.lyricsWindow instanceof MicaBrowserWindow) {
       this.lyricsWindow.setAutoTheme();

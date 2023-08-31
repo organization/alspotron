@@ -1,6 +1,8 @@
 import { For, Show, createSignal, createEffect, on, startTransition } from 'solid-js';
 import { Trans, TransProvider, useTransContext } from '@jellybrick/solid-i18next';
 
+import alsong from 'alsong';
+
 import SideBar from './SideBar';
 
 import Card from '../components/Card';
@@ -13,7 +15,6 @@ import useConfig from '../hooks/useConfig';
 import { formatTime } from '../utils/formatTime';
 import { LangResource } from '../../common/intl';
 
-import type alsong from 'alsong';
 
 type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>[number];
 
@@ -38,10 +39,10 @@ const LyricsMapEditor = () => {
 
   const onSearch = async () => {
     setLoading(true);
-    const result = await window.ipcRenderer.invoke('search-lyric', {
-      title: title(),
-      artist: artist(),
-    }) as LyricMetadata[] & { registerDate: string };
+    const result = await alsong(artist(), title(), { playtime: originalData()?.duration }).catch((e) => {
+      console.error(e);
+      return [];
+    });
 
     setLyricMetadata(result);
     setLoading(false);
