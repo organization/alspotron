@@ -1,7 +1,7 @@
 import { FlatMap } from 'tstl/experimental';
 import alsong from 'alsong';
 import {
-  Accessor,
+  Accessor, batch,
   createContext,
   createEffect,
   createSignal,
@@ -9,7 +9,7 @@ import {
   on,
   onCleanup,
   onMount,
-  useContext
+  useContext,
 } from 'solid-js';
 
 import IconMusic from '../../assets/icon_music.png';
@@ -94,7 +94,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     const artist = data?.artists?.join(', ') ?? '';
     const title = data?.title ?? '';
 
-    const metadata = await alsong(artist, title).catch(() => []);
+    const metadata = await alsong(artist, title, { playtime: data?.duration }).catch(() => []);
     if (metadata.length <= 0) return {} as Lyric;
 
     return await alsong.getLyricById(metadata[0].lyricId).catch(() => ({ lyric: data.lyrics } as Lyric));
@@ -103,7 +103,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   window.ipcRenderer.on('update', onUpdate);
   window.ipcRenderer.invoke('get-last-update').then((update?: { data: UpdateData }) => {
     if (update) {
-      onUpdate(null, update);
+      batch(() => onUpdate(null, update));
     }
   });
 
