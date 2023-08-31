@@ -6,7 +6,7 @@
   const LyricResolvers = {
     v2(uri) {
       return Spicetify.CosmosAsync
-        .get(`hm://lyrics/v1/track/${uri.id}`)
+        .get(`wg://lyrics/v1/track/${uri.id}`)
         .then(payload => payload.lines)
         .catch(() => {
           return [];
