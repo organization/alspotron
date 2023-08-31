@@ -13,7 +13,7 @@ index 44703f1..5bec587 100644
  	v2: AlsongV2
  };
 diff --git a/node_modules/alsong/src/resolvers/v2/index.js b/node_modules/alsong/src/resolvers/v2/index.js
-index 3762f9b..5b70e29 100644
+index 3762f9b..130796e 100644
 --- a/node_modules/alsong/src/resolvers/v2/index.js
 +++ b/node_modules/alsong/src/resolvers/v2/index.js
 @@ -1,40 +1,27 @@
@@ -94,15 +94,15 @@ index 3762f9b..5b70e29 100644
  		try {
 -			const { data } = await this.api.post('/v1/search', params);
 -			return data;
-+			const data = await fetch(`${baseApiUrl}/v1/search`, {
++			const response = await fetch(`${baseApiUrl}/v1/search`, {
 +				method: 'POST',
 +				body: params,
 +				headers,
 +			});
-+			if (data.status === 404) {
++			if (response.status === 404) {
 +				return null;
 +			}
-+			return await data.json();
++			return await response.json();
  		} catch(err) {
 -			throw new Error("Alsong: Wrong response from server: " + err.message);
 +			throw new Error("Alsong: Wrong response from server: " + err);
@@ -117,17 +117,17 @@ index 3762f9b..5b70e29 100644
 -			return data;
 -		} catch(err) {
 -			if (err.response && err.response.status === 404) {
-+			const  data  = await fetch(`${baseApiUrl}/v1/info`, {
++			const response = await fetch(`${baseApiUrl}/v1/info`, {
 +				method: 'POST',
 +				body: params,
 +				headers,
 +			});
-+			if (data.status === 404) {
++			if (response.status === 404) {
  				return null;
  			}
 -			
 -			throw new Error("Alsong: Wrong response from server: " + err.message);
-+			return await data.json();
++			return await response.json();
 +		} catch(err) {
 +			throw new Error("Alsong: Wrong response from server: " + err);
  		}
@@ -141,17 +141,17 @@ index 3762f9b..5b70e29 100644
 -			return data;
 -		} catch(err) {
 -			if (err.response && err.response.status === 404) {
-+			const  data  = await fetch(`${baseApiUrl}/v1/lookup`, {
++			const response = await fetch(`${baseApiUrl}/v1/lookup`, {
 +				method: 'POST',
 +				body: params,
 +				headers,
 +			});
-+			if (data.status === 404) {
++			if (response.status === 404) {
  				return null;
  			}
 -			
 -			throw new Error("Alsong: Wrong response from server: " + err.message);
-+			return await data.json();
++			return await response.json();
 +		} catch(err) {
 +			throw new Error("Alsong: Wrong response from server: " + err);
  		}
