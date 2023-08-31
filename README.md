@@ -33,7 +33,7 @@
 
 #### 3.  Alspotron Companion 설치  
 
-  -   [Spicetify 설치 위치의 Extensions 폴더에](https://spicetify.app/docs/advanced-usage/extensions/) [`alspotron.js`를 다운로드 받아](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) 넣어주세요.
+  -   [Spicetify 설치 위치의 Extensions](https://spicetify.app/docs/advanced-usage/extensions/) 폴더에 [`alspotron.js`를 다운로드 받아](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) 넣어주세요.
   -   아래 명령어를 사용하여 `alspotron.js` 확장을 `Spicetify`에 추가합니다. 
       ```bash
       spicetify config extensions alspotron.js
