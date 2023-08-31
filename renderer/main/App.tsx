@@ -53,14 +53,6 @@ const useProximityStyle = () => {
     setDistance(Math.hypot(x - targetAnchorX(), y - targetAnchorY()));
   };
 
-  const onMouseLeave = () => {
-    if (fullDimmedOpacity() === 1) {
-      return;
-    }
-
-    setDistance(1);
-  };
-
   const proximityOpacity = () => {
     if (distance() > 0.5) {
       return 1;
@@ -72,14 +64,13 @@ const useProximityStyle = () => {
   };
 
   const [element, elementRef] = createSignal<HTMLDivElement | null>(null);
-  createRenderEffect(on([proximityOpacity], () => {
+  createRenderEffect(on(proximityOpacity, () => {
     element()?.animate([{ opacity: proximityOpacity() }], { duration: 500, fill: 'forwards' });
   }));
 
   return {
     ref: elementRef,
     onMouseMove,
-    onMouseLeave,
   };
 };
 

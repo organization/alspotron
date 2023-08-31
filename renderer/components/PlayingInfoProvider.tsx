@@ -3,6 +3,7 @@ import alsong from 'alsong';
 import {
   Accessor, batch,
   createContext,
+  createDeferred,
   createEffect,
   createSignal,
   JSX,
@@ -117,17 +118,14 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
 
   onCleanup(() => window.ipcRenderer.off('update', originalData));
 
-  createEffect(on([title, coverUrl, lyricMapper], async () => {
+  createEffect(on(createDeferred(() => title() && coverUrl()), async () => {
     const data = originalData();
     const mapper = lyricMapper();
 
     if (!data) return;
-    let coverUrl = data.cover_url;
-    if (!coverUrl) {
-      coverUrl = 'unknown';
-    }
+    const coverDataURL = data.cover_url ?? 'unknown';
 
-    const id: number | undefined = mapper[`${data.title}:${coverUrl}`];
+    const id: number | undefined = mapper[`${data.title}:${coverDataURL}`];
     const lyricInfo = await (async (): Promise<LyricInfo | null> => {
       const alsongLyric = (
         id
@@ -144,8 +142,8 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
           useMapper: !!id,
           kind: 'default',
           data: {
+            ...data,
             lyric: data.lyrics,
-            ...data
           },
         } as const;
       }
