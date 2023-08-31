@@ -118,7 +118,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
 
   onCleanup(() => window.ipcRenderer.off('update', originalData));
 
-  createEffect(on(createDeferred(() => title() && coverUrl()), async () => {
+  createEffect(on([createDeferred(() => title() && coverUrl()), lyricMapper], async () => {
     const data = originalData();
     const mapper = lyricMapper();
 

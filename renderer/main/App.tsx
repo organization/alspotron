@@ -53,6 +53,14 @@ const useProximityStyle = () => {
     setDistance(Math.hypot(x - targetAnchorX(), y - targetAnchorY()));
   };
 
+  const onMouseLeave = () => {
+    if (fullDimmedOpacity() === 1) {
+      return;
+    }
+
+    setDistance(1);
+  };
+
   const proximityOpacity = () => {
     if (distance() > 0.5) {
       return 1;
@@ -71,6 +79,7 @@ const useProximityStyle = () => {
   return {
     ref: elementRef,
     onMouseMove,
+    onMouseLeave,
   };
 };
 
