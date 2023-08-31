@@ -72,7 +72,7 @@ const useProximityStyle = () => {
   };
 
   const [element, elementRef] = createSignal<HTMLDivElement | null>(null);
-  createRenderEffect(on([proximityOpacity], () => {
+  createRenderEffect(on(proximityOpacity, () => {
     element()?.animate([{ opacity: proximityOpacity() }], { duration: 500, fill: 'forwards' });
   }));
 
