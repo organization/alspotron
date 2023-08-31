@@ -1,7 +1,7 @@
 import { FlatMap } from 'tstl/experimental';
 import alsong from 'alsong';
 import {
-  Accessor, batch,
+  Accessor,
   createContext,
   createDeferred,
   createEffect,
@@ -104,7 +104,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   window.ipcRenderer.on('update', onUpdate);
   window.ipcRenderer.invoke('get-last-update').then((update?: { data: UpdateData }) => {
     if (update) {
-      batch(() => onUpdate(null, update));
+      onUpdate(null, update);
     }
   });
 
