@@ -74,7 +74,7 @@ declare module 'alsong' {
 
     getLyric(music: AlsongMusic): Promise<Lyric | null>;
 
-    getLyricById(lyricId: number | string): Promise<(Lyric & { registerDate?: Date }) | null>;
+    getLyricById(lyricId: number | string): Promise<Lyric | null>;
 
     getLyricByHash(hash: string): Promise<Lyric | null>;
 

@@ -5,5 +5,5 @@ export interface UpdateData {
   progress?: number;
   duration?: number;
   cover_url?: string;
-  lyric?: Record<number, string[]>;
+  lyrics?: Record<number, string[]>;
 }
