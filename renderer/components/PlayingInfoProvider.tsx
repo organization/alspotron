@@ -15,7 +15,7 @@ import {
 
 import useLyricMapper from '../hooks/useLyricMapper';
 import { UpdateData } from '../types';
-import { LyricMode as ConfigLyricMode } from '../../common/constants';
+import { ConfigLyricMode } from '../../common/constants';
 
 export type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
 export type Status = 'idle' | 'playing' | 'stopped';

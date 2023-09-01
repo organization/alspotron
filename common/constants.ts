@@ -1,5 +1,5 @@
-export const LyricMode = {
+export const ConfigLyricMode = {
   NONE: -1,
   PLAYER: -2,
 };
-export type LyricMode = typeof LyricMode[keyof typeof LyricMode];
+export type ConfigLyricMode = typeof ConfigLyricMode[keyof typeof ConfigLyricMode];

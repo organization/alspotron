@@ -10,7 +10,7 @@ import useLyric from '../hooks/useLyric';
 import useLyricMapper from '../hooks/useLyricMapper';
 import LyricProgressBar from '../main/components/LyricProgressBar';
 import Selector from '../components/Select';
-import { LyricMode as ConfigLyricMode } from '../../common/constants';
+import { ConfigLyricMode } from '../../common/constants';
 
 const SideBar = () => {
   const { coverUrl, title, lyrics, originalLyric, lyricMode } = usePlayingInfo();
