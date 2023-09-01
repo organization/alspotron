@@ -40,7 +40,7 @@ const SideBar = () => {
     if (mode === 'none') newValue = ConfigLyricMode.NONE;
 
     const newMapper = {
-      [`${title()}:${coverUrl()}`]: newValue,
+      [`${title()}:${coverUrl() ?? 'unknown'}`]: newValue,
     };
 
     setLyricMapper(newMapper);

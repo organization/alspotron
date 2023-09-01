@@ -13,7 +13,6 @@ import {
   useContext,
 } from 'solid-js';
 
-import IconMusic from '../../assets/icon_music.png';
 import useLyricMapper from '../hooks/useLyricMapper';
 import { UpdateData } from '../types';
 import { LyricMode as ConfigLyricMode } from '../../common/constants';
@@ -44,7 +43,7 @@ const PlayingInfoContext = createContext<PlayingInfo>({
   title: () => 'Not Playing' as const,
   artist: () => 'N/A' as const,
   status: () => 'idle' as const,
-  coverUrl: () => IconMusic,
+  coverUrl: () => undefined,
   lyrics: () => null,
   originalData: () => null,
   originalLyric: () => null,
@@ -103,7 +102,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     if (typeof data.cover_url === 'string' && /^(?:file|https?):\/\//.exec(data.cover_url)) {
       setCoverUrl(data.cover_url);
     } else {
-      setCoverUrl(IconMusic);
+      setCoverUrl(undefined);
     }
   };
 
