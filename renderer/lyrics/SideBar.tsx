@@ -83,7 +83,7 @@ const SideBar = () => {
               <div class={'text-xs text-black/50 dark:text-white/50'}>
                 <Trans key={'lyrics.lyric-id'} />: {alsongLyric()?.lyricId ?? 'N/A'}
               {' · '}
-                <Trans key={'lyrics.lyric-auth or'} />: {alsongLyric()?.register?.name ?? 'N/A'}
+                <Trans key={'lyrics.lyric-author'} />: {alsongLyric()?.register?.name ?? 'N/A'}
               {' · '}
                 <Switch fallback={t('lyrics.auto-recognized')}>
                   <Match when={isMappedLyric()}>
