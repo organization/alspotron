@@ -16,19 +16,22 @@ import {
 import IconMusic from '../../assets/icon_music.png';
 import useLyricMapper from '../hooks/useLyricMapper';
 import { UpdateData } from '../types';
+import { LyricMode as ConfigLyricMode } from '../../common/constants';
 
 export type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
 export type Status = 'idle' | 'playing' | 'stopped';
+export type LyricMode = 'auto' | 'manual' | 'player' | 'none';
 export type PlayingInfo = {
   progress: Accessor<number>;
   duration: Accessor<number>;
   title: Accessor<string>;
   artist: Accessor<string>;
   status: Accessor<Status>;
-  coverUrl: Accessor<string>;
+  coverUrl: Accessor<string | undefined>;
   lyrics: Accessor<FlatMap<number, string[]> | null>;
   originalData: Accessor<UpdateData | null>;
   originalLyric: Accessor<LyricInfo | null>;
+  lyricMode: Accessor<LyricMode>;
 };
 
 export type LyricInfo =
@@ -45,19 +48,34 @@ const PlayingInfoContext = createContext<PlayingInfo>({
   lyrics: () => null,
   originalData: () => null,
   originalLyric: () => null,
+  lyricMode: () => 'auto' as const,
 });
 const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [progress, setProgress] = createSignal(0);
   const [duration, setDuration] = createSignal(0);
   const [title, setTitle] = createSignal('Not Playing');
   const [artist, setArtist] = createSignal('N/A');
-  const [status, setStatus] = createSignal('idle');
+  const [status, setStatus] = createSignal<Status>('idle');
   const [coverUrl, setCoverUrl] = createSignal<string>();
   const [lyrics, setLyrics] = createSignal<FlatMap<number, string[]> | null>(null);
   const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
   const [originalLyric, setOriginalLyric] = createSignal<LyricInfo | null>(null);
 
   const [lyricMapper] = useLyricMapper();
+
+  const lyricMode = () => {
+    const data = originalData();
+    const mapper = lyricMapper();
+
+    if (!data) return 'auto';
+
+    const mode: number | undefined = mapper[`${data.title}:${data.cover_url ?? 'unknown'}`];
+    if (mode === undefined) return 'auto';
+    if (mode === ConfigLyricMode.NONE) return 'none';
+    if (mode === ConfigLyricMode.PLAYER) return 'player';
+
+    return 'manual';
+  };
 
   const onUpdate = (_event: unknown, message: { data: UpdateData }) => {
     const data: UpdateData = message.data;
@@ -126,30 +144,45 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     const coverDataURL = data.cover_url ?? 'unknown';
 
     const id: number | undefined = mapper[`${data.title}:${coverDataURL}`];
-    const lyricInfo = await (async (): Promise<LyricInfo | null> => {
-      const alsongLyric = (
-        id
-          ? await alsong.getLyricById(id).catch(() => null)
-          : await getLyric(data)
-      );
 
-      if (alsongLyric) {
-        return { useMapper: !!id, kind: 'alsong', data: alsongLyric } as const;
-      }
-
+    let lyricInfo: LyricInfo | null = null;
+    if (id === ConfigLyricMode.NONE) {
+      setLyrics(null);
+    } else if (id === ConfigLyricMode.PLAYER) {
       if (data.lyrics) {
-        return {
+        lyricInfo = {
           useMapper: !!id,
           kind: 'default',
           data: {
             ...data,
             lyric: data.lyrics,
           },
-        } as const;
+        } satisfies LyricInfo;
+      }
+    } else {
+      const alsongLyric = id
+        ? await alsong.getLyricById(id).catch(() => null)
+        : await getLyric(data);
+
+      if (alsongLyric) {
+        lyricInfo = {
+          useMapper: !!id,
+          kind: 'alsong',
+          data: alsongLyric,
+        } satisfies LyricInfo;
       }
 
-      return null;
-    })();
+      if (data.lyrics) {
+        lyricInfo = {
+          useMapper: !!id,
+          kind: 'default',
+          data: {
+            ...data,
+            lyric: data.lyrics,
+          },
+        } satisfies LyricInfo;
+      }
+    }
 
     setOriginalLyric(lyricInfo);
     if (lyricInfo?.data?.lyric) {
@@ -175,7 +208,8 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     lyrics,
     originalData,
     originalLyric,
-  } as PlayingInfo;
+    lyricMode,
+  } satisfies PlayingInfo;
 
   return (
     <PlayingInfoContext.Provider value={playingInfo}>

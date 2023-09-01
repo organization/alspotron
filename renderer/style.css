@@ -80,7 +80,7 @@
     @apply border-b-primary-500 border-b-2;
   }
   .select {
-    @apply outline-none bg-transparent w-fit;
+    @apply outline-none bg-transparent w-fit min-w-[20ch];
   }
 
   .spinner-shape {

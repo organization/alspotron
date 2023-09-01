@@ -4,28 +4,31 @@ import { For, Show, createEffect, createSignal, mergeProps, onCleanup, onMount, 
 
 import { Transition } from 'solid-transition-group';
 
+import { Dynamic } from 'solid-js/web';
+
 import { cx } from '../utils/classNames';
 
 import type { JSX } from 'solid-js/jsx-runtime';
 
-export interface SelectProps extends Omit<JSX.HTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
+export interface SelectProps<T extends string> extends Omit<JSX.HTMLAttributes<HTMLElement>, 'value' | 'onChange'> {
   mode?: 'select' | 'autocomplete';
 
   placeholder?: string;
   placement?: Placement;
 
-  options: string[];
-  value?: string;
-  onChange?: (value: string, index: number) => void;
-  format?: (value: string) => string;
+  options: T[];
+  value?: T;
+  onChange?: (value: T, index: number) => void;
+  format?: (value: T) => string;
 
   popupClass?: string;
   popupStyle?: string;
 
   renderItem?: (props: JSX.HTMLAttributes<HTMLLIElement>, option: string, isSelected: boolean) => JSX.Element;
 }
-const Selector = (props: SelectProps) => {
+const Selector = <T extends string>(props: SelectProps<T>) => {
   const [local, popup, leftProps] = splitProps(
+    // eslint-disable-next-line solid/reactivity
     mergeProps({ mode: 'select' }, props),
     ['format', 'options', 'value', 'onChange', 'renderItem', 'placement', 'mode'],
     ['popupClass', 'popupStyle']
@@ -33,9 +36,10 @@ const Selector = (props: SelectProps) => {
 
   const [keyword, setKeyword] = createSignal<string | null>(null);
   const [open, setOpen] = createSignal(false);
-  const [anchor, setAnchor] = createSignal<HTMLInputElement>();
+  const [anchor, setAnchor] = createSignal<HTMLElement>();
   const [popper, setPopper] = createSignal<HTMLUListElement>();
-  const [input, setInput] = createSignal<HTMLInputElement>();
+  const [input, setInput] = createSignal<HTMLElement>();
+  // eslint-disable-next-line solid/reactivity
   const [options, setOptions] = createSignal(local.options);
 
   /* properties */
@@ -97,7 +101,7 @@ const Selector = (props: SelectProps) => {
   });
 
   /* callbacks */
-  const onSelect = (option: string, index: number) => {
+  const onSelect = (option: T, index: number) => {
     input()?.blur();
     setKeyword(null);
     setOpen(false);
@@ -117,14 +121,28 @@ const Selector = (props: SelectProps) => {
         onClick={() => input()?.focus()}
         data-active={open()}
       >
-        <input
-          {...leftProps}
-          ref={setInput}
-          class={cx('select', leftProps.class)}
-          value={keyword() ?? local.format?.(local.value ?? '') ?? local.value}
-          onInput={(event) => setKeyword(event.target.value)}
-          onFocusIn={onOpen}
-        />
+        <Show
+          when={local.mode === 'autocomplete'}
+          fallback={
+            <div
+              {...leftProps}
+              ref={setInput}
+              class={cx('select', leftProps.class)}
+              onClick={onOpen}
+            >
+              {keyword() ?? local.format?.(local.value ?? '' as T) ?? local.value}
+            </div>
+          }
+        >
+          <input
+            {...leftProps}
+            ref={setInput}
+            class={cx('select', leftProps.class)}
+            value={keyword() ?? local.format?.(local.value ?? '' as T) ?? local.value}
+            onInput={(event) => setKeyword(event.target.value)}
+            onFocusIn={onOpen}
+          />
+        </Show>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

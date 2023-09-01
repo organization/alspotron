@@ -5,13 +5,15 @@ import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 import { Marquee } from '@suyongs/solid-utility';
 
 import Card from '../components/Card';
-import { usePlayingInfo } from '../components/PlayingInfoProvider';
+import { LyricMode, usePlayingInfo } from '../components/PlayingInfoProvider';
 import useLyric from '../hooks/useLyric';
 import useLyricMapper from '../hooks/useLyricMapper';
 import LyricProgressBar from '../main/components/LyricProgressBar';
+import Selector from '../components/Select';
+import { LyricMode as ConfigLyricMode } from '../../common/constants';
 
 const SideBar = () => {
-  const { coverUrl, title, lyrics, originalLyric } = usePlayingInfo();
+  const { coverUrl, title, lyrics, originalLyric, lyricMode } = usePlayingInfo();
   const [, lyricTime] = useLyric();
   const [, setLyricMapper] = useLyricMapper();
   const [t] = useTransContext();
@@ -32,9 +34,13 @@ const SideBar = () => {
     });
   });
 
-  const onResetLyric = () => {
+  const onChangeLyricMode = (mode: LyricMode) => {
+    let newValue: number | undefined = undefined;
+    if (mode === 'player') newValue = ConfigLyricMode.PLAYER;
+    if (mode === 'none') newValue = ConfigLyricMode.NONE;
+
     const newMapper = {
-      [`${title()}:${coverUrl()}`]: undefined,
+      [`${title()}:${coverUrl()}`]: newValue,
     };
 
     setLyricMapper(newMapper);
@@ -61,13 +67,13 @@ const SideBar = () => {
         class={'w-full flex flex-row justify-start items-center gap-1'}
         subCards={[
           <div class={'w-full h-full flex items-center'}>
-            <button class={isMappedLyric() ? 'btn-primary' : 'btn-primary-disabled disabled'} onClick={onResetLyric} disabled={!isMappedLyric()}>
-              <Switch fallback={t('lyrics.auto-recognizing')}>
-                <Match when={isMappedLyric()}>
-                  <Trans key={'lyrics.change-to-auto-recognize-mode'} />
-                </Match>
-              </Switch>
-            </button>
+            <Selector
+              mode={'select'}
+              options={['auto', 'player', 'none'] as LyricMode[]}
+              value={lyricMode()}
+              format={(mode) => t(`lyrics.mode.${mode}`)}
+              onChange={onChangeLyricMode}
+            />
           </div>,
         ]}
       >
@@ -77,7 +83,7 @@ const SideBar = () => {
               <div class={'text-xs text-black/50 dark:text-white/50'}>
                 <Trans key={'lyrics.lyric-id'} />: {alsongLyric()?.lyricId ?? 'N/A'}
               {' · '}
-                <Trans key={'lyrics.lyric-author'} />: {alsongLyric()?.register?.name ?? 'N/A'}
+                <Trans key={'lyrics.lyric-auth or'} />: {alsongLyric()?.register?.name ?? 'N/A'}
               {' · '}
                 <Switch fallback={t('lyrics.auto-recognized')}>
                   <Match when={isMappedLyric()}>
