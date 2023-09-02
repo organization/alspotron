@@ -455,7 +455,8 @@ class Application {
           const result = extractIcon(path, 32);
 
           return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
-        } catch {
+        } catch (e: unknown) {
+          console.error(e);
         }
 
         return null;
