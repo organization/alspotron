@@ -123,7 +123,7 @@
     "xml2js": "0.6.2",
     "axios": "1.5.0",
     "simple-update-notifier": "2.0.0",
-    "@electron/get": "2.0.2",
+    "@electron/get": "2.0.3",
     "electron": "27.0.0-alpha.5",
     "http-errors": "2.0.0"
   },
