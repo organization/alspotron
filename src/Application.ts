@@ -15,6 +15,8 @@ import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructo
 
 import { createEffect, on } from 'solid-js';
 
+import PluginLoader from './plugins/v1/plugin-loader';
+
 import {
   Config,
   config,
@@ -69,6 +71,7 @@ class Application {
   private tray!: Tray;
   private app!: Koa;
   private overlay!: Overlay;
+  private pluginLoader!: PluginLoader;
   private markQuit = false;
   private scaleFactor = 1.0;
   private lastUpdate: RequestBody | null = null;
@@ -129,6 +132,14 @@ class Application {
     }
   }
 
+  initPluginLoader() {
+    this.pluginLoader = new PluginLoader(path.resolve(getFile('./plugins')));
+
+    this.pluginLoader.loadPlugins().catch((e) => {
+      console.error('[Alspotron] Cannot load plugins', e);
+    });
+  }
+
   initAutoUpdater() {
     if (!app.isPackaged) return;
 
@@ -183,7 +194,6 @@ class Application {
   }
 
   initMenu() {
-
     const menu: (MenuItemConstructorOptions | MenuItem)[] = [
       {
         type: 'normal',
