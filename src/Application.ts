@@ -15,6 +15,8 @@ import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructo
 
 import { createEffect, on } from 'solid-js';
 
+import zip from 'zip-lib';
+
 import PluginLoader from './plugins/v1/plugin-loader';
 
 import {
@@ -551,15 +553,19 @@ class Application {
     });
 
     ipcMain.handle('get-plugin-list', () => this.pluginLoader.getPlugins());
-    ipcMain.handle('add-plugin', async (_, path: string) => {
-      const result = await this.pluginLoader.addPlugin(path).catch((err) => err as Error);
+    ipcMain.handle('add-plugin', async (_, pluginPath: string) => {
+      const extractPath = getFile(`plugins/${path.basename(pluginPath).replace(/\.\w+$/, '')}`);
+      await zip.extract(pluginPath, extractPath).catch((err) => console.error(err));
+
+      const result = await this.pluginLoader.addPlugin(extractPath).catch((err) => err as Error);
 
       if (result instanceof Error) {
         // TODO: What should I do?
+        console.log('cannot add plugin', result);
         return;
       }
       
-      setConfig({ plugins: { [result.id]: path } });
+      setConfig({ plugins: { [result.id]: extractPath } });
     });
     ipcMain.handle('remove-plugin', (_, id: string) => {
       setConfig({ plugins: { [id]: undefined } });

@@ -39,8 +39,9 @@ export interface Plugin {
 
   id: string;
   name: string;
+  description?: string;
   author: string;
-  version: string;
+  version?: string;
   versionCode: number;
   pluginVersion: number;
 }

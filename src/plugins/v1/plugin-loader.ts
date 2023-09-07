@@ -3,12 +3,13 @@ import path from 'node:path';
 
 import z from 'zod';
 
-import { Plugin, PluginEventMap, PluginInterface } from '../plugin';
+import { Plugin, PluginEventMap, PluginInterface } from '../../../common/plugin';
 import { errorSync } from '../../../utils/error';
 
 const v1ManifestSchema = z.object({
   id: z.string(),
   name: z.string(),
+  description: z.string().optional(),
   author: z.string(),
   version: z.string().optional(),
   versionCode: z.number(),
@@ -71,6 +72,7 @@ class PluginLoader {
 
       id: manifestJson.id,
       name: manifestJson.name,
+      description: manifestJson.description,
       author: manifestJson.author,
       version: manifestJson.version ?? '0.0.0',
       versionCode: manifestJson.versionCode,
