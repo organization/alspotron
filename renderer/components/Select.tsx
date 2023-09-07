@@ -44,7 +44,7 @@ const Selector = <T extends string>(props: SelectProps<T>) => {
 
   /* properties */
   const itemHeight = () => (popper()?.scrollHeight ?? popper()?.clientHeight ?? 0) / local.options.length;
-  const selectIndex = () => local.options.findIndex((option) => option === local.value);
+  const selectIndex = () => local.options.findIndex((option) => option === local.value) ?? 0;
 
   /* defines */
   const position = useFloating(anchor, popper, {
@@ -118,7 +118,7 @@ const Selector = <T extends string>(props: SelectProps<T>) => {
       <div
         ref={setAnchor}
         class={'select-container'}
-        onClick={() => input()?.focus()}
+        onClick={() => local.mode === 'autocomplete' ? input()?.focus() : onOpen()}
         data-active={open()}
       >
         <Show
@@ -128,7 +128,6 @@ const Selector = <T extends string>(props: SelectProps<T>) => {
               {...leftProps}
               ref={setInput}
               class={cx('select', leftProps.class)}
-              onClick={onOpen}
             >
               {keyword() ?? local.format?.(local.value ?? '' as T) ?? local.value}
             </div>

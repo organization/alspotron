@@ -1,15 +1,22 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import { Trans } from '@jellybrick/solid-i18next';
 import { useNavigate, useParams } from '@solidjs/router';
 
-import { For, createEffect, createSignal, onMount } from 'solid-js';
+import { For, Switch as SwitchFlow, Match, createEffect, createSignal, onMount } from 'solid-js';
 
-import { Plugin } from '../../../common/plugin';
+import { Marquee } from '@suyongs/solid-utility';
+
+import { Plugin, SelectOption, SettingOption } from '../../../common/plugin';
 import Card from '../../components/Card';
 import Switch from '../../components/Switch';
+import Selector from '../../components/Select';
+import useConfig from '../../hooks/useConfig';
 
 const PluginSettingsContainer = () => {
   const params = useParams();
   const navigate = useNavigate();
+  const [config, setConfig] = useConfig();
 
   const [plugin, setPlugin] = createSignal<Plugin | null>(null);
   const [pluginState, setPluginState] = createSignal<'enable' | 'disable'>('enable');
@@ -41,6 +48,13 @@ const PluginSettingsContainer = () => {
     window.ipcRenderer.invoke('get-plugin', params.id).then(setPlugin);
     window.ipcRenderer.invoke('get-plugin-state', params.id).then(setPluginState);
   };
+  const setOption = async (setting: SettingOption, value: unknown) => {
+    const id = plugin()?.id;
+    if (!id) return;
+
+    await setConfig({ plugins: { config: { [id]: { [setting.key]: value } } } });
+    console.log('setOption', id, setting.key, value, config()?.plugins.config);
+  }
 
   return(
     <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
@@ -106,7 +120,45 @@ const PluginSettingsContainer = () => {
       <div class={'text-md mt-4 mb-1'}>
         <Trans key={'setting.plugin.setting'} />
       </div>
-      
+      <For each={plugin()?.js?.settings}>
+        {(setting) => (
+          <Card class={'flex flex-row justify-start items-center gap-1'}>
+            <div class={'w-full flex flex-col justify-center items-stretch flex-1'}>
+              <div class={'w-full'}>
+                {setting.name}
+              </div>
+              <Marquee class={'text-gray-400'} gap={18}>
+                {setting.description}
+              </Marquee>
+            </div>
+            <div class={'flex-1'} />
+            <SwitchFlow>
+              <Match when={setting.type === 'select'}>
+                <Selector
+                  options={(setting as SelectOption).options.map(({ value }) => value)}
+                  value={config()?.plugins.config[plugin()?.id ?? '']?.[setting.key] as string}
+                  onChange={(value) => {setOption(setting, value)}}
+                  format={(option) => (setting as SelectOption).options.find((it) => it.value === option)?.label ?? option}
+                />
+              </Match>
+              <Match when={setting.type === 'string' || setting.type === 'number'}>
+                <input
+                  type={setting.type === 'string' ? 'text' : 'number'}
+                  class={'input'}
+                  value={config()?.plugins.config[plugin()?.id ?? '']?.[setting.key] as string}
+                  onChange={(event) => setOption(setting, event.target.value)}
+                />
+              </Match>
+              <Match when={setting.type === 'boolean'}>
+                <Switch
+                  value={config()?.plugins.config[plugin()?.id ?? '']?.[setting.key] as boolean}
+                  onChange={(checked) => setOption(setting, checked)}
+                />
+              </Match>
+            </SwitchFlow>
+          </Card>
+        )}
+      </For>
     </div>
   )
 };
