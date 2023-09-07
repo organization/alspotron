@@ -22,9 +22,18 @@ const v1ManifestSchema = z.object({
 class PluginLoader {
   private plugins: Plugin[] = [];
   private pluginPathList: string[] = [];
+  private pluginState: Record<string, 'enable' | 'disable'> = {};
 
-  constructor(pluginPathList: string[]) {
+  constructor(pluginPathList: string[], pluginState?: Record<string, 'enable' | 'disable'>) {
     this.pluginPathList = pluginPathList;
+    if (pluginState) this.pluginState = pluginState;
+  }
+
+  public setPluginState(pluginId: string, state: 'enable' | 'disable'): void {
+    this.pluginState[pluginId] = state;
+  }
+  public getPluginState(pluginId: string): 'enable' | 'disable' | undefined {
+    return this.pluginState[pluginId];
   }
 
   public async loadPlugins(): Promise<void> {
@@ -36,7 +45,7 @@ class PluginLoader {
       const newPlugin = await this.loadPlugin(path);
 
       this.plugins.push(newPlugin);
-      newPlugin.js?.onLoad();
+      if (this.pluginState[newPlugin.id] === 'enable') newPlugin.js?.onLoad();
 
       return newPlugin;
     } catch (e) {
@@ -96,7 +105,7 @@ class PluginLoader {
   public unloadPlugin(plugin: Plugin): void {
     const index = this.plugins.indexOf(plugin);
     if (index !== -1) {
-      plugin.js?.onUnload();
+      if (this.pluginState[plugin.id] === 'enable') plugin.js?.onUnload();
       this.plugins.splice(index, 1);
     }
   }

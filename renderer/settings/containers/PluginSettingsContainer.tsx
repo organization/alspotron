@@ -26,7 +26,7 @@ const PluginSettingsContainer = () => {
     const state = await window.ipcRenderer.invoke('get-plugin-state', params.id) as 'disable' | 'enable';
     
     const newState = state === 'enable' ? 'disable' : 'enable';
-    await window.ipcRenderer.invoke('change-plugin-state', params.id, newState);
+    await window.ipcRenderer.invoke('set-plugin-state', params.id, newState);
 
     refreshPlugin();
   }

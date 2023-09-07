@@ -136,9 +136,14 @@ class Application {
 
   initPluginLoader() {
     const pluginList = Object.values(config().plugins.list).filter((it) => typeof it === 'string') as string[];
+    const pluginState = Object.entries(config().plugins.disabled).reduce((prev, [key, value]) => ({
+      ...prev,
+      [key]: value ? 'disable' : 'enable',
+    }), {});
+
     console.log('[Alspotron] load all plugins', pluginList);
     
-    this.pluginLoader = new PluginLoader(pluginList);
+    this.pluginLoader = new PluginLoader(pluginList, pluginState);
     this.pluginLoader.loadPlugins().catch((e) => {
       console.error('[Alspotron] Cannot load plugins', e);
     });
@@ -587,7 +592,7 @@ class Application {
           [key]: value ? 'disable' : 'enable',
         }), {}),
     );
-    ipcMain.handle('change-plugin-state', (_, id: string, state: 'disable' | 'enable') => {
+    ipcMain.handle('set-plugin-state', (_, id: string, state: 'disable' | 'enable') => {
       const target = this.pluginLoader.getPlugins().find((it) => it.id === id);
 
       if (!target) return;
@@ -597,6 +602,7 @@ class Application {
       if (state === 'disable') newState = true;
 
       setConfig({ plugins: { disabled: { [id]: newState } } });
+      this.pluginLoader.setPluginState(target.id, state);
     });
   }
 
