@@ -56,6 +56,8 @@ export interface Config {
 
   language: 'ko' | 'en' | 'ja' | 'de';
   developer: boolean;
+
+  plugins: Record<string, string | undefined>; // id: path
 }
 
 const getCurrentLocale = () => (/en|ko|ja|de/.exec(app.getLocale())?.at(0)) as 'ko' | 'en' | 'ja' | 'de' | undefined ?? 'ko';
@@ -107,6 +109,8 @@ export const DEFAULT_CONFIG: Config = {
 
   language: 'ko',
   developer: false,
+
+  plugins: {},
 } satisfies Config;
 
 app.on('ready', () => {
@@ -146,6 +150,12 @@ export const setConfig = (params: DeepPartial<Config>) => {
       ...configSignal[0]()?.windowPosition,
       ...params?.windowPosition,
     },
+
+    plugins: {
+      ...DEFAULT_CONFIG.plugins,
+      ...configSignal[0]()?.plugins,
+      ...params?.plugins,
+    }
   };
   
   configSignal[1](value);

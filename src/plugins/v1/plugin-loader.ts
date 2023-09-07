@@ -7,6 +7,7 @@ import { Plugin, PluginEventMap, PluginInterface } from '../plugin';
 import { errorSync } from '../../../utils/error';
 
 const v1ManifestSchema = z.object({
+  id: z.string(),
   name: z.string(),
   author: z.string(),
   version: z.string().optional(),
@@ -19,30 +20,40 @@ const v1ManifestSchema = z.object({
 
 class PluginLoader {
   private plugins: Plugin[] = [];
-  private pluginFolder: string;
+  private pluginPathList: string[] = [];
 
-  constructor(pluginFolder: string) {
-    this.pluginFolder = pluginFolder;
+  constructor(pluginPathList: string[]) {
+    this.pluginPathList = pluginPathList;
   }
 
   public async loadPlugins(): Promise<void> {
-    const plugins = await fs.readdir(this.pluginFolder);
+    await Promise.all(this.pluginPathList.map((path) => this.addPlugin(path)));
+  }
 
-    await Promise.all(plugins.map(async (plugin) => {
-      try {
-        await this.loadPlugin(plugin);
-      } catch (e) {
-        console.error(`[Alspotron] Failed to load plugin ${plugin}`);
-        console.error(e);
-      }
-    }));
+  public async addPlugin(path: string): Promise<Plugin> {
+    try {
+      const newPlugin = await this.loadPlugin(path);
+
+      this.plugins.push(newPlugin);
+      newPlugin.js?.onLoad();
+
+      return newPlugin;
+    } catch (e) {
+      const error = Error(`Failed to load plugin ${path}`);
+      error.cause = e;
+
+      throw error;
+    }
+  }
+
+  public getPlugins(): Plugin[] {
+    return this.plugins;
   }
   
-  private async loadPlugin(plugin: string): Promise<Plugin> {
-    const pluginPath = path.join(this.pluginFolder, plugin);
+  private async loadPlugin(pluginPath: string): Promise<Plugin> {
     const stats = await fs.stat(pluginPath);
     
-    if (!stats.isDirectory()) throw Error(`${plugin} Plugin is not a directory`);
+    if (!stats.isDirectory()) throw Error(`${pluginPath} Plugin is not a directory`);
 
     const manifest = await fs.readFile(path.join(pluginPath, 'manifest.json'), 'utf-8').catch(() => {
       throw Error('Manifest not found')
@@ -58,6 +69,7 @@ class PluginLoader {
       css: manifestJson.css ?? [],
       manifest,
 
+      id: manifestJson.id,
       name: manifestJson.name,
       author: manifestJson.author,
       version: manifestJson.version ?? '0.0.0',
@@ -75,9 +87,6 @@ class PluginLoader {
       });
 
     if (!(pluginInstance instanceof Error)) newPlugin.js = pluginInstance; 
-
-    this.plugins.push(newPlugin);
-    newPlugin.js?.onLoad();
 
     return newPlugin;
   }

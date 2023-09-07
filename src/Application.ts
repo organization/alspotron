@@ -133,8 +133,9 @@ class Application {
   }
 
   initPluginLoader() {
-    this.pluginLoader = new PluginLoader(path.resolve(getFile('./plugins')));
-
+    const pluginList = Object.values(config().plugins).filter((it) => typeof it === 'string') as string[];
+    
+    this.pluginLoader = new PluginLoader(pluginList);
     this.pluginLoader.loadPlugins().catch((e) => {
       console.error('[Alspotron] Cannot load plugins', e);
     });
@@ -547,6 +548,21 @@ class Application {
           this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
         }
       }
+    });
+
+    ipcMain.handle('get-plugin-list', () => this.pluginLoader.getPlugins());
+    ipcMain.handle('add-plugin', async (_, path: string) => {
+      const result = await this.pluginLoader.addPlugin(path).catch((err) => err as Error);
+
+      if (result instanceof Error) {
+        // TODO: What should I do?
+        return;
+      }
+      
+      setConfig({ plugins: { [result.id]: path } });
+    });
+    ipcMain.handle('remove-plugin', (_, id: string) => {
+      setConfig({ plugins: { [id]: undefined } });
     });
   }
 

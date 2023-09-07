@@ -37,6 +37,7 @@ export interface Plugin {
   js?: PluginInterface;
   manifest: string;
 
+  id: string;
   name: string;
   author: string;
   version: string;
