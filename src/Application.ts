@@ -570,6 +570,11 @@ class Application {
     });
     ipcMain.handle('get-plugin', (_, id: string) => this.pluginLoader.getPlugins().find((it) => it.id === id));
     ipcMain.handle('remove-plugin', (_, id: string) => {
+      const target = this.pluginLoader.getPlugins().find((it) => it.id === id);
+
+      if (!target) return;
+
+      this.pluginLoader.unloadPlugin(target);
       setConfig({ plugins: { [id]: undefined } });
     });
   }

@@ -21,6 +21,10 @@ const PluginSettingsContainer = () => {
     params.id && refreshPlugin();
   })
 
+  const deletePlugin = async () => {
+    await window.ipcRenderer.invoke('remove-plugin', params.id);
+    navigate('/plugin');
+  };
   const onPluginPage = () => {
     navigate('/plugin');
   };
@@ -30,7 +34,7 @@ const PluginSettingsContainer = () => {
 
   return(
     <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
-      <div class={'text-3xl mb-1 flex justify-start items-center gap-2'}>
+      <div class={'text-3xl mb-1 flex justify-start items-center gap-2 select-none'}>
         <span class={'text-3xl opacity-80 hover:opacity-100'} onClick={onPluginPage}>
           <Trans key={'setting.title.plugin'} />
         </span>
@@ -75,7 +79,7 @@ const PluginSettingsContainer = () => {
               플러그인 비활성화
             </button>
             <div class={'flex-1'} />
-            <button class={'btn-error'}>
+            <button class={'btn-error'} onClick={deletePlugin}>
               플러그인 삭제
             </button>
           </div>

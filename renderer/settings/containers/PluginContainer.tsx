@@ -1,5 +1,7 @@
-import { For, createSignal, onMount } from 'solid-js';
+import { For, createEffect, createSignal, onMount } from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
+
+import { useLocation } from '@solidjs/router';
 
 import Card from '../../components/Card';
 
@@ -9,10 +11,16 @@ import PluginCard from '../components/PluginCard';
 import type { JSX } from 'solid-js';
 
 const PluginContainer = () => {
+  const location = useLocation();
+
   const [plugins, setPlugins] = createSignal<Plugin[]>([]);
 
   onMount(() => {
     refreshPlugins();
+  });
+
+  createEffect(() => {
+    location.pathname === '/plugin' && refreshPlugins();
   });
 
   const refreshPlugins = () => {
