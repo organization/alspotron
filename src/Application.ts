@@ -17,7 +17,7 @@ import { createEffect, on } from 'solid-js';
 
 import zip from 'zip-lib';
 
-import PluginLoader from './plugins/v1/plugin-loader';
+import PluginLoader from './plugins/plugin-loader';
 
 import {
   Config,
@@ -560,7 +560,12 @@ class Application {
 
     ipcMain.handle('get-plugin-list', () => this.pluginLoader.getPlugins());
     ipcMain.handle('add-plugin', async (_, pluginPath: string) => {
-      const extractPath = path.resolve('', getFile(`plugins/${path.basename(pluginPath).replace(/\.\w+$/, '')}`));
+      const extractPath = path.resolve(
+        app.getPath('userData'),
+        'plugins',
+        path.basename(pluginPath).replace(/\.\w+$/, ''),
+      );
+
       await zip.extract(pluginPath, extractPath).catch((err) => console.error(err));
 
       const result = await this.pluginLoader.addPlugin(extractPath).catch((err) => err as Error);

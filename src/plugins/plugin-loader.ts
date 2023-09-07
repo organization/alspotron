@@ -3,21 +3,22 @@ import path from 'node:path';
 
 import z from 'zod';
 
-import { Plugin, PluginEventMap, PluginInterface } from '../../../common/plugin';
-import { errorSync } from '../../../utils/error';
+import v1loader from './v1/v1-loader';
 
-const v1ManifestSchema = z.object({
+import { Plugin, PluginEventMap } from '../../common/plugin';
+import { errorSync } from '../../utils/error';
+
+const manifestSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string().optional(),
   author: z.string(),
   version: z.string().optional(),
   versionCode: z.number(),
-  pluginVersion: z.literal(1),
+  pluginVersion: z.number(),
+}).passthrough();
 
-  css: z.array(z.string()).optional(),
-  main: z.string().optional(),
-});
+export type Loader = (pluginPath: string, manifest: z.infer<typeof manifestSchema>) => Promise<Plugin>;
 
 class PluginLoader {
   private plugins: Plugin[] = [];
@@ -69,35 +70,16 @@ class PluginLoader {
       throw Error('Manifest not found')
     });
     
-    const [manifestJson, error] = errorSync(() => v1ManifestSchema.parse(JSON.parse(manifest)));
+    const [manifestJson, error] = errorSync(() => manifestSchema.parse(JSON.parse(manifest)));
     if (error || manifestJson === null) {
       console.error(error);
       throw Error('Manifest is not valid');
     }
 
-    const newPlugin: Plugin = {
-      css: manifestJson.css ?? [],
-      manifest,
+    let newPlugin: Plugin | null = null;
+    if (manifestJson.pluginVersion === 1) newPlugin = await v1loader(pluginPath, manifestJson);
 
-      id: manifestJson.id,
-      name: manifestJson.name,
-      description: manifestJson.description,
-      author: manifestJson.author,
-      version: manifestJson.version ?? '0.0.0',
-      versionCode: manifestJson.versionCode,
-      pluginVersion: manifestJson.pluginVersion,
-    };
-
-    const jsPath = `file://${path.join(pluginPath, manifestJson.main ?? '')}`;
-    const pluginInstance = await import(jsPath)
-      .then((module) => (module as { default: PluginInterface | undefined }).default)
-      .catch((err) => {
-        const error = Error(`Failed to load plugin: Cannot load "${jsPath}"`);
-        error.cause = err;
-        return error;
-      });
-
-    if (!(pluginInstance instanceof Error)) newPlugin.js = pluginInstance; 
+    if (!newPlugin) throw Error('Plugin version is not supported')
 
     return newPlugin;
   }

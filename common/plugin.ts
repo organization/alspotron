@@ -1,3 +1,5 @@
+import { Json } from '../utils/types';
+
 type Music = unknown; // TODO: Music interface
 
 export interface SettingOption {
@@ -35,7 +37,8 @@ export abstract class PluginInterface {
 export interface Plugin {
   css?: string[];
   js?: PluginInterface;
-  manifest: string;
+  rawManifest: string;
+  manifest: Json;
 
   id: string;
   name: string;
