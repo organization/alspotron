@@ -14,17 +14,19 @@ const PluginContainer = () => {
   const location = useLocation();
 
   const [plugins, setPlugins] = createSignal<Plugin[]>([]);
+  const [pluginState, setPluginState] = createSignal<Record<string, 'enable' | 'disable'>>({});
 
   onMount(() => {
     refreshPlugins();
   });
 
-  createEffect(() => {
-    location.pathname === '/plugin' && refreshPlugins();
-  });
+  // createEffect(() => {
+  //   location.pathname === '/plugin' && refreshPlugins();
+  // });
 
   const refreshPlugins = () => {
     window.ipcRenderer.invoke('get-plugin-list').then(setPlugins);
+    window.ipcRenderer.invoke('get-plugin-state-list').then(setPluginState);
   };
 
   const onAddPlugin: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = async (event) => {
@@ -55,7 +57,7 @@ const PluginContainer = () => {
         로드된 플러그인
       </div>
       <For each={plugins()}>
-        {(plugin) => <PluginCard plugin={plugin} state={'enabled'} />}
+        {(plugin) => <PluginCard plugin={plugin} state={pluginState()[plugin.id]} />}
       </For>
     </div>
   );

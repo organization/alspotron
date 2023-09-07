@@ -135,8 +135,8 @@ class Application {
   }
 
   initPluginLoader() {
-    const pluginList = Object.values(config().plugins).filter((it) => typeof it === 'string') as string[];
-    console.log('[Alspotron] load all plugins', pluginList, 'from', config().plugins);
+    const pluginList = Object.values(config().plugins.list).filter((it) => typeof it === 'string') as string[];
+    console.log('[Alspotron] load all plugins', pluginList);
     
     this.pluginLoader = new PluginLoader(pluginList);
     this.pluginLoader.loadPlugins().catch((e) => {
@@ -566,7 +566,7 @@ class Application {
         return;
       }
       
-      setConfig({ plugins: { [result.id]: extractPath } });
+      setConfig({ plugins: { list: { [result.id]: extractPath } } });
     });
     ipcMain.handle('get-plugin', (_, id: string) => this.pluginLoader.getPlugins().find((it) => it.id === id));
     ipcMain.handle('remove-plugin', (_, id: string) => {
@@ -575,7 +575,28 @@ class Application {
       if (!target) return;
 
       this.pluginLoader.unloadPlugin(target);
-      setConfig({ plugins: { [id]: undefined } });
+      setConfig({ plugins: { list: { [id]: undefined } } });
+    });
+
+    ipcMain.handle('get-plugin-state', (_, id: string) => config().plugins.disabled[id] ? 'disable' : 'enable');
+    ipcMain.handle(
+      'get-plugin-state-list',
+      () => Object.entries(config().plugins.disabled)
+        .reduce((prev, [key, value]) => ({
+          ...prev,
+          [key]: value ? 'disable' : 'enable',
+        }), {}),
+    );
+    ipcMain.handle('change-plugin-state', (_, id: string, state: 'disable' | 'enable') => {
+      const target = this.pluginLoader.getPlugins().find((it) => it.id === id);
+
+      if (!target) return;
+
+      let newState: boolean | undefined = undefined;
+      if (state === 'enable') newState = false;
+      if (state === 'disable') newState = true;
+
+      setConfig({ plugins: { disabled: { [id]: newState } } });
     });
   }
 

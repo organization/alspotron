@@ -5,15 +5,16 @@ import { For, createEffect, createSignal, onMount } from 'solid-js';
 
 import { Plugin } from '../../../common/plugin';
 import Card from '../../components/Card';
+import Switch from '../../components/Switch';
 
 const PluginSettingsContainer = () => {
   const params = useParams();
   const navigate = useNavigate();
 
   const [plugin, setPlugin] = createSignal<Plugin | null>(null);
+  const [pluginState, setPluginState] = createSignal<'enable' | 'disable'>('enable');
 
   onMount(() => {
-    console.log(params);
     refreshPlugin();
   });
 
@@ -21,6 +22,14 @@ const PluginSettingsContainer = () => {
     params.id && refreshPlugin();
   })
 
+  const togglePluginState = async () => {
+    const state = await window.ipcRenderer.invoke('get-plugin-state', params.id) as 'disable' | 'enable';
+    
+    const newState = state === 'enable' ? 'disable' : 'enable';
+    await window.ipcRenderer.invoke('change-plugin-state', params.id, newState);
+
+    refreshPlugin();
+  }
   const deletePlugin = async () => {
     await window.ipcRenderer.invoke('remove-plugin', params.id);
     navigate('/plugin');
@@ -30,6 +39,7 @@ const PluginSettingsContainer = () => {
   };
   const refreshPlugin = () => {
     window.ipcRenderer.invoke('get-plugin', params.id).then(setPlugin);
+    window.ipcRenderer.invoke('get-plugin-state', params.id).then(setPluginState);
   };
 
   return(
@@ -75,9 +85,13 @@ const PluginSettingsContainer = () => {
             </For>
           </div>,
           <div class={'w-full h-full flex justify-start items-center gap-3'}>
-            <button class={'btn-text'}>
-              플러그인 비활성화
-            </button>
+            <Switch
+              value={pluginState() === 'enable'}
+              onChange={togglePluginState}
+            />
+            <div class={'text-md'}>
+              플러그인 활성화
+            </div>
             <div class={'flex-1'} />
             <button class={'btn-error'} onClick={deletePlugin}>
               플러그인 삭제

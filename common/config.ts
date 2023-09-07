@@ -57,7 +57,10 @@ export interface Config {
   language: 'ko' | 'en' | 'ja' | 'de';
   developer: boolean;
 
-  plugins: Record<string, string | undefined>; // id: path
+  plugins: {
+    list: Record<string, string | undefined>; // id: path
+    disabled: Record<string, boolean | undefined>; // id: enabled
+  }
 }
 
 const getCurrentLocale = () => (/en|ko|ja|de/.exec(app.getLocale())?.at(0)) as 'ko' | 'en' | 'ja' | 'de' | undefined ?? 'ko';
@@ -110,7 +113,10 @@ export const DEFAULT_CONFIG: Config = {
   language: 'ko',
   developer: false,
 
-  plugins: {},
+  plugins: {
+    list: {},
+    disabled: {},
+  },
 } satisfies Config;
 
 app.on('ready', () => {
