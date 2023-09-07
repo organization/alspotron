@@ -11,10 +11,9 @@ import InfoContainer from './containers/InfoContainer';
 import GeneralContainer from './containers/GeneralContainer';
 import PositionContainer from './containers/PositionContainer';
 import ThemeContainer from './containers/ThemeContainer';
-
 import GameListContainer from './containers/GameListContainer';
-
 import PluginContainer from './containers/PluginContainer';
+import PluginSettingsContainer from './containers/PluginSettingsContainer';
 
 import Layout from '../components/Layout';
 
@@ -146,6 +145,7 @@ const App = () => {
               {(tab) => <Route path={tab.id} component={tab.container} />}
             </For>
             <Route path={'/game-overlay/list'} component={GameListContainer} />
+            <Route path={'/plugin/:id'} component={PluginSettingsContainer} />
             <Route path={'*'} element={<Navigate href={`/${TAB_LIST[0].id}`} />} />
           </Routes>
         </Transition>

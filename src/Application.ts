@@ -136,6 +136,7 @@ class Application {
 
   initPluginLoader() {
     const pluginList = Object.values(config().plugins).filter((it) => typeof it === 'string') as string[];
+    console.log('[Alspotron] load all plugins', pluginList, 'from', config().plugins);
     
     this.pluginLoader = new PluginLoader(pluginList);
     this.pluginLoader.loadPlugins().catch((e) => {
@@ -554,7 +555,7 @@ class Application {
 
     ipcMain.handle('get-plugin-list', () => this.pluginLoader.getPlugins());
     ipcMain.handle('add-plugin', async (_, pluginPath: string) => {
-      const extractPath = getFile(`plugins/${path.basename(pluginPath).replace(/\.\w+$/, '')}`);
+      const extractPath = path.resolve('', getFile(`plugins/${path.basename(pluginPath).replace(/\.\w+$/, '')}`));
       await zip.extract(pluginPath, extractPath).catch((err) => console.error(err));
 
       const result = await this.pluginLoader.addPlugin(extractPath).catch((err) => err as Error);
@@ -567,6 +568,7 @@ class Application {
       
       setConfig({ plugins: { [result.id]: extractPath } });
     });
+    ipcMain.handle('get-plugin', (_, id: string) => this.pluginLoader.getPlugins().find((it) => it.id === id));
     ipcMain.handle('remove-plugin', (_, id: string) => {
       setConfig({ plugins: { [id]: undefined } });
     });

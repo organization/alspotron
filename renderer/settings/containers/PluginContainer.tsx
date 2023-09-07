@@ -12,13 +12,18 @@ const PluginContainer = () => {
   const [plugins, setPlugins] = createSignal<Plugin[]>([]);
 
   onMount(() => {
-    window.ipcRenderer.invoke('get-plugin-list').then(setPlugins);
+    refreshPlugins();
   });
 
-  const onAddPlugin: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
+  const refreshPlugins = () => {
+    window.ipcRenderer.invoke('get-plugin-list').then(setPlugins);
+  };
+
+  const onAddPlugin: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = async (event) => {
     const file = event.target.files?.item(0);
 
-    window.ipcRenderer.invoke('add-plugin', file?.path);
+    await window.ipcRenderer.invoke('add-plugin', file?.path);
+    refreshPlugins();
   };
 
   return (
@@ -42,7 +47,7 @@ const PluginContainer = () => {
         로드된 플러그인
       </div>
       <For each={plugins()}>
-        {(plugin) => <PluginCard plugin={plugin} />}
+        {(plugin) => <PluginCard plugin={plugin} state={'enabled'} />}
       </For>
     </div>
   );

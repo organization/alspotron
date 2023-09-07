@@ -28,7 +28,7 @@ class PluginLoader {
   }
 
   public async loadPlugins(): Promise<void> {
-    await Promise.all(this.pluginPathList.map((path) => this.addPlugin(path)));
+    await Promise.all(this.pluginPathList.map(async (path) => this.addPlugin(path)));
   }
 
   public async addPlugin(path: string): Promise<Plugin> {
