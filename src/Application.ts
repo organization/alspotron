@@ -1,4 +1,5 @@
 import path from 'node:path';
+import fs from 'node:fs/promises';
 import { release } from 'os';
 
 import Koa from 'koa';
@@ -560,13 +561,21 @@ class Application {
 
     ipcMain.handle('get-plugin-list', () => this.pluginLoader.getPlugins());
     ipcMain.handle('add-plugin', async (_, pluginPath: string) => {
+      const pluginFileName = path.basename(pluginPath).replace(/\.\w+$/, '');
       const extractPath = path.resolve(
         app.getPath('userData'),
         'plugins',
-        path.basename(pluginPath).replace(/\.\w+$/, ''),
+        pluginFileName,
       );
 
       await zip.extract(pluginPath, extractPath).catch((err) => console.error(err));
+      const isNested = await fs.stat(path.join(extractPath, pluginFileName)).then(() => true).catch(() => false);
+      if (isNested) {
+        const tempPath = path.join(extractPath, '../', `temp-${Date.now()}`);
+        await fs.rename(path.join(extractPath, pluginFileName), tempPath);
+        await fs.rm(extractPath, { recursive: true, force: true });
+        await fs.rename(tempPath, extractPath);
+      }
 
       const result = await this.pluginLoader.addPlugin(extractPath).catch((err) => err as Error);
 

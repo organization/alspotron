@@ -46,7 +46,7 @@ class PluginLoader {
       const newPlugin = await this.loadPlugin(path);
 
       this.plugins.push(newPlugin);
-      if (this.pluginState[newPlugin.id] === 'enable') newPlugin.js?.onLoad();
+      if (this.pluginState[newPlugin.id] === 'enable') newPlugin.js?.onLoad?.();
 
       return newPlugin;
     } catch (e) {
@@ -87,7 +87,7 @@ class PluginLoader {
   public unloadPlugin(plugin: Plugin): void {
     const index = this.plugins.indexOf(plugin);
     if (index !== -1) {
-      if (this.pluginState[plugin.id] === 'enable') plugin.js?.onUnload();
+      if (this.pluginState[plugin.id] === 'enable') plugin.js?.onUnload?.();
       this.plugins.splice(index, 1);
     }
   }
