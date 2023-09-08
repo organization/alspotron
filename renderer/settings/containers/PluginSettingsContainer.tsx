@@ -87,13 +87,13 @@ const PluginSettingsContainer = () => {
               ] as [string, string][]}
             >
               {([key, value]) => (
-                <div class={'flex justify-start items-center'}>
+                <div class={'ml-[40px] flex justify-start items-center'}>
                   <div class={' w-32 text-md'}>
                     {key}
                   </div>
-                  <div class={'text-md text-gray-400'}>
+                  <Marquee class={'text-md text-gray-400'}>
                     {value}
-                  </div>
+                  </Marquee>
                 </div>
               )}
             </For>
@@ -113,6 +113,9 @@ const PluginSettingsContainer = () => {
           </div>
         ]}
       >
+        <svg class={'w-6 h-6 mr-4 fill-black dark:fill-white'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 1.999c5.524 0 10.002 4.478 10.002 10.002 0 5.523-4.478 10.001-10.002 10.001-5.524 0-10.002-4.478-10.002-10.001C1.998 6.477 6.476 1.999 12 1.999Zm0 1.5a8.502 8.502 0 1 0 0 17.003A8.502 8.502 0 0 0 12 3.5Zm-.004 7a.75.75 0 0 1 .744.648l.007.102.003 5.502a.75.75 0 0 1-1.493.102l-.007-.101-.003-5.502a.75.75 0 0 1 .75-.75ZM12 7.003a.999.999 0 1 1 0 1.997.999.999 0 0 1 0-1.997Z" class={'fill-black dark:fill-white'} />
+        </svg>
         <div class={'text-lg'}>
           {plugin()?.name} 정보
         </div>
