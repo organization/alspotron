@@ -1,7 +1,9 @@
+import { GameList, LyricMapper } from './config';
+
+import { UpdateData } from '../renderer/types';
 import { Json } from '../utils/types';
 
 type Music = unknown; // TODO: Music interface
-
 
 interface BaseSettingOption {
   key: string;
@@ -35,9 +37,25 @@ export interface BooleanOption extends BaseSettingOption {
 export type SettingOption = SelectOption | StringOption | NumberOption | BooleanOption; // | ButtonOption;
 
 export interface PluginEventMap {
-  loadMusic: (music: Music) => void;
-  findLyric: (query: string) => string;
-  changeSetting: (key: string, value: unknown) => void;
+  'update': (context: UpdateData) => void;
+  'game-list': (gameList: GameList) => void;
+  'lyric-mapper': (lyricMapper: LyricMapper) => void;
+  'registered-process-list': (pidList: number[]) => void;
+  'window-minimize': () => void;
+  'window-maximize': (maximize: boolean) => void;
+  'window-close': () => void;
+  'before-add-plugin': (pluginPath: string) => void;
+  'add-plugin': (plugin: Plugin, extractPath: string) => void;
+  'before-remove-plugin': (plugin: Plugin) => void;
+  'after-remove-plugin': (plugin: Plugin) => void;
+  'change-plugin-state': (plugin: Plugin, state: 'enable' | 'disable') => void;
+  'start-overlay': () => void;
+  'stop-overlay': () => void;
+  'inject-overlay-to-process': (processId: number, name?: string, filePath?: string) => void;
+  'remove-overlay-from-process': (processId: number) => void;
+  // loadMusic: (music: Music) => void;
+  // findLyric: (query: string) => string;
+  // changeSetting: (key: string, value: unknown) => void;
 }
 
 export abstract class PluginInterface {

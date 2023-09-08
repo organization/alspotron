@@ -38,6 +38,7 @@ import { getTranslation } from '../common/intl';
 
 import type { RequestBody } from './types';
 import type { IOverlay } from './electron-overlay';
+import type { PluginEventMap } from '../common/plugin';
 
 type Overlay = typeof IOverlay;
 
@@ -452,10 +453,17 @@ class Application {
   }
 
   broadcast<T>(event: string, ...args: T[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+    this.broadcastPlugin(event as keyof PluginEventMap, ...args as any);
+
     if (this.mainWindow) this.mainWindow.webContents.send(event, ...args);
     if (this.overlayWindow && !this.overlayWindow.isDestroyed()) this.overlayWindow.webContents.send(event, ...args);
     if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) this.lyricsWindow.webContents.send(event, ...args);
     if (this.settingsWindow && !this.settingsWindow.isDestroyed()) this.settingsWindow.webContents.send(event, ...args);
+  }
+
+  broadcastPlugin<T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) {
+    this.pluginLoader.broadcast(event, ...args);
   }
 
   initHook() {
@@ -485,6 +493,7 @@ class Application {
     ipcMain.handle('start-overlay', () => {
       this.initOverlay();
 
+      this.broadcastPlugin('start-overlay');
       if (this.overlayWindow) {
         this.addOverlayWindow(
           'StatusBar',
@@ -495,13 +504,20 @@ class Application {
         );
       }
     });
-    ipcMain.handle('stop-overlay', () => this.stopOverlay());
+    ipcMain.handle('stop-overlay', () => {
+      this.broadcastPlugin('stop-overlay');
+      this.stopOverlay();
+    });
     ipcMain.handle('inject-overlay-to-process', (_, processId: number, name?: string, filePath?: string) => {
       if (process.platform !== 'win32') return;
 
+      this.broadcastPlugin('inject-overlay-to-process', processId, name, filePath);
       this.onProcessCreation(processId, name, filePath);
     });
-    ipcMain.handle('remove-overlay-from-process', (_, processId: number) => this.onProcessDeletion(processId));
+    ipcMain.handle('remove-overlay-from-process', (_, processId: number) => {
+      this.broadcastPlugin('remove-overlay-from-process', processId);
+      this.onProcessDeletion(processId);
+    });
     ipcMain.handle('get-current-version', () => autoUpdater.currentVersion.version);
     ipcMain.handle('compare-with-current-version', (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion));
     ipcMain.handle('check-update', async () => autoUpdater.checkForUpdatesAndNotify());
@@ -534,13 +550,24 @@ class Application {
     });
     ipcMain.handle('get-game-list', () => gameList());
 
-    ipcMain.handle('window-minimize', () => BrowserWindow.getFocusedWindow()?.minimize());
+    ipcMain.handle('window-minimize', () => {
+      BrowserWindow.getFocusedWindow()?.minimize()
+      this.broadcastPlugin('window-minimize');
+    });
     ipcMain.handle('window-maximize', () => {
-      BrowserWindow.getFocusedWindow()?.isMaximized() ?
-        BrowserWindow.getFocusedWindow()?.unmaximize() : BrowserWindow.getFocusedWindow()?.maximize();
+      const isMaximized = BrowserWindow.getFocusedWindow()?.isMaximized()
+
+      if (isMaximized) BrowserWindow.getFocusedWindow()?.unmaximize();
+      else BrowserWindow.getFocusedWindow()?.maximize();
+
+      this.broadcastPlugin('window-maximize', !isMaximized);
     });
     ipcMain.handle('window-is-maximized', () => BrowserWindow.getFocusedWindow()?.isMaximized());
-    ipcMain.handle('window-close', () => BrowserWindow.getFocusedWindow()?.close());
+    ipcMain.handle('window-close', () => {
+      BrowserWindow.getFocusedWindow()?.close();
+
+      this.broadcastPlugin('window-close');
+    });
     ipcMain.handle('open-devtool', (_, target: string) => {
       if (target === 'main') {
         if (this.mainWindow && !this.mainWindow.isDestroyed()) {
@@ -561,6 +588,8 @@ class Application {
 
     ipcMain.handle('get-plugin-list', () => this.pluginLoader.getPlugins());
     ipcMain.handle('add-plugin', async (_, pluginPath: string) => {
+      this.broadcastPlugin('before-add-plugin', pluginPath);
+
       const pluginFileName = path.basename(pluginPath).replace(/\.\w+$/, '');
       const extractPath = path.resolve(
         app.getPath('userData'),
@@ -584,7 +613,8 @@ class Application {
         console.log('cannot add plugin', result);
         return;
       }
-      
+
+      this.broadcastPlugin('add-plugin', result, extractPath);
       setConfig({ plugins: { list: { [result.id]: extractPath } } });
     });
     ipcMain.handle('get-plugin', (_, id: string) => this.pluginLoader.getPlugins().find((it) => it.id === id));
@@ -593,7 +623,10 @@ class Application {
 
       if (!target) return;
 
+      this.broadcastPlugin('before-remove-plugin', target);
       this.pluginLoader.unloadPlugin(target);
+      this.broadcastPlugin('after-remove-plugin', target);
+
       setConfig({ plugins: { list: { [id]: undefined } } });
     });
 
@@ -615,6 +648,7 @@ class Application {
       if (state === 'enable') newState = false;
       if (state === 'disable') newState = true;
 
+      this.broadcastPlugin('change-plugin-state', target, state);
       setConfig({ plugins: { disabled: { [id]: newState } } });
       this.pluginLoader.setPluginState(target.id, state);
     });
