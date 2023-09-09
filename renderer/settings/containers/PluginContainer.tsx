@@ -42,19 +42,19 @@ const PluginContainer = () => {
         <Trans key={'setting.title.plugin'} />
       </div>
       <div class={'text-md mt-4 mb-1'}>
-        플러그인 추가/변경
+        <Trans key={'setting.plugin.setting'} />
       </div>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
-        플러그인 추가
+        <Trans key={'setting.plugin.add-plugin'} />
         <label for={'plugin'}>
           <a class={'btn-primary'}>
-            파일로부터 불러오기
+        <Trans key={'setting.plugin.add-plugin.from-file'} />
           </a>
           <input id={'plugin'} type={'file'} class={'hidden'} accept={'application/zip'} onInput={onAddPlugin} />
         </label>
       </Card>
       <div class={'text-md mt-4 mb-1'}>
-        로드된 플러그인
+        <Trans key={'setting.plugin.loaded-plugin'} />
       </div>
       <For each={plugins()}>
         {(plugin) => <PluginCard plugin={plugin} state={pluginState()[plugin.id]} />}

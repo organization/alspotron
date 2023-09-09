@@ -22,6 +22,7 @@
   "setting.title.position": "position",
   "setting.title.theme": "Theme",
   "setting.title.general": "General",
+  "setting.title.plugin": "Plugins",
   "setting.title.game-overlay": "Game Overlay",
   "setting.title.about": "About",
 
@@ -137,6 +138,21 @@
   "setting.user-css-warning.bold": "WARNING!",
   "setting.user-css-warning.0": "If you're using custom selectors, CSS settings can break after updates.",
   "setting.user-css-warning.1": "Custom CSS is an experimental feature. Alspotron Team does not guarantee custom CSS to work after updates.",
+
+  "setting.plugin.setting": "Plugin Setting",
+  "setting.plugin.add-plugin": "Add plugin",
+  "setting.plugin.add-plugin.from-file": "load from file",
+  "setting.plugin.loaded-plugin": "Loaded plugins",
+
+  "setting.plugin.id": "Id",
+  "setting.plugin.name": "Name",
+  "setting.plugin.description": "Description",
+  "setting.plugin.author": "Author",
+  "setting.plugin.version": "Version",
+  "setting.plugin.version-code": "Version code",
+  "setting.plugin.manifest-version": "Manifest version",
+  "setting.plugin.style-count": "Style count",
+  "setting.plugin.include-script": "Include script",
 
   "updater.download-and-auto-install": "Download & Automatically install",
   "updater.update-alert": "Alspotron update alert",

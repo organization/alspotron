@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
-import { Trans } from '@jellybrick/solid-i18next';
+import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 import { useNavigate, useParams } from '@solidjs/router';
 
 import { For, Switch as SwitchFlow, Match, createEffect, createSignal, onMount } from 'solid-js';
@@ -17,6 +17,7 @@ const PluginSettingsContainer = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [config, setConfig] = useConfig();
+  const [t] = useTransContext();
 
   const [plugin, setPlugin] = createSignal<Plugin | null>(null);
   const [pluginState, setPluginState] = createSignal<'enable' | 'disable'>('enable');
@@ -72,26 +73,26 @@ const PluginSettingsContainer = () => {
       <Card
         class={'flex flex-row justify-between items-center gap-1 mt-4'}
         subCards={[
-          <div class={'flex justify-start items-start flex-col'}>
+          <div class={'flex justify-start items-start flex-col ml-[40px]'}>
             <For
               each={[
-                ['아이디', plugin()?.id ?? 'Unknown'],
-                ['이름', plugin()?.name ?? 'Unknown'],
-                ['설명', plugin()?.description ?? 'Unknown'],
-                ['제작자', plugin()?.author ?? 'Unknown'],
-                ['버전', plugin()?.version ?? 'Unknown'],
-                ['버전코드', plugin()?.versionCode ?? 'Unknown'],
-                ['Manifest 버전', plugin()?.pluginVersion ?? 'Unknown'],
-                ['스타일 개수', `${plugin()?.css?.length ?? 0}개`],
-                ['스크립트 유무', plugin()?.js ? '있음' : '없음'],
+                [t('setting.plugin.id'), plugin()?.id ?? 'Unknown'],
+                [t('setting.plugin.name'), plugin()?.name ?? 'Unknown'],
+                [t('setting.plugin.description'), plugin()?.description ?? 'Unknown'],
+                [t('setting.plugin.author'), plugin()?.author ?? 'Unknown'],
+                [t('setting.plugin.version'), plugin()?.version ?? 'Unknown'],
+                [t('setting.plugin.version-code'), plugin()?.versionCode ?? 'Unknown'],
+                [t('setting.plugin.manifest-version'), plugin()?.pluginVersion ?? 'Unknown'],
+                [t('setting.plugin.style-count'), `${plugin()?.css?.length ?? 0}개`],
+                [t('setting.plugin.include-script'), plugin()?.js ? '있음' : '없음'],
               ] as [string, string][]}
             >
               {([key, value]) => (
-                <div class={'ml-[40px] flex justify-start items-center'}>
-                  <div class={' w-32 text-md'}>
+                <div class={'w-full flex justify-start items-center'}>
+                  <div class={'min-w-[128px] text-md'}>
                     {key}
                   </div>
-                  <Marquee class={'text-md text-gray-400'}>
+                  <Marquee class={'w-full text-md text-gray-400'} gap={32}>
                     {value}
                   </Marquee>
                 </div>
@@ -104,11 +105,11 @@ const PluginSettingsContainer = () => {
               onChange={togglePluginState}
             />
             <div class={'text-md'}>
-              플러그인 활성화
+              <Trans key={'setting.plugin.enable-plugin'} />
             </div>
             <div class={'flex-1'} />
             <button class={'btn-error'} onClick={deletePlugin}>
-              플러그인 삭제
+              <Trans key={'setting.plugin.delete-plugin'} />
             </button>
           </div>
         ]}
@@ -117,7 +118,7 @@ const PluginSettingsContainer = () => {
           <path d="M12 1.999c5.524 0 10.002 4.478 10.002 10.002 0 5.523-4.478 10.001-10.002 10.001-5.524 0-10.002-4.478-10.002-10.001C1.998 6.477 6.476 1.999 12 1.999Zm0 1.5a8.502 8.502 0 1 0 0 17.003A8.502 8.502 0 0 0 12 3.5Zm-.004 7a.75.75 0 0 1 .744.648l.007.102.003 5.502a.75.75 0 0 1-1.493.102l-.007-.101-.003-5.502a.75.75 0 0 1 .75-.75ZM12 7.003a.999.999 0 1 1 0 1.997.999.999 0 0 1 0-1.997Z" class={'fill-black dark:fill-white'} />
         </svg>
         <div class={'text-lg'}>
-          {plugin()?.name} 정보
+          <Trans key={'setting.plugin.plugin-info'} options={{ name: plugin()?.name }} />
         </div>
       </Card>
       <div class={'text-md mt-4 mb-1'}>
