@@ -564,8 +564,8 @@ class Application {
     ipcMain.handle('check-update', async () => autoUpdater.checkForUpdatesAndNotify());
     ipcMain.handle('get-last-update', () => this.lastUpdate);
 
-    ipcMain.handle('set-config', (_, data: DeepPartial<Config>) => {
-      this.overridePlugin('config', (data) => {
+    ipcMain.handle('set-config', async (_, data: DeepPartial<Config>) => {
+      await this.overridePlugin('config', (data) => {
         setConfig(data);
 
         this.updateWindowConfig(this.mainWindow);
