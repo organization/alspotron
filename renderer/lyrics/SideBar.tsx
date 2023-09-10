@@ -1,8 +1,7 @@
 import { Show, createMemo, For, createEffect, Match, Switch } from 'solid-js';
-
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
-
 import { Marquee } from '@suyongs/solid-utility';
+import { Entry } from 'tstl';
 
 import Card from '../components/Card';
 import { LyricMode, usePlayingInfo } from '../components/PlayingInfoProvider';
@@ -13,7 +12,7 @@ import Selector from '../components/Select';
 import { ConfigLyricMode } from '../../common/constants';
 
 const SideBar = () => {
-  const { coverUrl, title, lyrics, originalLyric, lyricMode } = usePlayingInfo();
+  const { coverUrl, title, lyrics, playerLyrics, originalLyric, lyricMode } = usePlayingInfo();
   const [, lyricTime] = useLyric();
   const [, setLyricMapper] = useLyricMapper();
   const [t] = useTransContext();
@@ -23,7 +22,13 @@ const SideBar = () => {
     return lyricInfo?.kind === 'alsong' ? lyricInfo.data : null;
   };
 
-  const lyricItems = createMemo(() => lyrics()?.toJSON() ?? []);
+  const lyricItems = createMemo(() => {
+    if (lyricMode() === 'player') {
+      return Object.entries(playerLyrics() ?? {}).map(([time, lyrics]) => new Entry(~~time, lyrics));
+    } else {
+      return lyrics()?.toJSON() ?? [];
+    }
+  });
 
   createEffect(() => {
     const time = lyricTime();

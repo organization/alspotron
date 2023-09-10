@@ -1,3 +1,22 @@
+diff --git a/node_modules/alsong/src/resolvers/AlsongResolver.js b/node_modules/alsong/src/resolvers/AlsongResolver.js
+index 9a0754a..06b532d 100644
+--- a/node_modules/alsong/src/resolvers/AlsongResolver.js
++++ b/node_modules/alsong/src/resolvers/AlsongResolver.js
+@@ -25,7 +25,13 @@ const AlsongResolver = {
+ 		return Promise.all(
+ 			lyricList
+ 				.asNew()
+-				.map(({ lyricId }) => this._getLyricById(lyricId, option))
++				.map(async ({ lyricId , registerDate}) => {
++					const lyricById = await this._getLyricById(lyricId, option);
++					if (lyricById) {
++						lyricById.registerDate = registerDate;
++					}
++					return lyricById;
++				})
+ 		);
+ 	},
+ 	
 diff --git a/node_modules/alsong/src/resolvers/index.js b/node_modules/alsong/src/resolvers/index.js
 index 44703f1..5bec587 100644
 --- a/node_modules/alsong/src/resolvers/index.js

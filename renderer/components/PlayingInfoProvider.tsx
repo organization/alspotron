@@ -28,6 +28,7 @@ export type PlayingInfo = {
   status: Accessor<Status>;
   coverUrl: Accessor<string | undefined>;
   lyrics: Accessor<FlatMap<number, string[]> | null>;
+  playerLyrics: Accessor<Record<number, string[]> | undefined>;
   originalData: Accessor<UpdateData | null>;
   originalLyric: Accessor<LyricInfo | null>;
   lyricMode: Accessor<LyricMode>;
@@ -45,6 +46,7 @@ const PlayingInfoContext = createContext<PlayingInfo>({
   status: () => 'idle' as const,
   coverUrl: () => undefined,
   lyrics: () => null,
+  playerLyrics: () => undefined,
   originalData: () => null,
   originalLyric: () => null,
   lyricMode: () => 'auto' as const,
@@ -57,6 +59,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [status, setStatus] = createSignal<Status>('idle');
   const [coverUrl, setCoverUrl] = createSignal<string>();
   const [lyrics, setLyrics] = createSignal<FlatMap<number, string[]> | null>(null);
+  const [playerLyrics, setPlayerLyrics] = createSignal<Record<number, string[]>>();
   const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
   const [originalLyric, setOriginalLyric] = createSignal<LyricInfo | null>(null);
 
@@ -96,13 +99,19 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     if (typeof data.progress === 'number') {
       setProgress(data.progress);
     }
+
     if (typeof data.duration === 'number') {
       setDuration(data.duration);
     }
+
     if (typeof data.cover_url === 'string' && /^(?:file|https?):\/\//.exec(data.cover_url)) {
       setCoverUrl(data.cover_url);
     } else {
       setCoverUrl(undefined);
+    }
+
+    if (typeof data.lyrics === 'object') {
+      setPlayerLyrics(data.lyrics);
     }
   };
 
@@ -135,7 +144,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
 
   onCleanup(() => window.ipcRenderer.off('update', originalData));
 
-  createEffect(on([createDeferred(() => title() && coverUrl()), lyricMapper], async () => {
+  createEffect(on([createDeferred(() => title() || coverUrl()), lyricMapper], async () => {
     const data = originalData();
     const mapper = lyricMapper();
 
@@ -148,13 +157,14 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     if (id === ConfigLyricMode.NONE) {
       setLyrics(null);
     } else if (id === ConfigLyricMode.PLAYER) {
-      if (data.lyrics) {
+      const lyricsFromPlayer = playerLyrics();
+      if (lyricsFromPlayer) {
         lyricInfo = {
           useMapper: !!id,
           kind: 'default',
           data: {
             ...data,
-            lyric: data.lyrics,
+            lyric: lyricsFromPlayer,
           },
         } satisfies LyricInfo;
       }
@@ -205,6 +215,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     status,
     coverUrl,
     lyrics,
+    playerLyrics,
     originalData,
     originalLyric,
     lyricMode,

@@ -51,7 +51,7 @@
     }
 
     if (previousInfo.uri !== uri) {
-      info.lyric = await getLyric();
+      info.lyrics = await getLyric();
     }
 
     return info;
