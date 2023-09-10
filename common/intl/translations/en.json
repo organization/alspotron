@@ -149,7 +149,6 @@
   "setting.plugin.reload-plugin": "Reload plugin",
   "setting.plugin.reload-all-plugins": "Reload all plugins",
   "setting.plugin.reload": "Reload",
-
   "setting.plugin.id": "Id",
   "setting.plugin.name": "Name",
   "setting.plugin.description": "Description",
