@@ -63,6 +63,8 @@ const loader: Loader = async (pluginPath, rawManifest) => {
       useConfig: () => [config, setConfig],
       useSetting: (options) => {
         newPlugin.js.settings.push(options);
+
+        return () => (config().plugins.config[newPlugin.id] as Record<string, unknown>)?.[options.key];
       },
       useOverride(target, fn) {
         newPlugin.js.overrides[target] ??= [];

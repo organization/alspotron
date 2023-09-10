@@ -15,6 +15,7 @@ import useConfig from '../hooks/useConfig';
 import usePluginsCSS from '../hooks/usePluginsCSS';
 import { formatTime } from '../utils/formatTime';
 import { LangResource } from '../../common/intl';
+import usePluginOverride from '../hooks/usePluginOverride';
 
 
 type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>[number];
@@ -42,12 +43,16 @@ const LyricsMapEditor = () => {
 
   const onSearch = async () => {
     setLoading(true);
-    const result = await alsong(artist(), title(), { playtime: originalData()?.duration }).catch((e) => {
-      console.error(e);
-      return [];
-    });
 
-    setLyricMetadata(result);
+    await usePluginOverride('search-lyrics', async (artist, title, options) => {
+      const result = await alsong(artist, title, options).catch((e) => {
+        console.error(e);
+        return [];
+      });
+  
+      setLyricMetadata(result);
+    }, artist(), title(), { playtime: originalData()?.duration });
+
     setLoading(false);
   };
 

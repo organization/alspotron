@@ -72,6 +72,12 @@ export interface OverrideParameterMap {
   'stop-overlay': [];
   'inject-overlay-to-process': [processId: number, name?: string, filePath?: string];
   'remove-overlay-from-process': [processId: number];
+
+  /* renderer */
+  'search-lyrics': [artist: string, title: string, options?: {
+    playtime?: number;
+    page?: number;
+  }];
 }
 export type OverrideMap = {
   [Key in keyof OverrideParameterMap]: (
@@ -87,7 +93,7 @@ export interface PluginContext {
   // emit<K extends keyof PluginEventMap>(event: K, ...args: Parameters<PluginEventMap[K]>): void;
 
   useConfig(): [Accessor<Config>, (config: DeepPartial<Config>) => void];
-  useSetting(options: SettingOption, onValueChange?: () => void): void;
+  useSetting(options: SettingOption, onValueChange?: () => void): unknown;
   useOverride<Target extends keyof OverrideMap>(target: Target, fn: OverrideMap[Target]): void;
 }
 

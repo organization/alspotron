@@ -472,7 +472,7 @@ class Application {
     
     await Promise.all(overrideFnList.map(async (overrideFn, index) => {
       const fn = (
-        index === overrideFn.length - 1
+        index === overrideFnList.length - 1
           ? originalFn
           : async () => {}
       ) as (...args: OverrideParameterMap[Target]) => Promise<void>;
@@ -722,6 +722,20 @@ class Application {
     });
     ipcMain.handle('broadcast-plugin', (_, event: keyof PluginEventMap, ...args) => {
       this.broadcastPlugin(event, ...args as Parameters<PluginEventMap[typeof event]>);
+    });
+    ipcMain.handle('override-plugin', (_, target: keyof OverrideMap, ...args) => {
+      return new Promise((resolve) => {
+        let isResolved = false;
+
+        (async () => {
+          await this.overridePlugin(target, (...provided) => {
+            isResolved = true;
+            resolve(provided);
+          }, ...args as never);
+
+          if (!isResolved) resolve(false);
+        })();
+      });
     });
   }
 

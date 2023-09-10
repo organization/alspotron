@@ -1,5 +1,5 @@
 import { FlatMap } from 'tstl/experimental';
-import alsong from 'alsong';
+import alsong, { LyricMetadata } from 'alsong';
 import {
   Accessor,
   createContext,
@@ -14,6 +14,7 @@ import {
 } from 'solid-js';
 
 import useLyricMapper from '../hooks/useLyricMapper';
+import usePluginOverride from '../hooks/usePluginOverride';
 import { UpdateData } from '../types';
 import { ConfigLyricMode } from '../../common/constants';
 
@@ -121,9 +122,12 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     const artist = data?.artists?.join(', ') ?? '';
     const title = data?.title ?? '';
 
-    const metadata = await alsong(artist, title, { playtime: data?.duration }).catch(() => []);
-    if (metadata.length <= 0) return {} as Lyric;
+    let metadata: LyricMetadata[] = [];
+    await usePluginOverride('search-lyrics', async (artist, title, options) => {
+      metadata = await alsong(artist, title, options).catch(() => []);
+    }, artist, title, { playtime: data?.duration });
 
+    if (metadata.length <= 0) return {} as Lyric;
     return await alsong.getLyricById(metadata[0].lyricId).catch(() => ({ lyric: data.lyrics } as Lyric));
   };
 
