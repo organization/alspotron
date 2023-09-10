@@ -7,17 +7,19 @@ const usePluginsCSS = () => {
 
   const injectStyleSheet = () => {
     plugins().forEach((plugin) => {
-      if (plugin.state !== 'enable') return;
-
       const id = `plugin-${plugin.id}`;
       const css = plugin.css?.join('\n');
 
-      if (!css) return;
-
       const style = document.querySelector(`#${id}`) ?? document.createElement('style');
+      if (!css || plugin.state !== 'enable') {
+        if (style.isConnected) style.remove();
+
+        return;
+      }
+
       style.id = id;
       style.innerHTML = css;
-      
+
       if (!style.isConnected) document.head.appendChild(style);
     });
   };

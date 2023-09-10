@@ -137,7 +137,7 @@ class Application {
   }
 
   initPluginLoader() {
-    const pluginList = Object.values(config().plugins.list).filter((it) => typeof it === 'string') as string[];
+    const pluginList = config().plugins.list;
     const pluginState = Object.entries(config().plugins.disabled).reduce((prev, [key, value]) => ({
       ...prev,
       [key]: value ? 'disable' : 'enable',
@@ -628,6 +628,12 @@ class Application {
       this.broadcastPlugin('after-remove-plugin', target);
 
       setConfig({ plugins: { list: { [id]: undefined } } });
+    });
+    ipcMain.handle('reload-plugin', async (_, id: string) => {
+      const target = this.pluginLoader.getPlugins().find((it) => it.id === id);
+      if (!target) return;
+
+      const plugin = await this.pluginLoader.reloadPlugin(target);
     });
 
     ipcMain.handle('get-plugin-state', (_, id: string) => config().plugins.disabled[id] ? 'disable' : 'enable');

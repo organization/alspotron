@@ -22,10 +22,10 @@ export type Loader = (pluginPath: string, manifest: z.infer<typeof manifestSchem
 
 class PluginLoader {
   private plugins: Plugin[] = [];
-  private pluginPathList: string[] = [];
+  private pluginPathList: Record<string, string | undefined> = {};
   private pluginState: Record<string, 'enable' | 'disable'> = {};
 
-  constructor(pluginPathList: string[], pluginState?: Record<string, 'enable' | 'disable'>) {
+  constructor(pluginPathList: Record<string, string | undefined>, pluginState?: Record<string, 'enable' | 'disable'>) {
     this.pluginPathList = pluginPathList;
     if (pluginState) this.pluginState = pluginState;
   }
@@ -38,7 +38,8 @@ class PluginLoader {
   }
 
   public async loadPlugins(): Promise<void> {
-    await Promise.all(this.pluginPathList.map(async (path) => this.addPlugin(path)));
+    const pathList = Object.values(this.pluginPathList);
+    await Promise.all(pathList.map(async (path) => path && this.addPlugin(path)));
   }
 
   public async addPlugin(path: string): Promise<Plugin> {
@@ -57,10 +58,18 @@ class PluginLoader {
     }
   }
 
+  public async reloadPlugin(plugin: Plugin): Promise<Plugin> {
+    const path = this.pluginPathList[plugin.id];
+    if (typeof path !== 'string') throw Error('Plugin path not found');
+
+    this.unloadPlugin(plugin);
+    return this.addPlugin(path);
+  }
+
   public getPlugins(): Plugin[] {
     return this.plugins;
   }
-  
+
   private async loadPlugin(pluginPath: string): Promise<Plugin> {
     const stats = await fs.stat(pluginPath);
     
@@ -94,6 +103,8 @@ class PluginLoader {
 
   broadcast<Event extends keyof PluginEventMap>(event: Event, ...args: Parameters<PluginEventMap[Event]>): void {
     this.plugins.forEach((plugin) => {
+      if (this.pluginState[plugin.id] !== 'enable') return;
+
       plugin.js?.listeners[event]?.forEach((callback) => {
         callback(...args as [never, never]);
       });

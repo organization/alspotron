@@ -33,7 +33,12 @@ const PluginSettingsContainer = () => {
   }
   const deletePlugin = async () => {
     await window.ipcRenderer.invoke('remove-plugin', params.id);
+    refresh();
     navigate('/plugin');
+  };
+  const reloadPlugin = async () => {
+    await window.ipcRenderer.invoke('reload-plugin', params.id);
+    refresh();
   };
   const onPluginPage = () => {
     navigate('/plugin');
@@ -87,19 +92,6 @@ const PluginSettingsContainer = () => {
               )}
             </For>
           </div>,
-          <div class={'w-full h-full flex justify-start items-center gap-3'}>
-            <Switch
-              value={plugin()?.state === 'enable'}
-              onChange={togglePluginState}
-            />
-            <div class={'text-md'}>
-              <Trans key={'setting.plugin.enable-plugin'} />
-            </div>
-            <div class={'flex-1'} />
-            <button class={'btn-error'} onClick={deletePlugin}>
-              <Trans key={'setting.plugin.delete-plugin'} />
-            </button>
-          </div>
         ]}
       >
         <svg class={'w-6 h-6 mr-4 fill-black dark:fill-white'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -109,6 +101,19 @@ const PluginSettingsContainer = () => {
           <Trans key={'setting.plugin.plugin-info'} options={{ name: plugin()?.name }} />
         </div>
       </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <Trans key={'setting.plugin.enable-plugin'} />
+        <Switch
+          value={plugin()?.state === 'enable'}
+          onChange={togglePluginState}
+        />
+      </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <Trans key={'setting.plugin.reload-plugin'} />
+        <button class={'btn-primary'} onClick={reloadPlugin}>
+          <Trans key={'setting.plugin.reload'} />
+        </button>
+      </Card>
       <div class={'text-md mt-4 mb-1'}>
         <Trans key={'setting.plugin.setting'} />
       </div>
@@ -116,9 +121,9 @@ const PluginSettingsContainer = () => {
         {(setting) => (
           <Card class={'flex flex-row justify-start items-center gap-1'}>
             <div class={'w-full flex flex-col justify-center items-stretch flex-1'}>
-              <div class={'w-full'}>
+              <Marquee class={'w-full'}>
                 {setting.name}
-              </div>
+              </Marquee>
               <Marquee class={'text-gray-400'} gap={18}>
                 {setting.description}
               </Marquee>
@@ -151,6 +156,21 @@ const PluginSettingsContainer = () => {
           </Card>
         )}
       </For>
+      <div class={'text-md mt-4 mb-1'}>
+        <Trans key={'setting.plugin.setting'} />
+      </div>
+      <Card
+        class={'flex flex-row justify-between items-center gap-1'}
+        subCards={[
+          <div class={'w-full h-full flex items-center'}>
+            <button class={'btn-error'} onClick={deletePlugin}>
+              <Trans key={'setting.plugin.delete-plugin'} />
+            </button>
+          </div>
+        ]}
+      >
+        <Trans key={'setting.plugin.delete-plugin'} />
+      </Card>
     </div>
   )
 };

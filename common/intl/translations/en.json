@@ -143,6 +143,12 @@
   "setting.plugin.add-plugin": "Add plugin",
   "setting.plugin.add-plugin.from-file": "load from file",
   "setting.plugin.loaded-plugin": "Loaded plugins",
+  "setting.plugin.enable-plugin": "Enable plugin",
+  "setting.plugin.delete-plugin": "Delete plugin",
+  "setting.plugin.plugin-info": "{{name}} Info",
+  "setting.plugin.reload-plugin": "Reload plugin",
+  "setting.plugin.reload-all-plugins": "Reload all plugins",
+  "setting.plugin.reload": "Reload",
 
   "setting.plugin.id": "Id",
   "setting.plugin.name": "Name",
