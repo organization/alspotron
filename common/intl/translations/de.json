@@ -60,7 +60,7 @@
 
   "setting.general.select-language-menu": "Spracheinstellungen",
   "setting.general.select-language": "Sprache ändern",
-  "setting.general.alert": "Einige Einstellungen werden erst nach Neustart angewendet.",
+  "setting.general.language.alert": "Einige Einstellungen werden erst nach Neustart angewendet.",
   "setting.general.developer-menu": "Developer options",
   "setting.general.developer": "Enable developer",
 

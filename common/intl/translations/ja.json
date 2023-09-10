@@ -60,7 +60,7 @@
 
   "setting.general.select-language-menu": "言語設定",
   "setting.general.select-language": "言語を選択",
-  "setting.general.alert": "Alspotronを再起動すると言語設定が適用されます。",
+  "setting.general.language.alert": "Alspotronを再起動すると言語設定が適用されます。",
   "setting.general.developer-menu": "Developer options",
   "setting.general.developer": "Enable developer",
 

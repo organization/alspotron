@@ -60,7 +60,7 @@
 
   "setting.general.select-language-menu": "Language preference",
   "setting.general.select-language": "Change language",
-  "setting.general.alert": "Some settings requires an app restart to show changes in effect.",
+  "setting.general.language.alert": "Some settings requires an app restart to show changes in effect.",
   "setting.general.developer-menu": "Developer options",
   "setting.general.developer": "Enable developer",
 

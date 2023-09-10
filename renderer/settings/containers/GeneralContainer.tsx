@@ -36,7 +36,7 @@ const LanguageContainer = () => {
             options={['ko', 'en', 'ja', 'de']}
             value={config()?.language ?? 'ko'}
             onChange={(value) => {
-              setConfig({ language: value as 'ko' | 'en' | 'ja' | 'de' });
+              setConfig({ language: value });
               changeLanguage(value);
               setOpen(true);
             }}
@@ -104,7 +104,7 @@ const LanguageContainer = () => {
         ]}
       >
         <div class={'text-white text-lg'}>
-          {t('setting.language.alert')}
+          {t('setting.general.language.alert')}
         </div>
       </Modal>
     </div>
