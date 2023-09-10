@@ -179,9 +179,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
           kind: 'alsong',
           data: alsongLyric,
         } satisfies LyricInfo;
-      }
-
-      if (data.lyrics) {
+      } else if (data.lyrics) {
         lyricInfo = {
           useMapper: !!id,
           kind: 'default',
