@@ -29,38 +29,32 @@
 
   let previousInfo = {};
   const getInfo = async () => {
-    if (!Spicetify.Player.isPlaying()) {
-      return {
-        status: 'stopped',
-      };
-    }
-
     const uri = Spicetify.Player.data.track.uri;
     let imageUrl = Spicetify.Player.data.track.metadata.image_xlarge_url;
     if (imageUrl?.indexOf('localfile') === -1) {
       imageUrl = `https://i.scdn.co/image/${imageUrl.substring(imageUrl.lastIndexOf(":") + 1)}`;
     }
 
-    if (previousInfo.uri !== uri) {
-      return {
-        status: 'playing',
-        title: Spicetify.Player.data.track.metadata.title,
-        artists: [Spicetify.Player.data.track.metadata.artist_name],
-        cover_url: imageUrl,
-        uri: uri,
-        duration: Spicetify.Player.getDuration(),
-        progress: Spicetify.Player.getProgress(),
-        lyrics: await getLyric()
-      };
-    }
-
-    return {
+    const info = {
       status: 'playing',
-      uri: uri,
+      title: Spicetify.Player.data.track.metadata.title,
+      artists: [Spicetify.Player.data.track.metadata.artist_name],
       cover_url: imageUrl,
+      uri: uri,
       duration: Spicetify.Player.getDuration(),
       progress: Spicetify.Player.getProgress()
     };
+
+    if (!Spicetify.Player.isPlaying()) {
+      info.status = 'stopped';
+      return info;
+    }
+
+    if (previousInfo.uri !== uri) {
+      info.lyric = await getLyric();
+    }
+
+    return info;
   };
 
   const sendInfo = async () => {
