@@ -9,6 +9,7 @@ import UserCSS from '../components/UserCSS';
 import useConfig from '../hooks/useConfig';
 import { cx } from '../utils/classNames';
 import { userCSSSelectors } from '../utils/userCSSSelectors';
+import usePluginsCSS from '../hooks/usePluginsCSS';
 
 
 const useProximityStyle = () => {
@@ -84,6 +85,8 @@ const useProximityStyle = () => {
 };
 
 const App = () => {
+  usePluginsCSS();
+
   const [config] = useConfig();
 
   const style = () => {

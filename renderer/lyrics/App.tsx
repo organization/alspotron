@@ -12,6 +12,7 @@ import Spinner from '../components/Spinner';
 import UserCSS from '../components/UserCSS';
 import useLyricMapper from '../hooks/useLyricMapper';
 import useConfig from '../hooks/useConfig';
+import usePluginsCSS from '../hooks/usePluginsCSS';
 import { formatTime } from '../utils/formatTime';
 import { LangResource } from '../../common/intl';
 
@@ -19,6 +20,8 @@ import { LangResource } from '../../common/intl';
 type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>[number];
 
 const LyricsMapEditor = () => {
+  usePluginsCSS();
+
   const { title: playingTitle, artist: playingArtist, originalData, status } = usePlayingInfo();
 
   const [title, setTitle] = createSignal(playingTitle());

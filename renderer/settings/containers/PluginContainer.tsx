@@ -1,39 +1,22 @@
-import { For, createEffect, createSignal, onMount } from 'solid-js';
+import { For } from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
-
-import { useLocation } from '@solidjs/router';
 
 import Card from '../../components/Card';
 
-import { Plugin } from '../../../common/plugin';
 import PluginCard from '../components/PluginCard';
+
+import usePlugins from '../../hooks/usePlugins';
 
 import type { JSX } from 'solid-js';
 
 const PluginContainer = () => {
-  const location = useLocation();
-
-  const [plugins, setPlugins] = createSignal<Plugin[]>([]);
-  const [pluginState, setPluginState] = createSignal<Record<string, 'enable' | 'disable'>>({});
-
-  onMount(() => {
-    refreshPlugins();
-  });
-
-  // createEffect(() => {
-  //   location.pathname === '/plugin' && refreshPlugins();
-  // });
-
-  const refreshPlugins = () => {
-    window.ipcRenderer.invoke('get-plugin-list').then(setPlugins);
-    window.ipcRenderer.invoke('get-plugin-state-list').then(setPluginState);
-  };
+  const { plugins, refresh } = usePlugins();
 
   const onAddPlugin: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = async (event) => {
     const file = event.target.files?.item(0);
 
     await window.ipcRenderer.invoke('add-plugin', file?.path);
-    refreshPlugins();
+    refresh();
   };
 
   return (
@@ -57,7 +40,7 @@ const PluginContainer = () => {
         <Trans key={'setting.plugin.loaded-plugin'} />
       </div>
       <For each={plugins()}>
-        {(plugin) => <PluginCard plugin={plugin} state={pluginState()[plugin.id]} />}
+        {(plugin) => <PluginCard plugin={plugin} state={plugin.state} />}
       </For>
     </div>
   );

@@ -652,6 +652,9 @@ class Application {
       setConfig({ plugins: { disabled: { [id]: newState } } });
       this.pluginLoader.setPluginState(target.id, state);
     });
+    ipcMain.handle('broadcast-plugin', (_, event: keyof PluginEventMap, ...args) => {
+      this.broadcastPlugin(event, ...args as Parameters<PluginEventMap[typeof event]>);
+    });
   }
 
   setCorsHandler(window: BrowserWindow) {

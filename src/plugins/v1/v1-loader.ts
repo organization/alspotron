@@ -1,4 +1,5 @@
 import path from 'node:path';
+import fs from 'node:fs/promises';
 
 import { z } from 'zod';
 
@@ -23,7 +24,6 @@ const loader: Loader = async (pluginPath, rawManifest) => {
   const manifest = v1ManifestSchema.parse(rawManifest);
 
   const newPlugin: Plugin = {
-    css: manifest.css ?? [],
     rawManifest: JSON.stringify(manifest),
     manifest: manifest as Json,
 
@@ -47,6 +47,13 @@ const loader: Loader = async (pluginPath, rawManifest) => {
   });
 
   if (!(pluginInstance instanceof Error)) newPlugin.js = pluginInstance; 
+
+  newPlugin.css = await Promise.all(
+    manifest.css?.map(async (cssFilePath) => {
+      const cssPath = path.resolve(pluginPath, cssFilePath);
+      return fs.readFile(cssPath, 'utf-8');
+    }) ?? [],
+  );
 
   return newPlugin;
 };

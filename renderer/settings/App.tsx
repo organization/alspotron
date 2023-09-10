@@ -16,6 +16,7 @@ import PluginContainer from './containers/PluginContainer';
 import PluginSettingsContainer from './containers/PluginSettingsContainer';
 
 import Layout from '../components/Layout';
+import usePluginsCSS from '../hooks/usePluginsCSS';
 
 export interface TabItemData extends Omit<ListItemData, 'label'> {
   container: () => JSX.Element;
@@ -107,6 +108,7 @@ const TAB_LIST = (() => {
 })();
 
 const App = () => {
+  usePluginsCSS();
 
   const [t] = useTransContext();
   const navigate = useNavigate();

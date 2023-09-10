@@ -95,8 +95,7 @@ class PluginLoader {
   broadcast<Event extends keyof PluginEventMap>(event: Event, ...args: Parameters<PluginEventMap[Event]>): void {
     this.plugins.forEach((plugin) => {
       plugin.js?.listeners[event]?.forEach((callback) => {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-        callback(...args as [any, any]);
+        callback(...args as [never, never]);
       });
     });
   }

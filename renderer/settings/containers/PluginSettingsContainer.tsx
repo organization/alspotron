@@ -3,32 +3,25 @@
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 import { useNavigate, useParams } from '@solidjs/router';
 
-import { For, Switch as SwitchFlow, Match, createEffect, createSignal, onMount } from 'solid-js';
+import { For, Switch as SwitchFlow, Match } from 'solid-js';
 
 import { Marquee } from '@suyongs/solid-utility';
 
-import { Plugin, SelectOption, SettingOption } from '../../../common/plugin';
+import { SelectOption, SettingOption } from '../../../common/plugin';
 import Card from '../../components/Card';
 import Switch from '../../components/Switch';
 import Selector from '../../components/Select';
 import useConfig from '../../hooks/useConfig';
+import usePlugins from '../../hooks/usePlugins';
 
 const PluginSettingsContainer = () => {
   const params = useParams();
   const navigate = useNavigate();
   const [config, setConfig] = useConfig();
   const [t] = useTransContext();
+  const { plugins, refresh } = usePlugins();
 
-  const [plugin, setPlugin] = createSignal<Plugin | null>(null);
-  const [pluginState, setPluginState] = createSignal<'enable' | 'disable'>('enable');
-
-  onMount(() => {
-    refreshPlugin();
-  });
-
-  createEffect(() => {
-    params.id && refreshPlugin();
-  })
+  const plugin = () => plugins().find((it) => it.id === params.id);
 
   const togglePluginState = async () => {
     const state = await window.ipcRenderer.invoke('get-plugin-state', params.id) as 'disable' | 'enable';
@@ -36,7 +29,7 @@ const PluginSettingsContainer = () => {
     const newState = state === 'enable' ? 'disable' : 'enable';
     await window.ipcRenderer.invoke('set-plugin-state', params.id, newState);
 
-    refreshPlugin();
+    refresh();
   }
   const deletePlugin = async () => {
     await window.ipcRenderer.invoke('remove-plugin', params.id);
@@ -45,16 +38,11 @@ const PluginSettingsContainer = () => {
   const onPluginPage = () => {
     navigate('/plugin');
   };
-  const refreshPlugin = () => {
-    window.ipcRenderer.invoke('get-plugin', params.id).then(setPlugin);
-    window.ipcRenderer.invoke('get-plugin-state', params.id).then(setPluginState);
-  };
   const setOption = async (setting: SettingOption, value: unknown) => {
     const id = plugin()?.id;
     if (!id) return;
 
     await setConfig({ plugins: { config: { [id]: { [setting.key]: value } } } });
-    console.log('setOption', id, setting.key, value, config()?.plugins.config);
   }
 
   return(
@@ -101,7 +89,7 @@ const PluginSettingsContainer = () => {
           </div>,
           <div class={'w-full h-full flex justify-start items-center gap-3'}>
             <Switch
-              value={pluginState() === 'enable'}
+              value={plugin()?.state === 'enable'}
               onChange={togglePluginState}
             />
             <div class={'text-md'}>

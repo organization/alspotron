@@ -3,8 +3,6 @@ import { GameList, LyricMapper } from './config';
 import { UpdateData } from '../renderer/types';
 import { Json } from '../utils/types';
 
-type Music = unknown; // TODO: Music interface
-
 interface BaseSettingOption {
   key: string;
   name: string;
