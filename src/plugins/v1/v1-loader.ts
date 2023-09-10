@@ -3,9 +3,10 @@ import fs from 'node:fs/promises';
 
 import { z } from 'zod';
 
-import { Plugin, PluginInterface } from '../../../common/plugin';
+import { Plugin, PluginContext, PluginProvider } from '../../../common/plugin';
 import { Loader } from '../plugin-loader';
 import { Json } from '../../../utils/types';
+import { config, setConfig } from '../../../common/config';
 
 const v1ManifestSchema = z.object({
   id: z.string(),
@@ -34,11 +35,15 @@ const loader: Loader = async (pluginPath, rawManifest) => {
     version: manifest.version ?? '0.0.0',
     versionCode: manifest.versionCode,
     pluginVersion: manifest.pluginVersion,
+    js: {
+      listeners: {},
+      settings: [],
+    },
   };
 
   const jsPath = `file://${path.join(pluginPath, manifest.main ?? '')}`;
-  const pluginInstance = await import(jsPath)
-  .then((module) => (module as { default: PluginInterface }).default)
+  const pluginProvider = await import(jsPath)
+  .then((module) => (module as { default: PluginProvider | undefined }).default)
   .catch((err) => {
     const error = Error(`Failed to load plugin: Cannot load "${jsPath}"`);
     error.cause = err;
@@ -46,7 +51,24 @@ const loader: Loader = async (pluginPath, rawManifest) => {
     throw error;
   });
 
-  if (!(pluginInstance instanceof Error)) newPlugin.js = pluginInstance; 
+  if (typeof pluginProvider === 'function') {
+    newPlugin.js.raw = pluginProvider;
+
+    const context: PluginContext = {
+      on(event, listener) {
+        if (!newPlugin.js.listeners[event]) newPlugin.js.listeners[event] = [];
+        newPlugin.js.listeners[event]?.push(listener);
+      },
+      useConfig: () => [config, setConfig],
+      useSetting: (options) => {
+        newPlugin.js.settings.push(options);
+      },
+    };
+
+    const result = pluginProvider(context);
+    if (typeof result === 'function') newPlugin.js.off = result;
+  }
+
 
   newPlugin.css = await Promise.all(
     manifest.css?.map(async (cssFilePath) => {

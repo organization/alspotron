@@ -30,8 +30,19 @@ class PluginLoader {
     if (pluginState) this.pluginState = pluginState;
   }
 
-  public setPluginState(pluginId: string, state: 'enable' | 'disable'): void {
+  public async setPluginState(pluginId: string, state: 'enable' | 'disable'): Promise<void> {
     this.pluginState[pluginId] = state;
+
+    if (state === 'enable') {
+      const path = this.pluginPathList[pluginId];
+      const index = this.plugins.findIndex((plugin) => plugin.id === pluginId);
+      if (typeof path !== 'string') throw Error('Plugin path not found');
+
+      const newPlugin = await this.loadPlugin(path);
+
+      this.plugins[index] = newPlugin;
+    }
+    if (state === 'disable') this.plugins.forEach((plugin) => plugin.id === pluginId && plugin.js.off?.());
   }
   public getPluginState(pluginId: string): 'enable' | 'disable' | undefined {
     return this.pluginState[pluginId];
@@ -47,7 +58,6 @@ class PluginLoader {
       const newPlugin = await this.loadPlugin(path);
 
       this.plugins.push(newPlugin);
-      if (this.pluginState[newPlugin.id] === 'enable') newPlugin.js?.onLoad?.();
 
       return newPlugin;
     } catch (e) {
@@ -70,6 +80,26 @@ class PluginLoader {
     return this.plugins;
   }
 
+  public unloadPlugin(plugin: Plugin): void {
+    const index = this.plugins.indexOf(plugin);
+    if (index !== -1) {
+      if (this.pluginState[plugin.id] === 'enable') plugin.js.off?.();
+      this.plugins.splice(index, 1);
+    }
+  }
+
+  public emit<Event extends keyof PluginEventMap>(plugin: Plugin, event: Event, ...args: Parameters<PluginEventMap[Event]>): void {
+    if (this.pluginState[plugin.id] !== 'enable') return;
+
+    plugin.js?.listeners[event]?.forEach((callback) => {
+      callback(...args as [never, never]);
+    });
+  }
+
+  public broadcast<Event extends keyof PluginEventMap>(event: Event, ...args: Parameters<PluginEventMap[Event]>): void {
+    this.plugins.forEach((plugin) => this.emit(plugin, event, ...args));
+  }
+  
   private async loadPlugin(pluginPath: string): Promise<Plugin> {
     const stats = await fs.stat(pluginPath);
     
@@ -93,23 +123,6 @@ class PluginLoader {
     return newPlugin;
   }
 
-  public unloadPlugin(plugin: Plugin): void {
-    const index = this.plugins.indexOf(plugin);
-    if (index !== -1) {
-      if (this.pluginState[plugin.id] === 'enable') plugin.js?.onUnload?.();
-      this.plugins.splice(index, 1);
-    }
-  }
-
-  broadcast<Event extends keyof PluginEventMap>(event: Event, ...args: Parameters<PluginEventMap[Event]>): void {
-    this.plugins.forEach((plugin) => {
-      if (this.pluginState[plugin.id] !== 'enable') return;
-
-      plugin.js?.listeners[event]?.forEach((callback) => {
-        callback(...args as [never, never]);
-      });
-    });
-  }
 }
 
 export default PluginLoader;

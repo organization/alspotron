@@ -1,4 +1,6 @@
-import { GameList, LyricMapper } from './config';
+import { Accessor } from 'solid-js';
+
+import { Config, GameList, LyricMapper } from './config';
 
 import { UpdateData } from '../renderer/types';
 import { Json } from '../utils/types';
@@ -56,30 +58,30 @@ export interface PluginEventMap {
   // changeSetting: (key: string, value: unknown) => void;
 }
 
-export abstract class PluginInterface {
-  public listeners: { [Key in keyof PluginEventMap]?: PluginEventMap[Key][] } = {};
-  public settings: SettingOption[] = [];
+export interface PluginContext {
+  on<K extends keyof PluginEventMap>(event: K, listener: PluginEventMap[K]): void;
+  // once<K extends keyof PluginEventMap>(event: K, listener: PluginEventMap[K]): void;
+  // off<K extends keyof PluginEventMap>(event: K, listener: PluginEventMap[K]): void;
+  // emit<K extends keyof PluginEventMap>(event: K, ...args: Parameters<PluginEventMap[K]>): void;
 
-  abstract onLoad(): void;
-  abstract onUnload(): void;
-
-  on<Event extends keyof PluginEventMap>(event: Event, callback: PluginEventMap[Event]) {
-    this.listeners[event] ??= [];
-    this.listeners[event]?.push(callback);
-  }
-
-  registerSetting(options: SettingOption) {
-    this.settings.push(options);
-  }
-
-  getConfig(key: string) {
-    throw Error(`${key} Not implemented`);
-  }
+  useConfig(): [Accessor<Config>, (config: DeepPartial<Config>) => void];
+  useSetting(options: SettingOption, onValueChange?: () => void): void;
+  // useOverride(options: OverrideOption): void;
 }
 
+export type PluginUnload = () => void;
+export type PluginProvider = (context: PluginContext) => PluginUnload | void;
 export interface Plugin {
   css?: string[];
-  js?: PluginInterface;
+  js: {
+    raw?: PluginProvider;
+    off?: () => void;
+    listeners: {
+      [Key in keyof PluginEventMap]?: PluginEventMap[Key][];
+    }
+    settings: SettingOption[];
+    // overrides: OverrideOption[];
+  }
   rawManifest: string;
   manifest: Json;
 

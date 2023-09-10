@@ -33,6 +33,7 @@ import {
   setLyricMapper
 } from '../common/config';
 
+import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
 import { getTranslation } from '../common/intl';
 
@@ -586,7 +587,7 @@ class Application {
       }
     });
 
-    ipcMain.handle('get-plugin-list', () => this.pluginLoader.getPlugins());
+    ipcMain.handle('get-plugin-list', () => pure(this.pluginLoader.getPlugins()));
     ipcMain.handle('add-plugin', async (_, pluginPath: string) => {
       this.broadcastPlugin('before-add-plugin', pluginPath);
 
@@ -617,7 +618,7 @@ class Application {
       this.broadcastPlugin('add-plugin', result, extractPath);
       setConfig({ plugins: { list: { [result.id]: extractPath } } });
     });
-    ipcMain.handle('get-plugin', (_, id: string) => this.pluginLoader.getPlugins().find((it) => it.id === id));
+    ipcMain.handle('get-plugin', (_, id: string) => pure(this.pluginLoader.getPlugins().find((it) => it.id === id)));
     ipcMain.handle('remove-plugin', (_, id: string) => {
       const target = this.pluginLoader.getPlugins().find((it) => it.id === id);
 
@@ -633,7 +634,7 @@ class Application {
       const target = this.pluginLoader.getPlugins().find((it) => it.id === id);
       if (!target) return;
 
-      const plugin = await this.pluginLoader.reloadPlugin(target);
+      await this.pluginLoader.reloadPlugin(target);
     });
 
     ipcMain.handle('get-plugin-state', (_, id: string) => config().plugins.disabled[id] ? 'disable' : 'enable');
