@@ -158,6 +158,11 @@
   "setting.plugin.manifest-version": "Manifest version",
   "setting.plugin.style-count": "Style count",
   "setting.plugin.include-script": "Include script",
+  "setting.plugin.count": "{{count}}",
+  "setting.plugin.unknown": "Unknown",
+  "setting.plugin.include": "Included",
+  "setting.plugin.not-include": "Not included",
+  "setting.plugin.detail-setting": "Detail options",
 
   "updater.download-and-auto-install": "Download & Automatically install",
   "updater.update-alert": "Alspotron update alert",

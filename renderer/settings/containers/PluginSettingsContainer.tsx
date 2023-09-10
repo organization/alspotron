@@ -60,7 +60,7 @@ const PluginSettingsContainer = () => {
           <path d="M8.47 4.22a.75.75 0 0 0 0 1.06L15.19 12l-6.72 6.72a.75.75 0 1 0 1.06 1.06l7.25-7.25a.75.75 0 0 0 0-1.06L9.53 4.22a.75.75 0 0 0-1.06 0Z" class={'fill-black dark:fill-white'} />
         </svg>
         <span class={'text-3xl'}>
-          {plugin()?.name ?? 'Unknown'}
+          {plugin()?.name ?? t('setting.plugin.unknown')}
         </span>
       </div>
       <Card
@@ -69,15 +69,15 @@ const PluginSettingsContainer = () => {
           <div class={'flex justify-start items-start flex-col ml-[40px]'}>
             <For
               each={[
-                [t('setting.plugin.id'), plugin()?.id ?? 'Unknown'],
-                [t('setting.plugin.name'), plugin()?.name ?? 'Unknown'],
-                [t('setting.plugin.description'), plugin()?.description ?? 'Unknown'],
-                [t('setting.plugin.author'), plugin()?.author ?? 'Unknown'],
-                [t('setting.plugin.version'), plugin()?.version ?? 'Unknown'],
-                [t('setting.plugin.version-code'), plugin()?.versionCode ?? 'Unknown'],
-                [t('setting.plugin.manifest-version'), plugin()?.pluginVersion ?? 'Unknown'],
-                [t('setting.plugin.style-count'), `${plugin()?.css?.length ?? 0}개`],
-                [t('setting.plugin.include-script'), plugin()?.js ? '있음' : '없음'],
+                [t('setting.plugin.id'), plugin()?.id ?? t('setting.plugin.unknown')],
+                [t('setting.plugin.name'), plugin()?.name ?? t('setting.plugin.unknown')],
+                [t('setting.plugin.description'), plugin()?.description ?? t('setting.plugin.unknown')],
+                [t('setting.plugin.author'), plugin()?.author ?? t('setting.plugin.unknown')],
+                [t('setting.plugin.version'), plugin()?.version ?? t('setting.plugin.unknown')],
+                [t('setting.plugin.version-code'), plugin()?.versionCode ?? t('setting.plugin.unknown')],
+                [t('setting.plugin.manifest-version'), plugin()?.pluginVersion ?? t('setting.plugin.unknown')],
+                [t('setting.plugin.style-count'), t('setting.plugin.count', { count: plugin()?.css?.length ?? 0 })],
+                [t('setting.plugin.include-script'), plugin()?.js ? t('setting.plugin.include') : t('setting.plugin.not-include')],
               ] as [string, string][]}
             >
               {([key, value]) => (

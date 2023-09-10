@@ -54,7 +54,7 @@ const PluginCard = (props: PluginCardProps) => {
             <Trans key={'setting.plugin.reload'} />
           </button>
           <button class={'btn-primary flex justify-center items-center'} onClick={onPluginPage}>
-            세부설정
+            <Trans key={'setting.plugin.detail-setting'} />
             <svg class={'w-[18px] h-[18px] fill-none'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M8.47 4.22a.75.75 0 0 0 0 1.06L15.19 12l-6.72 6.72a.75.75 0 1 0 1.06 1.06l7.25-7.25a.75.75 0 0 0 0-1.06L9.53 4.22a.75.75 0 0 0-1.06 0Z"

@@ -158,6 +158,11 @@
   "setting.plugin.manifest-version": "Manifest 버전",
   "setting.plugin.style-count": "스타일 개수",
   "setting.plugin.include-script": "스크립트 유무",
+  "setting.plugin.count": "{{count}}개",
+  "setting.plugin.unknown": "알 수 없음",
+  "setting.plugin.include": "포함됨",
+  "setting.plugin.not-include": "포함되지 않음",
+  "setting.plugin.detail-setting": "세부 설정",
 
   "updater.download-and-auto-install": "다운로드 및 자동 설치",
   "updater.update-alert": "Alspotron 업데이트 알림",
