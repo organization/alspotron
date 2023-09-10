@@ -37,9 +37,10 @@ export interface BooleanOption extends BaseSettingOption {
 export type SettingOption = SelectOption | StringOption | NumberOption | BooleanOption; // | ButtonOption;
 
 export interface PluginEventMap {
-  'update': (context: UpdateData) => void;
-  'game-list': (gameList: GameList) => void;
-  'lyric-mapper': (lyricMapper: LyricMapper) => void;
+  'update': (updateContext: { data: UpdateData }) => void;
+  'config': (config: DeepPartial<Config>) => void;
+  'game-list': (gameList: Partial<GameList>) => void;
+  'lyric-mapper': (lyricMapper: Partial<LyricMapper>) => void;
   'registered-process-list': (pidList: number[]) => void;
   'window-minimize': () => void;
   'window-maximize': (maximize: boolean) => void;
@@ -53,10 +54,31 @@ export interface PluginEventMap {
   'stop-overlay': () => void;
   'inject-overlay-to-process': (processId: number, name?: string, filePath?: string) => void;
   'remove-overlay-from-process': (processId: number) => void;
-  // loadMusic: (music: Music) => void;
-  // findLyric: (query: string) => string;
-  // changeSetting: (key: string, value: unknown) => void;
 }
+export interface OverrideParameterMap {
+  'update': [updateContext: { data: UpdateData }];
+  'config': [config: DeepPartial<Config>];
+  'game-list': [gameList: Partial<GameList>];
+  'lyric-mapper': [lyricMapper: Partial<LyricMapper>];
+  'window-minimize': [];
+  'window-maximize': [maximize: boolean];
+  'window-close': [];
+  'before-add-plugin': [pluginPath: string];
+  'add-plugin': [extractPath: string];
+  'remove-plugin': [plugin: Plugin];
+  'reload-plugin': [plugin: Plugin];
+  'change-plugin-state': [plugin: Plugin, state: 'enable' | 'disable'];
+  'start-overlay': [];
+  'stop-overlay': [];
+  'inject-overlay-to-process': [processId: number, name?: string, filePath?: string];
+  'remove-overlay-from-process': [processId: number];
+}
+export type OverrideMap = {
+  [Key in keyof OverrideParameterMap]: (
+    fn: (...args: OverrideParameterMap[Key]) => Promise<void>,
+    ...args: OverrideParameterMap[Key]
+  ) => Promise<void>;
+};
 
 export interface PluginContext {
   on<K extends keyof PluginEventMap>(event: K, listener: PluginEventMap[K]): void;
@@ -66,7 +88,7 @@ export interface PluginContext {
 
   useConfig(): [Accessor<Config>, (config: DeepPartial<Config>) => void];
   useSetting(options: SettingOption, onValueChange?: () => void): void;
-  // useOverride(options: OverrideOption): void;
+  useOverride<Target extends keyof OverrideMap>(target: Target, fn: OverrideMap[Target]): void;
 }
 
 export type PluginUnload = () => void;
@@ -80,7 +102,9 @@ export interface Plugin {
       [Key in keyof PluginEventMap]?: PluginEventMap[Key][];
     }
     settings: SettingOption[];
-    // overrides: OverrideOption[];
+    overrides: {
+      [Target in keyof OverrideMap]?: OverrideMap[Target][];
+    };
   }
   rawManifest: string;
   manifest: Json;

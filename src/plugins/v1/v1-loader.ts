@@ -38,6 +38,7 @@ const loader: Loader = async (pluginPath, rawManifest) => {
     js: {
       listeners: {},
       settings: [],
+      overrides: {},
     },
   };
 
@@ -56,12 +57,16 @@ const loader: Loader = async (pluginPath, rawManifest) => {
 
     const context: PluginContext = {
       on(event, listener) {
-        if (!newPlugin.js.listeners[event]) newPlugin.js.listeners[event] = [];
+        newPlugin.js.listeners[event] ??= [];
         newPlugin.js.listeners[event]?.push(listener);
       },
       useConfig: () => [config, setConfig],
       useSetting: (options) => {
         newPlugin.js.settings.push(options);
+      },
+      useOverride(target, fn) {
+        newPlugin.js.overrides[target] ??= [];
+        newPlugin.js.overrides[target]?.push(fn);
       },
     };
 

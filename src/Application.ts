@@ -39,7 +39,7 @@ import { getTranslation } from '../common/intl';
 
 import type { RequestBody } from './types';
 import type { IOverlay } from './electron-overlay';
-import type { PluginEventMap } from '../common/plugin';
+import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugin';
 
 type Overlay = typeof IOverlay;
 
@@ -317,7 +317,13 @@ class Application {
         ctx.status = 200;
 
         this.lastUpdate = ctx.request.body;
-        this.broadcast('update', this.lastUpdate);
+        this.overridePlugin(
+          'update',
+          (updateData) => {
+            this.broadcast('update', updateData);
+          },
+          this.lastUpdate,
+        );
 
         await next();
       },
@@ -453,6 +459,32 @@ class Application {
     this.overlay.stop();
   }
 
+  async overridePlugin<Target extends keyof OverrideMap>(
+    target: Target,
+    originalFn: (...args: OverrideParameterMap[Target]) => Promise<void> | void,
+    ...args: OverrideParameterMap[Target]
+  ): Promise<void> {
+    const overrideFnList = this.pluginLoader.getPlugins()
+      .flatMap((plugin) => this.pluginLoader.getPluginState(plugin.id) === 'enable'
+        ? plugin.js.overrides[target] ?? []
+        : []
+      );
+    
+    await Promise.all(overrideFnList.map(async (overrideFn, index) => {
+      const fn = (
+        index === overrideFn.length - 1
+          ? originalFn
+          : async () => {}
+      ) as (...args: OverrideParameterMap[Target]) => Promise<void>;
+
+      await overrideFn(fn, ...args);
+    }));
+
+    if (overrideFnList.length === 0) {
+      await originalFn(...args);
+    }
+  }
+
   broadcast<T>(event: string, ...args: T[]) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
     this.broadcastPlugin(event as keyof PluginEventMap, ...args as any);
@@ -494,30 +526,38 @@ class Application {
     ipcMain.handle('start-overlay', () => {
       this.initOverlay();
 
+      this.overridePlugin('start-overlay', () => {
+        if (this.overlayWindow) {
+          this.addOverlayWindow(
+            'StatusBar',
+            this.overlayWindow,
+            0,
+            0,
+            true,
+          );
+        }
+      });
       this.broadcastPlugin('start-overlay');
-      if (this.overlayWindow) {
-        this.addOverlayWindow(
-          'StatusBar',
-          this.overlayWindow,
-          0,
-          0,
-          true,
-        );
-      }
     });
     ipcMain.handle('stop-overlay', () => {
+      this.overridePlugin('stop-overlay', () => {
+        this.stopOverlay();
+      });
       this.broadcastPlugin('stop-overlay');
-      this.stopOverlay();
     });
     ipcMain.handle('inject-overlay-to-process', (_, processId: number, name?: string, filePath?: string) => {
       if (process.platform !== 'win32') return;
 
+      this.overridePlugin('inject-overlay-to-process', (processId, name, filePath) => {
+        this.onProcessCreation(processId, name, filePath);
+      }, processId, name, filePath);
       this.broadcastPlugin('inject-overlay-to-process', processId, name, filePath);
-      this.onProcessCreation(processId, name, filePath);
     });
     ipcMain.handle('remove-overlay-from-process', (_, processId: number) => {
       this.broadcastPlugin('remove-overlay-from-process', processId);
-      this.onProcessDeletion(processId);
+      this.overridePlugin('remove-overlay-from-process', (processId) => {
+        this.onProcessDeletion(processId);
+      }, processId);
     });
     ipcMain.handle('get-current-version', () => autoUpdater.currentVersion.version);
     ipcMain.handle('compare-with-current-version', (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion));
@@ -525,48 +565,59 @@ class Application {
     ipcMain.handle('get-last-update', () => this.lastUpdate);
 
     ipcMain.handle('set-config', (_, data: DeepPartial<Config>) => {
-      setConfig(data);
-      this.broadcast('config', config());
+      this.overridePlugin('config', (data) => {
+        setConfig(data);
 
-      this.updateWindowConfig(this.mainWindow);
-      if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
-        this.overlayWindow.close();
-        this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
-        this.initOverlayWindow();
-        this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
-      }
+        this.updateWindowConfig(this.mainWindow);
+        if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
+          this.overlayWindow.close();
+          this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
+          this.initOverlayWindow();
+          this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
+        }
+      }, data);
+      this.broadcast('config', config());
     });
     ipcMain.on('get-config', (event) => {
       event.returnValue = config();
     });
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
     ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
-      setLyricMapper(data, useFallback);
+      this.overridePlugin('lyric-mapper', (data) => {
+        setLyricMapper(data, useFallback);
+      }, data);
       this.broadcast('lyric-mapper', lyricMapper());
     });
     ipcMain.handle('get-lyric-mapper', () => lyricMapper());
     ipcMain.handle('set-game-list', (_, data: Partial<GameList>, useFallback: boolean = true) => {
-      setGameList(data, useFallback);
+      this.overridePlugin('game-list', (data) => {
+        setGameList(data, useFallback);
+      }, data);
       this.broadcast('game-list', gameList());
     });
     ipcMain.handle('get-game-list', () => gameList());
 
     ipcMain.handle('window-minimize', () => {
-      BrowserWindow.getFocusedWindow()?.minimize()
+      this.overridePlugin('window-minimize', () => {
+        BrowserWindow.getFocusedWindow()?.minimize();
+      });
       this.broadcastPlugin('window-minimize');
     });
     ipcMain.handle('window-maximize', () => {
-      const isMaximized = BrowserWindow.getFocusedWindow()?.isMaximized()
+      const isMaximized = BrowserWindow.getFocusedWindow()?.isMaximized() ?? false;
 
-      if (isMaximized) BrowserWindow.getFocusedWindow()?.unmaximize();
-      else BrowserWindow.getFocusedWindow()?.maximize();
+      this.overridePlugin('window-maximize', (isMaximized) => {
+        if (isMaximized) BrowserWindow.getFocusedWindow()?.unmaximize();
+        else BrowserWindow.getFocusedWindow()?.maximize();
+      }, isMaximized);
 
       this.broadcastPlugin('window-maximize', !isMaximized);
     });
     ipcMain.handle('window-is-maximized', () => BrowserWindow.getFocusedWindow()?.isMaximized());
     ipcMain.handle('window-close', () => {
-      BrowserWindow.getFocusedWindow()?.close();
-
+      this.overridePlugin('window-close', () => {
+        BrowserWindow.getFocusedWindow()?.close();
+      });
       this.broadcastPlugin('window-close');
     });
     ipcMain.handle('open-devtool', (_, target: string) => {
@@ -591,32 +642,35 @@ class Application {
     ipcMain.handle('add-plugin', async (_, pluginPath: string) => {
       this.broadcastPlugin('before-add-plugin', pluginPath);
 
-      const pluginFileName = path.basename(pluginPath).replace(/\.\w+$/, '');
-      const extractPath = path.resolve(
-        app.getPath('userData'),
-        'plugins',
-        pluginFileName,
-      );
+      await this.overridePlugin('add-plugin', async (pluginPath) => {
+        const pluginFileName = path.basename(pluginPath).replace(/\.\w+$/, '');
+        const extractPath = path.resolve(
+          app.getPath('userData'),
+          'plugins',
+          pluginFileName,
+        );
 
-      await zip.extract(pluginPath, extractPath).catch((err) => console.error(err));
-      const isNested = await fs.stat(path.join(extractPath, pluginFileName)).then(() => true).catch(() => false);
-      if (isNested) {
-        const tempPath = path.join(extractPath, '../', `temp-${Date.now()}`);
-        await fs.rename(path.join(extractPath, pluginFileName), tempPath);
-        await fs.rm(extractPath, { recursive: true, force: true });
-        await fs.rename(tempPath, extractPath);
-      }
+        await zip.extract(pluginPath, extractPath).catch((err) => console.error(err));
+        const isNested = await fs.stat(path.join(extractPath, pluginFileName)).then(() => true).catch(() => false);
+        if (isNested) {
+          const tempPath = path.join(extractPath, '../', `temp-${Date.now()}`);
+          await fs.rename(path.join(extractPath, pluginFileName), tempPath);
+          await fs.rm(extractPath, { recursive: true, force: true });
+          await fs.rename(tempPath, extractPath);
+        }
 
-      const result = await this.pluginLoader.addPlugin(extractPath).catch((err) => err as Error);
+        const result = await this.pluginLoader.addPlugin(extractPath).catch((err) => err as Error);
 
-      if (result instanceof Error) {
-        // TODO: What should I do?
-        console.log('cannot add plugin', result);
-        return;
-      }
+        if (result instanceof Error) {
+          // TODO: What should I do?
+          console.log('cannot add plugin', result);
+          return;
+        }
 
-      this.broadcastPlugin('add-plugin', result, extractPath);
-      setConfig({ plugins: { list: { [result.id]: extractPath } } });
+        setConfig({ plugins: { list: { [result.id]: extractPath } } });
+
+        this.broadcastPlugin('add-plugin', result, extractPath);
+      }, pluginPath);
     });
     ipcMain.handle('get-plugin', (_, id: string) => pure(this.pluginLoader.getPlugins().find((it) => it.id === id)));
     ipcMain.handle('remove-plugin', (_, id: string) => {
@@ -625,7 +679,9 @@ class Application {
       if (!target) return;
 
       this.broadcastPlugin('before-remove-plugin', target);
-      this.pluginLoader.unloadPlugin(target);
+      this.overridePlugin('remove-plugin', (target) => {
+        this.pluginLoader.unloadPlugin(target);
+      }, target);
       this.broadcastPlugin('after-remove-plugin', target);
 
       setConfig({ plugins: { list: { [id]: undefined } } });
@@ -634,7 +690,9 @@ class Application {
       const target = this.pluginLoader.getPlugins().find((it) => it.id === id);
       if (!target) return;
 
-      await this.pluginLoader.reloadPlugin(target);
+      await this.overridePlugin('reload-plugin', async (target) => {
+        await this.pluginLoader.reloadPlugin(target);
+      }, target);
     });
 
     ipcMain.handle('get-plugin-state', (_, id: string) => config().plugins.disabled[id] ? 'disable' : 'enable');
@@ -651,13 +709,16 @@ class Application {
 
       if (!target) return;
 
-      let newState: boolean | undefined = undefined;
-      if (state === 'enable') newState = false;
-      if (state === 'disable') newState = true;
+      this.overridePlugin('change-plugin-state', (target, state) => {
+        let newState: boolean | undefined = undefined;
+        if (state === 'enable') newState = false;
+        if (state === 'disable') newState = true;
 
+        setConfig({ plugins: { disabled: { [id]: newState } } });
+        this.pluginLoader.setPluginState(target.id, state);
+      }, target, state);
+      
       this.broadcastPlugin('change-plugin-state', target, state);
-      setConfig({ plugins: { disabled: { [id]: newState } } });
-      this.pluginLoader.setPluginState(target.id, state);
     });
     ipcMain.handle('broadcast-plugin', (_, event: keyof PluginEventMap, ...args) => {
       this.broadcastPlugin(event, ...args as Parameters<PluginEventMap[typeof event]>);
