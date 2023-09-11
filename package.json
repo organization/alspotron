@@ -82,7 +82,7 @@
     "@codemirror/lang-sass": "6.0.2",
     "@codemirror/state": "6.2.1",
     "@codemirror/view": "6.18.0",
-    "@floating-ui/dom": "1.5.1",
+    "@floating-ui/dom": "1.5.2",
     "@jellybrick/solid-i18next": "1.2.2",
     "@koa/cors": "4.0.0",
     "@solid-codemirror/codemirror": "1.0.4",
