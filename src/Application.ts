@@ -1,6 +1,5 @@
 import path from 'node:path';
-import fs from 'node:fs/promises';
-import { release } from 'os';
+import { release } from 'node:os';
 
 import Koa from 'koa';
 import cors from '@koa/cors';
@@ -16,9 +15,7 @@ import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructo
 
 import { createEffect, on } from 'solid-js';
 
-import zip from 'zip-lib';
-
-import PluginLoader from './plugins/plugin-loader';
+import PluginManager from './plugins/plugin-manager';
 
 import {
   Config,
@@ -33,13 +30,15 @@ import {
   setLyricMapper
 } from '../common/config';
 
-import { pure } from '../utils/pure';
-import { getFile } from '../utils/resource';
 import { getTranslation } from '../common/intl';
 
-import type { RequestBody } from './types';
+import { pure } from '../utils/pure';
+import { getFile } from '../utils/resource';
+
+import type { RequestBody } from '../common/types';
+
 import type { IOverlay } from './electron-overlay';
-import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugin';
+import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
 
 type Overlay = typeof IOverlay;
 
@@ -76,7 +75,7 @@ class Application {
   private tray!: Tray;
   private app!: Koa;
   private overlay!: Overlay;
-  private pluginLoader!: PluginLoader;
+  private pluginManager!: PluginManager;
   private markQuit = false;
   private scaleFactor = 1.0;
   private lastUpdate: RequestBody | null = null;
@@ -138,16 +137,14 @@ class Application {
   }
 
   initPluginLoader() {
-    const pluginList = config().plugins.list;
-    const pluginState = Object.entries(config().plugins.disabled).reduce((prev, [key, value]) => ({
-      ...prev,
-      [key]: value ? 'disable' : 'enable',
-    }), {});
-
-    console.log('[Alspotron] load all plugins', pluginList);
+    console.log('[Alspotron] load all plugins');
     
-    this.pluginLoader = new PluginLoader(pluginList, pluginState);
-    this.pluginLoader.loadPlugins().catch((e) => {
+    this.pluginManager = new PluginManager({
+      config: () => config().plugins,
+      folder: path.resolve(app.getPath('userData'), 'plugins'),
+      set: (config) => setConfig({ plugins: config }),
+    });
+    this.pluginManager.loadPluginsFromConfig().catch((e) => {
       console.error('[Alspotron] Cannot load plugins', e);
     });
   }
@@ -464,8 +461,8 @@ class Application {
     originalFn: (...args: OverrideParameterMap[Target]) => Promise<void> | void,
     ...args: OverrideParameterMap[Target]
   ): Promise<void> {
-    const overrideFnList = this.pluginLoader.getPlugins()
-      .flatMap((plugin) => this.pluginLoader.getPluginState(plugin.id) === 'enable'
+    const overrideFnList = this.pluginManager.getPlugins()
+      .flatMap((plugin) => plugin.state === 'enable'
         ? plugin.js.overrides[target] ?? []
         : []
       );
@@ -496,7 +493,7 @@ class Application {
   }
 
   broadcastPlugin<T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) {
-    this.pluginLoader.broadcast(event, ...args);
+    this.pluginManager.broadcast(event, ...args);
   }
 
   initHook() {
@@ -638,84 +635,52 @@ class Application {
       }
     });
 
-    ipcMain.handle('get-plugin-list', () => pure(this.pluginLoader.getPlugins()));
+    ipcMain.handle('get-plugin-list', () => pure(this.pluginManager.getPlugins()));
     ipcMain.handle('add-plugin', async (_, pluginPath: string) => {
       this.broadcastPlugin('before-add-plugin', pluginPath);
 
+      let error: Error | null = null;
       await this.overridePlugin('add-plugin', async (pluginPath) => {
-        const pluginFileName = path.basename(pluginPath).replace(/\.\w+$/, '');
-        const extractPath = path.resolve(
-          app.getPath('userData'),
-          'plugins',
-          pluginFileName,
-        );
-
-        await zip.extract(pluginPath, extractPath).catch((err) => console.error(err));
-        const isNested = await fs.stat(path.join(extractPath, pluginFileName)).then(() => true).catch(() => false);
-        if (isNested) {
-          const tempPath = path.join(extractPath, '../', `temp-${Date.now()}`);
-          await fs.rename(path.join(extractPath, pluginFileName), tempPath);
-          await fs.rm(extractPath, { recursive: true, force: true });
-          await fs.rename(tempPath, extractPath);
-        }
-
-        const result = await this.pluginLoader.addPlugin(extractPath).catch((err) => err as Error);
-
+        const result = await this.pluginManager.addPlugin(pluginPath);
         if (result instanceof Error) {
-          // TODO: What should I do?
-          console.log('cannot add plugin', result);
+          error = result;
           return;
         }
 
-        setConfig({ plugins: { list: { [result.id]: extractPath } } });
-
-        this.broadcastPlugin('add-plugin', result, extractPath);
+        this.broadcastPlugin('add-plugin', result, result.path);
       }, pluginPath);
+
+      return error;
     });
-    ipcMain.handle('get-plugin', (_, id: string) => pure(this.pluginLoader.getPlugins().find((it) => it.id === id)));
+    ipcMain.handle('get-plugin', (_, id: string) => pure(this.pluginManager.getPlugins().find((it) => it.id === id)));
     ipcMain.handle('remove-plugin', (_, id: string) => {
-      const target = this.pluginLoader.getPlugins().find((it) => it.id === id);
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
 
       if (!target) return;
 
       this.broadcastPlugin('before-remove-plugin', target);
       this.overridePlugin('remove-plugin', (target) => {
-        this.pluginLoader.unloadPlugin(target);
+        this.pluginManager.removePlugin(target);
       }, target);
       this.broadcastPlugin('after-remove-plugin', target);
 
       setConfig({ plugins: { list: { [id]: undefined } } });
     });
     ipcMain.handle('reload-plugin', async (_, id: string) => {
-      const target = this.pluginLoader.getPlugins().find((it) => it.id === id);
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
       if (!target) return;
 
       await this.overridePlugin('reload-plugin', async (target) => {
-        await this.pluginLoader.reloadPlugin(target);
+        await this.pluginManager.reloadPlugin(target);
       }, target);
     });
 
-    ipcMain.handle('get-plugin-state', (_, id: string) => config().plugins.disabled[id] ? 'disable' : 'enable');
-    ipcMain.handle(
-      'get-plugin-state-list',
-      () => Object.entries(config().plugins.disabled)
-        .reduce((prev, [key, value]) => ({
-          ...prev,
-          [key]: value ? 'disable' : 'enable',
-        }), {}),
-    );
-    ipcMain.handle('set-plugin-state', (_, id: string, state: 'disable' | 'enable') => {
-      const target = this.pluginLoader.getPlugins().find((it) => it.id === id);
-
+    ipcMain.handle('set-plugin-state', async (_, id: string, state: 'disable' | 'enable') => {
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
       if (!target) return;
 
-      this.overridePlugin('change-plugin-state', (target, state) => {
-        let newState: boolean | undefined = undefined;
-        if (state === 'enable') newState = false;
-        if (state === 'disable') newState = true;
-
-        setConfig({ plugins: { disabled: { [id]: newState } } });
-        this.pluginLoader.setPluginState(target.id, state);
+      await this.overridePlugin('change-plugin-state', async (target, state) => {
+        await this.pluginManager.setPluginState(target.id, state);
       }, target, state);
       
       this.broadcastPlugin('change-plugin-state', target, state);

@@ -7,7 +7,7 @@ import { For, Switch as SwitchFlow, Match } from 'solid-js';
 
 import { Marquee } from '@suyongs/solid-utility';
 
-import { SelectOption, SettingOption } from '../../../common/plugin';
+import { SelectOption, SettingOption } from '../../../common/plugins';
 import Card from '../../components/Card';
 import Switch from '../../components/Switch';
 import Selector from '../../components/Select';
@@ -24,9 +24,7 @@ const PluginSettingsContainer = () => {
   const plugin = () => plugins().find((it) => it.id === params.id);
 
   const togglePluginState = async () => {
-    const state = await window.ipcRenderer.invoke('get-plugin-state', params.id) as 'disable' | 'enable';
-    
-    const newState = state === 'enable' ? 'disable' : 'enable';
+    const newState = plugin()?.state === 'enable' ? 'disable' : 'enable';
     await window.ipcRenderer.invoke('set-plugin-state', params.id, newState);
 
     refresh();
@@ -75,7 +73,7 @@ const PluginSettingsContainer = () => {
                 [t('setting.plugin.author'), plugin()?.author ?? t('setting.plugin.unknown')],
                 [t('setting.plugin.version'), plugin()?.version ?? t('setting.plugin.unknown')],
                 [t('setting.plugin.version-code'), plugin()?.versionCode ?? t('setting.plugin.unknown')],
-                [t('setting.plugin.manifest-version'), plugin()?.pluginVersion ?? t('setting.plugin.unknown')],
+                [t('setting.plugin.manifest-version'), plugin()?.manifestVersion ?? t('setting.plugin.unknown')],
                 [t('setting.plugin.style-count'), t('setting.plugin.count', { count: plugin()?.css?.length ?? 0 })],
                 [t('setting.plugin.include-script'), plugin()?.js ? t('setting.plugin.include') : t('setting.plugin.not-include')],
               ] as [string, string][]}

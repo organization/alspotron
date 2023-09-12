@@ -1,23 +1,33 @@
-import { For } from 'solid-js';
-import { Trans } from '@jellybrick/solid-i18next';
-
-import Card from '../../components/Card';
+import { For, createSignal } from 'solid-js';
+import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
 import PluginCard from '../components/PluginCard';
 
+import Card from '../../components/Card';
+import Modal from '../../components/Modal';
 import usePlugins from '../../hooks/usePlugins';
 
 import type { JSX } from 'solid-js';
 
 const PluginContainer = () => {
+  const [t] = useTransContext();
   const { plugins, refresh } = usePlugins();
+
+  const [open, setOpen] = createSignal(false);
+  const [error, setError] = createSignal<Error | null>(null);
 
   const pluginIdList = () => plugins().map((plugin) => plugin.id);
 
   const onAddPlugin: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = async (event) => {
     const file = event.target.files?.item(0);
 
-    await window.ipcRenderer.invoke('add-plugin', file?.path);
+    const error = await window.ipcRenderer.invoke('add-plugin', file?.path) as Error | null;
+
+    if (error) {
+      setOpen(true);
+      setError(error);
+    }
+
     refresh();
   };
   const reloadPlugins = async () => {
@@ -55,6 +65,30 @@ const PluginContainer = () => {
       <For each={pluginIdList()}>
         {(id) => <PluginCard id={id} />}
       </For>
+      <Modal
+        open={open()}
+        onClose={() => setOpen(false)}
+        buttons={[
+          {
+            type: 'positive',
+            name: t('common.okay'),
+            onClick: () => setOpen(false),
+          },
+        ]}
+      >
+        <div class={'text-white text-lg'}>
+          {t('setting.plugin.load-plugin-failed')}
+        </div>
+        <div>
+          {error()?.name}
+          {error()?.message}
+        </div>
+        <pre>
+          <code>
+            {JSON.stringify(error(), null, 2)}
+          </code>
+        </pre>
+      </Modal>
     </div>
   );
 };

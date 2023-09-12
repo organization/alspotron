@@ -3,10 +3,12 @@ import fs from 'node:fs/promises';
 
 import { z } from 'zod';
 
-import { Plugin, PluginContext, PluginProvider } from '../../../common/plugin';
-import { Loader } from '../plugin-loader';
+import { createLogger } from './v1-logger';
+
+import { Plugin, PluginContext, PluginProvider } from '../../../common/plugins';
 import { Json } from '../../../utils/types';
 import { config, setConfig } from '../../../common/config';
+import { VersionedPluginLoader } from '../types';
 
 const v1ManifestSchema = z.object({
   id: z.string(),
@@ -15,18 +17,23 @@ const v1ManifestSchema = z.object({
   author: z.string(),
   version: z.string().optional(),
   versionCode: z.number(),
-  pluginVersion: z.literal(1),
+  manifestVersion: z.literal(1),
 
   css: z.array(z.string()).optional(),
   main: z.string().optional(),
 }).passthrough();
 
-const loader: Loader = async (pluginPath, rawManifest) => {
+const loader: VersionedPluginLoader = async (pluginPath, rawManifest, runner) => {
   const manifest = v1ManifestSchema.parse(rawManifest);
 
   const newPlugin: Plugin = {
     rawManifest: JSON.stringify(manifest),
     manifest: manifest as Json,
+    js: {
+      listeners: {},
+      settings: [],
+      overrides: {},
+    },
 
     id: manifest.id,
     name: manifest.name,
@@ -34,12 +41,10 @@ const loader: Loader = async (pluginPath, rawManifest) => {
     author: manifest.author,
     version: manifest.version ?? '0.0.0',
     versionCode: manifest.versionCode,
-    pluginVersion: manifest.pluginVersion,
-    js: {
-      listeners: {},
-      settings: [],
-      overrides: {},
-    },
+    manifestVersion: manifest.manifestVersion,
+    state: 'enable',
+    path: pluginPath,
+    logs: [],
   };
 
   const jsPath = `file://${path.join(pluginPath, manifest.main ?? '')}`;
@@ -70,12 +75,14 @@ const loader: Loader = async (pluginPath, rawManifest) => {
         newPlugin.js.overrides[target] ??= [];
         newPlugin.js.overrides[target]?.push(fn);
       },
+      logger: createLogger(newPlugin),
     };
 
-    const result = pluginProvider(context);
-    if (typeof result === 'function') newPlugin.js.off = result;
+    runner(newPlugin, () => {
+      const result = pluginProvider(context);
+      if (typeof result === 'function') newPlugin.js.off = result;
+    }, { message: 'Failed to load plugin' });
   }
-
 
   newPlugin.css = await Promise.all(
     manifest.css?.map(async (cssFilePath) => {

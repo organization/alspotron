@@ -15,7 +15,7 @@ import {
 
 import useLyricMapper from '../hooks/useLyricMapper';
 import usePluginOverride from '../hooks/usePluginOverride';
-import { UpdateData } from '../types';
+import { UpdateData } from '../../common/types';
 import { ConfigLyricMode } from '../../common/constants';
 
 export type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;

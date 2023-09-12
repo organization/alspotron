@@ -1,128 +1,114 @@
-import fs from 'node:fs/promises';
 import path from 'node:path';
+import fs from 'node:fs/promises';
 
-import z from 'zod';
+import zip from 'zip-lib';
 
 import v1loader from './v1/v1-loader';
+import { PluginRunner, pluginManifestSchema } from './types';
 
-import { Plugin, PluginEventMap } from '../../common/plugin';
+import { Plugin } from '../../common/plugins/plugin';
 import { errorSync } from '../../utils/error';
 
-const manifestSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string().optional(),
-  author: z.string(),
-  version: z.string().optional(),
-  versionCode: z.number(),
-  pluginVersion: z.number(),
-}).passthrough();
-
-export type Loader = (pluginPath: string, manifest: z.infer<typeof manifestSchema>) => Promise<Plugin>;
+export interface PluginLoaderOptions {
+  folder?: string;
+}
 
 class PluginLoader {
-  private plugins: Plugin[] = [];
-  private pluginPathList: Record<string, string | undefined> = {};
-  private pluginState: Record<string, 'enable' | 'disable'> = {};
+  private folder: string;
 
-  constructor(pluginPathList: Record<string, string | undefined>, pluginState?: Record<string, 'enable' | 'disable'>) {
-    this.pluginPathList = pluginPathList;
-    if (pluginState) this.pluginState = pluginState;
+  constructor(options: PluginLoaderOptions) {
+    this.folder = options.folder ?? './plugins';
   }
 
-  public async setPluginState(pluginId: string, state: 'enable' | 'disable'): Promise<void> {
-    this.pluginState[pluginId] = state;
+  public async loadFromFolder(path: string): Promise<Plugin | Error> {
+    const plugin = await this.loadPlugin(path).catch((err) => err as Error);
 
-    if (state === 'enable') {
-      const path = this.pluginPathList[pluginId];
-      const index = this.plugins.findIndex((plugin) => plugin.id === pluginId);
-      if (typeof path !== 'string') throw Error('Plugin path not found');
+    return plugin;
+  }
 
-      const newPlugin = await this.loadPlugin(path);
+  public async loadFromFile(pluginPath: string): Promise<Plugin | Error> {
+    const pluginFileName = path.basename(pluginPath).replace(/\.\w+$/, '');
+    const extractPath = path.resolve(this.folder, pluginFileName);
 
-      this.plugins[index] = newPlugin;
+    const extractResult = await zip.extract(pluginPath, extractPath).catch((err) => err as Error);
+    if (extractResult instanceof Error) {
+      const error = Error('Failed to extract plugin');
+      error.cause = extractResult;
+
+      return error;
     }
-    if (state === 'disable') this.plugins.forEach((plugin) => plugin.id === pluginId && plugin.js.off?.());
-  }
-  public getPluginState(pluginId: string): 'enable' | 'disable' | undefined {
-    return this.pluginState[pluginId];
+
+    const isNested = await fs.stat(path.join(extractPath, pluginFileName)).then(() => true).catch(() => false);
+    if (isNested) {
+      try {
+        const tempPath = path.join(extractPath, '../', `temp-${Date.now()}`);
+        await fs.rename(path.join(extractPath, pluginFileName), tempPath);
+        await fs.rm(extractPath, { recursive: true, force: true });
+        await fs.rename(tempPath, extractPath);
+      } catch (err) {
+        const error = Error('Failed to extract plugin');
+        error.cause = err;
+
+        return error;
+      }
+    }
+
+    return await this.loadPlugin(extractPath).catch((err) => err as Error);
   }
 
-  public async loadPlugins(): Promise<void> {
-    const pathList = Object.values(this.pluginPathList);
-    await Promise.all(pathList.map(async (path) => path && this.addPlugin(path)));
+  public unloadPlugin(plugin: Plugin): Error | null {
+    return this.runPlugin(
+      plugin,
+      (plugin) => plugin.js.off?.(),
+      {
+        message: 'Failed to unload plugin',
+        force: true,
+      },
+    );
   }
 
-  public async addPlugin(path: string): Promise<Plugin> {
+  public runPlugin: PluginRunner = (plugin, fn, { force, message } = {}) => {
+    if (!force && plugin.state !== 'enable') return null;
+
     try {
-      const newPlugin = await this.loadPlugin(path);
+      fn(plugin);
+    } catch (err) {
+      const error = Error(message ?? 'Failed to run plugin');
+      error.cause = err;
 
-      this.plugins.push(newPlugin);
+      return error;
+    }
 
-      return newPlugin;
-    } catch (e) {
-      const error = Error(`Failed to load plugin ${path}`);
-      error.cause = e;
+    return null;
+  }
+
+  private async loadPlugin(pluginPath: string): Promise<Plugin> {
+    const stats = await fs.stat(pluginPath);
+    if (!stats.isDirectory()) throw Error(`"${pluginPath}" is not a directory`);
+
+    const manifest = await fs.readFile(path.join(pluginPath, 'manifest.json'), 'utf-8')
+      .catch((err) => {
+        const error = Error('Cannot load manifest.json');
+        error.cause = err;
+
+        throw error;
+      });
+    
+    const [manifestJson, err] = errorSync(() => pluginManifestSchema.parse(JSON.parse(manifest)));
+    if (err || manifestJson === null) {
+      const error = Error('Manifest is not valid');
+      error.cause = err;
 
       throw error;
     }
-  }
-
-  public async reloadPlugin(plugin: Plugin): Promise<Plugin> {
-    const path = this.pluginPathList[plugin.id];
-    if (typeof path !== 'string') throw Error('Plugin path not found');
-
-    this.unloadPlugin(plugin);
-    return this.addPlugin(path);
-  }
-
-  public getPlugins(): Plugin[] {
-    return this.plugins;
-  }
-
-  public unloadPlugin(plugin: Plugin): void {
-    const index = this.plugins.indexOf(plugin);
-    if (index !== -1) {
-      if (this.pluginState[plugin.id] === 'enable') plugin.js.off?.();
-      this.plugins.splice(index, 1);
-    }
-  }
-
-  public emit<Event extends keyof PluginEventMap>(plugin: Plugin, event: Event, ...args: Parameters<PluginEventMap[Event]>): void {
-    if (this.pluginState[plugin.id] !== 'enable') return;
-
-    plugin.js?.listeners[event]?.forEach((callback) => {
-      callback(...args as [never, never]);
-    });
-  }
-
-  public broadcast<Event extends keyof PluginEventMap>(event: Event, ...args: Parameters<PluginEventMap[Event]>): void {
-    this.plugins.forEach((plugin) => this.emit(plugin, event, ...args));
-  }
-  
-  private async loadPlugin(pluginPath: string): Promise<Plugin> {
-    const stats = await fs.stat(pluginPath);
-    
-    if (!stats.isDirectory()) throw Error(`${pluginPath} Plugin is not a directory`);
-
-    const manifest = await fs.readFile(path.join(pluginPath, 'manifest.json'), 'utf-8').catch(() => {
-      throw Error('Manifest not found')
-    });
-    
-    const [manifestJson, error] = errorSync(() => manifestSchema.parse(JSON.parse(manifest)));
-    if (error || manifestJson === null) {
-      console.error(error);
-      throw Error('Manifest is not valid');
-    }
 
     let newPlugin: Plugin | null = null;
-    if (manifestJson.pluginVersion === 1) newPlugin = await v1loader(pluginPath, manifestJson);
+    if (manifestJson.manifestVersion === 1) newPlugin = await v1loader(pluginPath, manifestJson, this.runPlugin);
 
-    if (!newPlugin) throw Error('Plugin version is not supported')
+    if (!newPlugin) throw Error(`Manifest version "${manifestJson.manifestVersion}" is not supported`);
 
     return newPlugin;
   }
-
 }
 
 export default PluginLoader;
