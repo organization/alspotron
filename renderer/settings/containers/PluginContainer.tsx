@@ -115,14 +115,15 @@ const PluginContainer = () => {
           },
         ]}
       >
-        <div class={'text-white text-lg'}>
+        <div class={'text-black dark:text-white text-lg'}>
           {t('setting.plugin.load-plugin-failed')}
         </div>
-        <div>
+        <div class={'text-black dark:text-white font-mono'}>
           {error()?.name}
+          {': '}
           {error()?.message}
         </div>
-        <pre>
+        <pre class={'text-white bg-slate-700 font-mono'}>
           <code>
             {JSON.stringify(error(), null, 2)}
           </code>
