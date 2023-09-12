@@ -1,6 +1,6 @@
 import PluginLoader, { PluginLoaderOptions } from './plugin-loader';
 
-import { Plugin, PluginEventMap } from '../../common/plugins';
+import { Plugin, PluginEventMap, PluginState } from '../../common/plugins';
 import { Config } from '../../common/config';
 
 export interface PluginManagerOptions extends PluginLoaderOptions {
@@ -49,12 +49,19 @@ class PluginManager {
   }
   
   public async loadPluginsFromConfig(): Promise<void> {
-    const pluginPathList = Object.values(this.config().list);
-    await Promise.all(pluginPathList.map(async (path) => path && this.addPlugin(path)));
+    const pluginPathList = Object.entries(this.config().list);
+    const disablePluginMap = this.config().disabled;
+
+    await Promise.all(pluginPathList.map(async ([id, path]) => {
+      const isDisabled = disablePluginMap[id];
+
+      if (typeof path !== 'string') return null;
+      return this.addPlugin(path, isDisabled ? 'disable' : 'enable');
+    }));
   }
 
-  public async addPlugin(path: string): Promise<Plugin | Error> {
-    const plugin = await this.loader.loadFromFile(path);
+  public async addPlugin(path: string, state: PluginState = 'enable'): Promise<Plugin | Error> {
+    const plugin = await this.loader.loadFromFile(path, state);
     if (plugin instanceof Error) return plugin;
 
     this.plugins.push(plugin);

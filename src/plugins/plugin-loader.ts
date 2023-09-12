@@ -4,9 +4,9 @@ import fs from 'node:fs/promises';
 import zip from 'zip-lib';
 
 import v1loader from './v1/v1-loader';
-import { PluginRunner, pluginManifestSchema } from './types';
+import { PluginRunner, VersionedPluginRunnerOptions, pluginManifestSchema } from './types';
 
-import { Plugin } from '../../common/plugins/plugin';
+import { Plugin, PluginState } from '../../common/plugins';
 import { errorSync } from '../../utils/error';
 
 export interface PluginLoaderOptions {
@@ -20,13 +20,13 @@ class PluginLoader {
     this.folder = options.folder ?? './plugins';
   }
 
-  public async loadFromFolder(path: string): Promise<Plugin | Error> {
-    const plugin = await this.loadPlugin(path).catch((err) => err as Error);
+  public async loadFromFolder(path: string, state: PluginState = 'enable'): Promise<Plugin | Error> {
+    const plugin = await this.loadPlugin(path, state).catch((err) => err as Error);
 
     return plugin;
   }
 
-  public async loadFromFile(pluginPath: string): Promise<Plugin | Error> {
+  public async loadFromFile(pluginPath: string, state: PluginState = 'enable'): Promise<Plugin | Error> {
     const pluginFileName = path.basename(pluginPath).replace(/\.\w+$/, '');
     const extractPath = path.resolve(this.folder, pluginFileName);
 
@@ -53,7 +53,7 @@ class PluginLoader {
       }
     }
 
-    return await this.loadPlugin(extractPath).catch((err) => err as Error);
+    return await this.loadPlugin(extractPath, state).catch((err) => err as Error);
   }
 
   public unloadPlugin(plugin: Plugin): Error | null {
@@ -82,7 +82,7 @@ class PluginLoader {
     return null;
   }
 
-  private async loadPlugin(pluginPath: string): Promise<Plugin> {
+  private async loadPlugin(pluginPath: string, state: PluginState = 'enable'): Promise<Plugin> {
     const stats = await fs.stat(pluginPath);
     if (!stats.isDirectory()) throw Error(`"${pluginPath}" is not a directory`);
 
@@ -102,8 +102,10 @@ class PluginLoader {
       throw error;
     }
 
+    const versionedOption: VersionedPluginRunnerOptions = { state };
+
     let newPlugin: Plugin | null = null;
-    if (manifestJson.manifestVersion === 1) newPlugin = await v1loader(pluginPath, manifestJson, this.runPlugin);
+    if (manifestJson.manifestVersion === 1) newPlugin = await v1loader(pluginPath, manifestJson, this.runPlugin, versionedOption);
 
     if (!newPlugin) throw Error(`Manifest version "${manifestJson.manifestVersion}" is not supported`);
 

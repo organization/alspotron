@@ -15,6 +15,13 @@ export const pluginManifestSchema = z.object({
 export interface PluginRunnerOptions {
   message?: string;
   force?: boolean;
+}export interface VersionedPluginRunnerOptions {
+  state?: Plugin['state'];
 }
 export type PluginRunner = (plugin: Plugin, fn: (plugin: Plugin) => void, options?: PluginRunnerOptions) => Error | null;
-export type VersionedPluginLoader = (pluginPath: string, manifest: z.infer<typeof pluginManifestSchema>, runner: PluginRunner) => Promise<Plugin>;
+export type VersionedPluginLoader = (
+  pluginPath: string,
+  manifest: z.infer<typeof pluginManifestSchema>,
+  runner: PluginRunner,
+  options?: VersionedPluginRunnerOptions,
+) => Promise<Plugin>;

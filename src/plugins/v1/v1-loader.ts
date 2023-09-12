@@ -23,7 +23,7 @@ const v1ManifestSchema = z.object({
   main: z.string().optional(),
 }).passthrough();
 
-const loader: VersionedPluginLoader = async (pluginPath, rawManifest, runner) => {
+const loader: VersionedPluginLoader = async (pluginPath, rawManifest, runner, options) => {
   const manifest = v1ManifestSchema.parse(rawManifest);
 
   const newPlugin: Plugin = {
@@ -42,7 +42,7 @@ const loader: VersionedPluginLoader = async (pluginPath, rawManifest, runner) =>
     version: manifest.version ?? '0.0.0',
     versionCode: manifest.versionCode,
     manifestVersion: manifest.manifestVersion,
-    state: 'enable',
+    state: options?.state ?? 'enable',
     path: pluginPath,
     logs: [],
   };
