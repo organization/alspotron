@@ -3,7 +3,7 @@
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 import { useNavigate, useParams } from '@solidjs/router';
 
-import { For, Switch as SwitchFlow, Match } from 'solid-js';
+import { For, Switch as SwitchFlow, Match, Show, createSignal } from 'solid-js';
 
 import { Marquee } from '@suyongs/solid-utility';
 
@@ -13,6 +13,7 @@ import Switch from '../../components/Switch';
 import Selector from '../../components/Select';
 import useConfig from '../../hooks/useConfig';
 import usePlugins from '../../hooks/usePlugins';
+import PluginLog from '../components/PluginLog';
 
 const PluginSettingsContainer = () => {
   const params = useParams();
@@ -20,6 +21,8 @@ const PluginSettingsContainer = () => {
   const [config, setConfig] = useConfig();
   const [t] = useTransContext();
   const { plugins, refresh } = usePlugins();
+
+  const [showLog, setShowLog] = createSignal(false);
 
   const plugin = () => plugins().find((it) => it.id === params.id);
 
@@ -112,6 +115,22 @@ const PluginSettingsContainer = () => {
           <Trans key={'setting.plugin.reload'} />
         </button>
       </Card>
+      <Show when={config()?.developer}>
+        <Card
+          expand={showLog()}
+          setExpand={setShowLog}
+          class={'flex flex-row justify-between items-center gap-1'}
+          subCards={[
+            <div class={'w-full max-h-[400px] fluent-scrollbar'}>
+              <For each={plugin()?.logs}>
+                {(log) => <PluginLog log={log} />}
+              </For>
+            </div>
+          ]}
+        >
+          <Trans key={'setting.plugin.show-log'} />
+        </Card>
+      </Show>
       <div class={'text-md mt-4 mb-1'}>
         <Trans key={'setting.plugin.setting'} />
       </div>

@@ -1,10 +1,12 @@
-import { For, createSignal } from 'solid-js';
+import { For, Show, createEffect, createSignal, onCleanup } from 'solid-js';
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
+import PluginLog from '../components/PluginLog';
 import PluginCard from '../components/PluginCard';
 
 import Card from '../../components/Card';
 import Modal from '../../components/Modal';
+import useConfig from '../../hooks/useConfig';
 import usePlugins from '../../hooks/usePlugins';
 
 import type { JSX } from 'solid-js';
@@ -12,11 +14,32 @@ import type { JSX } from 'solid-js';
 const PluginContainer = () => {
   const [t] = useTransContext();
   const { plugins, refresh } = usePlugins();
+  const [config] = useConfig();
 
   const [open, setOpen] = createSignal(false);
+  const [showLog, setShowLog] = createSignal(false);
   const [error, setError] = createSignal<Error | null>(null);
 
   const pluginIdList = () => plugins().map((plugin) => plugin.id);
+  const logs = () => plugins()
+    .flatMap((plugin) => plugin.logs.map((log) => ({ plugin, log })))
+    .sort((a, b) => a.log.time - b.log.time);
+
+  let refreshPlugin: NodeJS.Timeout | null = null;
+  createEffect(() => {
+    if (refreshPlugin) clearInterval(refreshPlugin);
+    
+    if (showLog()) {
+      refresh();
+
+      refreshPlugin = setInterval(() => {
+        refresh();
+      }, 1000);
+    }
+  });
+  onCleanup(() => {
+    if (refreshPlugin) clearInterval(refreshPlugin);
+  });
 
   const onAddPlugin: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = async (event) => {
     const file = event.target.files?.item(0);
@@ -59,6 +82,22 @@ const PluginContainer = () => {
           <Trans key={'setting.plugin.reload'} />
         </button>
       </Card>
+      <Show when={config()?.developer}>
+        <Card
+          expand={showLog()}
+          setExpand={setShowLog}
+          class={'flex flex-row justify-between items-center gap-1'}
+          subCards={[
+            <div class={'w-full max-h-[400px] fluent-scrollbar'}>
+              <For each={logs()}>
+                {({ plugin, log }) => <PluginLog log={log} showPlugin={plugin} />}
+              </For>
+            </div>
+          ]}
+        >
+          <Trans key={'setting.plugin.show-log'} />
+        </Card>
+      </Show>
       <div class={'text-md mt-4 mb-1'}>
         <Trans key={'setting.plugin.loaded-plugin'} />
       </div>

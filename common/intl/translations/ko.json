@@ -164,6 +164,7 @@
   "setting.plugin.not-include": "포함되지 않음",
   "setting.plugin.detail-setting": "세부 설정",
   "setting.plugin.load-plugin-failed": "플러그인을 불러오는 중 오류가 발생했습니다.",
+  "setting.plugin.show-log": "플러그인 로그 보기",
 
   "updater.download-and-auto-install": "다운로드 및 자동 설치",
   "updater.update-alert": "Alspotron 업데이트 알림",

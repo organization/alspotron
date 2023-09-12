@@ -163,6 +163,8 @@
   "setting.plugin.include": "Included",
   "setting.plugin.not-include": "Not included",
   "setting.plugin.detail-setting": "Detail options",
+  "setting.plugin.load-plugin-failed": "Cannot load plugin",
+  "setting.plugin.show-log": "Show plugin logs",
 
   "updater.download-and-auto-install": "Herunterladen und automatisch installieren",
   "updater.update-alert": "Bei Updates für Alspotron benachrichtigen",
