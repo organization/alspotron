@@ -59,10 +59,6 @@ const PlatformBrowserWindow = process.platform === 'win32' && IS_WINDOWS_11 ? Mi
 // Set application name for Windows 10+ notifications
 if (process.platform === 'win32') {
   app.setAppUserModelId(app.getName());
-  // Disable GPU Acceleration for Windows 7
-  if (release().startsWith('6.1')) {
-    app.disableHardwareAcceleration();
-  }
 }
 
 if (!app.requestSingleInstanceLock()) {
