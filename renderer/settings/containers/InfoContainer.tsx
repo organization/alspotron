@@ -1,4 +1,3 @@
-import { UpdateCheckResult } from 'electron-updater';
 import { createSignal, Switch, Match } from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
 
@@ -6,6 +5,8 @@ import MainIcon from '../../../assets/icon_music.png';
 import packageJson from '../../../package.json';
 import Card from '../../components/Card';
 import Spinner from '../../components/Spinner';
+
+import type { UpdateCheckResult } from 'electron-updater';
 
 
 const InfoContainer = () => {

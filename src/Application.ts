@@ -1,5 +1,4 @@
 import path from 'node:path';
-import { release } from 'node:os';
 
 import Koa from 'koa';
 import cors from '@koa/cors';
@@ -8,7 +7,7 @@ import { z } from 'zod';
 import bodyParser from 'koa-bodyparser';
 import ProgressBar from 'electron-progressbar';
 import { hmc } from 'hmc-win32';
-import { autoUpdater } from 'electron-updater';
+import { autoUpdater } from 'electron-differential-updater';
 import { IS_WINDOWS_11, MicaBrowserWindow } from 'mica-electron';
 import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
 import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructorOptions, nativeImage, screen, shell, Tray } from 'electron';
@@ -34,6 +33,9 @@ import { getTranslation } from '../common/intl';
 
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
+
+import type { ProgressInfo } from 'electron-builder';
+import type { UpdateInfo } from 'builder-util-runtime';
 
 import type { RequestBody } from '../common/types';
 
@@ -149,7 +151,7 @@ class Application {
     if (!app.isPackaged) return;
 
     autoUpdater.autoDownload = false;
-    autoUpdater.on('update-available', async (it) => {
+    autoUpdater.on('update-available', async (it: UpdateInfo) => {
       const downloadLink = 'https://github.com/organization/alspotron/releases/latest';
 
       const { response } = await dialog.showMessageBox({
@@ -182,7 +184,7 @@ class Application {
             autoUpdater.quitAndInstall(false);
           });
 
-        autoUpdater.on('download-progress', (it) => {
+        autoUpdater.on('download-progress', (it: ProgressInfo) => {
           if (!updateProgressBar.isCompleted()) {
             updateProgressBar.value = it.percent;
             updateProgressBar.text = `${getTranslation('updater.popup.percent', config().language)} (${it.percent.toFixed(2)}%, ${it.transferred} / ${it.total})`;
