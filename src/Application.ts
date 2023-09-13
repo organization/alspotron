@@ -1,5 +1,5 @@
 import path from 'node:path';
-import { release } from 'os';
+import { release } from 'node:os';
 
 import Koa from 'koa';
 import cors from '@koa/cors';
@@ -15,6 +15,8 @@ import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructo
 
 import { createEffect, on } from 'solid-js';
 
+import PluginManager from './plugins/plugin-manager';
+
 import {
   Config,
   config,
@@ -28,11 +30,15 @@ import {
   setLyricMapper
 } from '../common/config';
 
-import { getFile } from '../utils/resource';
 import { getTranslation } from '../common/intl';
 
-import type { RequestBody } from './types';
+import { pure } from '../utils/pure';
+import { getFile } from '../utils/resource';
+
+import type { RequestBody } from '../common/types';
+
 import type { IOverlay } from './electron-overlay';
+import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
 
 type Overlay = typeof IOverlay;
 
@@ -69,6 +75,7 @@ class Application {
   private tray!: Tray;
   private app!: Koa;
   private overlay!: Overlay;
+  private pluginManager!: PluginManager;
   private markQuit = false;
   private scaleFactor = 1.0;
   private lastUpdate: RequestBody | null = null;
@@ -129,6 +136,19 @@ class Application {
     }
   }
 
+  initPluginLoader() {
+    console.log('[Alspotron] load all plugins');
+    
+    this.pluginManager = new PluginManager({
+      config: () => config().plugins,
+      folder: path.resolve(app.getPath('userData'), 'plugins'),
+      set: (config) => setConfig({ plugins: config }),
+    });
+    this.pluginManager.loadPluginsFromConfig().catch((e) => {
+      console.error('[Alspotron] Cannot load plugins', e);
+    });
+  }
+
   initAutoUpdater() {
     if (!app.isPackaged) return;
 
@@ -183,7 +203,6 @@ class Application {
   }
 
   initMenu() {
-
     const menu: (MenuItemConstructorOptions | MenuItem)[] = [
       {
         type: 'normal',
@@ -295,7 +314,13 @@ class Application {
         ctx.status = 200;
 
         this.lastUpdate = ctx.request.body;
-        this.broadcast('update', this.lastUpdate);
+        this.overridePlugin(
+          'update',
+          (updateData) => {
+            this.broadcast('update', updateData);
+          },
+          this.lastUpdate,
+        );
 
         await next();
       },
@@ -431,11 +456,44 @@ class Application {
     this.overlay.stop();
   }
 
+  async overridePlugin<Target extends keyof OverrideMap>(
+    target: Target,
+    originalFn: (...args: OverrideParameterMap[Target]) => Promise<void> | void,
+    ...args: OverrideParameterMap[Target]
+  ): Promise<void> {
+    const overrideFnList = this.pluginManager.getPlugins()
+      .flatMap((plugin) => plugin.state === 'enable'
+        ? plugin.js.overrides[target] ?? []
+        : []
+      );
+    
+    await Promise.all(overrideFnList.map(async (overrideFn, index) => {
+      const fn = (
+        index === overrideFnList.length - 1
+          ? originalFn
+          : async () => {}
+      ) as (...args: OverrideParameterMap[Target]) => Promise<void>;
+
+      await overrideFn(fn, ...args);
+    }));
+
+    if (overrideFnList.length === 0) {
+      await originalFn(...args);
+    }
+  }
+
   broadcast<T>(event: string, ...args: T[]) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+    this.broadcastPlugin(event as keyof PluginEventMap, ...args as any);
+
     if (this.mainWindow) this.mainWindow.webContents.send(event, ...args);
     if (this.overlayWindow && !this.overlayWindow.isDestroyed()) this.overlayWindow.webContents.send(event, ...args);
     if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) this.lyricsWindow.webContents.send(event, ...args);
     if (this.settingsWindow && !this.settingsWindow.isDestroyed()) this.settingsWindow.webContents.send(event, ...args);
+  }
+
+  broadcastPlugin<T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) {
+    this.pluginManager.broadcast(event, ...args);
   }
 
   initHook() {
@@ -465,62 +523,100 @@ class Application {
     ipcMain.handle('start-overlay', () => {
       this.initOverlay();
 
-      if (this.overlayWindow) {
-        this.addOverlayWindow(
-          'StatusBar',
-          this.overlayWindow,
-          0,
-          0,
-          true,
-        );
-      }
+      this.overridePlugin('start-overlay', () => {
+        if (this.overlayWindow) {
+          this.addOverlayWindow(
+            'StatusBar',
+            this.overlayWindow,
+            0,
+            0,
+            true,
+          );
+        }
+      });
+      this.broadcastPlugin('start-overlay');
     });
-    ipcMain.handle('stop-overlay', () => this.stopOverlay());
+    ipcMain.handle('stop-overlay', () => {
+      this.overridePlugin('stop-overlay', () => {
+        this.stopOverlay();
+      });
+      this.broadcastPlugin('stop-overlay');
+    });
     ipcMain.handle('inject-overlay-to-process', (_, processId: number, name?: string, filePath?: string) => {
       if (process.platform !== 'win32') return;
 
-      this.onProcessCreation(processId, name, filePath);
+      this.overridePlugin('inject-overlay-to-process', (processId, name, filePath) => {
+        this.onProcessCreation(processId, name, filePath);
+      }, processId, name, filePath);
+      this.broadcastPlugin('inject-overlay-to-process', processId, name, filePath);
     });
-    ipcMain.handle('remove-overlay-from-process', (_, processId: number) => this.onProcessDeletion(processId));
+    ipcMain.handle('remove-overlay-from-process', (_, processId: number) => {
+      this.broadcastPlugin('remove-overlay-from-process', processId);
+      this.overridePlugin('remove-overlay-from-process', (processId) => {
+        this.onProcessDeletion(processId);
+      }, processId);
+    });
     ipcMain.handle('get-current-version', () => autoUpdater.currentVersion.version);
     ipcMain.handle('compare-with-current-version', (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion));
     ipcMain.handle('check-update', async () => autoUpdater.checkForUpdatesAndNotify());
     ipcMain.handle('get-last-update', () => this.lastUpdate);
 
-    ipcMain.handle('set-config', (_, data: DeepPartial<Config>) => {
-      setConfig(data);
-      this.broadcast('config', config());
+    ipcMain.handle('set-config', async (_, data: DeepPartial<Config>) => {
+      await this.overridePlugin('config', (data) => {
+        setConfig(data);
 
-      this.updateWindowConfig(this.mainWindow);
-      if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
-        this.overlayWindow.close();
-        this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
-        this.initOverlayWindow();
-        this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
-      }
+        this.updateWindowConfig(this.mainWindow);
+        if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
+          this.overlayWindow.close();
+          this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
+          this.initOverlayWindow();
+          this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
+        }
+      }, data);
+      this.broadcast('config', config());
     });
     ipcMain.on('get-config', (event) => {
       event.returnValue = config();
     });
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
     ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
-      setLyricMapper(data, useFallback);
+      this.overridePlugin('lyric-mapper', (data) => {
+        setLyricMapper(data, useFallback);
+      }, data);
       this.broadcast('lyric-mapper', lyricMapper());
     });
     ipcMain.handle('get-lyric-mapper', () => lyricMapper());
     ipcMain.handle('set-game-list', (_, data: Partial<GameList>, useFallback: boolean = true) => {
-      setGameList(data, useFallback);
+      this.overridePlugin('game-list', (data) => {
+        setGameList(data, useFallback);
+      }, data);
       this.broadcast('game-list', gameList());
     });
     ipcMain.handle('get-game-list', () => gameList());
 
-    ipcMain.handle('window-minimize', () => BrowserWindow.getFocusedWindow()?.minimize());
+    ipcMain.handle('window-minimize', () => {
+      this.overridePlugin('window-minimize', () => {
+        BrowserWindow.getFocusedWindow()?.minimize();
+      });
+      this.broadcastPlugin('window-minimize');
+    });
     ipcMain.handle('window-maximize', () => {
-      BrowserWindow.getFocusedWindow()?.isMaximized() ?
-        BrowserWindow.getFocusedWindow()?.unmaximize() : BrowserWindow.getFocusedWindow()?.maximize();
+      const isMaximized = BrowserWindow.getFocusedWindow()?.isMaximized() ?? false;
+
+      this.overridePlugin('window-maximize', (isMaximized) => {
+        if (isMaximized) BrowserWindow.getFocusedWindow()?.unmaximize();
+        else BrowserWindow.getFocusedWindow()?.maximize();
+      }, isMaximized);
+
+      this.broadcastPlugin('window-maximize', !isMaximized);
     });
     ipcMain.handle('window-is-maximized', () => BrowserWindow.getFocusedWindow()?.isMaximized());
-    ipcMain.handle('window-close', () => BrowserWindow.getFocusedWindow()?.close());
+    ipcMain.handle('window-close', () => {
+      this.overridePlugin('window-close', () => {
+        BrowserWindow.getFocusedWindow()?.close();
+      });
+      this.broadcastPlugin('window-close');
+    });
     ipcMain.handle('open-devtool', (_, target: string) => {
       if (target === 'main') {
         if (this.mainWindow && !this.mainWindow.isDestroyed()) {
@@ -537,6 +633,74 @@ class Application {
           this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
         }
       }
+    });
+
+    ipcMain.handle('get-plugin-list', () => pure(this.pluginManager.getPlugins()));
+    ipcMain.handle('add-plugin', async (_, pluginPath: string) => {
+      this.broadcastPlugin('before-add-plugin', pluginPath);
+
+      let error: Error | null = null;
+      await this.overridePlugin('add-plugin', async (pluginPath) => {
+        const result = await this.pluginManager.addPlugin(pluginPath);
+        if (result instanceof Error) {
+          error = result;
+          return;
+        }
+
+        this.broadcastPlugin('add-plugin', result, result.path);
+      }, pluginPath);
+
+      return error;
+    });
+    ipcMain.handle('get-plugin', (_, id: string) => pure(this.pluginManager.getPlugins().find((it) => it.id === id)));
+    ipcMain.handle('remove-plugin', (_, id: string) => {
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
+
+      if (!target) return;
+
+      this.broadcastPlugin('before-remove-plugin', target);
+      this.overridePlugin('remove-plugin', (target) => {
+        this.pluginManager.removePlugin(target);
+      }, target);
+      this.broadcastPlugin('after-remove-plugin', target);
+
+      setConfig({ plugins: { list: { [id]: undefined } } });
+    });
+    ipcMain.handle('reload-plugin', async (_, id: string) => {
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
+      if (!target) return;
+
+      await this.overridePlugin('reload-plugin', async (target) => {
+        await this.pluginManager.reloadPlugin(target);
+      }, target);
+    });
+
+    ipcMain.handle('set-plugin-state', async (_, id: string, state: 'disable' | 'enable') => {
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
+      if (!target) return;
+
+      await this.overridePlugin('change-plugin-state', async (target, state) => {
+        await this.pluginManager.setPluginState(target.id, state);
+      }, target, state);
+      
+      this.broadcastPlugin('change-plugin-state', target, state);
+    });
+    ipcMain.handle('broadcast-plugin', (_, event: keyof PluginEventMap, ...args) => {
+      this.broadcastPlugin(event, ...args as Parameters<PluginEventMap[typeof event]>);
+    });
+    ipcMain.handle('override-plugin', (_, target: keyof OverrideMap, ...args) => {
+      return new Promise((resolve) => {
+        let isResolved = false;
+
+        (async () => {
+          await this.overridePlugin(target, (...provided) => {
+            isResolved = true;
+            resolve(provided);
+          }, ...args as never);
+
+          if (!isResolved) resolve(false);
+        })();
+      });
     });
   }
 

@@ -7,3 +7,7 @@ export interface UpdateData {
   cover_url?: string;
   lyrics?: Record<number, string[]>;
 }
+
+export interface RequestBody {
+  data: UpdateData;
+}

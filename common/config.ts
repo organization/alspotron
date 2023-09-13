@@ -56,6 +56,13 @@ export interface Config {
 
   language: 'ko' | 'en' | 'ja' | 'de';
   developer: boolean;
+
+  plugins: {
+    list: Record<string, string | undefined>; // id: path
+    disabled: Record<string, boolean | undefined>; // id: enabled
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    config: Record<string, any>; // id: config
+  }
 }
 
 const getCurrentLocale = () => (/en|ko|ja|de/.exec(app.getLocale())?.at(0)) as 'ko' | 'en' | 'ja' | 'de' | undefined ?? 'ko';
@@ -107,6 +114,12 @@ export const DEFAULT_CONFIG: Config = {
 
   language: 'ko',
   developer: false,
+
+  plugins: {
+    list: {},
+    disabled: {},
+    config: {},
+  },
 } satisfies Config;
 
 app.on('ready', () => {
@@ -120,34 +133,8 @@ const configSignal = createSignal<Config>(DEFAULT_CONFIG);
 
 export const config = configSignal[0];
 export const setConfig = (params: DeepPartial<Config>) => {
-  const value = {
-    ...DEFAULT_CONFIG,
-    ...configSignal[0](),
-    ...params,
+  const value = deepmerge(DEFAULT_CONFIG, deepmerge(configSignal[0](), params)) as Config;
 
-    style: {
-      ...DEFAULT_CONFIG.style,
-      ...configSignal[0]()?.style,
-      ...params?.style,
-      nowPlaying: {
-        ...DEFAULT_CONFIG.style.nowPlaying,
-        ...configSignal[0]()?.style?.nowPlaying,
-        ...params?.style?.nowPlaying,
-      },
-      lyric: {
-        ...DEFAULT_CONFIG.style.lyric,
-        ...configSignal[0]()?.style?.lyric,
-        ...params?.style?.lyric,
-      },
-    },
-
-    windowPosition: {
-      ...DEFAULT_CONFIG.windowPosition,
-      ...configSignal[0]()?.windowPosition,
-      ...params?.windowPosition,
-    },
-  };
-  
   configSignal[1](value);
 
   if (configFileTimeout) clearTimeout(configFileTimeout);

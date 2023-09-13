@@ -165,7 +165,7 @@ const PositionContainer = () => {
         <Selector
           format={(value) => value === 'column' ? t('setting.position.from-top-to-bottom') : t('setting.position.from-bottom-to-top')}
           value={config()?.windowPosition?.direction ?? 'column'}
-          onChange={(value) => setConfig({ windowPosition: { direction: value as 'column' | 'column-reverse' } })}
+          onChange={(value) => setConfig({ windowPosition: { direction: value } })}
           options={['column', 'column-reverse']}
           class={'select'}
         />

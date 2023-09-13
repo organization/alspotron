@@ -21,7 +21,7 @@ declare module 'alsong' {
     register: LyricRegister
   };
 
-  type LyricMetadata = {
+  export type LyricMetadata = {
     lyricId: number,
     playtime: number,
     title: string,

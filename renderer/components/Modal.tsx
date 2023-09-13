@@ -49,12 +49,15 @@ const Modal = (props: ModalProps) => {
             <div
               {...leftProps}
               ref={content}
-              class={'w-fit h-fit flex flex-col bg-stone-700 rounded shadow-[0_0_0_1px] shadow-white/25'}
+              class={`
+                w-fit h-fit flex flex-col rounded overflow-hidden
+                shadow-xl shadow-black/10 border-[1px]
+                bg-stone-100 border-black/10 dark:bg-stone-700 dark:border-white/10`}
             >
-              <div class={'px-6 py-5'}>
+              <div class={'text-black dark:text-white px-6 py-5'}>
                 {props.children}
               </div>
-              <div class={'flex justify-end items-center gap-2 bg-stone-800  px-6 py-5 '}>
+              <div class={'flex justify-end items-center gap-2 bg-stone-200 dark:bg-stone-800 px-6 py-5'}>
                 <For each={local.buttons ?? []}>
                   {(button) => (
                     <button

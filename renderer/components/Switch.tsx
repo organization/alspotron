@@ -45,13 +45,16 @@ const Switch = (props: SwitchProps) => {
         newOffset = offset() > 0.5 ? 1 : 0;
       }
 
-      if (thumb && newOffset !== offset()) {
-        thumb.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
-        transitionTimeout = setTimeout(() => {
-          if (thumb) thumb.style.transition = '';
-        }, 500);
-      }
-      setOffset(newOffset);
+      setTimeout(() => {
+        if (thumb && newOffset !== offset()) {
+          thumb.style.transition = 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+          transitionTimeout = setTimeout(() => {
+            if (thumb) thumb.style.transition = '';
+          }, 500);
+        }
+
+        setOffset(newOffset);
+      }, 16 * 3); // 3 frames
 
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', cleanUp);

@@ -7,6 +7,8 @@ const application = new Application();
 (async () => {
   await app.whenReady();
 
+  application.initPluginLoader();
+
   application.initAutoUpdater();
   application.initTray();
   application.initServer();
