@@ -97,6 +97,11 @@
 |:--------------------------------------------------------------------------------------------------------:|
 | ![image](https://github.com/organization/alspotron/assets/16558115/1de5703a-1bde-4152-8c17-092463750246) |
 
+## Plugin
+Refer this [Documentation](https://github.com/organization/alspotron/wiki/Plugin)
+
+Refer this [Example](https://github.com/organization/alspotron/tree/master/example/alspotron-plugin)
+
 ## Migration von Alspotify
 
 Siehe diese [Dokumentation](https://github.com/organization/alspotron/blob/master/MIGRATION_FROM_ALSPOTIFY.md)

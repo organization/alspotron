@@ -94,6 +94,11 @@
 |:--------------------------------------------------------------------------------------------------------:|
 | ![Editing alspotron_README-i18n_en md at feat_i18n · organization_alspotron - Chrome 2023-07-31 오전 8_02_09](https://github.com/organization/alspotron/assets/16558115/6604d1b5-74c5-48c8-8912-afdbcdfa3700) |
 
+## Plugin
+Refer this [Documentation](https://github.com/organization/alspotron/wiki/Plugin)
+
+Refer this [Example](https://github.com/organization/alspotron/tree/master/example/alspotron-plugin)
+
 ## Migration from Alspotify
 
 Refer this [Documentation](https://github.com/organization/alspotron/blob/master/MIGRATION_FROM_ALSPOTIFY.md)

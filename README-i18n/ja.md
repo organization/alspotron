@@ -86,6 +86,11 @@
 |:--------------------------------------------------------------------------------------------------------:|
 | ![image](https://github.com/organization/alspotron/assets/16558115/9a28d479-b59d-4ea8-8564-4694dde5157a) |
 
+## Plugin
+Refer this [Documentation](https://github.com/organization/alspotron/wiki/Plugin)
+
+Refer this [Example](https://github.com/organization/alspotron/tree/master/example/alspotron-plugin)
+
 ## Migration from Alspotify
 
 [ドキュメント](https://github.com/organization/alspotron/blob/master/MIGRATION_FROM_ALSPOTIFY.md)を参照してください。

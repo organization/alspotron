@@ -101,6 +101,11 @@
 | :------------------------------------------------------------------------------------------------------: |
 | ![image](https://github.com/organization/alspotron/assets/16558115/171d97b3-79ff-4ede-b7a6-9905b7993b42) |
 
+## Plugin
+[문서](https://github.com/organization/alspotron/wiki/Plugin)를 참고하세요.
+
+예제는 [여기](https://github.com/organization/alspotron/tree/master/example/alspotron-plugin)를 확인해주세요.
+
 ## Migration from Alspotify
 
 [문서](https://github.com/organization/alspotron/blob/master/MIGRATION_FROM_ALSPOTIFY.md)를 참고하세요.
