@@ -5,3 +5,4 @@ rollup.preload.config.ts
 rollup.main.config.ts
 vite.renderer.config.ts
 extensions/alspotron.js
+example/

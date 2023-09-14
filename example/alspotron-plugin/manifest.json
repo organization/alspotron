@@ -1,0 +1,11 @@
+{
+  "id": "4fee1a34-d187-4dcc-ba63-ab9fd62abe71",
+  "name": "Improve Music Search",
+  "description": "Analyze titles to provide more accurate search results.",
+  "author": "JellyBrick & Su-Yong",
+  "version": "1.1.0",
+  "versionCode": 2,
+  "manifestVersion": 1,
+  
+  "main": "index.js"
+}
