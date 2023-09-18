@@ -5,6 +5,7 @@ import {
   createContext,
   createDeferred,
   createEffect,
+  createMemo,
   createSignal,
   JSX,
   on,
@@ -66,19 +67,17 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
 
   const [lyricMapper] = useLyricMapper();
 
-  const lyricMode = () => {
-    const data = originalData();
+  const lyricMode = createMemo(() => {
     const mapper = lyricMapper();
 
-    if (!data) return 'auto';
+    const mode: number | undefined = mapper[`${title()}:${coverUrl() ?? 'unknown'}`];
 
-    const mode: number | undefined = mapper[`${data.title}:${data.cover_url ?? 'unknown'}`];
     if (mode === undefined) return 'auto';
     if (mode === ConfigLyricMode.NONE) return 'none';
     if (mode === ConfigLyricMode.PLAYER) return 'player';
 
     return 'manual';
-  };
+  });
 
   const onUpdate = (_event: unknown, message: { data: UpdateData }) => {
     const data: UpdateData = message.data;

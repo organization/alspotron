@@ -5,11 +5,9 @@ import { LyricMapper } from '../../common/config';
 const useLyricMapper = () => {
   const [lyricMapper, setLyricMapper] = createSignal<LyricMapper>({});
 
-  (async () => {
-    const result = await window.ipcRenderer.invoke('get-lyric-mapper') as LyricMapper;
-
+  window.ipcRenderer.invoke('get-lyric-mapper').then((result: LyricMapper) => {
     setLyricMapper(result || {});
-  })();
+  });
 
   window.ipcRenderer.on('lyric-mapper', (_, data: LyricMapper) => {
     setLyricMapper(data);
