@@ -577,15 +577,15 @@ class Application {
       event.returnValue = config();
     });
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
-    ipcMain.handle('set-lyric-mapper', (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
-      this.overridePlugin('lyric-mapper', (data) => {
+    ipcMain.handle('set-lyric-mapper', async (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
+      await this.overridePlugin('lyric-mapper', (data) => {
         setLyricMapper(data, useFallback);
       }, data);
       this.broadcast('lyric-mapper', lyricMapper());
     });
     ipcMain.handle('get-lyric-mapper', () => lyricMapper());
-    ipcMain.handle('set-game-list', (_, data: Partial<GameList>, useFallback: boolean = true) => {
-      this.overridePlugin('game-list', (data) => {
+    ipcMain.handle('set-game-list', async (_, data: Partial<GameList>, useFallback: boolean = true) => {
+      await this.overridePlugin('game-list', (data) => {
         setGameList(data, useFallback);
       }, data);
       this.broadcast('game-list', gameList());
