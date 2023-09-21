@@ -47,9 +47,10 @@ const useLyric = () => {
         if (now.equals(tempLyrics.end())) return null;
 
         const next = now.next();
-        now = next;
+        if (!next.value) return null;
 
-        return next.second;
+        now = next;
+        return next?.second;
       });
   });
   const previousLyrics = createMemo(() => {
@@ -63,10 +64,11 @@ const useLyric = () => {
         if (!tempLyrics) return null;
         if (now.equals(tempLyrics.begin())) return null;
 
-        const next = now.prev();
-        now = next;
+        const prev = now.prev();
+        if (!prev.value) return null;
 
-        return next.second;
+        now = prev;
+        return prev?.second;
       });
   });
 
