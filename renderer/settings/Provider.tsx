@@ -1,7 +1,7 @@
 import { JSX } from 'solid-js';
 import { TransProvider } from '@jellybrick/solid-i18next';
 
-import { Router } from '@solidjs/router';
+import { Router, hashIntegration } from '@solidjs/router';
 
 import { LangResource } from '../../common/intl';
 import useConfig from '../hooks/useConfig';
@@ -20,7 +20,7 @@ const Provider = (props: ProviderProps) => {
         lng: config()?.language
       }}
     >
-      <Router>
+      <Router source={hashIntegration()}>
         {props.children}
       </Router>
     </TransProvider>
