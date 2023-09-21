@@ -49,12 +49,14 @@ const Lyrics = (props: LyricsProps) => {
     opacity: ${configData?.style.lyric?.nextLyricOpacity};
     transform: scale(${configData?.style.lyric?.nextLyricScale});
     transform-origin: ${anchorTypeToOriginType(configData.windowPosition.anchor)};
+    row-gap: ${configData.style.lyric.multipleContainerRowGap}rem;
   ` : ''));
 
   const previousLyricsStyle = createMemo(on(config, (configData) => configData ? `
     opacity: ${configData?.style.lyric?.previousLyricOpacity};
     transform: scale(${configData?.style.lyric?.previousLyricScale});
     transform-origin: ${anchorTypeToOriginType(configData.windowPosition.anchor, '100%')};
+    row-gap: ${configData.style.lyric.multipleContainerRowGap}rem;
   ` : ''));
 
   return (
@@ -67,7 +69,7 @@ const Lyrics = (props: LyricsProps) => {
       {...containerProps}
     >
     <div
-      class={cx('w-full flex flex-col', props.class, userCSSSelectors['previous-lyrics-wrapper'])}
+      class={cx('w-full flex flex-col-reverse', props.class, userCSSSelectors['previous-lyrics-wrapper'])}
       style={previousLyricsStyle()}
     >
       <Index each={previousLyrics()}>
