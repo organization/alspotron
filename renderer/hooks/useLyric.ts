@@ -58,7 +58,7 @@ const useLyric = () => {
     let now = lastIter();
     
     return Array
-      .from({ length: config()?.lyric.nextLyric ?? 0 })
+      .from({ length: config()?.lyric.previousLyric ?? 0 })
       .map(() => {
         if (!now) return null;
         if (!tempLyrics) return null;
