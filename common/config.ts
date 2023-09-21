@@ -42,6 +42,11 @@ export interface Config {
     userCSS: string | null;
   };
 
+  lyric: {
+    nextLyric: number;
+    previousLyric: number;
+  };
+
   windowPosition: {
     anchor: 'top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right';
     display: number | null;
@@ -98,6 +103,11 @@ export const DEFAULT_CONFIG: Config = {
     },
 
     userCSS: null,
+  },
+
+  lyric: {
+    nextLyric: 0,
+    previousLyric: 0,
   },
 
   windowPosition: {

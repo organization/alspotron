@@ -62,6 +62,9 @@
   "setting.general.select-language-menu": "Language preference",
   "setting.general.select-language": "Change language",
   "setting.general.language.alert": "Some settings requires an app restart to show changes in effect.",
+  "setting.general.lyric-menu": "Lyric preference",
+  "setting.general.next-lyric-count": "Count of next lyrics to show",
+  "setting.general.previous-lyric-count": "Count of previous lyrics to show",
   "setting.general.developer-menu": "Developer options",
   "setting.general.developer": "Enable developer",
 

@@ -62,6 +62,9 @@
   "setting.general.select-language-menu": "言語設定",
   "setting.general.select-language": "言語を選択",
   "setting.general.language.alert": "Alspotronを再起動すると言語設定が適用されます。",
+  "setting.general.lyric-menu": "Lyric preference",
+  "setting.general.next-lyric-count": "Count of next lyrics to show",
+  "setting.general.previous-lyric-count": "Count of previous lyrics to show",
   "setting.general.developer-menu": "Developer options",
   "setting.general.developer": "Enable developer",
 

@@ -62,6 +62,9 @@
   "setting.general.select-language-menu": "Spracheinstellungen",
   "setting.general.select-language": "Sprache ändern",
   "setting.general.language.alert": "Einige Einstellungen werden erst nach Neustart angewendet.",
+  "setting.general.lyric-menu": "Lyric preference",
+  "setting.general.next-lyric-count": "Count of next lyrics to show",
+  "setting.general.previous-lyric-count": "Count of previous lyrics to show",
   "setting.general.developer-menu": "Developer options",
   "setting.general.developer": "Enable developer",
 
