@@ -1,5 +1,7 @@
 import { createMemo } from 'solid-js';
 
+import { FlatMap } from 'tstl/experimental';
+
 import useConfig from './useConfig';
 
 import { usePlayingInfo } from '../components/PlayingInfoProvider';
@@ -36,40 +38,42 @@ const useLyric = () => {
   const index = createMemo(() => lastIter()?.first);
 
   const nextLyrics = createMemo(() => {
+    let nextLyricLength = config()?.lyric.nextLyric;
+    if (!nextLyricLength) return null;
+
+    const now = lastIter();
     const tempLyrics = lyrics();
-    let now = lastIter();
-    
-    return Array
-      .from({ length: config()?.lyric.nextLyric ?? 0 })
-      .map(() => {
-        if (!now) return null;
-        if (!tempLyrics) return null;
-        if (now.equals(tempLyrics.end())) return null;
 
-        const next = now.next();
-        if (!next.value) return null;
+    if (
+      !tempLyrics ||
+      !now
+    ) {
+      return null;
+    } else if (now.index() + nextLyricLength >= tempLyrics.end().index()) {
+      nextLyricLength = tempLyrics.end().index() - now.index() - 1;
+    }
 
-        now = next;
-        return next?.second;
-      });
+    return new FlatMap<number, string[]>(now.next(), now.advance(nextLyricLength + 1));
   });
+
   const previousLyrics = createMemo(() => {
+    let previousLyricLength = config()?.lyric.previousLyric;
+    if (!previousLyricLength) return null;
+    const now = lastIter();
     const tempLyrics = lyrics();
-    let now = lastIter();
-    
-    return Array
-      .from({ length: config()?.lyric.previousLyric ?? 0 })
-      .map(() => {
-        if (!now) return null;
-        if (!tempLyrics) return null;
-        if (now.equals(tempLyrics.begin())) return null;
 
-        const prev = now.prev();
-        if (!prev.value) return null;
+    if (
+      !tempLyrics ||
+      !now
+    ) {
+      return null;
+    } else if (now.index() - previousLyricLength < tempLyrics.begin().index()) {
+      previousLyricLength = now.index() - tempLyrics.begin().index();
+    }
 
-        now = prev;
-        return prev?.second;
-      });
+    // NOW: -2 1 0
+    // HOW TO 0 -1 -2?
+    return new FlatMap<number, string[]>(now.advance(-previousLyricLength), now, (a, b) => a > b);
   });
 
 
