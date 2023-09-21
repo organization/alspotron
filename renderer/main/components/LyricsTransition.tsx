@@ -21,7 +21,7 @@ const Lyrics = (props: LyricsProps) => (
         class={userCSSSelectors['lyrics-item']}
         status={props.status}
         style={`
-          --order: ${index()};
+          --order: calc(${index()} + var(--order-offset, 0));
           ${userCSSVariables['var-lyric-order']}: var(--order);
           ${props.style};
         `}
@@ -74,6 +74,7 @@ const LyricsTransitionGroupSequential = (props: LyricsTransitionGroupProps) => {
 type LyricTransitionProps = JSX.HTMLAttributes<HTMLDivElement> & {
   lyrics: string[];
   status: Status;
+  style: string;
 };
 
 const LyricsTransition = (props: LyricTransitionProps) => {

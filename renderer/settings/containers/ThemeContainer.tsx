@@ -409,6 +409,50 @@ const ThemeContainer = () => {
           onChange={(event) => setConfig({ style: { lyric: { containerRowGap: event.target.valueAsNumber } } })}
         />
       </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <div class={'text-md'}>
+          <Trans key={'setting.theme.next-lyrics-opacity'} />
+        </div>
+        <input
+          type={'number'}
+          class={'input w-48'}
+          value={config()?.style.lyric.nextLyricOpacity}
+          onChange={(event) => setConfig({ style: { lyric: { nextLyricOpacity: event.target.valueAsNumber } } })}
+        />
+      </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <div class={'text-md'}>
+          <Trans key={'setting.theme.previous-lyrics-opacity'} />
+        </div>
+        <input
+          type={'number'}
+          class={'input w-48'}
+          value={config()?.style.lyric.previousLyricOpacity}
+          onChange={(event) => setConfig({ style: { lyric: { previousLyricOpacity: event.target.valueAsNumber } } })}
+        />
+      </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <div class={'text-md'}>
+          <Trans key={'setting.theme.next-lyrics-scale'} />
+        </div>
+        <input
+          type={'number'}
+          class={'input w-48'}
+          value={config()?.style.lyric.nextLyricScale}
+          onChange={(event) => setConfig({ style: { lyric: { nextLyricScale: event.target.valueAsNumber } } })}
+        />
+      </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <div class={'text-md'}>
+          <Trans key={'setting.theme.previous-lyrics-scale'} />
+        </div>
+        <input
+          type={'number'}
+          class={'input w-48'}
+          value={config()?.style.lyric.previousLyricScale}
+          onChange={(event) => setConfig({ style: { lyric: { previousLyricScale: event.target.valueAsNumber } } })}
+        />
+      </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
       <Trans key={'setting.theme.theme'} />
