@@ -61,7 +61,7 @@ const Lyrics = (props: LyricsProps) => {
     <div
       class={cx('w-full flex flex-col', props.class, userCSSSelectors['lyrics-wrapper'])}
       style={`
-        row-gap: ${config()?.style.lyric.containerRowGap}rem;
+        row-gap: ${config()?.style.lyric.multipleContainerRowGap}rem;
         opacity: ${status() !== 'playing' ? config()?.style.lyric.stoppedOpacity : 1}; ${props.style ?? ''};
       `}
       {...containerProps}

@@ -37,10 +37,11 @@ export interface Config {
       maxWidth: number;
       stoppedOpacity: number;
       containerRowGap: number;
-      nextLyricScale?: number;
-      previousLyricScale?: number;
-      nextLyricOpacity?: number;
-      previousLyricOpacity?: number;
+      multipleContainerRowGap: number;
+      nextLyricScale: number;
+      previousLyricScale: number;
+      nextLyricOpacity: number;
+      previousLyricOpacity: number;
     };
 
     userCSS: string | null;
@@ -104,6 +105,7 @@ export const DEFAULT_CONFIG: Config = {
       maxWidth: 700,
       stoppedOpacity: 0.5,
       containerRowGap: 1,
+      multipleContainerRowGap: 1,
       nextLyricScale: 0.9,
       previousLyricScale: 0.9,
       nextLyricOpacity: 0.5,

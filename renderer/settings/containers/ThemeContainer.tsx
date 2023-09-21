@@ -411,6 +411,17 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
+          <Trans key={'setting.theme.margin-between-multiple-lyrics-containers'} />
+        </div>
+        <input
+          type={'number'}
+          class={'input w-48'}
+          value={config()?.style.lyric.multipleContainerRowGap}
+          onChange={(event) => setConfig({ style: { lyric: { multipleContainerRowGap: event.target.valueAsNumber } } })}
+        />
+      </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <div class={'text-md'}>
           <Trans key={'setting.theme.next-lyrics-opacity'} />
         </div>
         <input
