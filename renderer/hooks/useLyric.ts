@@ -91,23 +91,26 @@ const useLyric = () => {
 
     return now.advance(-previousLyricLength);
   });
-  const lyricIters = createMemo(() => {
+  const lyricRange = createMemo(() => {
     const now = lastIter();
     if (!now) return null;
-    const iters: (MapElementVector.Iterator<number, string[], true, FlatMap<number, string[]>>)[] = [];
+
+    const result: string[][] = [];
     const prevIter = previousLyricsIter() ?? now;
     const nextIter = nextLyricsIter() ?? now;
-    if (prevIter.equals(nextIter)) return [now];
+  
+    if (prevIter.equals(nextIter)) return [now.second];
     for (let v = prevIter; !v.equals(nextIter); v = v.next()) {
-      iters.push(v);
+      result.push(v.second);
     }
     if (nextIter.equals(now)) {
-      iters.push(now);
+      result.push(now.second);
     }
-    return iters;
+  
+    return result;
   });
 
-  return [lyric, index, lyricIters, getPreviousLyricLength] as const;
+  return [lyric, index, lyricRange, getPreviousLyricLength] as const;
 };
 
 export default useLyric;

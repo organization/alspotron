@@ -42,7 +42,7 @@ const Lyrics = (props: LyricsProps) => {
   const [config] = useConfig();
   const [, containerProps] = splitProps(props, ['class', 'style']);
   const { status } = usePlayingInfo();
-  const [lyrics, , lyricIters, getPreviousLyricLength] = useLyric();
+  const [lyrics, , lyricsRange, getPreviousLyricLength] = useLyric();
 
 
 
@@ -72,10 +72,10 @@ const Lyrics = (props: LyricsProps) => {
           name={animation()}
           appear
         >
-          <For each={lyricIters()}>
+          <For each={lyricsRange()}>
             {(lyrics, index) => (
               <LyricsTransition
-                lyrics={lyrics.second ?? []}
+                lyrics={lyrics}
                 status={status()}
                 class={'w-fit transition-all'}
                 style={`
