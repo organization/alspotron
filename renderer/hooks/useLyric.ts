@@ -94,11 +94,15 @@ const useLyric = () => {
   const lyricIters = createMemo(() => {
     const now = lastIter();
     if (!now) return null;
-    const iters: MapElementVector.Iterator<number, string[], true, FlatMap<number, string[]>>[] = [];
+    const iters: (MapElementVector.Iterator<number, string[], true, FlatMap<number, string[]>>)[] = [];
     const prevIter = previousLyricsIter() ?? now;
     const nextIter = nextLyricsIter() ?? now;
+    if (prevIter.equals(nextIter)) return [now];
     for (let v = prevIter; !v.equals(nextIter); v = v.next()) {
       iters.push(v);
+    }
+    if (nextIter.equals(now)) {
+      iters.push(now);
     }
     return iters;
   });
