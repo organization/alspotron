@@ -54,9 +54,11 @@ const LanguageContainer = () => {
           </div>
           <input
             type={'number'}
+            min={0}
+            step={1}
             class={'input w-48'}
             value={config()?.lyric.nextLyric}
-            onChange={(event) => setConfig({ lyric: { nextLyric: event.target.valueAsNumber } })}
+            onChange={(event) => setConfig({ lyric: { nextLyric: Math.round(event.target.valueAsNumber) } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -65,9 +67,11 @@ const LanguageContainer = () => {
           </div>
           <input
             type={'number'}
+            min={0}
+            step={1}
             class={'input w-48'}
             value={config()?.lyric.previousLyric}
-            onChange={(event) => setConfig({ lyric: { previousLyric: event.target.valueAsNumber } })}
+            onChange={(event) => setConfig({ lyric: { previousLyric: Math.round(event.target.valueAsNumber) } })}
           />
         </Card>
       </div>
