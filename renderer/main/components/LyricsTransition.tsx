@@ -1,4 +1,4 @@
-import { createMemo, For, JSX, on, Show, splitProps, untrack } from 'solid-js';
+import { createMemo, For, JSX, Match, on, splitProps, Switch, untrack } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
 import LyricsItem from './LyricsItem';
@@ -18,10 +18,10 @@ const Lyrics = (props: LyricsProps) => (
   <For each={props.lyrics}>
     {(item, index) => item && (
       <LyricsItem
-        class={userCSSSelectors['lyrics-item']}
+        class={cx(userCSSSelectors['lyrics-item'], 'w-fit')}
         status={props.status}
         style={`
-          --order: ${index()};
+          --order: calc(${index()} + var(--order-offset, 0));
           ${userCSSVariables['var-lyric-order']}: var(--order);
           ${props.style};
         `}
@@ -74,6 +74,7 @@ const LyricsTransitionGroupSequential = (props: LyricsTransitionGroupProps) => {
 type LyricTransitionProps = JSX.HTMLAttributes<HTMLDivElement> & {
   lyrics: string[];
   status: Status;
+  style: string;
 };
 
 const LyricsTransition = (props: LyricTransitionProps) => {
@@ -106,12 +107,14 @@ const LyricsTransition = (props: LyricTransitionProps) => {
   );
 
   const LyricsTransitionGroup = (transitionProps: LyricsTransitionGroupProps) => (
-    <Show
-      when={config()?.style.animationAtOnce}
-      fallback={<LyricsTransitionGroupSequential {...transitionProps} />}
-    >
-      <LyricsTransitionGroupAllAtOnce {...transitionProps} />
-    </Show>
+    <Switch>
+      <Match when={config()?.style.animationAtOnce}>
+        <LyricsTransitionGroupAllAtOnce {...transitionProps} />
+      </Match>
+      <Match when={!config()?.style.animationAtOnce}>
+        <LyricsTransitionGroupSequential {...transitionProps} />
+      </Match>
+    </Switch>
   );
 
   return (
