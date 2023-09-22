@@ -42,11 +42,11 @@ const Lyrics = (props: LyricsProps) => {
   const [config] = useConfig();
   const [, containerProps] = splitProps(props, ['class', 'style']);
   const { status } = usePlayingInfo();
-  const [lyrics, _, nextLyrics, previousLyrics] = useLyric();
+  const [lyrics, , lyricIters, getPreviousLyricLength] = useLyric();
 
-  const lyricsList = () => [ ...previousLyrics(), lyrics(), ...nextLyrics()];
 
-  const orderOffset = () => previousLyrics().length * 3;
+
+  const orderOffset = () => (getPreviousLyricLength() ?? 0) * 3;
   const offset = () => config()?.style.animationAtOnce ? 1 : 3;
 
   const animation = () => {
@@ -72,10 +72,10 @@ const Lyrics = (props: LyricsProps) => {
           name={animation()}
           appear
         >
-          <For each={lyricsList()}>
+          <For each={lyricIters()}>
             {(lyrics, index) => (
               <LyricsTransition
-                lyrics={lyrics ?? []}
+                lyrics={lyrics.second ?? []}
                 status={status()}
                 class={'w-fit transition-all'}
                 style={`
