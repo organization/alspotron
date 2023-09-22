@@ -856,7 +856,12 @@ class Application {
         + ((activeDisplay.bounds.height - windowHeight) / 2);
     })();
 
+    // electron issue: https://github.com/electron/electron/issues/16711#issuecomment-1311824063
+    const resizable = window.isResizable();
+    window.unmaximize();
+    window.setResizable(true);
     window.setSize(windowWidth, windowHeight);
+    window.setResizable(resizable);
     window.setPosition(Math.round(anchorX), Math.round(anchorY));
   }
 
