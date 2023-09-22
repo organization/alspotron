@@ -102,7 +102,7 @@ const useLyric = () => {
 
     const result: string[][] = [];
     for (let v = prevIter; !v.equals(nextIter); v = v.next()) {
-      result.push(v.second);
+      if (v) result.push(v.second);
     }
     if (nextIter.equals(now)) {
       result.push(now.second);

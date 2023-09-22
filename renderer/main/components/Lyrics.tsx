@@ -1,5 +1,5 @@
 
-import { For, splitProps } from 'solid-js';
+import { For, createMemo, on, splitProps } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
 import LyricsTransition from './LyricsTransition';
@@ -58,9 +58,29 @@ const Lyrics = (props: LyricsProps) => {
     return `lyric-${configuredName}`;
   };
 
+  const previousStyle = createMemo(on(config, (configData) => configData ? `
+    scale: ${configData.style.lyric.previousLyricScale};
+    opacity: ${configData.style.lyric.previousLyricOpacity};
+    transform-origin: ${anchorTypeToOriginType(configData.windowPosition.anchor, '100%')};
+  ` : ''));
+
+  const nextStyle = createMemo(on(config, (configData) => configData ? `
+    scale: ${configData.style.lyric.nextLyricScale};
+    opacity: ${configData.style.lyric.nextLyricOpacity};
+    transform-origin: ${anchorTypeToOriginType(configData.windowPosition.anchor)};
+  ` : ''));
+
+  const getStyle = (index: number) => {
+    const previousLength = getPreviousLyricLength() ?? 0;
+    if (index < previousLength) return previousStyle();
+    if (index > previousLength) return nextStyle();
+
+    return '';
+  };
+
   return (
       <div
-        class={cx('w-full flex flex-col justify-center', props.class, userCSSSelectors['lyrics-wrapper'])}
+        class={cx('w-full flex flex-col justify-center', props.class, userCSSSelectors['lyrics-container'])}
         style={`
           row-gap: ${config()?.style.lyric.multipleContainerRowGap}rem;
           opacity: ${status() !== 'playing' ? config()?.style.lyric.stoppedOpacity : 1}; ${props.style ?? ''};
@@ -74,19 +94,25 @@ const Lyrics = (props: LyricsProps) => {
         >
           <For each={lyricsRange()}>
             {(lyrics, index) => (
-              <LyricsTransition
-                lyrics={lyrics}
-                status={status()}
-                class={'w-fit transition-all'}
-                style={`
-                  --order-offset: ${orderOffset() + (index() * offset())};
-                  row-gap: ${config()?.style.lyric.containerRowGap}rem;
-                  flex-direction: ${config()?.windowPosition?.direction ?? 'column'};
-                  align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
-                  transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
-                `}
-                {...containerProps}
-              />
+              <div class={cx('w-fit transition-all', userCSSSelectors['lyrics-transition-wrapper'])}>
+                <div
+                  style={getStyle(index())}
+                  class={cx('transition-all duration-500', userCSSSelectors['lyrics-wrapper'])}
+                >
+                  <LyricsTransition
+                    lyrics={lyrics}
+                    status={status()}
+                    style={`
+                      --order-offset: ${orderOffset() + (index() * offset())};
+                      row-gap: ${config()?.style.lyric.containerRowGap}rem;
+                      flex-direction: ${config()?.windowPosition?.direction ?? 'column'};
+                      align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
+                      transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
+                    `}
+                    {...containerProps}
+                  />
+                </div>
+              </div>
             )}
           </For>
       </TransitionGroup>
