@@ -95,11 +95,12 @@ const useLyric = () => {
     const now = lastIter();
     if (!now) return null;
 
-    const result: string[][] = [];
     const prevIter = previousLyricsIter() ?? now;
     const nextIter = nextLyricsIter() ?? now;
   
     if (prevIter.equals(nextIter)) return [now.second];
+
+    const result: string[][] = [];
     for (let v = prevIter; !v.equals(nextIter); v = v.next()) {
       result.push(v.second);
     }
