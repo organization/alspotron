@@ -7,7 +7,6 @@ import { basicSetup, EditorView } from 'codemirror';
 import { createEffect, createSignal, For, getOwner, runWithOwner, untrack } from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
 
-import useConfig from '../../hooks/useConfig';
 import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
 
 const debounce = <P extends unknown[]>(fn: (...args: P) => void, timeout: number) => {
@@ -37,7 +36,7 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
 
     const editingDraft = untrack(initialUserCSS);
     if (editingDraft === null) {
-      setInitialUserCSS(userCSS || '');
+      setInitialUserCSS(userCSS ?? '');
     }
   });
 
