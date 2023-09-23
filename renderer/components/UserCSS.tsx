@@ -1,7 +1,7 @@
 import { createMemo, createRenderEffect, onCleanup, onMount } from 'solid-js';
 import { compile, serialize, stringify, prefixer, middleware, Middleware } from 'stylis';
 
-import useConfig from '../hooks/useConfig';
+import useStyle from '../hooks/useStyle';
 import { userCSSSelectors, userCSSTransitions } from '../utils/userCSSSelectors';
 
 const userCSSMiddleware: Middleware = (element) => {
@@ -29,14 +29,16 @@ const userCSSMiddleware: Middleware = (element) => {
 };
 
 const UserCSS = () => {
-  const [config] = useConfig();
-  const userCSS = () => config()?.style.userCSS ?? '';
-  const compiledCSS = createMemo(
-    () => serialize(
+  const style = useStyle();
+  const userCSS = () => style().userCSS ?? '';
+  const compiledCSS = createMemo(() => {
+    if (!userCSS()) return '';
+    
+    return serialize(
       compile(userCSS()),
       middleware([userCSSMiddleware, prefixer, stringify])
-    )
-  );
+    );
+  });
 
   const stylesheet = new CSSStyleSheet();
   createRenderEffect(() => stylesheet.replace(compiledCSS()));

@@ -47,6 +47,8 @@ export type StyleConfig = {
 };
 
 export interface Config {
+  version: 1;
+
   themes: Record<string, StyleConfig | undefined>;
   selectedTheme: string;
 

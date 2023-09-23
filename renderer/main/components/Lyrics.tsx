@@ -11,6 +11,7 @@ import { cx } from '../../utils/classNames';
 import { userCSSSelectors, userCSSTransitions } from '../../utils/userCSSSelectors';
 
 import useConfig from '../../hooks/useConfig';
+import useStyle from '../../hooks/useStyle';
 
 import type { JSX } from 'solid-js/jsx-runtime';
 
@@ -40,6 +41,7 @@ const anchorTypeToOriginType = (anchor?: string, y = '0') => {
 
 const Lyrics = (props: LyricsProps) => {
   const [config] = useConfig();
+  const style = useStyle();
   const [, containerProps] = splitProps(props, ['class', 'style']);
   const { status } = usePlayingInfo();
   const [lyrics, , lyricsRange, getPreviousLyricLength] = useLyric();
@@ -47,10 +49,10 @@ const Lyrics = (props: LyricsProps) => {
 
 
   const orderOffset = () => (getPreviousLyricLength() ?? 0) * 3;
-  const offset = () => config()?.style.animationAtOnce ? 1 : 3;
+  const offset = () => style().animationAtOnce ? 1 : 3;
 
   const animation = () => {
-    const configuredName = config()?.style?.animation ?? 'pretty';
+    const configuredName = style()?.animation ?? 'pretty';
     if (configuredName === 'custom') {
       return userCSSTransitions['transition-lyric'];
     }
@@ -59,14 +61,14 @@ const Lyrics = (props: LyricsProps) => {
   };
 
   const previousStyle = createMemo(on(config, (configData) => configData ? `
-    scale: ${configData.style.lyric.previousLyricScale};
-    opacity: ${configData.style.lyric.previousLyricOpacity};
+    scale: ${style().lyric.previousLyricScale};
+    opacity: ${style().lyric.previousLyricOpacity};
     transform-origin: ${anchorTypeToOriginType(configData.windowPosition.anchor, '100%')};
   ` : ''));
 
   const nextStyle = createMemo(on(config, (configData) => configData ? `
-    scale: ${configData.style.lyric.nextLyricScale};
-    opacity: ${configData.style.lyric.nextLyricOpacity};
+    scale: ${style().lyric.nextLyricScale};
+    opacity: ${style().lyric.nextLyricOpacity};
     transform-origin: ${anchorTypeToOriginType(configData.windowPosition.anchor)};
   ` : ''));
 
@@ -82,8 +84,8 @@ const Lyrics = (props: LyricsProps) => {
       <div
         class={cx('w-full flex flex-col justify-center', props.class, userCSSSelectors['lyrics-container'])}
         style={`
-          row-gap: ${config()?.style.lyric.multipleContainerRowGap}rem;
-          opacity: ${status() !== 'playing' ? config()?.style.lyric.stoppedOpacity : 1}; ${props.style ?? ''};
+          row-gap: ${style().lyric.multipleContainerRowGap}rem;
+          opacity: ${status() !== 'playing' ? style().lyric.stoppedOpacity : 1}; ${props.style ?? ''};
           align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
         `}
         {...containerProps}
@@ -104,7 +106,7 @@ const Lyrics = (props: LyricsProps) => {
                     status={status()}
                     style={`
                       --order-offset: ${orderOffset() + (index() * offset())};
-                      row-gap: ${config()?.style.lyric.containerRowGap}rem;
+                      row-gap: ${style().lyric.containerRowGap}rem;
                       flex-direction: ${config()?.windowPosition?.direction ?? 'column'};
                       align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
                       transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};

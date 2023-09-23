@@ -5,7 +5,7 @@ import { useNavigate } from '@solidjs/router';
 import Card from '../../components/Card';
 import Modal from '../../components/Modal';
 import useConfig from '../../hooks/useConfig';
-import { DEFAULT_CONFIG } from '../../../common/constants';
+import { DEFAULT_STYLE } from '../../../common/constants';
 
 const ThemeListContainer = () => {
   const [config, setConfig] = useConfig();
@@ -48,12 +48,9 @@ const ThemeListContainer = () => {
       suffix += 1;
     }
 
-    const value = DEFAULT_CONFIG.themes[Object.keys(DEFAULT_CONFIG.themes)[0]];
-    if (!value) return;
-
     setConfig({
       themes: {
-        [`${newName} ${suffix}`]: value,
+        [`${newName} ${suffix}`]: DEFAULT_STYLE,
       },
     });
   };

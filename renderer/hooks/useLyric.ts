@@ -1,10 +1,7 @@
 import { createMemo } from 'solid-js';
 
-import { FlatMap } from 'tstl/experimental';
-
-import { MapElementVector } from 'tstl/internal/container/associative/MapElementVector';
-
 import useConfig from './useConfig';
+import useStyle from './useStyle';
 
 import { usePlayingInfo } from '../components/PlayingInfoProvider';
 
@@ -13,6 +10,7 @@ const TRANSITION_DURATION = 225; // ms
 
 const useLyric = () => {
   const [config] = useConfig();
+  const style = useStyle();
   const { lyrics, progress } = usePlayingInfo();
 
   const lastIter = () => {
@@ -22,7 +20,7 @@ const useLyric = () => {
     const last = tempLyrics.lower_bound(
       progress() + (
         BIAS + (
-          config()?.style?.animation !== 'none' && !config()?.style?.animationAtOnce ?
+          style().animation !== 'none' && !style().animationAtOnce ?
             TRANSITION_DURATION :
             0
         )

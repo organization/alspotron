@@ -4,7 +4,7 @@ import { Marquee } from '@suyongs/solid-utility';
 
 import icon from '../../../assets/icon_music.png';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
-import useConfig from '../../hooks/useConfig';
+import useStyle from '../../hooks/useStyle';
 import { cx } from '../../utils/classNames';
 
 import { formatTime } from '../../utils/formatTime';
@@ -25,7 +25,7 @@ interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
 }
 
 const LyricProgressBar = (props: LyricProgressBarProps) => {
-  const [config] = useConfig();
+  const themeStyle = useStyle();
   const { coverUrl, title, artist, progress, duration, status } = usePlayingInfo();
   const [style, containerProps] = splitProps(
     props,
@@ -54,7 +54,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
         ${userCSSVariables['var-nowplaying-percent']}: var(--percent);
         ${userCSSVariables['var-nowplaying-duration']}: '${formatTime(duration())}';
         ${userCSSVariables['var-nowplaying-progress']}: '${formatTime(progress())}';
-        opacity: ${status() !== 'playing' ? config()?.style.nowPlaying.stoppedOpacity : 1};
+        opacity: ${status() !== 'playing' ? themeStyle().nowPlaying.stoppedOpacity : 1};
         will-change: opacity, transform;
         ${style.style ?? ''}
       `}

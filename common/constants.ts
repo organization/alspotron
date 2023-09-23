@@ -6,44 +6,47 @@ export const ConfigLyricMode = {
 };
 export type ConfigLyricMode = typeof ConfigLyricMode[keyof typeof ConfigLyricMode];
 
+export const DEFAULT_STYLE = {
+  font: 'KoPubWorldDotum',
+  fontWeight: '400',
+  animation: 'pretty',
+  animationAtOnce: false,
+  maxHeight: 400,
+  proximityOpacity: 0,
+  proximitySensitivity: 2,
+  rowGap: 2,
+
+  nowPlaying: {
+    color: '#FFFFFF',
+    background: 'rgba(29, 29, 29, .50)',
+    backgroundProgress: 'rgba(29, 29, 29, .80)',
+    fontSize: 11,
+    maxWidth: 300,
+    visible: true,
+    stoppedOpacity: 0.5,
+  },
+
+  lyric: {
+    color: '#FFFFFF',
+    background: 'rgba(29, 29, 29, .70)',
+    fontSize: 12,
+    maxWidth: 700,
+    stoppedOpacity: 0.5,
+    containerRowGap: 1,
+    multipleContainerRowGap: 1,
+    nextLyricScale: 0.9,
+    previousLyricScale: 0.9,
+    nextLyricOpacity: 0.5,
+    previousLyricOpacity: 0.5,
+  },
+
+  userCSS: null,
+};
 export const DEFAULT_CONFIG: Config = {
+  version: 1,
+
   themes: {
-    'Default Theme': {
-      font: 'KoPubWorldDotum',
-      fontWeight: '400',
-      animation: 'pretty',
-      animationAtOnce: false,
-      maxHeight: 400,
-      proximityOpacity: 0,
-      proximitySensitivity: 2,
-      rowGap: 2,
-  
-      nowPlaying: {
-        color: '#FFFFFF',
-        background: 'rgba(29, 29, 29, .50)',
-        backgroundProgress: 'rgba(29, 29, 29, .80)',
-        fontSize: 11,
-        maxWidth: 300,
-        visible: true,
-        stoppedOpacity: 0.5,
-      },
-  
-      lyric: {
-        color: '#FFFFFF',
-        background: 'rgba(29, 29, 29, .70)',
-        fontSize: 12,
-        maxWidth: 700,
-        stoppedOpacity: 0.5,
-        containerRowGap: 1,
-        multipleContainerRowGap: 1,
-        nextLyricScale: 0.9,
-        previousLyricScale: 0.9,
-        nextLyricOpacity: 0.5,
-        previousLyricOpacity: 0.5,
-      },
-  
-      userCSS: null,
-    },
+    'Default Theme': DEFAULT_STYLE,
   },
   selectedTheme: 'Default Theme',
 

@@ -279,6 +279,20 @@ const ThemeContainer = () => {
           onChange={(event) => setTheme({ rowGap: event.target.valueAsNumber })}
         />
       </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'}>
+        <div class={'font-md'}>
+          <Trans key={'setting.position.select-to-show-now-playing-panel'} />
+        </div>
+        <div class={'flex-1'} />
+        <Selector
+          format={(value) => value === 'true' ? t('setting.position.show-now-playing-panel') : t('setting.position.hide-now-playing-panel')}
+          value={theme()?.nowPlaying?.visible?.toString() ?? 'true'}
+          onChange={(value) => setTheme({ nowPlaying: { visible: value === 'true' } })}
+          options={['true', 'false']}
+          class={'select'}
+        />
+      </Card>
+
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
       <Trans key={'setting.theme.now-playing'} />
@@ -463,7 +477,10 @@ const ThemeContainer = () => {
       <Card
         class={'flex flex-row justify-between items-center gap-1'}
         subCards={[
-          <UserCSSEditor />
+          <UserCSSEditor
+            css={theme()?.userCSS}
+            onUpdate={(value) => setTheme({ userCSS: value })}
+          />
         ]}
       >
         <div class={'w-full h-full flex flex-col justify-center items-start gap-0'}>

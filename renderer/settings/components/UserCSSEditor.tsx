@@ -4,7 +4,7 @@ import { keymap } from '@codemirror/view';
 import { CodeMirror } from '@solid-codemirror/codemirror';
 import { githubDarkInit } from '@uiw/codemirror-theme-github';
 import { basicSetup, EditorView } from 'codemirror';
-import { createEffect, createSignal, For, untrack } from 'solid-js';
+import { createEffect, createSignal, For, getOwner, runWithOwner, untrack } from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
 
 import useConfig from '../../hooks/useConfig';
@@ -22,23 +22,29 @@ const debounce = <P extends unknown[]>(fn: (...args: P) => void, timeout: number
   }
 };
 
-const UserCSSEditor = () => {
-  const [config, setConfig] = useConfig();
+export interface UserCSSEditorProps {
+  css?: string | null;
+  onUpdate: (value: string) => void;
+}
+
+const UserCSSEditor = (props: UserCSSEditorProps) => {
   const [initialUserCSS, setInitialUserCSS] = createSignal<string | null>(null);
   createEffect(() => {
-    const styleConfig = config()?.style;
-    if (styleConfig?.userCSS === undefined) {
+    const userCSS = props.css;
+    if (userCSS === undefined) {
       return;
     }
 
     const editingDraft = untrack(initialUserCSS);
     if (editingDraft === null) {
-      setInitialUserCSS(styleConfig.userCSS || '');
+      setInitialUserCSS(userCSS || '');
     }
   });
 
+  const owner = getOwner();
   const onUpdate = (value: string) => {
-    setConfig({ style: { userCSS: value } });
+    // eslint-disable-next-line solid/reactivity
+    runWithOwner(owner, () => props.onUpdate(value));
   };
   const onUpdateDebounced = debounce(onUpdate, 1000);
 

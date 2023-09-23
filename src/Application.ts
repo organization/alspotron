@@ -19,7 +19,6 @@ import PluginManager from './plugins/plugin-manager';
 import {
   Config,
   config,
-  DEFAULT_CONFIG,
   GameList,
   gameList,
   LyricMapper,
@@ -28,6 +27,7 @@ import {
   setGameList,
   setLyricMapper
 } from '../common/config';
+import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../common/constants';
 
 import { getTranslation } from '../common/intl';
 
@@ -809,7 +809,8 @@ class Application {
   updateWindowConfig(window: BrowserWindow | null, options?: { isOverlay: boolean, gameProcessId?: number }) {
     if (!window) return;
 
-    const { windowPosition, style } = config();
+    const { windowPosition, themes, selectedTheme, style: legacyStyle } = config();
+    const style = themes[selectedTheme] ?? legacyStyle ?? DEFAULT_STYLE;
     let activeDisplay: Electron.Display;
     if (options?.isOverlay && process.platform === 'win32') {
       // eslint-disable-next-line @typescript-eslint/no-var-requires

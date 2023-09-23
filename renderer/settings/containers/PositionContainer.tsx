@@ -170,20 +170,6 @@ const PositionContainer = () => {
           class={'select'}
         />
       </Card>
-      <Card class={'flex flex-row justify-start items-center gap-1'}>
-        <div class={'font-md'}>
-          <Trans key={'setting.position.select-to-show-now-playing-panel'} />
-        </div>
-        <div class={'flex-1'} />
-        <Selector
-          format={(value) => value === 'true' ? t('setting.position.show-now-playing-panel') : t('setting.position.hide-now-playing-panel')}
-          value={config()?.style?.nowPlaying?.visible?.toString() ?? 'true'}
-          onChange={(value) => setConfig({ style: { nowPlaying: { visible: value === 'true' } } })}
-          options={['true', 'false']}
-          class={'select'}
-        />
-      </Card>
-
       <div class={'text-md mt-8 mb-1'}>
         <Trans key={'setting.position.adjust-margin'} />
       </div>

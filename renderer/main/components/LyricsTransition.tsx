@@ -3,9 +3,9 @@ import { TransitionGroup } from 'solid-transition-group';
 
 import LyricsItem from './LyricsItem';
 
-import { Status } from '../../components/PlayingInfoProvider';
-import useConfig from '../../hooks/useConfig';
+import useStyle from '../../hooks/useStyle';
 import { cx } from '../../utils/classNames';
+import { Status } from '../../components/PlayingInfoProvider';
 import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
 
 type LyricsProps = {
@@ -80,8 +80,10 @@ type LyricTransitionProps = JSX.HTMLAttributes<HTMLDivElement> & {
 const LyricsTransition = (props: LyricTransitionProps) => {
   const [, lyricsProps, passedProps] = splitProps(props, ['class'], ['lyrics', 'status']);
 
+  const style = useStyle();
+
   const animation = () => {
-    const configuredName = config()?.style?.animation ?? 'pretty';
+    const configuredName = style()?.animation ?? 'pretty';
     if (configuredName === 'custom') {
       return userCSSTransitions['transition-lyric'];
     }
@@ -89,15 +91,12 @@ const LyricsTransition = (props: LyricTransitionProps) => {
     return `lyric-${configuredName}`;
   };
 
-  const [config] = useConfig();
-  const lyricsStyle = createMemo(on(config, (configData) => `
-    ${configData ? `
-      font-family: ${configData.style.font};
-      font-weight: ${configData.style.fontWeight};
-      font-size: ${configData.style.lyric.fontSize}px;
-      color: ${configData.style.lyric.color};
-      background-color: ${configData.style.lyric.background};
-    ` : ''};
+  const lyricsStyle = createMemo(on(style, (styleData) => `
+    font-family: ${styleData.font};
+    font-weight: ${styleData.fontWeight};
+    font-size: ${styleData.lyric.fontSize}px;
+    color: ${styleData.lyric.color};
+    background-color: ${styleData.lyric.background};
   `));
 
   const Container = (containerProps: { children: JSX.Element }) => (
@@ -108,10 +107,10 @@ const LyricsTransition = (props: LyricTransitionProps) => {
 
   const LyricsTransitionGroup = (transitionProps: LyricsTransitionGroupProps) => (
     <Switch>
-      <Match when={config()?.style.animationAtOnce}>
+      <Match when={style().animationAtOnce}>
         <LyricsTransitionGroupAllAtOnce {...transitionProps} />
       </Match>
-      <Match when={!config()?.style.animationAtOnce}>
+      <Match when={!style().animationAtOnce}>
         <LyricsTransitionGroupSequential {...transitionProps} />
       </Match>
     </Switch>
