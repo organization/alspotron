@@ -37,6 +37,9 @@ export type StyleConfig = {
     stoppedOpacity: number;
     containerRowGap: number;
     multipleContainerRowGap: number;
+    direction: 'column' | 'column-reverse';
+    nextLyric: number;
+    previousLyric: number;
     nextLyricScale: number;
     previousLyricScale: number;
     nextLyricOpacity: number;
@@ -55,11 +58,6 @@ export interface Config {
   /** @deprecated */
   style?: StyleConfig;
 
-  lyric: {
-    nextLyric: number;
-    previousLyric: number;
-  };
-
   windowPosition: {
     anchor: 'top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right';
     display: number | null;
@@ -67,7 +65,6 @@ export interface Config {
     left: number | null;
     bottom: number | null;
     right: number | null;
-    direction: 'column' | 'column-reverse';
   };
 
   syncThrottle: number;

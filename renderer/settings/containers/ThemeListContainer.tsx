@@ -175,34 +175,6 @@ const ThemeListContainer = () => {
       >
         <Trans key={'setting.theme.add-theme'} />
       </button>
-      <div class={'text-md mt-4 mb-1'}>
-        <Trans key={'setting.theme.theme'} />
-      </div>
-      <div class={'flex flex-col justify-start items-stretch gap-1'}>
-        <Card
-          class={'flex flex-row justify-between items-center gap-1'}
-          subCards={[
-            <div class={'w-full h-full flex justify-start items-center'}>
-              <button
-                class={'btn-primary'}
-                onClick={(async () => {
-                })}
-                >
-                <Trans key={'setting.theme.reset'} />
-              </button>
-            </div>,
-          ]}
-        >
-          <div class={'w-full h-full flex flex-col justify-center items-start gap-0'}>
-            <div class={'text-md'}>
-              <Trans key={'setting.theme.theme-reset'} />
-            </div>
-            <div class={'text-xs mt-[-2px] text-black/50 dark:text-white/80'}>
-              <Trans key={'setting.theme.theme-reset-warning'} />
-            </div>
-          </div>
-        </Card>
-      </div>
       <Modal
         open={nameOpen()}
         onClose={() => setNameOpen(false)}

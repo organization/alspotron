@@ -3,7 +3,7 @@ import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
 import { useNavigate, useParams } from '@solidjs/router';
 
-import { Config, StyleConfig } from '../../../common/config';
+import { StyleConfig } from '../../../common/config';
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
 
@@ -423,6 +423,45 @@ const ThemeContainer = () => {
           class={'input w-48'}
           value={theme()?.lyric.multipleContainerRowGap}
           onChange={(event) => setTheme({ lyric: { multipleContainerRowGap: event.target.valueAsNumber } })}
+        />
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'}>
+        <div class={'font-md'}>
+          <Trans key={'setting.position.select-orientation-to-display-lyrics'} />
+        </div>
+        <div class={'flex-1'} />
+        <Selector
+          format={(value) => value === 'column' ? t('setting.position.from-top-to-bottom') : t('setting.position.from-bottom-to-top')}
+          value={theme()?.lyric?.direction ?? 'column'}
+          onChange={(value) => setTheme({ lyric: { direction: value } })}
+          options={['column', 'column-reverse']}
+          class={'select'}
+        />
+      </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <div class={'text-md'}>
+          <Trans key={'setting.general.next-lyric-count'} />
+        </div>
+        <input
+          type={'number'}
+          min={0}
+          step={1}
+          class={'input w-48'}
+          value={theme()?.lyric.nextLyric}
+          onChange={(event) => setTheme({ lyric: { nextLyric: Math.round(event.target.valueAsNumber) } })}
+        />
+      </Card>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <div class={'text-md'}>
+          <Trans key={'setting.general.previous-lyric-count'} />
+        </div>
+        <input
+          type={'number'}
+          min={0}
+          step={1}
+          class={'input w-48'}
+          value={theme()?.lyric.previousLyric}
+          onChange={(event) => setTheme({ lyric: { previousLyric: Math.round(event.target.valueAsNumber) } })}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>

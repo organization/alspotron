@@ -45,37 +45,6 @@ const LanguageContainer = () => {
         </Card>
       </div>
       <div class={'text-md mt-4 mb-1 px-4'}>
-        <Trans key={'setting.general.lyric-menu'} />
-      </div>
-      <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
-        <Card class={'flex flex-row justify-between items-center gap-1'}>
-          <div class={'text-md'}>
-            <Trans key={'setting.general.next-lyric-count'} />
-          </div>
-          <input
-            type={'number'}
-            min={0}
-            step={1}
-            class={'input w-48'}
-            value={config()?.lyric.nextLyric}
-            onChange={(event) => setConfig({ lyric: { nextLyric: Math.round(event.target.valueAsNumber) } })}
-          />
-        </Card>
-        <Card class={'flex flex-row justify-between items-center gap-1'}>
-          <div class={'text-md'}>
-            <Trans key={'setting.general.previous-lyric-count'} />
-          </div>
-          <input
-            type={'number'}
-            min={0}
-            step={1}
-            class={'input w-48'}
-            value={config()?.lyric.previousLyric}
-            onChange={(event) => setConfig({ lyric: { previousLyric: Math.round(event.target.valueAsNumber) } })}
-          />
-        </Card>
-      </div>
-      <div class={'text-md mt-4 mb-1 px-4'}>
         <Trans key={'setting.general.developer-menu'} />
       </div>
       <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>

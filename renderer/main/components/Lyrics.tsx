@@ -44,9 +44,7 @@ const Lyrics = (props: LyricsProps) => {
   const style = useStyle();
   const [, containerProps] = splitProps(props, ['class', 'style']);
   const { status } = usePlayingInfo();
-  const [lyrics, , lyricsRange, getPreviousLyricLength] = useLyric();
-
-
+  const [, , lyricsRange, getPreviousLyricLength] = useLyric();
 
   const orderOffset = () => (getPreviousLyricLength() ?? 0) * 3;
   const offset = () => style().animationAtOnce ? 1 : 3;
@@ -107,7 +105,7 @@ const Lyrics = (props: LyricsProps) => {
                     style={`
                       --order-offset: ${orderOffset() + (index() * offset())};
                       row-gap: ${style().lyric.containerRowGap}rem;
-                      flex-direction: ${config()?.windowPosition?.direction ?? 'column'};
+                      flex-direction: ${style()?.lyric?.direction ?? 'column'};
                       align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
                       transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
                     `}

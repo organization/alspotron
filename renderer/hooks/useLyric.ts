@@ -1,6 +1,5 @@
 import { createMemo } from 'solid-js';
 
-import useConfig from './useConfig';
 import useStyle from './useStyle';
 
 import { usePlayingInfo } from '../components/PlayingInfoProvider';
@@ -9,7 +8,6 @@ const BIAS = 225; // ms
 const TRANSITION_DURATION = 225; // ms
 
 const useLyric = () => {
-  const [config] = useConfig();
   const style = useStyle();
   const { lyrics, progress } = usePlayingInfo();
 
@@ -38,8 +36,7 @@ const useLyric = () => {
   const index = createMemo(() => lastIter()?.first);
 
   const nextLyricsIter = createMemo(() => {
-    let nextLyricLength = config()?.lyric.nextLyric;
-    if (!nextLyricLength) return null;
+    let nextLyricLength = style().lyric.nextLyric;
 
     const now = lastIter();
     const tempLyrics = lyrics();
@@ -57,8 +54,8 @@ const useLyric = () => {
   });
 
   const getPreviousLyricLength = createMemo(() => {
-    let previousLyricLength = config()?.lyric.previousLyric;
-    if (!previousLyricLength) return null;
+    let previousLyricLength = style().lyric.previousLyric;
+  
     const now = lastIter();
     const tempLyrics = lyrics();
 
