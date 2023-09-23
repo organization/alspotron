@@ -45,7 +45,7 @@ const ThemeContainer = () => {
 
   const [fontList, setFontList] = createSignal<string[]>([]);
   const [animationPreview, setAnimationPreview] = createSignal(PREVIEW_TEXT_A);
-  
+
   const themeName = () => decodeURIComponent(params.name);
   const theme = () => config()?.themes[themeName()];
 
@@ -123,8 +123,7 @@ const ThemeContainer = () => {
           options={fontList()}
           value={theme()?.font}
           onChange={(value) => setTheme({ font: value })}
-          renderItem={(props, option, isSelected) => (
-            <li
+          renderItem={(props, option, isSelected) => <li
               {...props}
               class={cx(
                 'w-full py-2 hover:bg-white/10 rounded-lg truncate flex items-center shrink-0',
@@ -138,8 +137,7 @@ const ThemeContainer = () => {
               <div class={'px-2'}>
                 {option}
               </div>
-            </li>
-          )}
+            </li>}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -166,8 +164,7 @@ const ThemeContainer = () => {
           ]}
           value={theme()?.fontWeight ?? '400'}
           onChange={(value) => setTheme({ fontWeight: value })}
-          renderItem={(props, option, isSelected) => (
-            <li
+          renderItem={(props, option, isSelected) => <li
               {...props}
               class={cx(
                 'w-full py-2 hover:bg-white/10 rounded-lg truncate flex items-center',
@@ -181,15 +178,14 @@ const ThemeContainer = () => {
               <div class={'px-2'}>
                 <Trans key={'setting.theme.font-weight.option'} options={{ weight: option }} />
               </div>
-            </li>
-          )}
+            </li>}
         />
       </Card>
       <Card
         class={'flex flex-row justify-between items-center gap-1'}
         subCards={[
           <div class={'flex flex-col justify-start items-stretch gap-1'}>
-            <div class={'text-md'}> 
+            <div class={'text-md'}>
               <Trans key={'setting.theme.preview'} />
             </div>
             <div class={'relative w-full h-32 flex flex-col justify-start items-start gap-4'}>
@@ -529,7 +525,7 @@ const ThemeContainer = () => {
         </div>
       </Card>
     </div>
-  </div>
+  </div>;
 };
 
 export default ThemeContainer;

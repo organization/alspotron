@@ -20,8 +20,15 @@ const useMigrateLegacyTheme = () => {
 
     setConfig({
       themes: {
-        [name]: configData.style,
+        [name]: {
+          ...configData.style,
+          lyric: {
+            nextLyric: config()?.lyric?.nextLyric ?? 0,
+            previousLyric: config()?.lyric?.previousLyric ?? 0,
+          }
+        },
       },
+      selectedTheme: name,
       style: undefined,
     });
   });

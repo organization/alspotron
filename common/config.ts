@@ -1,4 +1,3 @@
-/* eslint-disable solid/reactivity */
 import { readFileSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -57,6 +56,11 @@ export interface Config {
 
   /** @deprecated */
   style?: StyleConfig;
+  /** @deprecated */
+  lyric?: {
+    nextLyric: number;
+    previousLyric: number;
+  }
 
   windowPosition: {
     anchor: 'top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right';
@@ -89,6 +93,7 @@ app.on('ready', () => {
 const defaultConfigDirectory = app.getPath('userData');
 
 let configFileTimeout: NodeJS.Timeout | null = null;
+// eslint-disable-next-line solid/reactivity
 const configSignal = createSignal<Config>(DEFAULT_CONFIG);
 
 export const config = configSignal[0];
@@ -120,6 +125,7 @@ export interface LyricMapper {
 }
 
 let lyricMapperFileTimeout: NodeJS.Timeout | null = null;
+// eslint-disable-next-line solid/reactivity
 const lyricMapperSignal = createSignal<LyricMapper>();
 export const lyricMapper = lyricMapperSignal[0];
 export const setLyricMapper = (params: Partial<LyricMapper>, useFallback = true) => {
@@ -155,6 +161,7 @@ export interface GameList {
 }
 
 let gameListFileTimeout: NodeJS.Timeout | null = null;
+// eslint-disable-next-line solid/reactivity
 const gameListSignal = createSignal<GameList>();
 
 export const gameList = gameListSignal[0];

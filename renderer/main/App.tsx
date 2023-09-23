@@ -1,4 +1,4 @@
-import { Show, createRenderEffect, createSignal, getOwner, on, runWithOwner } from 'solid-js';
+import { Show, createRenderEffect, createSignal, on } from 'solid-js';
 
 import AnchoredView from './components/AnchoredView';
 import LyricProgressBar from './components/LyricProgressBar';

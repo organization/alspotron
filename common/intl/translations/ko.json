@@ -167,7 +167,7 @@
   "setting.theme.rename-conflict": "\"{{name}}\"는 이미 존재하는 이름입니다.",
   "setting.theme.edit-theme": "테마 편집",
   "setting.theme.new-theme": "새 테마",
-  "setting.theme.legacy-theme": "레거시 테마",
+  "setting.theme.legacy-theme": "기존 테마",
   "setting.user-css-warning.bold": "주의!",
   "setting.user-css-warning.0": "제공된 셀렉터, 변수 외의 다른 셀렉터 등을 사용하실 경우 업데이트 시 CSS가 깨질 확률이 높습니다.",
   "setting.user-css-warning.1": "사용자 CSS는 어디까지나 실험기능으로, Alspotron 팀에서는 업데이트 시 스타일의 안정성을 보장하지 않습니다.",
