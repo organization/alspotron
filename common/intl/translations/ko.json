@@ -79,7 +79,7 @@
   "setting.general.reset-config": "모든 설정 초기화",
   "setting.general.reset-alert-title": "정말로 모든 설정을 초기화 하시겠습니까?",
   "setting.general.reset-alert": "모든 설정이 초기화 되며, 이 작업은 되돌릴 수 없습니다.",
-  "setting.general.reset-last-alert": "이 화면에서 리셋을 누르면 정말로 모든 설정이 초기화 됩니다. 초기화전 설정을 백업하였는지 확인하십시오.",
+  "setting.general.reset-last-alert": "이 화면에서 초기화 버튼을 누르면 정말로 모든 설정이 초기화 됩니다. 초기화전 설정을 백업하였는지 확인하십시오.",
 
   "setting.position.select-position-to-display-lyrics": "가사를 표시할 위치",
   "setting.position.left-top": "왼쪽 상단",
