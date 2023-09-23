@@ -1,9 +1,12 @@
 # <img src="https://github.com/organization/alspotron/assets/16558115/447a957e-faf2-4759-8884-5d7b04fb1fbb" width="2%" /> Alspotron <a href="https://github.com/organization/alspotron/releases/latest"><img src="https://img.shields.io/github/downloads/organization/alspotron/total.svg"/></a>
 
 ### 커스텀이 편리한 *Spotify*, *YouTube Music* 가사 표시기
-### Fully-customizable *Spotify*, *YouTube Music* lyrics viewer [(English README)](https://github.com/organization/alspotron/blob/master/README-i18n/en.md)
-### カスタマイズしやすい「*Spotify*」・「*YouTube Music*」歌詞インジケータ [(日本語 README)](https://github.com/organization/alspotron/blob/master/README-i18n/ja.md)
-### Vollständig anpassbarer Lyrics-Viewer für Spotify und YouTube Music [(Deutsch README)](https://github.com/organization/alspotron/blob/master/README-i18n/de.md)
+
+[(English README)](https://github.com/organization/alspotron/blob/master/README-i18n/en.md)
+
+[(日本語 README)](https://github.com/organization/alspotron/blob/master/README-i18n/ja.md)
+
+[(Deutsch README)](https://github.com/organization/alspotron/blob/master/README-i18n/de.md)
 
 
 > `스포티파이` 혹은 `유튜브 뮤직`등의 `뮤직 플레이어`에서 재생중인 노래의 알송 가사를 화면에 표시해줍니다.\
