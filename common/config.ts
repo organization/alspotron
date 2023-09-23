@@ -9,43 +9,49 @@ import deepmerge from 'deepmerge';
 import { app } from 'electron';
 import { createSignal } from 'solid-js';
 
-export interface Config {
-  style: {
-    font: string;
-    fontWeight: string;
-    animation: string;
-    animationAtOnce: boolean;
-    maxHeight: number;
-    proximityOpacity: number;
-    proximitySensitivity: number;
-    rowGap: number;
+export type StyleConfig = {
+  font: string;
+  fontWeight: string;
+  animation: string;
+  animationAtOnce: boolean;
+  maxHeight: number;
+  proximityOpacity: number;
+  proximitySensitivity: number;
+  rowGap: number;
 
-    nowPlaying: {
-      color: string;
-      background: string;
-      backgroundProgress: string;
-      fontSize: number;
-      maxWidth: number;
-      visible: boolean;
-      stoppedOpacity: number;
-    };
-
-    lyric: {
-      color: string;
-      background: string;
-      fontSize: number;
-      maxWidth: number;
-      stoppedOpacity: number;
-      containerRowGap: number;
-      multipleContainerRowGap: number;
-      nextLyricScale: number;
-      previousLyricScale: number;
-      nextLyricOpacity: number;
-      previousLyricOpacity: number;
-    };
-
-    userCSS: string | null;
+  nowPlaying: {
+    color: string;
+    background: string;
+    backgroundProgress: string;
+    fontSize: number;
+    maxWidth: number;
+    visible: boolean;
+    stoppedOpacity: number;
   };
+
+  lyric: {
+    color: string;
+    background: string;
+    fontSize: number;
+    maxWidth: number;
+    stoppedOpacity: number;
+    containerRowGap: number;
+    multipleContainerRowGap: number;
+    nextLyricScale: number;
+    previousLyricScale: number;
+    nextLyricOpacity: number;
+    previousLyricOpacity: number;
+  };
+
+  userCSS: string | null;
+};
+
+export interface Config {
+  themes: Record<string, StyleConfig>;
+  selectedTheme: number;
+
+  /** @deprecated */
+  style?: StyleConfig;
 
   lyric: {
     nextLyric: number;
@@ -78,42 +84,45 @@ export interface Config {
 const getCurrentLocale = () => (/en|ko|ja|de/.exec(app.getLocale())?.at(0)) as 'ko' | 'en' | 'ja' | 'de' | undefined ?? 'ko';
 
 export const DEFAULT_CONFIG: Config = {
-  style: {
-    font: 'KoPubWorldDotum',
-    fontWeight: '400',
-    animation: 'pretty',
-    animationAtOnce: false,
-    maxHeight: 400,
-    proximityOpacity: 0,
-    proximitySensitivity: 2,
-    rowGap: 2,
-
-    nowPlaying: {
-      color: '#FFFFFF',
-      background: 'rgba(29, 29, 29, .50)',
-      backgroundProgress: 'rgba(29, 29, 29, .80)',
-      fontSize: 11,
-      maxWidth: 300,
-      visible: true,
-      stoppedOpacity: 0.5,
+  themes: {
+    'Default Theme': {
+      font: 'KoPubWorldDotum',
+      fontWeight: '400',
+      animation: 'pretty',
+      animationAtOnce: false,
+      maxHeight: 400,
+      proximityOpacity: 0,
+      proximitySensitivity: 2,
+      rowGap: 2,
+  
+      nowPlaying: {
+        color: '#FFFFFF',
+        background: 'rgba(29, 29, 29, .50)',
+        backgroundProgress: 'rgba(29, 29, 29, .80)',
+        fontSize: 11,
+        maxWidth: 300,
+        visible: true,
+        stoppedOpacity: 0.5,
+      },
+  
+      lyric: {
+        color: '#FFFFFF',
+        background: 'rgba(29, 29, 29, .70)',
+        fontSize: 12,
+        maxWidth: 700,
+        stoppedOpacity: 0.5,
+        containerRowGap: 1,
+        multipleContainerRowGap: 1,
+        nextLyricScale: 0.9,
+        previousLyricScale: 0.9,
+        nextLyricOpacity: 0.5,
+        previousLyricOpacity: 0.5,
+      },
+  
+      userCSS: null,
     },
-
-    lyric: {
-      color: '#FFFFFF',
-      background: 'rgba(29, 29, 29, .70)',
-      fontSize: 12,
-      maxWidth: 700,
-      stoppedOpacity: 0.5,
-      containerRowGap: 1,
-      multipleContainerRowGap: 1,
-      nextLyricScale: 0.9,
-      previousLyricScale: 0.9,
-      nextLyricOpacity: 0.5,
-      previousLyricOpacity: 0.5,
-    },
-
-    userCSS: null,
   },
+  selectedTheme: 0,
 
   lyric: {
     nextLyric: 0,
