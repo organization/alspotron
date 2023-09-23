@@ -29,6 +29,7 @@ const useMigrateLegacyTheme = () => {
         },
       },
       selectedTheme: name,
+      lyric: undefined,
       style: undefined,
     });
   });
