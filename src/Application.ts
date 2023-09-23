@@ -577,6 +577,17 @@ class Application {
       event.returnValue = config();
     });
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
+    ipcMain.handle('reset-config', () => {
+      setConfig(DEFAULT_CONFIG, false);
+      setLyricMapper({}, false);
+      setGameList({}, false);
+
+      this.pluginManager.getPlugins()
+        .forEach((plugin) => this.pluginManager.removePlugin(plugin));
+
+      this.broadcast('config', config());
+      this.broadcast('game-list', gameList());
+    });
     ipcMain.handle('set-lyric-mapper', async (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
       await this.overridePlugin('lyric-mapper', (data) => {
         setLyricMapper(data, useFallback);

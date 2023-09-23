@@ -2,6 +2,8 @@ import { createEffect, For, JSX, onCleanup, Show, splitProps } from 'solid-js'
 import { Portal } from 'solid-js/web'
 import { Transition } from 'solid-transition-group';
 
+import { cx } from '../utils/classNames';
+
 export interface ButtonOptions {
   type?: 'positive' | 'negative' | 'normal';
   name?: string;
@@ -44,10 +46,11 @@ const Modal = (props: ModalProps) => {
             <div
               {...leftProps}
               ref={content}
-              class={`
+              class={cx(`
                 w-fit h-fit flex flex-col rounded overflow-hidden
                 shadow-xl shadow-black/10 border-[1px]
-                bg-stone-100 border-black/10 dark:bg-stone-700 dark:border-white/10`}
+                bg-stone-100 border-black/10 dark:bg-stone-700 dark:border-white/10
+              `, leftProps.class)}
             >
               <div class={'text-black dark:text-white px-6 py-5'}>
                 {props.children}

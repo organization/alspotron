@@ -7,6 +7,7 @@ import Selector from '../../components/Select';
 
 import useConfig from '../../hooks/useConfig';
 import { getTranslation } from '../../../common/intl';
+import { Config } from '../../../common/config';
 import Modal from '../../components/Modal';
 import Switch from '../../components/Switch';
 
@@ -15,7 +16,16 @@ const LanguageContainer = () => {
   const [config, setConfig] = useConfig();
 
   const [open, setOpen] = createSignal(false);
+  const [resetOpen, setResetOpen] = createSignal(false);
+  const [resetLastOpen, setResetLastOpen] = createSignal(false);
   
+  const onResetConfig = async () => {
+    await window.ipcRenderer.invoke('reset-config') as Config;
+
+    setResetLastOpen(false);
+    setResetOpen(false);
+  };
+
   return (
     <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1 px-4'}>
@@ -97,6 +107,68 @@ const LanguageContainer = () => {
           <Switch value={config()?.developer} onChange={(checked) => setConfig({ developer: checked })} />
         </Card>
       </div>
+      <div class={'text-md mt-4 mb-1 px-4'}>
+        <Trans key={'setting.general.dangerous-menu'} />
+      </div>
+      <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
+        <Card class={'flex flex-row justify-between items-center gap-1'}>
+          <div class={'text-md'}>
+            <Trans key={'setting.general.reset-config'} />
+          </div>
+          <button class={'btn-error'} onClick={() => setResetOpen(true)}>
+            <Trans key={'setting.general.reset'} />
+          </button>
+        </Card>
+      </div>
+      <Modal
+        open={resetOpen()}
+        onClose={() => setResetOpen(false)}
+        class={'max-w-[500px]'}
+        buttons={[
+          {
+            name: t('common.cancel'),
+            onClick: () => setResetOpen(false),
+          },
+          {
+            type: 'negative',
+            name: t('setting.general.reset'),
+            onClick: () => {
+              setResetOpen(false);
+              setResetLastOpen(true);
+            },
+          },
+        ]}
+      >
+        <div class={'text-xl mb-2'}>
+          <Trans key={'setting.general.reset-alert-title'} />
+        </div>
+        <div class={'text-md mb-1'}>
+          <Trans key={'setting.general.reset-alert'} />
+        </div>
+      </Modal>
+      <Modal
+        open={resetLastOpen()}
+        onClose={() => setResetLastOpen(false)}
+        class={'max-w-[500px]'}
+        buttons={[
+          {
+            type: 'negative',
+            name: t('setting.general.reset'),
+            onClick: () => onResetConfig(),
+          },
+          {
+            name: t('common.cancel'),
+            onClick: () => setResetLastOpen(false),
+          },
+        ]}
+      >
+        <div class={'text-xl mb-2'}>
+          <Trans key={'setting.general.reset-alert-title'} />
+        </div>
+        <div class={'text-md mb-1'}>
+          <Trans key={'setting.general.reset-last-alert'} />
+        </div>
+      </Modal>
       <Modal
         open={open()}
         onClose={() => setOpen(false)}

@@ -92,8 +92,8 @@ let configFileTimeout: NodeJS.Timeout | null = null;
 const configSignal = createSignal<Config>(DEFAULT_CONFIG);
 
 export const config = configSignal[0];
-export const setConfig = (params: DeepPartial<Config>) => {
-  const value = deepmerge(DEFAULT_CONFIG, deepmerge(configSignal[0](), params)) as Config;
+export const setConfig = (params: DeepPartial<Config>, useDefault = true) => {
+  const value = (useDefault ? deepmerge(DEFAULT_CONFIG, deepmerge(configSignal[0](), params)) : params) as Config;
 
   configSignal[1](value);
 
