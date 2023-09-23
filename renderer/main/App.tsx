@@ -1,4 +1,4 @@
-import { Show, createRenderEffect, createSignal, on } from 'solid-js';
+import { Show, createRenderEffect, createSignal, getOwner, on, runWithOwner } from 'solid-js';
 
 import AnchoredView from './components/AnchoredView';
 import LyricProgressBar from './components/LyricProgressBar';
@@ -90,12 +90,13 @@ const App = () => {
   usePluginsCSS();
 
   const style = useStyle();
+  const owner = getOwner();
 
   const lyricStyle = () => {
     let result = '';
-    const styleData = style();
+    const styleData = runWithOwner(owner, () => style());
 
-    if (styleData.nowPlaying) {
+    if (styleData?.nowPlaying) {
       const nowPlayingData = styleData.nowPlaying;
 
       if (nowPlayingData.maxWidth) result += `max-width: ${nowPlayingData.maxWidth}px;`;
@@ -103,8 +104,8 @@ const App = () => {
       if (nowPlayingData.background) result += `background-color: ${nowPlayingData.background};`;
     }
 
-    if (styleData.font) result += `font-family: ${styleData.font};`;
-    if (styleData.fontWeight) result += `font-weight: ${styleData.fontWeight};`;
+    if (styleData?.font) result += `font-family: ${styleData.font};`;
+    if (styleData?.fontWeight) result += `font-weight: ${styleData.fontWeight};`;
 
     return result;
   };
@@ -112,7 +113,9 @@ const App = () => {
   const textStyle = () => {
     let result = '';
 
-    if (style().nowPlaying.fontSize) result += `font-size: ${style().nowPlaying.fontSize}px;`;
+    const styleData = runWithOwner(owner, () => style());
+
+    if (styleData?.nowPlaying.fontSize) result += `font-size: ${styleData.nowPlaying.fontSize}px;`;
     
     return result;
   };
@@ -120,7 +123,9 @@ const App = () => {
   const progressStyle = () => {
     let result = '';
 
-    if (style().nowPlaying.backgroundProgress) result += `background-color: ${style().nowPlaying.backgroundProgress};`;
+    const styleData = runWithOwner(owner, () => style());
+  
+    if (styleData?.nowPlaying.backgroundProgress) result += `background-color: ${styleData.nowPlaying.backgroundProgress};`;
 
     return result;
   };
