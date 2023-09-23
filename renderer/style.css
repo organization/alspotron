@@ -15,7 +15,7 @@
       focus:outline-none;
   }
 
-  .btn-primary-disabled {
+  .btn-primary-disabled, .btn-primary[disabled]:not([disable="false"]) {
     @apply min-w-[130px] px-3 py-2 rounded opacity-50
     text-black/50 bg-primary-300
     dark:text-white/50 dark:bg-primary-700
@@ -38,7 +38,7 @@
       focus:outline-none;
   }
 
-  .btn-disabled {
+  .btn-disabled, .btn-text[disabled]:not([disable="false"]), .btn-error[disabled]:not([disable="false"]) {
     @apply px-3 py-2 bg-gray-400 text-gray-100 dark:bg-gray-600 dark:text-gray-900 font-semibold rounded-lg
       outline-none select-none;
   }

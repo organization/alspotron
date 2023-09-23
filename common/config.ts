@@ -1,13 +1,13 @@
 /* eslint-disable solid/reactivity */
-import { readFileSync } from 'fs';
-
-import fs from 'fs/promises';
-
+import { readFileSync } from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import deepmerge from 'deepmerge';
 import { app } from 'electron';
 import { createSignal } from 'solid-js';
+
+import { DEFAULT_CONFIG } from './constants';
 
 export type StyleConfig = {
   font: string;
@@ -47,8 +47,8 @@ export type StyleConfig = {
 };
 
 export interface Config {
-  themes: Record<string, StyleConfig>;
-  selectedTheme: number;
+  themes: Record<string, StyleConfig | undefined>;
+  selectedTheme: string;
 
   /** @deprecated */
   style?: StyleConfig;
@@ -82,74 +82,6 @@ export interface Config {
 }
 
 const getCurrentLocale = () => (/en|ko|ja|de/.exec(app.getLocale())?.at(0)) as 'ko' | 'en' | 'ja' | 'de' | undefined ?? 'ko';
-
-export const DEFAULT_CONFIG: Config = {
-  themes: {
-    'Default Theme': {
-      font: 'KoPubWorldDotum',
-      fontWeight: '400',
-      animation: 'pretty',
-      animationAtOnce: false,
-      maxHeight: 400,
-      proximityOpacity: 0,
-      proximitySensitivity: 2,
-      rowGap: 2,
-  
-      nowPlaying: {
-        color: '#FFFFFF',
-        background: 'rgba(29, 29, 29, .50)',
-        backgroundProgress: 'rgba(29, 29, 29, .80)',
-        fontSize: 11,
-        maxWidth: 300,
-        visible: true,
-        stoppedOpacity: 0.5,
-      },
-  
-      lyric: {
-        color: '#FFFFFF',
-        background: 'rgba(29, 29, 29, .70)',
-        fontSize: 12,
-        maxWidth: 700,
-        stoppedOpacity: 0.5,
-        containerRowGap: 1,
-        multipleContainerRowGap: 1,
-        nextLyricScale: 0.9,
-        previousLyricScale: 0.9,
-        nextLyricOpacity: 0.5,
-        previousLyricOpacity: 0.5,
-      },
-  
-      userCSS: null,
-    },
-  },
-  selectedTheme: 0,
-
-  lyric: {
-    nextLyric: 0,
-    previousLyric: 0,
-  },
-
-  windowPosition: {
-    anchor: 'bottom-right',
-    display: null,
-    top: 32,
-    left: 32,
-    bottom: 32,
-    right: 32,
-    direction: 'column',
-  },
-
-  syncThrottle: 1000 * 3,
-
-  language: 'ko',
-  developer: false,
-
-  plugins: {
-    list: {},
-    disabled: {},
-    config: {},
-  },
-} satisfies Config;
 
 app.on('ready', () => {
   DEFAULT_CONFIG.language = getCurrentLocale();

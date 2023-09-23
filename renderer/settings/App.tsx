@@ -11,6 +11,7 @@ import InfoContainer from './containers/InfoContainer';
 import GeneralContainer from './containers/GeneralContainer';
 import PositionContainer from './containers/PositionContainer';
 import ThemeContainer from './containers/ThemeContainer';
+import ThemeListContainer from './containers/ThemeListContainer';
 import GameListContainer from './containers/GameListContainer';
 import PluginContainer from './containers/PluginContainer';
 import PluginSettingsContainer from './containers/PluginSettingsContainer';
@@ -60,7 +61,7 @@ const TAB_LIST = (() => {
           />
         </svg>
       ),
-      container: ThemeContainer,
+      container: ThemeListContainer,
     },
     {
       id: 'plugin',
@@ -148,6 +149,7 @@ const App = () => {
             </For>
             <Route path={'/game-overlay/list'} component={GameListContainer} />
             <Route path={'/plugin/:id'} component={PluginSettingsContainer} />
+            <Route path={'/theme/:name'} component={ThemeContainer} />
             <Route path={'*'} element={<Navigate href={`/${TAB_LIST[0].id}`} />} />
           </Routes>
         </Transition>
