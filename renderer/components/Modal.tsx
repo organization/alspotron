@@ -1,4 +1,4 @@
-import { For, JSX, onCleanup, onMount, Show, splitProps } from 'solid-js'
+import { createEffect, For, JSX, onCleanup, Show, splitProps } from 'solid-js'
 import { Portal } from 'solid-js/web'
 import { Transition } from 'solid-transition-group';
 
@@ -18,23 +18,18 @@ const Modal = (props: ModalProps) => {
   const [local, leftProps] = splitProps(props, ['open', 'onClose', 'buttons']);
   
   let content!: HTMLDivElement;
-  let lastOpen = local.open;
   
   const listener = (event: MouseEvent) => {
-    if (lastOpen !== local.open) {
-      lastOpen = local.open;
-      return;
-    }
-
-    lastOpen = local.open;
-    if (!local.open) return;
-
     const isOutside = !event.composedPath().some((it) => it === content);
 
     if (isOutside) local.onClose?.();
   };
-  onMount(() => {
-    document.addEventListener('click', listener);
+
+  createEffect(() => {
+    if (local.open) {
+      document.removeEventListener('click', listener);
+      document.addEventListener('click', listener);
+    }
   });
 
   onCleanup(() => {
