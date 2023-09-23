@@ -154,7 +154,7 @@ const LanguageContainer = () => {
           {
             type: 'negative',
             name: t('setting.general.reset'),
-            onClick: () => onResetConfig(),
+            onClick: () => { onResetConfig() },
           },
           {
             name: t('common.cancel'),
