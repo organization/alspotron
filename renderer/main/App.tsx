@@ -90,20 +90,14 @@ const App = () => {
   usePluginsCSS();
 
   const style = useStyle();
-  const owner = getOwner();
 
   const lyricStyle = () => {
     let result = '';
-    const styleData = runWithOwner(owner, () => style());
+    const styleData = style();
 
-    if (styleData?.nowPlaying) {
-      const nowPlayingData = styleData.nowPlaying;
-
-      if (nowPlayingData.maxWidth) result += `max-width: ${nowPlayingData.maxWidth}px;`;
-      if (nowPlayingData.color) result += `color: ${nowPlayingData.color};`;
-      if (nowPlayingData.background) result += `background-color: ${nowPlayingData.background};`;
-    }
-
+    if (styleData?.nowPlaying.maxWidth) result += `max-width: ${styleData.nowPlaying.maxWidth}px;`;
+    if (styleData?.nowPlaying.color) result += `color: ${styleData.nowPlaying.color};`;
+    if (styleData?.nowPlaying.background) result += `background-color: ${styleData.nowPlaying.background};`;
     if (styleData?.font) result += `font-family: ${styleData.font};`;
     if (styleData?.fontWeight) result += `font-weight: ${styleData.fontWeight};`;
 
@@ -113,8 +107,7 @@ const App = () => {
   const textStyle = () => {
     let result = '';
 
-    const styleData = runWithOwner(owner, () => style());
-
+    const styleData = style();
     if (styleData?.nowPlaying.fontSize) result += `font-size: ${styleData.nowPlaying.fontSize}px;`;
     
     return result;
@@ -123,8 +116,7 @@ const App = () => {
   const progressStyle = () => {
     let result = '';
 
-    const styleData = runWithOwner(owner, () => style());
-  
+    const styleData = style();
     if (styleData?.nowPlaying.backgroundProgress) result += `background-color: ${styleData.nowPlaying.backgroundProgress};`;
 
     return result;

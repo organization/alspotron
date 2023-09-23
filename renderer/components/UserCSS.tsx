@@ -41,7 +41,7 @@ const UserCSS = () => {
   });
 
   const stylesheet = new CSSStyleSheet();
-  createRenderEffect(() => stylesheet.replace(compiledCSS()));
+  createRenderEffect(() => stylesheet.replaceSync(compiledCSS())); // DO NOT USE replace() HERE (maybe a chromium bug)
   onMount(() => {
     document.adoptedStyleSheets = document.adoptedStyleSheets.concat([stylesheet]);
   });
