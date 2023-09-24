@@ -29,7 +29,7 @@
 
   let previousInfo = {};
   const getInfo = async () => {
-    const uri = Spicetify.Player.data.track.uri;
+    const uri = Spicetify.Player.data.item.uri;
     let imageUrl = Spicetify.Player.data.track.metadata.image_xlarge_url;
     if (imageUrl?.indexOf('localfile') === -1) {
       imageUrl = `https://i.scdn.co/image/${imageUrl.substring(imageUrl.lastIndexOf(":") + 1)}`;

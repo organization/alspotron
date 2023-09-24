@@ -3,80 +3,307 @@
 import React from 'react';
 
 declare namespace Spicetify {
-  type Icon = 'album' | 'artist' | 'block' | 'brightness' | 'car' | 'chart-down' | 'chart-up' | 'check' | 'check-alt-fill' | 'chevron-left' | 'chevron-right' | 'chromecast-disconnected' | 'clock' | 'collaborative' | 'computer' | 'copy' | 'download' | 'downloaded' | 'edit' | 'enhance' | 'exclamation-circle' | 'external-link' | 'facebook' | 'follow' | 'fullscreen' | 'gamepad' | 'grid-view' | 'heart' | 'heart-active' | 'instagram' | 'laptop' | 'library' | 'list-view' | 'location' | 'locked' | 'locked-active' | 'lyrics' | 'menu' | 'minimize' | 'minus' | 'more' | 'new-spotify-connect' | 'offline' | 'pause' | 'phone' | 'play' | 'playlist' | 'playlist-folder' | 'plus-alt' | 'plus2px' | 'podcasts' | 'projector' | 'queue' | 'repeat' | 'repeat-once' | 'search' | 'search-active' | 'shuffle' | 'skip-back' | 'skip-back15' | 'skip-forward' | 'skip-forward15' | 'soundbetter' | 'speaker' | 'spotify' | 'subtitles' | 'tablet' | 'ticket' | 'twitter' | 'visualizer' | 'voice' | 'volume' | 'volume-off' | 'volume-one-wave' | 'volume-two-wave' | 'watch' | 'x';
-  type Variant = 'bass' | 'forte' | 'brio' | 'altoBrio' | 'alto' | 'canon' | 'celloCanon' | 'cello' | 'ballad' | 'balladBold' | 'viola' | 'violaBold' | 'mesto' | 'mestoBold' | 'metronome' | 'finale' | 'finaleBold' | 'minuet' | 'minuetBold';
-  type SemanticColor = 'textBase' | 'textSubdued' | 'textBrightAccent' | 'textNegative' | 'textWarning' | 'textPositive' | 'textAnnouncement' | 'essentialBase' | 'essentialSubdued' | 'essentialBrightAccent' | 'essentialNegative' | 'essentialWarning' | 'essentialPositive' | 'essentialAnnouncement' | 'decorativeBase' | 'decorativeSubdued' | 'backgroundBase' | 'backgroundHighlight' | 'backgroundPress' | 'backgroundElevatedBase' | 'backgroundElevatedHighlight' | 'backgroundElevatedPress' | 'backgroundTintedBase' | 'backgroundTintedHighlight' | 'backgroundTintedPress' | 'backgroundUnsafeForSmallTextBase' | 'backgroundUnsafeForSmallTextHighlight' | 'backgroundUnsafeForSmallTextPress';
+  type Icon =
+    | "album"
+    | "artist"
+    | "block"
+    | "brightness"
+    | "car"
+    | "chart-down"
+    | "chart-up"
+    | "check"
+    | "check-alt-fill"
+    | "chevron-left"
+    | "chevron-right"
+    | "chromecast-disconnected"
+    | "clock"
+    | "collaborative"
+    | "computer"
+    | "copy"
+    | "download"
+    | "downloaded"
+    | "edit"
+    | "enhance"
+    | "exclamation-circle"
+    | "external-link"
+    | "facebook"
+    | "follow"
+    | "fullscreen"
+    | "gamepad"
+    | "grid-view"
+    | "heart"
+    | "heart-active"
+    | "instagram"
+    | "laptop"
+    | "library"
+    | "list-view"
+    | "location"
+    | "locked"
+    | "locked-active"
+    | "lyrics"
+    | "menu"
+    | "minimize"
+    | "minus"
+    | "more"
+    | "new-spotify-connect"
+    | "offline"
+    | "pause"
+    | "phone"
+    | "play"
+    | "playlist"
+    | "playlist-folder"
+    | "plus-alt"
+    | "plus2px"
+    | "podcasts"
+    | "projector"
+    | "queue"
+    | "repeat"
+    | "repeat-once"
+    | "search"
+    | "search-active"
+    | "shuffle"
+    | "skip-back"
+    | "skip-back15"
+    | "skip-forward"
+    | "skip-forward15"
+    | "soundbetter"
+    | "speaker"
+    | "spotify"
+    | "subtitles"
+    | "tablet"
+    | "ticket"
+    | "twitter"
+    | "visualizer"
+    | "voice"
+    | "volume"
+    | "volume-off"
+    | "volume-one-wave"
+    | "volume-two-wave"
+    | "watch"
+    | "x";
+  type Variant =
+    | "bass"
+    | "forte"
+    | "brio"
+    | "altoBrio"
+    | "alto"
+    | "canon"
+    | "celloCanon"
+    | "cello"
+    | "ballad"
+    | "balladBold"
+    | "viola"
+    | "violaBold"
+    | "mesto"
+    | "mestoBold"
+    | "metronome"
+    | "finale"
+    | "finaleBold"
+    | "minuet"
+    | "minuetBold";
+  type SemanticColor =
+    | "textBase"
+    | "textSubdued"
+    | "textBrightAccent"
+    | "textNegative"
+    | "textWarning"
+    | "textPositive"
+    | "textAnnouncement"
+    | "essentialBase"
+    | "essentialSubdued"
+    | "essentialBrightAccent"
+    | "essentialNegative"
+    | "essentialWarning"
+    | "essentialPositive"
+    | "essentialAnnouncement"
+    | "decorativeBase"
+    | "decorativeSubdued"
+    | "backgroundBase"
+    | "backgroundHighlight"
+    | "backgroundPress"
+    | "backgroundElevatedBase"
+    | "backgroundElevatedHighlight"
+    | "backgroundElevatedPress"
+    | "backgroundTintedBase"
+    | "backgroundTintedHighlight"
+    | "backgroundTintedPress"
+    | "backgroundUnsafeForSmallTextBase"
+    | "backgroundUnsafeForSmallTextHighlight"
+    | "backgroundUnsafeForSmallTextPress";
+  type ColorSet =
+    | "base"
+    | "brightAccent"
+    | "negative"
+    | "warning"
+    | "positive"
+    | "announcement"
+    | "invertedDark"
+    | "invertedLight"
+    | "mutedAccent"
+    | "overMedia";
+  type ColorSetBackgroundColors = {
+    base: string;
+    highlight: string;
+    press: string;
+  };
+  type ColorSetNamespaceColors = {
+    announcement: string;
+    base: string;
+    brightAccent: string;
+    negative: string;
+    positive: string;
+    subdued: string;
+    warning: string;
+  };
+  type ColorSetBody = {
+    background: ColorSetBackgroundColors & {
+      elevated: ColorSetBackgroundColors;
+      tinted: ColorSetBackgroundColors;
+      unsafeForSmallText: ColorSetBackgroundColors;
+    };
+    decorative: {
+      base: string;
+      subdued: string;
+    };
+    essential: ColorSetNamespaceColors;
+    text: ColorSetNamespaceColors;
+  };
   type Metadata = Partial<Record<string, string>>;
   type ContextTrack = {
     uri: string;
     uid?: string;
     metadata?: Metadata;
   };
-  type ProvidedTrack = ContextTrack & {
-    removed?: string[];
-    blocked?: string[];
-    provider?: string;
-  };
-  type ContextOption = {
-    contextURI?: string;
-    index?: number;
-    trackUri?: string;
-    page?: number;
-    trackUid?: string;
-    sortedBy?: string;
-    filteredBy?: string;
-    shuffleContext?: boolean;
-    repeatContext?: boolean;
-    repeatTrack?: boolean;
-    offset?: number;
-    next_page_url?: string;
-    restrictions?: Record<string, string[]>;
-    referrer?: string;
-  };
   type PlayerState = {
     timestamp: number;
-    context_uri: string;
-    context_url: string;
-    context_restrictions: Record<string, string>;
-    index?: {
-      page: number;
-      track: number;
-    };
-    track?: ProvidedTrack;
-    playback_id?: string;
-    playback_quality?: string;
-    playback_speed?: number;
-    position_as_of_timestamp: number;
+    context: PlayerContext;
+    index: PlayerIndex;
+    item: PlayerTrack;
+    shuffle: boolean;
+    repeat: number;
+    speed: number;
+    positionAsOfTimestamp: number;
     duration: number;
-    is_playing: boolean;
-    is_paused: boolean;
-    is_buffering: boolean;
-    play_origin: {
-      feature_identifier: string;
-      feature_version: string;
-      view_uri?: string;
-      external_referrer?: string;
-      referrer_identifier?: string;
-      device_identifier?: string;
+    hasContext: boolean;
+    isPaused: boolean;
+    isBuffering: boolean;
+    restrictions: Restrictions;
+    previousItems?: PlayerTrack[];
+    nextItems?: PlayerTrack[];
+    playbackQuality: PlaybackQuality;
+    playbackId: string;
+    sessionId: string;
+    signals?: any[];
+    /**
+     * @deprecated Use `item` instead. This will be removed in the future.
+     */
+    track: PlayerTrack;
+  };
+  type PlayerContext = {
+    uri: string;
+    url: string;
+    metadata: {
+      "player.arch": string;
     };
-    options: {
-      shuffling_context?: boolean;
-      repeating_context?: boolean;
-      repeating_track?: boolean;
+  };
+  type PlayerIndex = {
+    pageURI?: string | null;
+    pageIndex: number;
+    itemIndex: number;
+  };
+  type PlayerTrack = {
+    type: string;
+    uri: string;
+    uid: string;
+    name: string;
+    mediaType: string;
+    duration: {
+      milliseconds: number;
     };
-    restrictions: Record<string, string[]>;
-    suppressions: {
-      providers: string[];
-    };
-    debug: {
-      log: string[];
-    };
-    prev_tracks: ProvidedTrack[];
-    next_tracks: ProvidedTrack[];
-    context_metadata: Metadata;
-    page_metadata: Metadata;
-    session_id: string;
-    queue_revision: string;
+    album: Album;
+    artists?: ArtistsEntity[];
+    isLocal: boolean;
+    isExplicit: boolean;
+    is19PlusOnly: boolean;
+    provider: string;
+    metadata: TrackMetadata;
+    images?: ImagesEntity[];
+  };
+  type TrackMetadata = {
+    artist_uri: string;
+    entity_uri: string;
+    iteration: string;
+    title: string;
+    "collection.is_banned": string;
+    "artist_uri:1": string;
+    "collection.in_collection": string;
+    image_small_url: string;
+    "collection.can_ban": string;
+    is_explicit: string;
+    album_disc_number: string;
+    album_disc_count: string;
+    track_player: string;
+    album_title: string;
+    "collection.can_add": string;
+    image_large_url: string;
+    "actions.skipping_prev_past_track": string;
+    page_instance_id: string;
+    image_xlarge_url: string;
+    marked_for_download: string;
+    "actions.skipping_next_past_track": string;
+    context_uri: string;
+    "artist_name:1": string;
+    has_lyrics: string;
+    interaction_id: string;
+    image_url: string;
+    album_uri: string;
+    album_artist_name: string;
+    album_track_number: string;
+    artist_name: string;
+    duration: string;
+    album_track_count: string;
+    popularity: string;
+  };
+  type Album = {
+    type: string;
+    uri: string;
+    name: string;
+    images?: ImagesEntity[];
+  };
+  type ImagesEntity = {
+    url: string;
+    label: string;
+  };
+  type ArtistsEntity = {
+    type: string;
+    uri: string;
+    name: string;
+  };
+  type Restrictions = {
+    canPause: boolean;
+    canResume: boolean;
+    canSeek: boolean;
+    canSkipPrevious: boolean;
+    canSkipNext: boolean;
+    canToggleRepeatContext: boolean;
+    canToggleRepeatTrack: boolean;
+    canToggleShuffle: boolean;
+    disallowPausingReasons?: string[];
+    disallowResumingReasons?: string[];
+    disallowSeekingReasons?: string[];
+    disallowSkippingPreviousReasons?: string[];
+    disallowSkippingNextReasons?: string[];
+    disallowTogglingRepeatContextReasons?: string[];
+    disallowTogglingRepeatTrackReasons?: string[];
+    disallowTogglingShuffleReasons?: string[];
+    disallowTransferringPlaybackReasons?: string[];
+  };
+  type PlaybackQuality = {
+    bitrateLevel: number;
+    strategy: number;
+    targetBitrateLevel: number;
+    targetBitrateAvailable: boolean;
+    hifiStatus: number;
   };
   namespace Player {
     /**
@@ -89,19 +316,26 @@ declare namespace Spicetify {
      *  - `appchange` type when user changes page.
      */
     function addEventListener(type: string, callback: (event?: Event) => void): void;
-    function addEventListener(type: 'songchange', callback: (event?: Event & { data: PlayerState }) => void): void;
-    function addEventListener(type: 'onplaypause', callback: (event?: Event & { data: PlayerState }) => void): void;
-    function addEventListener(type: 'onprogress', callback: (event?: Event & { data: number }) => void): void;
-    function addEventListener(type: 'appchange', callback: (event?: Event & { data: {
-        /**
-         * App href path
-         */
-        path: string;
-        /**
-         * App container
-         */
-        container: HTMLElement;
-      } }) => void): void;
+    function addEventListener(type: "songchange", callback: (event?: Event & { data: PlayerState }) => void): void;
+    function addEventListener(type: "onplaypause", callback: (event?: Event & { data: PlayerState }) => void): void;
+    function addEventListener(type: "onprogress", callback: (event?: Event & { data: number }) => void): void;
+    function addEventListener(
+      type: "appchange",
+      callback: (
+        event?: Event & {
+          data: {
+            /**
+             * App href path
+             */
+            path: string;
+            /**
+             * App container
+             */
+            container: HTMLElement;
+          };
+        }
+      ) => void
+    ): void;
     /**
      * Skip to previous track.
      */
@@ -125,7 +359,7 @@ declare namespace Spicetify {
      */
     function dispatchEvent(event: Event): void;
     const eventListeners: {
-      [key: string]: Array<(event?: Event) => void>
+      [key: string]: Array<(event?: Event) => void>;
     };
     /**
      * Convert milisecond to `mm:ss` format
@@ -269,7 +503,7 @@ declare namespace Spicetify {
    * Async wrappers of CosmosAPI
    */
   namespace CosmosAsync {
-    type Method = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT' | 'SUB';
+    type Method = "DELETE" | "GET" | "HEAD" | "PATCH" | "POST" | "PUT" | "SUB";
     interface Error {
       code: number;
       error: string;
@@ -288,13 +522,24 @@ declare namespace Spicetify {
     }
 
     function head(url: string, headers?: Headers): Promise<Headers>;
-    function get(url: string, body?: Body, headers?: Headers): Promise<Response['body']>;
-    function post(url: string, body?: Body, headers?: Headers): Promise<Response['body']>;
-    function put(url: string, body?: Body, headers?: Headers): Promise<Response['body']>;
-    function del(url: string, body?: Body, headers?: Headers): Promise<Response['body']>;
-    function patch(url: string, body?: Body, headers?: Headers): Promise<Response['body']>;
-    function sub(url: string, callback: ((b: Response['body']) => void), onError?: ((e: Error) => void), body?: Body, headers?: Headers): Promise<Response['body']>;
-    function postSub(url: string, body: Body | null, callback: ((b: Response['body']) => void), onError?: ((e: Error) => void)): Promise<Response['body']>;
+    function get(url: string, body?: Body, headers?: Headers): Promise<Response["body"]>;
+    function post(url: string, body?: Body, headers?: Headers): Promise<Response["body"]>;
+    function put(url: string, body?: Body, headers?: Headers): Promise<Response["body"]>;
+    function del(url: string, body?: Body, headers?: Headers): Promise<Response["body"]>;
+    function patch(url: string, body?: Body, headers?: Headers): Promise<Response["body"]>;
+    function sub(
+      url: string,
+      callback: (b: Response["body"]) => void,
+      onError?: (e: Error) => void,
+      body?: Body,
+      headers?: Headers
+    ): Promise<Response["body"]>;
+    function postSub(
+      url: string,
+      body: Body | null,
+      callback: (b: Response["body"]) => void,
+      onError?: (e: Error) => void
+    ): Promise<Response["body"]>;
     function request(method: Method, url: string, body?: Body, headers?: Headers): Promise<Response>;
     function resolve(method: Method, url: string, body?: Body, headers?: Headers): Promise<Response>;
   }
@@ -324,8 +569,114 @@ declare namespace Spicetify {
    * Set of APIs method to register, deregister hotkeys/shortcuts
    */
   namespace Keyboard {
-    type ValidKey = 'BACKSPACE' | 'TAB' | 'ENTER' | 'SHIFT' | 'CTRL' | 'ALT' | 'CAPS' | 'ESCAPE' | 'SPACE' | 'PAGE_UP' | 'PAGE_DOWN' | 'END' | 'HOME' | 'ARROW_LEFT' | 'ARROW_UP' | 'ARROW_RIGHT' | 'ARROW_DOWN' | 'INSERT' | 'DELETE' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' | 'WINDOW_LEFT' | 'WINDOW_RIGHT' | 'SELECT' | 'NUMPAD_0' | 'NUMPAD_1' | 'NUMPAD_2' | 'NUMPAD_3' | 'NUMPAD_4' | 'NUMPAD_5' | 'NUMPAD_6' | 'NUMPAD_7' | 'NUMPAD_8' | 'NUMPAD_9' | 'MULTIPLY' | 'ADD' | 'SUBTRACT' | 'DECIMAL_POINT' | 'DIVIDE' | 'F1' | 'F2' | 'F3' | 'F4' | 'F5' | 'F6' | 'F7' | 'F8' | 'F9' | 'F10' | 'F11' | 'F12' | ';' | '=' | ' | ' | '-' | '.' | '/' | '`' | '[' | '\\' | ']' | '"' | '~' | '!' | '@' | '#' | '$' | '%' | '^' | '&' | '*' | '(' | ')' | '_' | '+' | ':' | '<' | '>' | '?' | '|';
-    type KeysDefine = string | {
+    type ValidKey =
+      | "BACKSPACE"
+      | "TAB"
+      | "ENTER"
+      | "SHIFT"
+      | "CTRL"
+      | "ALT"
+      | "CAPS"
+      | "ESCAPE"
+      | "SPACE"
+      | "PAGE_UP"
+      | "PAGE_DOWN"
+      | "END"
+      | "HOME"
+      | "ARROW_LEFT"
+      | "ARROW_UP"
+      | "ARROW_RIGHT"
+      | "ARROW_DOWN"
+      | "INSERT"
+      | "DELETE"
+      | "A"
+      | "B"
+      | "C"
+      | "D"
+      | "E"
+      | "F"
+      | "G"
+      | "H"
+      | "I"
+      | "J"
+      | "K"
+      | "L"
+      | "M"
+      | "N"
+      | "O"
+      | "P"
+      | "Q"
+      | "R"
+      | "S"
+      | "T"
+      | "U"
+      | "V"
+      | "W"
+      | "X"
+      | "Y"
+      | "Z"
+      | "WINDOW_LEFT"
+      | "WINDOW_RIGHT"
+      | "SELECT"
+      | "NUMPAD_0"
+      | "NUMPAD_1"
+      | "NUMPAD_2"
+      | "NUMPAD_3"
+      | "NUMPAD_4"
+      | "NUMPAD_5"
+      | "NUMPAD_6"
+      | "NUMPAD_7"
+      | "NUMPAD_8"
+      | "NUMPAD_9"
+      | "MULTIPLY"
+      | "ADD"
+      | "SUBTRACT"
+      | "DECIMAL_POINT"
+      | "DIVIDE"
+      | "F1"
+      | "F2"
+      | "F3"
+      | "F4"
+      | "F5"
+      | "F6"
+      | "F7"
+      | "F8"
+      | "F9"
+      | "F10"
+      | "F11"
+      | "F12"
+      | ";"
+      | "="
+      | " | "
+      | "-"
+      | "."
+      | "/"
+      | "`"
+      | "["
+      | "\\"
+      | "]"
+      | '"'
+      | "~"
+      | "!"
+      | "@"
+      | "#"
+      | "$"
+      | "%"
+      | "^"
+      | "&"
+      | "*"
+      | "("
+      | ")"
+      | "_"
+      | "+"
+      | ":"
+      | "<"
+      | ">"
+      | "?"
+      | "|";
+    type KeysDefine =
+      | string
+      | {
       key: string;
       ctrl?: boolean;
       shift?: boolean;
@@ -982,16 +1333,28 @@ declare namespace Spicetify {
       /**
        * Determins what will trigger the context menu. For example, a click, or a right-click
        */
-      trigger?: 'click' | 'right-click';
+      trigger?: "click" | "right-click";
       /**
        * Determins is the context menu should open or toggle when triggered
        */
-      action?: 'toggle' | 'open';
+      action?: "toggle" | "open";
       /**
        * The preferred placement of the context menu when it opens.
        * Relative to trigger element.
        */
-      placement?: 'top' | 'top-start' | 'top-end' | 'right' | 'right-start' | 'right-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end';
+      placement?:
+        | "top"
+        | "top-start"
+        | "top-end"
+        | "right"
+        | "right-start"
+        | "right-end"
+        | "bottom"
+        | "bottom-start"
+        | "bottom-end"
+        | "left"
+        | "left-start"
+        | "left-end";
       /**
        * The x and y offset distances at which the context menu should open.
        * Relative to trigger element and `position`.
@@ -1004,11 +1367,12 @@ declare namespace Spicetify {
       /**
        * The menu UI to render inside of the context menu.
        */
-      menu: typeof Spicetify.ReactComponent.Menu 
-         
-         
-         
-        ;
+      menu:
+        | typeof Spicetify.ReactComponent.Menu
+        | typeof Spicetify.ReactComponent.AlbumMenu
+        | typeof Spicetify.ReactComponent.PodcastShowMenu
+        | typeof Spicetify.ReactComponent.ArtistMenu
+        | typeof Spicetify.ReactComponent.PlaylistMenu;
       /**
        * A child of the context menu. Should be `<button>`, `<a>`,
        * a custom react component that forwards a ref to a `<button>` or `<a>`,
@@ -1027,7 +1391,7 @@ declare namespace Spicetify {
        * is opened
        */
       getInitialFocusElement?: (el: HTMLElement | null) => HTMLElement | undefined | null;
-    }
+    };
     type MenuItemProps = {
       /**
        * Function that runs when `MenuItem` is clicked
@@ -1041,7 +1405,7 @@ declare namespace Spicetify {
       /**
        * Indicate that a divider line should be added `before` or `after` this `MenuItem`
        */
-      divider?: 'before' | 'after' | 'both';
+      divider?: "before" | "after" | "both";
       /**
        * React component icon that will be rendered at the end of the `MenuItem`
        * @deprecated Since Spotify `1.2.8`. Use `leadingIcon` or `trailingIcon` instead
@@ -1088,7 +1452,19 @@ declare namespace Spicetify {
        * Relative to trigger element.
        * @default 'top'
        */
-      placement?: 'top' | 'top-start' | 'top-end' | 'right' | 'right-start' | 'right-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end';
+      placement?:
+        | "top"
+        | "top-start"
+        | "top-end"
+        | "right"
+        | "right-start"
+        | "right-end"
+        | "bottom"
+        | "bottom-start"
+        | "bottom-end"
+        | "left"
+        | "left-start"
+        | "left-end";
       /**
        * Class name to apply to the tooltip
        */
@@ -1134,7 +1510,7 @@ declare namespace Spicetify {
        * @default false
        */
       autoMirror?: boolean;
-    }
+    };
     type TextComponentProps = {
       /**
        * Text color
@@ -1160,8 +1536,8 @@ declare namespace Spicetify {
       /**
        * Font weight
        */
-      weight?: 'book' | 'bold' | 'black';
-    }
+      weight?: "book" | "bold" | "black";
+    };
     type ConfirmDialogProps = {
       /**
        * Boolean to determine if the dialog should be opened
@@ -1212,7 +1588,7 @@ declare namespace Spicetify {
        * @param {React.MouseEvent<HTMLButtonElement>} event
        */
       onOutside?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-    }
+    };
     type PanelSkeletonProps = {
       /**
        * Aria label for the panel. Does not set the panel header content.
@@ -1238,7 +1614,7 @@ declare namespace Spicetify {
        * Children to render inside the panel.
        */
       children?: React.ReactNode;
-    }
+    };
     type PanelContentProps = {
       /**
        * Additional class name to apply to the panel.
@@ -1248,7 +1624,7 @@ declare namespace Spicetify {
        * Children to render inside the panel.
        */
       children?: React.ReactNode;
-    }
+    };
     type PanelHeaderProps = {
       /**
        * Href for the header link.
@@ -1297,7 +1673,7 @@ declare namespace Spicetify {
        * @default "textBase"
        */
       titleSemanticColor?: SemanticColor;
-    }
+    };
     type SliderProps = {
       /**
        * Label for the slider.
@@ -1360,7 +1736,63 @@ declare namespace Spicetify {
        * @deprecated Use `onDrag` props instead.
        */
       onStepBackward?: () => void;
-    }
+    };
+    type ButtonProps = {
+      component: any;
+      /**
+       * Color set for the button.
+       * @default "brightAccent"
+       */
+      colorSet?: ColorSet;
+      /**
+       * Size for the button.
+       * @default "md"
+       */
+      buttonSize?: "sm" | "md" | "lg";
+      /**
+       * Size for the button.
+       * @deprecated Use `buttonSize` prop instead, as it will take precedence.
+       * @default "medium"
+       */
+      size?: "small" | "medium" | "large";
+      /**
+       * Unused by Spotify. Usage unknown.
+       */
+      fullWidth?: any;
+      /**
+       * React component to render for an icon placed before children. Component, not element!
+       */
+      iconLeading?: (props: any) => any | string;
+      /**
+       * React component to render for an icon placed after children. Component, not element!
+       */
+      iconTrailing?: (props: any) => any | string;
+      /**
+       * Additional class name to apply to the button.
+       */
+      className?: string;
+      /**
+       * Label of the element for screen readers.
+       */
+      ["aria-label"]?: string;
+      /**
+       * ID of an element that describes the button for screen readers.
+       */
+      ["aria-labelledby"]?: string;
+      /**
+       * Unsafely set the color set for the button.
+       * Values from the colorSet will be pasted into the CSS.
+       */
+      UNSAFE_colorSet?: ColorSetBody;
+      // TODO: fix these types
+      // onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+      // onMouseEnter?: (event: MouseEvent<HTMLButtonElement>) => void;
+      // onMouseLeave?: (event: MouseEvent<HTMLButtonElement>) => void;
+      // onMouseDown?: (event: MouseEvent<HTMLButtonElement>) => void;
+      // onMouseUp?: (event: MouseEvent<HTMLButtonElement>) => void;
+      // onFocus?: (event: FocusEvent<HTMLButtonElement>) => void;
+      // onBlur?: (event: FocusEvent<HTMLButtonElement>) => void;
+    };
     /**
      * Generic context menu provider
      *
@@ -1489,7 +1921,14 @@ declare namespace Spicetify {
      * Create a button on the right side of the playbar
      */
     class Button {
-      constructor(label: string, icon: Icon | string, onClick?: (self: Button) => void, disabled?: boolean, active?: boolean, registerOnCreate?: boolean);
+      constructor(
+        label: string,
+        icon: Icon | string,
+        onClick?: (self: Button) => void,
+        disabled?: boolean,
+        active?: boolean,
+        registerOnCreate?: boolean
+      );
       label: string;
       icon: string;
       onClick: (self: Button) => void;
@@ -1505,7 +1944,14 @@ declare namespace Spicetify {
      * Create a widget next to track info
      */
     class Widget {
-      constructor(label: string, icon: Icon | string, onClick?: (self: Widget) => void, disabled?: boolean, active?: boolean, registerOnCreate?: boolean);
+      constructor(
+        label: string,
+        icon: Icon | string,
+        onClick?: (self: Widget) => void,
+        disabled?: boolean,
+        active?: boolean,
+        registerOnCreate?: boolean
+      );
       label: string;
       icon: string;
       onClick: (self: Widget) => void;
@@ -1589,7 +2035,98 @@ declare namespace Spicetify {
      *
      * This list is dynamic and may change in the future.
      */
-    type Query = 'decorateItemsForEnhance' | 'imageURLAndSize' | 'imageSources' | 'audioItems' | 'creator' | 'extractedColors' | 'extractedColorsAndImageSources' | 'fetchExtractedColorAndImageForAlbumEntity' | 'fetchExtractedColorAndImageForArtistEntity' | 'fetchExtractedColorAndImageForEpisodeEntity' | 'fetchExtractedColorAndImageForPlaylistEntity' | 'fetchExtractedColorAndImageForPodcastEntity' | 'fetchExtractedColorAndImageForTrackEntity' | 'fetchExtractedColorForAlbumEntity' | 'fetchExtractedColorForArtistEntity' | 'fetchExtractedColorForEpisodeEntity' | 'fetchExtractedColorForPlaylistEntity' | 'fetchExtractedColorForPodcastEntity' | 'fetchExtractedColorForTrackEntity' | 'getAlbumNameAndTracks' | 'getEpisodeName' | 'getTrackName' | 'queryAlbumTrackUris' | 'queryTrackArtists' | 'decorateContextEpisodesOrChapters' | 'decorateContextTracks' | 'fetchTracksForRadioStation' | 'decoratePlaylists' | 'playlistUser' | 'FetchPlaylistMetadata' | 'playlistContentsItemTrackArtist' | 'playlistContentsItemTrackAlbum' | 'playlistContentsItemTrack' | 'playlistContentsItemLocalTrack' | 'playlistContentsItemEpisodeShow' | 'playlistContentsItemEpisode' | 'playlistContentsItemResponse' | 'playlistContentsItem' | 'FetchPlaylistContents' | 'episodeTrailerUri' | 'podcastEpisode' | 'podcastMetadataV2' | 'minimalAudiobook' | 'audiobookChapter' | 'audiobookMetadataV2' | 'fetchExtractedColors' | 'queryFullscreenMode' | 'queryNpvEpisode' | 'queryNpvArtist' | 'albumTrack' | 'getAlbum' | 'queryAlbumTracks' | 'queryArtistOverview' | 'queryArtistAppearsOn' | 'discographyAlbum' | 'albumMetadataReleases' | 'albumMetadata' | 'queryArtistDiscographyAlbums' | 'queryArtistDiscographySingles' | 'queryArtistDiscographyCompilations' | 'queryArtistDiscographyAll' | 'queryArtistDiscographyOverview' | 'artistPlaylist' | 'queryArtistPlaylists' | 'queryArtistDiscoveredOn' | 'queryArtistFeaturing' | 'queryArtistRelated' | 'queryArtistMinimal' | 'searchModalResults' | 'queryWhatsNewFeed' | 'whatsNewFeedNewItems' | 'SetItemsStateInWhatsNewFeed' | 'browseImageURLAndSize' | 'browseImageSources' | 'browseAlbum' | 'browseArtist' | 'browseEpisode' | 'browseChapter' | 'browsePlaylist' | 'browsePodcast' | 'browseAudiobook' | 'browseTrack' | 'browseUser' | 'browseMerch' | 'browseArtistConcerts' | 'browseContent' | 'browseSectionContainer' | 'browseClientFeature' | 'browseItem' | 'browseAll' | 'browsePage';
+    type Query =
+      | "decorateItemsForEnhance"
+      | "imageURLAndSize"
+      | "imageSources"
+      | "audioItems"
+      | "creator"
+      | "extractedColors"
+      | "extractedColorsAndImageSources"
+      | "fetchExtractedColorAndImageForAlbumEntity"
+      | "fetchExtractedColorAndImageForArtistEntity"
+      | "fetchExtractedColorAndImageForEpisodeEntity"
+      | "fetchExtractedColorAndImageForPlaylistEntity"
+      | "fetchExtractedColorAndImageForPodcastEntity"
+      | "fetchExtractedColorAndImageForTrackEntity"
+      | "fetchExtractedColorForAlbumEntity"
+      | "fetchExtractedColorForArtistEntity"
+      | "fetchExtractedColorForEpisodeEntity"
+      | "fetchExtractedColorForPlaylistEntity"
+      | "fetchExtractedColorForPodcastEntity"
+      | "fetchExtractedColorForTrackEntity"
+      | "getAlbumNameAndTracks"
+      | "getEpisodeName"
+      | "getTrackName"
+      | "queryAlbumTrackUris"
+      | "queryTrackArtists"
+      | "decorateContextEpisodesOrChapters"
+      | "decorateContextTracks"
+      | "fetchTracksForRadioStation"
+      | "decoratePlaylists"
+      | "playlistUser"
+      | "FetchPlaylistMetadata"
+      | "playlistContentsItemTrackArtist"
+      | "playlistContentsItemTrackAlbum"
+      | "playlistContentsItemTrack"
+      | "playlistContentsItemLocalTrack"
+      | "playlistContentsItemEpisodeShow"
+      | "playlistContentsItemEpisode"
+      | "playlistContentsItemResponse"
+      | "playlistContentsItem"
+      | "FetchPlaylistContents"
+      | "episodeTrailerUri"
+      | "podcastEpisode"
+      | "podcastMetadataV2"
+      | "minimalAudiobook"
+      | "audiobookChapter"
+      | "audiobookMetadataV2"
+      | "fetchExtractedColors"
+      | "queryFullscreenMode"
+      | "queryNpvEpisode"
+      | "queryNpvArtist"
+      | "albumTrack"
+      | "getAlbum"
+      | "queryAlbumTracks"
+      | "queryArtistOverview"
+      | "queryArtistAppearsOn"
+      | "discographyAlbum"
+      | "albumMetadataReleases"
+      | "albumMetadata"
+      | "queryArtistDiscographyAlbums"
+      | "queryArtistDiscographySingles"
+      | "queryArtistDiscographyCompilations"
+      | "queryArtistDiscographyAll"
+      | "queryArtistDiscographyOverview"
+      | "artistPlaylist"
+      | "queryArtistPlaylists"
+      | "queryArtistDiscoveredOn"
+      | "queryArtistFeaturing"
+      | "queryArtistRelated"
+      | "queryArtistMinimal"
+      | "searchModalResults"
+      | "queryWhatsNewFeed"
+      | "whatsNewFeedNewItems"
+      | "SetItemsStateInWhatsNewFeed"
+      | "browseImageURLAndSize"
+      | "browseImageSources"
+      | "browseAlbum"
+      | "browseArtist"
+      | "browseEpisode"
+      | "browseChapter"
+      | "browsePlaylist"
+      | "browsePodcast"
+      | "browseAudiobook"
+      | "browseTrack"
+      | "browseUser"
+      | "browseMerch"
+      | "browseArtistConcerts"
+      | "browseContent"
+      | "browseSectionContainer"
+      | "browseClientFeature"
+      | "browseItem"
+      | "browseAll"
+      | "browsePage";
     /**
      * Collection of GraphQL definitions.
      */
@@ -1614,7 +2151,7 @@ declare namespace Spicetify {
      * @param context Context to use
      * @return Promise that resolves to the response
      */
-    function Request(query: typeof Definitions[Query | string], variables?: Record<string, any>, context?: Record<string, any>): Promise<any>;
+    function Request(query: (typeof Definitions)[Query | string], variables?: Record<string, any>, context?: Record<string, any>): Promise<any>;
     /**
      * Context for GraphQL queries.
      * @description Used to set context for the handler and initialze it.
@@ -1625,7 +2162,9 @@ declare namespace Spicetify {
      * @param context Context to use
      * @return Function to handle GraphQL queries
      */
-    function Handler(context: Record<string, any>): (query: typeof Definitions[Query | string], variables?: Record<string, any>, context?: Record<string, any>) => Promise<any>;
+    function Handler(
+      context: Record<string, any>
+    ): (query: (typeof Definitions)[Query | string], variables?: Record<string, any>, context?: Record<string, any>) => Promise<any>;
   }
 
   namespace ReactHook {
@@ -1653,7 +2192,7 @@ declare namespace Spicetify {
      * @param id ID of the panel to use
      * @return Object with methods of the panel
      */
-    function usePanelState(id: number): { toggle: () => void, isActive: boolean };
+    function usePanelState(id: number): { toggle: () => void; isActive: boolean };
 
     /**
      * React Hook to use extracted color from GraphQL
@@ -1669,7 +2208,7 @@ declare namespace Spicetify {
      *
      * @return Extracted color hex code.
      */
-    function useExtractedColor(uri: string, fallbackColor?: string, variant?: 'colorRaw' | 'colorLight' | 'colorDark'): string;
+    function useExtractedColor(uri: string, fallbackColor?: string, variant?: "colorRaw" | "colorLight" | "colorDark"): string;
   }
 
   /**
@@ -1777,7 +2316,7 @@ declare namespace Spicetify {
        * @see Spicetify.ReactComponent.PanelHeaderProps
        */
       PanelHeader: any;
-    }
+    };
     /**
      * Check whether or not a Panel with the provided ID is registered.
      * @param id Panel ID to check
@@ -1875,12 +2414,14 @@ declare namespace Spicetify {
    * Analyse and extract color presets from an image. Works for any valid image URL/URI.
    * @param image Spotify URI to an image, or an image URL.
    */
-  function extractColorPreset(image: string | string[]): Promise<{
-    colorRaw: Color;
-    colorLight: Color;
-    colorDark: Color;
-    isFallback: boolean;
-  }[]>;
+  function extractColorPreset(image: string | string[]): Promise<
+    {
+      colorRaw: Color;
+      colorLight: Color;
+      colorDark: Color;
+      isFallback: boolean;
+    }[]
+  >;
 
   interface hsl {
     h: number;
@@ -1897,7 +2438,7 @@ declare namespace Spicetify {
     g: number;
     b: number;
   }
-  type CSSColors = 'HEX' | 'HEXA' | 'HSL' | 'HSLA' | 'RGB' | 'RGBA';
+  type CSSColors = "HEX" | "HEXA" | "HSL" | "HSLA" | "RGB" | "RGBA";
   /**
    * Spotify's internal color class
    */
@@ -1974,7 +2515,7 @@ declare namespace Spicetify {
     /**
      * Dictionary of localized strings
      */
-    const _dictionary: Record<string, string | { one: string, other: string }>;
+    const _dictionary: Record<string, string | { one: string; other: string }>;
 
     /**
      * Format date into locale string
@@ -2031,7 +2572,7 @@ declare namespace Spicetify {
      *
      * @return Current locale dictionary
      */
-    function getDictionary(): Record<string, string | { one: string, other: string }>;
+    function getDictionary(): Record<string, string | { one: string; other: string }>;
     /**
      * Get the current locale
      *
@@ -2081,7 +2622,7 @@ declare namespace Spicetify {
      *
      * @param dictionary Dictionary to set
      */
-    function setDictionary(dictionary: Record<string, string | { one: string, other: string }>): void;
+    function setDictionary(dictionary: Record<string, string | { one: string; other: string }>): void;
     /**
      * Transform text into locale lowercase
      *
