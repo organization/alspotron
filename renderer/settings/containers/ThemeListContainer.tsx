@@ -1,15 +1,13 @@
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
-import { For, Show, createMemo, createSignal, onMount } from 'solid-js';
+import { For, Show, createMemo, createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 
 import Card from '../../components/Card';
 import Modal from '../../components/Modal';
 import useConfig from '../../hooks/useConfig';
 import { DEFAULT_STYLE } from '../../../common/constants';
-import useMigrateLegacyTheme from '../hooks/migrate-legacy-theme';
 
 const ThemeListContainer = () => {
-  const migrate = useMigrateLegacyTheme();
   const [config, setConfig] = useConfig();
   const navigate = useNavigate();
   const [t] = useTransContext();
@@ -24,10 +22,6 @@ const ThemeListContainer = () => {
     .entries(config()?.themes ?? {})
     .filter(([, value]) => !!value),
   );
-
-  onMount(() => {
-    migrate();
-  });
   
   const onSelectTheme = (name: string) => {
     setConfig({

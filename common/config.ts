@@ -7,6 +7,7 @@ import { app } from 'electron';
 import { createSignal } from 'solid-js';
 
 import { DEFAULT_CONFIG } from './constants';
+import migrateLegacyTheme from './migrate-legacy-theme';
 
 export type StyleConfig = {
   font: string;
@@ -93,7 +94,6 @@ app.on('ready', () => {
 }); // to get the correct locale
 
 const defaultConfigDirectory = app.getPath('userData');
-console.log(defaultConfigDirectory);
 
 let configFileTimeout: NodeJS.Timeout | null = null;
 // eslint-disable-next-line solid/reactivity
@@ -116,9 +116,11 @@ export const setConfig = (params: DeepPartial<Config>, useDefault = true) => {
 
 try {
   const str = readFileSync(path.join(defaultConfigDirectory, 'config.json'), 'utf-8');
-  const config = JSON.parse(str);
-  setConfig(deepmerge(DEFAULT_CONFIG, config as Config)); // to upgrade config
-} catch {
+  const config = JSON.parse(str) as Config;
+  const updatedConfig = deepmerge(config, migrateLegacyTheme(config) ?? {});
+
+  setConfig(deepmerge(DEFAULT_CONFIG, updatedConfig)); // to upgrade config
+} catch (err) {
   setConfig(DEFAULT_CONFIG);
 }
 
