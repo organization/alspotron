@@ -13,6 +13,7 @@ import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron
 import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructorOptions, nativeImage, screen, shell, Tray } from 'electron';
 
 import { createEffect, on } from 'solid-js';
+import deepmerge from 'deepmerge';
 
 import PluginManager from './plugins/plugin-manager';
 
@@ -25,7 +26,7 @@ import {
   lyricMapper,
   setConfig,
   setGameList,
-  setLyricMapper
+  setLyricMapper,
 } from '../common/config';
 import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../common/constants';
 
@@ -821,7 +822,7 @@ class Application {
     if (!window) return;
 
     const { windowPosition, themes, selectedTheme, style: legacyStyle } = config();
-    const style = themes[selectedTheme] ?? legacyStyle ?? DEFAULT_STYLE;
+    const style = deepmerge(deepmerge(DEFAULT_STYLE, legacyStyle ?? DEFAULT_STYLE), themes[selectedTheme] ?? DEFAULT_STYLE);
     let activeDisplay: Electron.Display;
     if (options?.isOverlay && process.platform === 'win32') {
       // eslint-disable-next-line @typescript-eslint/no-var-requires

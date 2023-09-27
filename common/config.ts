@@ -69,6 +69,8 @@ export interface Config {
     left: number | null;
     bottom: number | null;
     right: number | null;
+    /** @deprecated */
+    direction?: StyleConfig['lyric']['direction'];
   };
 
   syncThrottle: number;
@@ -91,6 +93,7 @@ app.on('ready', () => {
 }); // to get the correct locale
 
 const defaultConfigDirectory = app.getPath('userData');
+console.log(defaultConfigDirectory);
 
 let configFileTimeout: NodeJS.Timeout | null = null;
 // eslint-disable-next-line solid/reactivity

@@ -1,7 +1,10 @@
 import { on } from 'solid-js';
 import { useTransContext } from '@jellybrick/solid-i18next';
+import deepmerge from 'deepmerge';
 
 import useConfig from '../../hooks/useConfig';
+import { StyleConfig } from '../../../common/config';
+import { DEFAULT_STYLE } from '../../../common/constants';
 
 const useMigrateLegacyTheme = () => {
   const [config, setConfig] = useConfig();
@@ -18,15 +21,19 @@ const useMigrateLegacyTheme = () => {
       name = `${t('setting.theme.legacy-theme')}-${count}`;
     }
 
+    const style: StyleConfig = deepmerge(DEFAULT_STYLE, {
+      ...configData.style,
+      lyric: {
+        ...configData.style.lyric,
+        direction: config()?.windowPosition?.direction ?? 'column',
+        nextLyric: config()?.lyric?.nextLyric ?? 0,
+        previousLyric: config()?.lyric?.previousLyric ?? 0,
+      }
+    });
+
     setConfig({
       themes: {
-        [name]: {
-          ...configData.style,
-          lyric: {
-            nextLyric: config()?.lyric?.nextLyric ?? 0,
-            previousLyric: config()?.lyric?.previousLyric ?? 0,
-          }
-        },
+        [name]: style,
       },
       selectedTheme: name,
       lyric: undefined,
