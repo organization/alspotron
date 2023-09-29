@@ -3,11 +3,10 @@ import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
 import { useNavigate, useParams } from '@solidjs/router';
 
-import { StyleConfig, themeList } from '../../../common/config';
+import { StyleConfig } from '../../../common/config';
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
 
-import useConfig from '../../hooks/useConfig';
 import useThemeList from '../../hooks/useThemeList';
 import LyricsTransition from '../../main/components/LyricsTransition';
 import ColorPicker from '../components/ColorPicker';
@@ -104,6 +103,17 @@ const ThemeContainer = () => {
   const onThemeListPage = () => {
     navigate('/theme');
   };
+  const onExport = () => {
+    const json = JSON.stringify(theme(), null, 2);
+    const name = themeName();
+
+    const link = document.createElement('a');
+    const file = new Blob([json], { type: 'text/plain' });
+    link.href = URL.createObjectURL(file);
+    link.download = `${name}.json`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
 
   return <div ref={parentRef} class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
     <div class={'text-3xl mb-1 px-4 flex justify-start items-center gap-2 select-none'}>
@@ -136,6 +146,7 @@ const ThemeContainer = () => {
         <div class={'flex-1'} />
         <button
           class={'btn-primary'}
+          onClick={onExport}
         >
           <Trans key={'setting.theme.export-as-file'} />
         </button>
