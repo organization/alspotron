@@ -8,6 +8,8 @@ import { cx } from '../../utils/classNames';
 import { Status } from '../../components/PlayingInfoProvider';
 import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
 
+import type { StyleConfig } from '../../../common/config';
+
 type LyricsProps = {
   lyrics: string[];
   status: Status;
@@ -75,12 +77,14 @@ type LyricTransitionProps = JSX.HTMLAttributes<HTMLDivElement> & {
   lyrics: string[];
   status: Status;
   style: string;
+  theme?: StyleConfig;
 };
 
 const LyricsTransition = (props: LyricTransitionProps) => {
   const [, lyricsProps, passedProps] = splitProps(props, ['class'], ['lyrics', 'status']);
 
-  const style = useStyle();
+  const theme = useStyle();
+  const style = () => props.theme ?? theme();
 
   const animation = () => {
     const configuredName = style()?.animation ?? 'pretty';
@@ -117,7 +121,7 @@ const LyricsTransition = (props: LyricTransitionProps) => {
   );
 
   return (
-    <LyricsTransitionGroup 
+    <LyricsTransitionGroup
       animation={animation()}
       container={Container}
       lyrics={lyricsProps.lyrics}

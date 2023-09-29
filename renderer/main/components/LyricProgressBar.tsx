@@ -12,6 +12,7 @@ import { formatTime } from '../../utils/formatTime';
 import { userCSSSelectors, userCSSVariables } from '../../utils/userCSSSelectors';
 
 import type { JSX } from 'solid-js/jsx-runtime';
+import type { StyleConfig } from '../../../common/config';
 
 interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
   style?: string;
@@ -22,10 +23,13 @@ interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
 
   textStyle?: string;
   textClass?: string;
+
+  theme?: StyleConfig;
 }
 
 const LyricProgressBar = (props: LyricProgressBarProps) => {
-  const themeStyle = useStyle();
+  const theme = useStyle();
+  const themeStyle = () => props.theme ?? theme();
   const { coverUrl, title, artist, progress, duration, status } = usePlayingInfo();
   const [style, containerProps] = splitProps(
     props,

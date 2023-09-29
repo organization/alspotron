@@ -13,6 +13,7 @@ import ColorPicker from '../components/ColorPicker';
 import UserCSSEditor from '../components/UserCSSEditor';
 import { cx } from '../../utils/classNames';
 import Switch from '../../components/Switch';
+import LyricPreview from '../components/LyricPreview';
 
 const ANIMATION_LIST = [
   'none',
@@ -45,11 +46,22 @@ const ThemeContainer = () => {
 
   const [fontList, setFontList] = createSignal<string[]>([]);
   const [animationPreview, setAnimationPreview] = createSignal(PREVIEW_TEXT_A);
+  const [scrollY, setScrollY] = createSignal(0);
+  const [previewOffset, setPreviewOffset] = createSignal(0);
 
   const themeName = () => decodeURIComponent(params.name);
   const theme = () => config()?.themes[themeName()];
 
+  let previewRef: HTMLDivElement | undefined;
+  let parentRef: HTMLDivElement | undefined;
   let interval: ReturnType<typeof setInterval> | null = null;
+  const onScroll = () => {
+    setScrollY(parentRef?.scrollTop ?? 0);
+
+    if (previewOffset() === 0 && previewRef) {
+      setPreviewOffset(previewRef.offsetTop);
+    }
+  };
   onMount(() => {
     let isTick = false;
     interval = setInterval(() => {
@@ -58,11 +70,16 @@ const ThemeContainer = () => {
       isTick = !isTick;
       setAnimationPreview(nextPreview);
     }, 1500);
+
+    parentRef?.addEventListener('scroll', onScroll);
   });
   (async () => {
     setFontList(await window.getFont({ disableQuoting: true }));
   })();
-  onCleanup(() => interval && clearInterval(interval));
+  onCleanup(() => {
+    if (typeof interval === 'number') clearInterval(interval);
+    parentRef?.removeEventListener('scroll', onScroll);
+  });
 
   const getAnimationName = (value: string) => {
     if (value === 'none') return t('setting.theme.animation.none');
@@ -93,7 +110,7 @@ const ThemeContainer = () => {
     navigate('/theme');
   };
 
-  return <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
+  return <div ref={parentRef} class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
     <div class={'text-3xl mb-1 px-4 flex justify-start items-center gap-2 select-none'}>
       <span class={'text-3xl opacity-80 hover:opacity-100'} onClick={onThemeListPage}>
         <Trans key={'setting.title.theme'} />
@@ -105,6 +122,19 @@ const ThemeContainer = () => {
         {themeName() ?? t('setting.theme.unknown')}
       </span>
     </div>
+    <Show when={theme()}>
+      <div
+        ref={previewRef}
+        class={cx(
+          'sticky top-[-16px] z-50 mx-4 rounded-lg transition-all',
+          scrollY() <= previewOffset() && 'shadow-none',
+          scrollY() > previewOffset() && 'shadow-xl bg-gray-200 dark:bg-gray-800',
+        )}>
+        <LyricPreview
+          theme={theme()!}
+        />
+      </div>
+    </Show>
     <div class={'text-md mt-4 mb-1 px-4'}>
       <Trans key={'setting.theme.generic-theme-settings'} />
     </div>
