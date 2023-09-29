@@ -1,27 +1,24 @@
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
-import { For, Show, createMemo, createSignal } from 'solid-js';
+import { For, Show, createSignal } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 
 import Card from '../../components/Card';
 import Modal from '../../components/Modal';
 import useConfig from '../../hooks/useConfig';
 import { DEFAULT_STYLE } from '../../../common/constants';
+import useThemeList from '../../hooks/useThemeList';
 
 const ThemeListContainer = () => {
   const [config, setConfig] = useConfig();
   const navigate = useNavigate();
   const [t] = useTransContext();
+  const [themeList, setTheme] = useThemeList();
 
   const [nameConflictOpen, setNameConflictOpen] = createSignal(false);
   const [deleteOpen, setDeleteOpen] = createSignal(false);
   const [nameOpen, setNameOpen] = createSignal(false);
   const [target, setTarget] = createSignal<string | null>(null);
   const [name, setName] = createSignal('');
-
-  const themes = createMemo(() => Object
-    .entries(config()?.themes ?? {})
-    .filter(([, value]) => !!value),
-  );
   
   const onSelectTheme = (name: string) => {
     setConfig({
@@ -44,15 +41,11 @@ const ThemeListContainer = () => {
     const newName = t('setting.theme.new-theme');
     let suffix = 1;
 
-    while (themes().find(([name]) => name === `${newName} ${suffix}`)) {
+    while (themeList()[`${newName} ${suffix}`]) {
       suffix += 1;
     }
 
-    setConfig({
-      themes: {
-        [`${newName} ${suffix}`]: DEFAULT_STYLE,
-      },
-    });
+    setTheme(`${newName} ${suffix}`, DEFAULT_STYLE);
   };
 
   const onRenameConfirm = () => {
@@ -60,20 +53,18 @@ const ThemeListContainer = () => {
     const oldName = target();
     
     if (typeof oldName !== 'string') return;
-    const original = config()?.themes?.[oldName];
+    const original = themeList()[oldName];
 
-    if (themes().find(([name]) => name === newName)) {
+    if (themeList()[newName]) {
       setNameOpen(false);
       setNameConflictOpen(true);
       return;
     }
 
     const isSelected = config()?.selectedTheme === oldName;
+    setTheme(newName, original);
+    setTheme(oldName, null);
     setConfig({
-      themes: {
-        [newName]: original,
-        [oldName]: undefined,
-      },
       selectedTheme: isSelected ? newName : config()?.selectedTheme,
     });
     setNameOpen(false);
@@ -83,11 +74,9 @@ const ThemeListContainer = () => {
     if (typeof name !== 'string') return;
 
     const isSelected = config()?.selectedTheme === name;
+    setTheme(name, null);
     setConfig({
-      themes: {
-        [name]: undefined,
-      },
-      selectedTheme: isSelected ? themes()[0][0] : config()?.selectedTheme,
+      selectedTheme: isSelected ? Object.keys(themeList())[0] : config()?.selectedTheme,
     });
     setDeleteOpen(false);
   };
@@ -100,14 +89,14 @@ const ThemeListContainer = () => {
       <div class={'text-md mt-4 mb-1'}>
         <Trans key={'setting.theme.available-themes'} />
       </div>
-      <For each={themes()}>
-        {([name]) => (
+      <For each={Object.keys(themeList())}>
+        {(name) => (
           <Card
             class={'flex flex-row justify-start items-center gap-4'}
             subCards={[
               <div class={'w-full h-full flex justify-start items-center gap-3'}>
                 <button
-                  disabled={themes().length <= 1}
+                  disabled={Object.keys(themeList()).length <= 1}
                   class={'btn-error flex justify-center items-center'}
                   onClick={() => onDelete(name)}
                 >

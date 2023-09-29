@@ -4,17 +4,10 @@ import { Config, StyleConfig } from './config';
 import { DEFAULT_STYLE } from './constants';
 import { getTranslation } from './intl';
 
-const migrateLegacyTheme = (configData: Config): Partial<Config> | null => {
+const migrateLegacyTheme = (configData: Config): [Partial<Config>, [string, StyleConfig]] | null => {
   if (!configData?.style) return null;
 
-  const prefix = getTranslation('setting.theme.legacy-theme', configData.language);
-  let count = 0;
-  let name = prefix;
-  while(configData.themes?.[name]) {
-    count += 1;
-
-    name = `${prefix}-${count}`;
-  }
+  const name = getTranslation('setting.theme.legacy-theme', configData.language);
 
   const style: StyleConfig = deepmerge(DEFAULT_STYLE, {
     ...configData.style,
@@ -26,14 +19,14 @@ const migrateLegacyTheme = (configData: Config): Partial<Config> | null => {
     }
   });
 
-  return {
-    themes: {
-      [name]: style,
+  return [
+    {
+      selectedTheme: name,
+      lyric: undefined,
+      style: undefined,
     },
-    selectedTheme: name,
-    lyric: undefined,
-    style: undefined,
-  };
+    [name, style],
+  ];
 };
 
 export default migrateLegacyTheme;

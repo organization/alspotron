@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -6,7 +6,7 @@ import deepmerge from 'deepmerge';
 import { app } from 'electron';
 import { createSignal } from 'solid-js';
 
-import { DEFAULT_CONFIG } from './constants';
+import { DEFAULT_CONFIG, DEFAULT_STYLE } from './constants';
 import migrateLegacyTheme from './migrate-legacy-theme';
 
 export type StyleConfig = {
@@ -51,8 +51,6 @@ export type StyleConfig = {
 
 export interface Config {
   version: 1;
-
-  themes: Record<string, StyleConfig | undefined>;
   selectedTheme: string;
 
   /** @deprecated */
@@ -94,14 +92,15 @@ app.on('ready', () => {
 }); // to get the correct locale
 
 const defaultConfigDirectory = app.getPath('userData');
+let migrationCallback: (() => void) | null = null;
 
 let configFileTimeout: NodeJS.Timeout | null = null;
 // eslint-disable-next-line solid/reactivity
 const configSignal = createSignal<Config>(DEFAULT_CONFIG);
 
 export const config = configSignal[0];
-export const setConfig = (params: DeepPartial<Config>, useDefault = true) => {
-  const value = (useDefault ? deepmerge(DEFAULT_CONFIG, deepmerge(configSignal[0](), params)) : params) as Config;
+export const setConfig = (params: DeepPartial<Config>, useFallback = true) => {
+  const value = (useFallback ? deepmerge(DEFAULT_CONFIG, deepmerge(configSignal[0](), params)) : params) as Config;
 
   configSignal[1](value);
 
@@ -117,8 +116,15 @@ export const setConfig = (params: DeepPartial<Config>, useDefault = true) => {
 try {
   const str = readFileSync(path.join(defaultConfigDirectory, 'config.json'), 'utf-8');
   const config = JSON.parse(str) as Config;
-  const updatedConfig = deepmerge(config, migrateLegacyTheme(config) ?? {});
+  const [legacyConfig, legacyTheme] = migrateLegacyTheme(config) ?? [null, null];
+  const updatedConfig = deepmerge(config, legacyConfig ?? {});
 
+  if (legacyTheme) {
+    migrationCallback = () => {
+      const [name, theme] = legacyTheme;
+      setTheme(name, theme);
+    };
+  }
   setConfig(deepmerge(DEFAULT_CONFIG, updatedConfig)); // to upgrade config
 } catch (err) {
   setConfig(DEFAULT_CONFIG);
@@ -193,5 +199,76 @@ export const setGameList = (params: Partial<GameList>, useFallback = true) => {
     gameListSignal[1](gameList as GameList);
   } catch {
     setGameList({});
+  }
+})();
+
+/* Themes */
+let themeListFileTimeout: NodeJS.Timeout | null = null;
+// eslint-disable-next-line solid/reactivity
+const themeListSignal = createSignal<Record<string, StyleConfig>>();
+export const themeList = themeListSignal[0];
+export const setTheme = (name: string, style: DeepPartial<StyleConfig> | null, useFallback = true) => {
+  const original = themeListSignal[0]();
+
+  if (style === null) {
+    const newList = { ...original };
+    delete newList[name];
+
+    themeListSignal[1](newList);
+  } else {
+    const value = (
+      useFallback
+      ? deepmerge(DEFAULT_STYLE, deepmerge(original?.[name] ?? DEFAULT_STYLE, style))
+      : style
+    ) as StyleConfig;
+    
+    themeListSignal[1]({
+      ...original,
+      [name]: value,
+    });
+  }
+
+  if (themeListFileTimeout) clearTimeout(themeListFileTimeout);
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  themeListFileTimeout = setTimeout(async () => {
+    themeListFileTimeout = null;
+
+    const data = themeListSignal[0]() ?? {};
+    const names = Object.entries(data).filter(([, value]) => value).map(([key]) => key);
+
+    const themeFolderPath = path.join(defaultConfigDirectory, '/theme');
+    await fs.mkdir(themeFolderPath).catch(() => null);
+
+    const toDeleteList = (await fs.readdir(themeFolderPath))
+      .filter((filename) => filename.match(/\.json$/) && !names.includes(filename.replace(/\.json$/, '')));
+
+    await Promise.all(toDeleteList.map(async (filename) => fs.unlink(path.join(themeFolderPath, filename))));
+    await Promise.all(names.map(async (name) => {
+      const themePath = path.join(themeFolderPath, `${name}.json`);
+      await fs.writeFile(themePath, JSON.stringify(data[name], null, 2), 'utf-8').catch(() => null);
+    }));
+  }, 1000);
+};
+
+(() => {
+  try {
+    const themeFolderPath = path.join(defaultConfigDirectory, '/theme');
+    const nameList = readdirSync(themeFolderPath, { withFileTypes: true })
+      .filter((it) => it.isFile())
+      .map((it) => it.name);
+
+    const initThemeList: Record<string, StyleConfig> = {};
+    for (const filename of nameList) {
+      if (filename.match(/\.json$/)?.[0] !== '.json') continue;
+
+      const name = filename.replace(/\.json$/, '');
+      const data = readFileSync(path.join(themeFolderPath, filename), 'utf-8');
+      initThemeList[name] = JSON.parse(data) as StyleConfig;
+    }
+    
+    themeListSignal[1](initThemeList);
+    migrationCallback?.();
+  } catch {
+    setTheme('Default Theme', DEFAULT_STYLE);
   }
 })();

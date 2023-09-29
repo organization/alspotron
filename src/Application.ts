@@ -27,6 +27,9 @@ import {
   setConfig,
   setGameList,
   setLyricMapper,
+  setTheme,
+  StyleConfig,
+  themeList,
 } from '../common/config';
 import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../common/constants';
 
@@ -603,6 +606,13 @@ class Application {
       this.broadcast('game-list', gameList());
     });
     ipcMain.handle('get-game-list', () => gameList());
+    ipcMain.handle('set-theme', async (_, name: string, data: DeepPartial<StyleConfig> | null, useFallback: boolean = true) => {
+      await this.overridePlugin('set-theme', (data) => {
+        setTheme(name, data, useFallback);
+      }, data);
+      this.broadcast('theme-list', themeList());
+    });
+    ipcMain.handle('get-theme-list', () => themeList());
 
     ipcMain.handle('window-minimize', () => {
       this.overridePlugin('window-minimize', () => {
@@ -821,7 +831,8 @@ class Application {
   updateWindowConfig(window: BrowserWindow | null, options?: { isOverlay: boolean, gameProcessId?: number }) {
     if (!window) return;
 
-    const { windowPosition, themes, selectedTheme, style: legacyStyle } = config();
+    const { windowPosition, selectedTheme, style: legacyStyle } = config();
+    const themes = themeList() ?? {};
     const style = deepmerge(deepmerge(DEFAULT_STYLE, legacyStyle ?? DEFAULT_STYLE), themes[selectedTheme] ?? DEFAULT_STYLE);
     let activeDisplay: Electron.Display;
     if (options?.isOverlay && process.platform === 'win32') {

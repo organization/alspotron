@@ -3,11 +3,12 @@ import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
 import { useNavigate, useParams } from '@solidjs/router';
 
-import { StyleConfig } from '../../../common/config';
+import { StyleConfig, themeList } from '../../../common/config';
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
 
 import useConfig from '../../hooks/useConfig';
+import useThemeList from '../../hooks/useThemeList';
 import LyricsTransition from '../../main/components/LyricsTransition';
 import ColorPicker from '../components/ColorPicker';
 import UserCSSEditor from '../components/UserCSSEditor';
@@ -29,7 +30,7 @@ const ANIMATION_LIST = [
 const ThemeContainer = () => {
   const params = useParams();
   const navigate = useNavigate();
-  const [config, setConfig] = useConfig();
+  const [themeList, setThemeList] = useThemeList();
   const [t] = useTransContext();
 
   const PREVIEW_TEXT_A = [
@@ -50,7 +51,7 @@ const ThemeContainer = () => {
   const [previewOffset, setPreviewOffset] = createSignal(0);
 
   const themeName = () => decodeURIComponent(params.name);
-  const theme = () => config()?.themes[themeName()];
+  const theme = () => themeList()[themeName()];
 
   let previewRef: HTMLDivElement | undefined;
   let parentRef: HTMLDivElement | undefined;
@@ -98,13 +99,7 @@ const ThemeContainer = () => {
   const setTheme = (style: DeepPartial<StyleConfig>) => {
     const nowThemeName = themeName();
 
-    setConfig({
-      themes: {
-        [nowThemeName]: {
-          ...style,
-        },
-      }
-    });
+    setThemeList(nowThemeName, style);
   };
   const onThemeListPage = () => {
     navigate('/theme');

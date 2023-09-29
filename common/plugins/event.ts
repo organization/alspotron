@@ -1,6 +1,6 @@
 import { Plugin } from './plugin';
 
-import { Config, GameList, LyricMapper } from '../config';
+import { Config, GameList, LyricMapper, StyleConfig } from '../config';
 import { UpdateData } from '../types';
 
 export interface PluginEventMap {
@@ -26,6 +26,7 @@ export interface OverrideParameterMap {
   'update': [updateContext: { data: UpdateData }];
   'config': [config: DeepPartial<Config>];
   'game-list': [gameList: Partial<GameList>];
+  'set-theme': [themeList: DeepPartial<StyleConfig> | null];
   'lyric-mapper': [lyricMapper: Partial<LyricMapper>];
   'window-minimize': [];
   'window-maximize': [maximize: boolean];

@@ -49,9 +49,6 @@ export const DEFAULT_STYLE: StyleConfig = {
 export const DEFAULT_CONFIG: Config = {
   version: 1,
 
-  themes: {
-    'Default Theme': DEFAULT_STYLE,
-  },
   selectedTheme: 'Default Theme',
 
   windowPosition: {
