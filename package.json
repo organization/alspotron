@@ -77,11 +77,11 @@
     "vite-plugin-static-copy": "0.17.0"
   },
   "dependencies": {
-    "@codemirror/commands": "6.2.5",
+    "@codemirror/commands": "6.3.0",
     "@codemirror/lang-css": "6.2.1",
     "@codemirror/lang-sass": "6.0.2",
     "@codemirror/state": "6.2.1",
-    "@codemirror/view": "6.20.2",
+    "@codemirror/view": "6.21.0",
     "@floating-ui/dom": "1.5.3",
     "@jellybrick/solid-i18next": "1.2.2",
     "@koa/cors": "4.0.0",
