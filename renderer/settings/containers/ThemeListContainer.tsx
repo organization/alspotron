@@ -152,12 +152,29 @@ const ThemeListContainer = () => {
           </Card>
         )}
       </For>
-      <button
-        class={'btn-primary'}
-        onClick={onAdd}
-      >
+      <div class={'text-md mt-4 mb-1'}>
+        <Trans key={'setting.theme.edit-theme'} />
+      </div>
+      <Card class={'flex flex-row justify-start items-center gap-4'}>
         <Trans key={'setting.theme.add-theme'} />
-      </button>
+        <div class={'flex-1'} />
+        <button
+          class={'btn-primary'}
+          onClick={onAdd}
+        >
+          <Trans key={'setting.theme.add-theme'} />
+        </button>
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-4'}>
+        <Trans key={'setting.theme.import-theme'} />
+        <div class={'flex-1'} />
+        <button
+          class={'btn-primary'}
+          onClick={onAdd}
+        >
+          <Trans key={'setting.theme.import-from-file'} />
+        </button>
+      </Card>
       <Modal
         open={nameOpen()}
         onClose={() => setNameOpen(false)}

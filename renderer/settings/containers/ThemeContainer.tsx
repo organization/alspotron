@@ -130,6 +130,17 @@ const ThemeContainer = () => {
         />
       </div>
     </Show>
+    <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
+      <Card class={'flex flex-row justify-start items-center gap-4'}>
+        <Trans key={'setting.theme.export-theme'} />
+        <div class={'flex-1'} />
+        <button
+          class={'btn-primary'}
+        >
+          <Trans key={'setting.theme.export-as-file'} />
+        </button>
+      </Card>
+    </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
       <Trans key={'setting.theme.generic-theme-settings'} />
     </div>
