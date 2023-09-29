@@ -172,6 +172,7 @@
   "setting.theme.export-theme": "Export theme",
   "setting.theme.import-from-file": "Import from file",
   "setting.theme.export-as-file": "Export as a file",
+  "setting.theme.import-theme-failed": "Failed to import a theme",
   "setting.user-css-warning.bold": "WARNING!",
   "setting.user-css-warning.0": "If you're using custom selectors, CSS settings can break after updates.",
   "setting.user-css-warning.1": "Custom CSS is an experimental feature. Alspotron Team does not guarantee custom CSS to work after updates.",

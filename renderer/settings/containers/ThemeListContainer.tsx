@@ -1,5 +1,5 @@
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
-import { For, Show, createSignal } from 'solid-js';
+import { For, Show, createSignal, JSX } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 
 import Card from '../../components/Card';
@@ -7,6 +7,7 @@ import Modal from '../../components/Modal';
 import useConfig from '../../hooks/useConfig';
 import { DEFAULT_STYLE } from '../../../common/constants';
 import useThemeList from '../../hooks/useThemeList';
+import { StyleConfig } from '../../../common/config';
 
 const ThemeListContainer = () => {
   const [config, setConfig] = useConfig();
@@ -19,6 +20,8 @@ const ThemeListContainer = () => {
   const [nameOpen, setNameOpen] = createSignal(false);
   const [target, setTarget] = createSignal<string | null>(null);
   const [name, setName] = createSignal('');
+  const [open, setOpen] = createSignal(false);
+  const [error, setError] = createSignal<Error | null>(null);
   
   const onSelectTheme = (name: string) => {
     setConfig({
@@ -79,6 +82,23 @@ const ThemeListContainer = () => {
       selectedTheme: isSelected ? Object.keys(themeList())[0] : config()?.selectedTheme,
     });
     setDeleteOpen(false);
+  };
+
+  const onImportTheme: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = async (event) => {    
+    const file = event.target.files?.item(0);
+    if (!file) return;
+
+    try {
+      const filename = file.name;
+      const name = filename.replace(/\.json$/, '');
+      const str = await file.text();
+
+      const json = JSON.parse(str) as StyleConfig;
+      setTheme(name, json);
+    } catch (err) {
+      setError(err as Error);
+      setOpen(true);
+    }
   };
 
   return (
@@ -168,12 +188,12 @@ const ThemeListContainer = () => {
       <Card class={'flex flex-row justify-start items-center gap-4'}>
         <Trans key={'setting.theme.import-theme'} />
         <div class={'flex-1'} />
-        <button
-          class={'btn-primary'}
-          onClick={onAdd}
-        >
-          <Trans key={'setting.theme.import-from-file'} />
-        </button>
+        <label for={'import-theme'}>
+          <a class={'btn-primary'}>
+            <Trans key={'setting.theme.import-from-file'} />
+          </a>
+          <input id={'import-theme'} type={'file'} class={'hidden'} accept={'application/json'} onInput={onImportTheme} />
+        </label>
       </Card>
       <Modal
         open={nameOpen()}
@@ -232,6 +252,31 @@ const ThemeListContainer = () => {
         <div class={'text-md mb-1'}>
           {t('setting.theme.rename-conflict', { name: name() })}
         </div>
+      </Modal>
+      <Modal
+        open={open()}
+        onClose={() => setOpen(false)}
+        buttons={[
+          {
+            type: 'positive',
+            name: t('common.okay'),
+            onClick: () => setOpen(false),
+          },
+        ]}
+      >
+        <div class={'text-black dark:text-white text-lg'}>
+          {t('setting.theme.import-theme-failed')}
+        </div>
+        <div class={'text-black dark:text-white font-mono'}>
+          {error()?.name}
+          {': '}
+          {error()?.message}
+        </div>
+        <pre class={'text-white bg-slate-700 font-mono'}>
+          <code>
+            {JSON.stringify(error(), null, 2)}
+          </code>
+        </pre>
       </Modal>
     </div>
   )

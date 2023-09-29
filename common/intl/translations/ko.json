@@ -172,6 +172,7 @@
   "setting.theme.export-theme": "테마 저장하기",
   "setting.theme.import-from-file": "파일로부터 불러오기",
   "setting.theme.export-as-file": "파일로 저장하기",
+  "setting.theme.import-theme-failed": "테마를 불러오지 못하였습니다.",
   "setting.user-css-warning.bold": "주의!",
   "setting.user-css-warning.0": "제공된 셀렉터, 변수 외의 다른 셀렉터 등을 사용하실 경우 업데이트 시 CSS가 깨질 확률이 높습니다.",
   "setting.user-css-warning.1": "사용자 CSS는 어디까지나 실험기능으로, Alspotron 팀에서는 업데이트 시 스타일의 안정성을 보장하지 않습니다.",
