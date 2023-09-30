@@ -13,21 +13,25 @@ import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron
 import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructorOptions, nativeImage, screen, shell, Tray } from 'electron';
 
 import { createEffect, on } from 'solid-js';
+import deepmerge from 'deepmerge';
 
 import PluginManager from './plugins/plugin-manager';
 
 import {
   Config,
   config,
-  DEFAULT_CONFIG,
   GameList,
   gameList,
   LyricMapper,
   lyricMapper,
   setConfig,
   setGameList,
-  setLyricMapper
+  setLyricMapper,
+  setTheme,
+  StyleConfig,
+  themeList,
 } from '../common/config';
+import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../common/constants';
 
 import { getTranslation } from '../common/intl';
 
@@ -577,6 +581,17 @@ class Application {
       event.returnValue = config();
     });
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
+    ipcMain.handle('reset-config', () => {
+      setConfig(DEFAULT_CONFIG, false);
+      setLyricMapper({}, false);
+      setGameList({}, false);
+
+      this.pluginManager.getPlugins()
+        .forEach((plugin) => this.pluginManager.removePlugin(plugin));
+
+      this.broadcast('config', config());
+      this.broadcast('game-list', gameList());
+    });
     ipcMain.handle('set-lyric-mapper', async (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
       await this.overridePlugin('lyric-mapper', (data) => {
         setLyricMapper(data, useFallback);
@@ -591,6 +606,13 @@ class Application {
       this.broadcast('game-list', gameList());
     });
     ipcMain.handle('get-game-list', () => gameList());
+    ipcMain.handle('set-theme', async (_, name: string, data: DeepPartial<StyleConfig> | null, useFallback: boolean = true) => {
+      await this.overridePlugin('set-theme', (data) => {
+        setTheme(name, data, useFallback);
+      }, data);
+      this.broadcast('theme-list', themeList());
+    });
+    ipcMain.handle('get-theme-list', () => themeList());
 
     ipcMain.handle('window-minimize', () => {
       this.overridePlugin('window-minimize', () => {
@@ -809,7 +831,9 @@ class Application {
   updateWindowConfig(window: BrowserWindow | null, options?: { isOverlay: boolean, gameProcessId?: number }) {
     if (!window) return;
 
-    const { windowPosition, style } = config();
+    const { windowPosition, selectedTheme, style: legacyStyle } = config();
+    const themes = themeList() ?? {};
+    const style = deepmerge(deepmerge(DEFAULT_STYLE, legacyStyle ?? DEFAULT_STYLE), themes[selectedTheme] ?? DEFAULT_STYLE);
     let activeDisplay: Electron.Display;
     if (options?.isOverlay && process.platform === 'win32') {
       // eslint-disable-next-line @typescript-eslint/no-var-requires

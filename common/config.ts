@@ -1,56 +1,65 @@
-/* eslint-disable solid/reactivity */
-import { readFileSync } from 'fs';
-
-import fs from 'fs/promises';
-
+import { readFileSync, readdirSync } from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import deepmerge from 'deepmerge';
 import { app } from 'electron';
 import { createSignal } from 'solid-js';
 
-export interface Config {
-  style: {
-    font: string;
-    fontWeight: string;
-    animation: string;
-    animationAtOnce: boolean;
-    maxHeight: number;
-    proximityOpacity: number;
-    proximitySensitivity: number;
-    rowGap: number;
+import { DEFAULT_CONFIG, DEFAULT_STYLE } from './constants';
+import migrateLegacyTheme from './migrate-legacy-theme';
 
-    nowPlaying: {
-      color: string;
-      background: string;
-      backgroundProgress: string;
-      fontSize: number;
-      maxWidth: number;
-      visible: boolean;
-      stoppedOpacity: number;
-    };
+export type StyleConfig = {
+  font: string;
+  fontWeight: string;
+  animation: string;
+  animationAtOnce: boolean;
+  maxHeight: number;
+  proximityOpacity: number;
+  proximitySensitivity: number;
+  rowGap: number;
 
-    lyric: {
-      color: string;
-      background: string;
-      fontSize: number;
-      maxWidth: number;
-      stoppedOpacity: number;
-      containerRowGap: number;
-      multipleContainerRowGap: number;
-      nextLyricScale: number;
-      previousLyricScale: number;
-      nextLyricOpacity: number;
-      previousLyricOpacity: number;
-    };
-
-    userCSS: string | null;
+  nowPlaying: {
+    color: string;
+    background: string;
+    backgroundProgress: string;
+    fontSize: number;
+    maxWidth: number;
+    visible: boolean;
+    stoppedOpacity: number;
   };
 
   lyric: {
+    color: string;
+    background: string;
+    fontSize: number;
+    maxWidth: number;
+    stoppedOpacity: number;
+    containerRowGap: number;
+    multipleContainerRowGap: number;
+    direction: 'column' | 'column-reverse';
     nextLyric: number;
     previousLyric: number;
+    nextLyricScale: number;
+    previousLyricScale: number;
+    nextLyricOpacity: number;
+    previousLyricOpacity: number;
   };
+
+  userCSS: string | null;
+};
+
+export interface Config {
+  version: 1;
+  selectedTheme: string;
+
+  /** @deprecated */
+  style?: StyleConfig;
+  /** @deprecated */
+  lyric?: {
+    nextLyric: number;
+    previousLyric: number;
+  }
 
   windowPosition: {
     anchor: 'top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right';
@@ -59,7 +68,8 @@ export interface Config {
     left: number | null;
     bottom: number | null;
     right: number | null;
-    direction: 'column' | 'column-reverse';
+    /** @deprecated */
+    direction?: StyleConfig['lyric']['direction'];
   };
 
   syncThrottle: number;
@@ -77,83 +87,20 @@ export interface Config {
 
 const getCurrentLocale = () => (/en|ko|ja|de/.exec(app.getLocale())?.at(0)) as 'ko' | 'en' | 'ja' | 'de' | undefined ?? 'ko';
 
-export const DEFAULT_CONFIG: Config = {
-  style: {
-    font: 'KoPubWorldDotum',
-    fontWeight: '400',
-    animation: 'pretty',
-    animationAtOnce: false,
-    maxHeight: 400,
-    proximityOpacity: 0,
-    proximitySensitivity: 2,
-    rowGap: 2,
-
-    nowPlaying: {
-      color: '#FFFFFF',
-      background: 'rgba(29, 29, 29, .50)',
-      backgroundProgress: 'rgba(29, 29, 29, .80)',
-      fontSize: 11,
-      maxWidth: 300,
-      visible: true,
-      stoppedOpacity: 0.5,
-    },
-
-    lyric: {
-      color: '#FFFFFF',
-      background: 'rgba(29, 29, 29, .70)',
-      fontSize: 12,
-      maxWidth: 700,
-      stoppedOpacity: 0.5,
-      containerRowGap: 1,
-      multipleContainerRowGap: 1,
-      nextLyricScale: 0.9,
-      previousLyricScale: 0.9,
-      nextLyricOpacity: 0.5,
-      previousLyricOpacity: 0.5,
-    },
-
-    userCSS: null,
-  },
-
-  lyric: {
-    nextLyric: 0,
-    previousLyric: 0,
-  },
-
-  windowPosition: {
-    anchor: 'bottom-right',
-    display: null,
-    top: 32,
-    left: 32,
-    bottom: 32,
-    right: 32,
-    direction: 'column',
-  },
-
-  syncThrottle: 1000 * 3,
-
-  language: 'ko',
-  developer: false,
-
-  plugins: {
-    list: {},
-    disabled: {},
-    config: {},
-  },
-} satisfies Config;
-
 app.on('ready', () => {
   DEFAULT_CONFIG.language = getCurrentLocale();
 }); // to get the correct locale
 
 const defaultConfigDirectory = app.getPath('userData');
+let migrationCallback: (() => void) | null = null;
 
 let configFileTimeout: NodeJS.Timeout | null = null;
+// eslint-disable-next-line solid/reactivity
 const configSignal = createSignal<Config>(DEFAULT_CONFIG);
 
 export const config = configSignal[0];
-export const setConfig = (params: DeepPartial<Config>) => {
-  const value = deepmerge(DEFAULT_CONFIG, deepmerge(configSignal[0](), params)) as Config;
+export const setConfig = (params: DeepPartial<Config>, useFallback = true) => {
+  const value = (useFallback ? deepmerge(DEFAULT_CONFIG, deepmerge(configSignal[0](), params)) : params) as Config;
 
   configSignal[1](value);
 
@@ -168,9 +115,18 @@ export const setConfig = (params: DeepPartial<Config>) => {
 
 try {
   const str = readFileSync(path.join(defaultConfigDirectory, 'config.json'), 'utf-8');
-  const config = JSON.parse(str);
-  setConfig(deepmerge(DEFAULT_CONFIG, config as Config)); // to upgrade config
-} catch {
+  const config = JSON.parse(str) as Config;
+  const [legacyConfig, legacyTheme] = migrateLegacyTheme(config) ?? [null, null];
+  const updatedConfig = deepmerge(config, legacyConfig ?? {});
+
+  if (legacyTheme) {
+    migrationCallback = () => {
+      const [name, theme] = legacyTheme;
+      setTheme(name, theme);
+    };
+  }
+  setConfig(deepmerge(DEFAULT_CONFIG, updatedConfig)); // to upgrade config
+} catch (err) {
   setConfig(DEFAULT_CONFIG);
 }
 
@@ -180,6 +136,7 @@ export interface LyricMapper {
 }
 
 let lyricMapperFileTimeout: NodeJS.Timeout | null = null;
+// eslint-disable-next-line solid/reactivity
 const lyricMapperSignal = createSignal<LyricMapper>();
 export const lyricMapper = lyricMapperSignal[0];
 export const setLyricMapper = (params: Partial<LyricMapper>, useFallback = true) => {
@@ -215,6 +172,7 @@ export interface GameList {
 }
 
 let gameListFileTimeout: NodeJS.Timeout | null = null;
+// eslint-disable-next-line solid/reactivity
 const gameListSignal = createSignal<GameList>();
 
 export const gameList = gameListSignal[0];
@@ -241,5 +199,76 @@ export const setGameList = (params: Partial<GameList>, useFallback = true) => {
     gameListSignal[1](gameList as GameList);
   } catch {
     setGameList({});
+  }
+})();
+
+/* Themes */
+let themeListFileTimeout: NodeJS.Timeout | null = null;
+// eslint-disable-next-line solid/reactivity
+const themeListSignal = createSignal<Record<string, StyleConfig>>();
+export const themeList = themeListSignal[0];
+export const setTheme = (name: string, style: DeepPartial<StyleConfig> | null, useFallback = true) => {
+  const original = themeListSignal[0]();
+
+  if (style === null) {
+    const newList = { ...original };
+    delete newList[name];
+
+    themeListSignal[1](newList);
+  } else {
+    const value = (
+      useFallback
+      ? deepmerge(DEFAULT_STYLE, deepmerge(original?.[name] ?? DEFAULT_STYLE, style))
+      : style
+    ) as StyleConfig;
+    
+    themeListSignal[1]({
+      ...original,
+      [name]: value,
+    });
+  }
+
+  if (themeListFileTimeout) clearTimeout(themeListFileTimeout);
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  themeListFileTimeout = setTimeout(async () => {
+    themeListFileTimeout = null;
+
+    const data = themeListSignal[0]() ?? {};
+    const names = Object.entries(data).filter(([, value]) => value).map(([key]) => key);
+
+    const themeFolderPath = path.join(defaultConfigDirectory, '/theme');
+    await fs.mkdir(themeFolderPath).catch(() => null);
+
+    const toDeleteList = (await fs.readdir(themeFolderPath))
+      .filter((filename) => filename.match(/\.json$/) && !names.includes(filename.replace(/\.json$/, '')));
+
+    await Promise.all(toDeleteList.map(async (filename) => fs.unlink(path.join(themeFolderPath, filename))));
+    await Promise.all(names.map(async (name) => {
+      const themePath = path.join(themeFolderPath, `${name}.json`);
+      await fs.writeFile(themePath, JSON.stringify(data[name], null, 2), 'utf-8').catch(() => null);
+    }));
+  }, 1000);
+};
+
+(() => {
+  try {
+    const themeFolderPath = path.join(defaultConfigDirectory, '/theme');
+    const nameList = readdirSync(themeFolderPath, { withFileTypes: true })
+      .filter((it) => it.isFile())
+      .map((it) => it.name);
+
+    const initThemeList: Record<string, StyleConfig> = {};
+    for (const filename of nameList) {
+      if (filename.match(/\.json$/)?.[0] !== '.json') continue;
+
+      const name = filename.replace(/\.json$/, '');
+      const data = readFileSync(path.join(themeFolderPath, filename), 'utf-8');
+      initThemeList[name] = JSON.parse(data) as StyleConfig;
+    }
+    
+    themeListSignal[1](initThemeList);
+    migrationCallback?.();
+  } catch {
+    setTheme('Default Theme', DEFAULT_STYLE);
   }
 })();

@@ -1,8 +1,10 @@
-import { createMemo, createRenderEffect, onCleanup, onMount } from 'solid-js';
+import { createMemo, createRenderEffect, on, onCleanup, onMount } from 'solid-js';
 import { compile, serialize, stringify, prefixer, middleware, Middleware } from 'stylis';
 
-import useConfig from '../hooks/useConfig';
+import useStyle from '../hooks/useStyle';
 import { userCSSSelectors, userCSSTransitions } from '../utils/userCSSSelectors';
+
+import type { StyleConfig } from '../../common/config';
 
 const userCSSMiddleware: Middleware = (element) => {
   if (element.type !== 'rule') {
@@ -28,18 +30,33 @@ const userCSSMiddleware: Middleware = (element) => {
   element.props = mappedProps;
 };
 
-const UserCSS = () => {
-  const [config] = useConfig();
-  const userCSS = () => config()?.style.userCSS ?? '';
-  const compiledCSS = createMemo(
-    () => serialize(
-      compile(userCSS()),
+export interface UserCSSProps {
+  theme?: StyleConfig;
+}
+
+const UserCSS = (props: UserCSSProps) => {
+  const style = useStyle();
+  const userCSS = () => {
+    if (props.theme) return props.theme.userCSS ?? '';
+    return style().userCSS ?? '';
+  };
+  const compiledCSS = createMemo(on(userCSS, (css) => {
+    if (!css) return '';
+    
+    return serialize(
+      compile(css),
       middleware([userCSSMiddleware, prefixer, stringify])
-    )
-  );
+    );
+  }));
 
   const stylesheet = new CSSStyleSheet();
-  createRenderEffect(() => stylesheet.replace(compiledCSS()));
+  createRenderEffect(() => {
+    const compiled = compiledCSS();
+
+    requestIdleCallback(() => {
+      stylesheet.replace(compiled);
+    });
+  });
   onMount(() => {
     document.adoptedStyleSheets = document.adoptedStyleSheets.concat([stylesheet]);
   });

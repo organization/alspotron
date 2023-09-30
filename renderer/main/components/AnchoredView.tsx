@@ -3,6 +3,7 @@ import { splitProps } from 'solid-js';
 import { cx } from '../../utils/classNames';
 
 import useConfig from '../../hooks/useConfig';
+import useStyle from '../../hooks/useStyle';
 
 import type { JSX } from 'solid-js/jsx-runtime';
 
@@ -14,6 +15,7 @@ interface AnchoredViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
 
 const AnchoredView = (props: AnchoredViewProps) => {
   const [config] = useConfig();
+  const style = useStyle();
   const [, containerProps] = splitProps(
     props,
     ['class', 'style', 'children'],
@@ -37,7 +39,7 @@ const AnchoredView = (props: AnchoredViewProps) => {
           'items-center': ['top', 'bottom', 'center'].includes(config()?.windowPosition.anchor ?? 'bottom-right'),
           'items-end': config()?.windowPosition.anchor.includes('right'),
         }}
-        style={`flex-direction: ${config()?.windowPosition?.direction ?? 'column'}; ${props.style}`}
+        style={`flex-direction: ${style().lyric.direction}; ${props.style}`}
         {...containerProps}
       >
       {props.children}

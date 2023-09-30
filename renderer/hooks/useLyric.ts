@@ -1,10 +1,6 @@
 import { createMemo } from 'solid-js';
 
-import { FlatMap } from 'tstl/experimental';
-
-import { MapElementVector } from 'tstl/internal/container/associative/MapElementVector';
-
-import useConfig from './useConfig';
+import useStyle from './useStyle';
 
 import { usePlayingInfo } from '../components/PlayingInfoProvider';
 
@@ -12,7 +8,7 @@ const BIAS = 225; // ms
 const TRANSITION_DURATION = 225; // ms
 
 const useLyric = () => {
-  const [config] = useConfig();
+  const style = useStyle();
   const { lyrics, progress } = usePlayingInfo();
 
   const lastIter = () => {
@@ -22,7 +18,7 @@ const useLyric = () => {
     const last = tempLyrics.lower_bound(
       progress() + (
         BIAS + (
-          config()?.style?.animation !== 'none' && !config()?.style?.animationAtOnce ?
+          style().animation !== 'none' && !style().animationAtOnce ?
             TRANSITION_DURATION :
             0
         )
@@ -40,8 +36,7 @@ const useLyric = () => {
   const index = createMemo(() => lastIter()?.first);
 
   const nextLyricsIter = createMemo(() => {
-    let nextLyricLength = config()?.lyric.nextLyric;
-    if (!nextLyricLength) return null;
+    let nextLyricLength = style().lyric.nextLyric;
 
     const now = lastIter();
     const tempLyrics = lyrics();
@@ -59,8 +54,8 @@ const useLyric = () => {
   });
 
   const getPreviousLyricLength = createMemo(() => {
-    let previousLyricLength = config()?.lyric.previousLyric;
-    if (!previousLyricLength) return null;
+    let previousLyricLength = style().lyric.previousLyric;
+  
     const now = lastIter();
     const tempLyrics = lyrics();
 
@@ -102,7 +97,7 @@ const useLyric = () => {
 
     const result: string[][] = [];
     for (let v = prevIter; !v.equals(nextIter); v = v.next()) {
-      if (v) result.push(v.second);
+      if (v.value) result.push(v.second);
     }
     if (nextIter.equals(now)) {
       result.push(now.second);
