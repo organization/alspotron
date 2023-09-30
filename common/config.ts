@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -208,7 +208,8 @@ let themeListFileTimeout: NodeJS.Timeout | null = null;
 const themeListSignal = createSignal<Record<string, StyleConfig>>();
 export const themeList = themeListSignal[0];
 export const setTheme = (name: string, style: DeepPartial<StyleConfig> | null, useFallback = true) => {
-  const original = themeListSignal[0]();
+  const original = themeListSignal[0]() ?? {};
+  if (!original['Default Theme'] && name !== 'Default Theme') original['Default Theme'] = DEFAULT_STYLE;
 
   if (style === null) {
     const newList = { ...original };
@@ -221,7 +222,7 @@ export const setTheme = (name: string, style: DeepPartial<StyleConfig> | null, u
       ? deepmerge(DEFAULT_STYLE, deepmerge(original?.[name] ?? DEFAULT_STYLE, style))
       : style
     ) as StyleConfig;
-    
+
     themeListSignal[1]({
       ...original,
       [name]: value,
@@ -250,23 +251,27 @@ export const setTheme = (name: string, style: DeepPartial<StyleConfig> | null, u
   }, 1000);
 };
 
-(() => {
+(async () => {
   try {
     const themeFolderPath = path.join(defaultConfigDirectory, '/theme');
-    const nameList = readdirSync(themeFolderPath, { withFileTypes: true })
-      .filter((it) => it.isFile())
-      .map((it) => it.name);
+    await fs.mkdir(themeFolderPath).catch(() => null);
+
+    const fileList = await fs.readdir(themeFolderPath, { withFileTypes: true }).catch(() => []);
+    const nameList = fileList.filter((it) => it.isFile()).map((it) => it.name);
 
     const initThemeList: Record<string, StyleConfig> = {};
-    for (const filename of nameList) {
-      if (filename.match(/\.json$/)?.[0] !== '.json') continue;
+    await Promise.all(nameList.map(async (filename) => {
+      if (filename.match(/\.json$/)?.[0] !== '.json') return;
 
       const name = filename.replace(/\.json$/, '');
-      const data = readFileSync(path.join(themeFolderPath, filename), 'utf-8');
+      const data = await fs.readFile(path.join(themeFolderPath, filename), 'utf-8').catch(() => null);
+      if (data === null) return;
+
       initThemeList[name] = JSON.parse(data) as StyleConfig;
-    }
+    }));
     
     themeListSignal[1](initThemeList);
+  
     migrationCallback?.();
   } catch {
     setTheme('Default Theme', DEFAULT_STYLE);
