@@ -52,7 +52,7 @@
 
 ### YouTube Music
 
-1.  [YouTube Music Desktop 설치](https://github.com/th-ch/youtube-music/releases)
+1.  [YouTube Music Desktop 설치](https://github.com/organization/youtube-music-next/releases)
 
     -   다음 링크의 지시사항에 따라 `Youtube Music Desktop`을 설치해주세요.
 
@@ -62,10 +62,6 @@
 
     -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요.
     -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
-
-#### YouTube Music 사용자는 주의!
-
-**반드시** [이 링크](https://github.com/organization/alspotron/issues/1)를 참고하여 `adblocker` 플러그인을 비활성화하거나, `in-player` adblocker로 전환해주세요.
 
 ---
 
