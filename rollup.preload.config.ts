@@ -17,6 +17,14 @@ export default defineConfig({
     terser({
       ecma: 2020,
     }),
+    {
+      closeBundle() {
+        if (!process.env.ROLLUP_WATCH) {
+          setTimeout(() => process.exit(0));
+        }
+      },
+      name: 'force-close'
+    },
   ],
   input: './src/preload.ts',
   output: {
