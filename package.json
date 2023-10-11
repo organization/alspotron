@@ -73,7 +73,7 @@
     "terser": "5.21.0",
     "typescript": "5.2.2",
     "vite": "4.4.11",
-    "vite-plugin-solid": "2.7.0",
+    "vite-plugin-solid": "2.7.1",
     "vite-plugin-static-copy": "0.17.0"
   },
   "dependencies": {
