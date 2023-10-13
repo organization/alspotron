@@ -51,11 +51,6 @@
   -   Install latest version of Alspotron from Releases.
   -   If you're using Windows, you need to install `Alspotron-Web-Setup-[version].exe`.
 
-### WARNING : For YouTube Music users
-
-  -  There is an [issue](https://github.com/organization/alspotron/issues/1) related to adblocker.
-  -  You **MUST** disable `adblocker` plugin or change adblocker to `in-player`.
-
 ---
 ### Other platforms (e.g. Apple Music)
 

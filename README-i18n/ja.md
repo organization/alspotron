@@ -49,10 +49,6 @@
 -   上記リンクから最新バージョンの「Alspotron」をダウンロードして実行してください。
 -   Windows ユーザの場合は、「`Alspotron-Web-Setup-[version].exe`」をダウンロードしてください。
 
-#### 「`YouTube Music Desktop`」のユーザーは以下の説明を読んでください。
-
-[このリンク](https://github.com/organization/alspotron/issues/1)を参照してかならず「`adblocker`」を無効にするか、「`in-player adblock`」に切り替えりしてください。
-
 ---
 
 ### 以外のプレーヤー (e.g. Apple Music)
