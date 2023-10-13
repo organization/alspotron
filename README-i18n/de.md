@@ -42,7 +42,7 @@
 
 ### YouTube Music
 
-#### 1.  [YouTube Music Desktop installieren](https://github.com/organization/youtube-music-next/releases)
+#### 1.  [YouTube Music Desktop installieren](https://github.com/th-ch/youtube-music/releases)
 
   -   Bitte folgen Sie dem obigen Link, um `Youtube Music Desktop` zu installieren.
 
@@ -52,6 +52,11 @@
 
   -   Installieren Sie die neueste Version von Alspotron unter `Releases`.
   -   Falls Sie Windows verwenden, müssen Sie `Alspotron-Web-Setup-[Version].exe` installieren.
+
+#### WARNUNG: Für Benutzer von YouTube Music
+
+- Es gibt ein [Issue](https://github.com/organization/alspotron/issues/1) bezüglich Adblockern.
+- Sie **MÜSSEN** das `adblocker`-Plugin deaktivieren oder durch `in-player` ersetzen.
 
 ---
 

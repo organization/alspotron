@@ -38,7 +38,7 @@
 
 ### YouTube Music
 
-#### 1.  [YouTube Music Desktop インストール](https://github.com/organization/youtube-music-next/releases)
+#### 1.  [YouTube Music Desktop インストール](https://github.com/th-ch/youtube-music/releases)
 
   -   上記リンクの指示に従って「`Youtube Music Desktop`」をインストールしてください。
 
@@ -48,6 +48,10 @@
 
 -   上記リンクから最新バージョンの「Alspotron」をダウンロードして実行してください。
 -   Windows ユーザの場合は、「`Alspotron-Web-Setup-[version].exe`」をダウンロードしてください。
+
+#### 「`YouTube Music Desktop`」のユーザーは以下の説明を読んでください。
+
+[このリンク](https://github.com/organization/alspotron/issues/1)を参照してかならず「`adblocker`」を無効にするか、「`in-player adblock`」に切り替えりしてください。
 
 ---
 
