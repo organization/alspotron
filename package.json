@@ -47,7 +47,7 @@
     "@total-typescript/ts-reset": "0.5.1",
     "@types/color": "3.0.5",
     "@types/electron-progressbar": "1.2.5",
-    "@types/koa": "2.13.9",
+    "@types/koa": "2.13.10",
     "@types/koa__cors": "4.0.1",
     "@types/koa-bodyparser": "4.3.10",
     "@types/koa-router": "7.4.5",
