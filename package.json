@@ -45,7 +45,7 @@
     "@rollup/plugin-terser": "0.4.4",
     "@rollup/plugin-typescript": "11.1.5",
     "@total-typescript/ts-reset": "0.5.1",
-    "@types/color": "3.0.4",
+    "@types/color": "3.0.5",
     "@types/electron-progressbar": "1.2.4",
     "@types/koa": "2.13.9",
     "@types/koa__cors": "4.0.1",
