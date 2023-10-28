@@ -25,14 +25,16 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install: |
-            - args: [--frozen-lockfile]
+          run_install: false
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       # https://github.com/actions/setup-node/issues/280#issuecomment-1139455898
       - name: Update node-gyp (windows only)
@@ -96,14 +98,16 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install: |
-            - args: [--frozen-lockfile]
+          run_install: false
 
       - name: Setup NodeJS
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Get version
         run: |
