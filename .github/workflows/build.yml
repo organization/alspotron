@@ -21,20 +21,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: false
-
       - name: Setup NodeJS
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       # https://github.com/actions/setup-node/issues/280#issuecomment-1139455898
       - name: Update node-gyp (windows only)
@@ -46,43 +36,48 @@ jobs:
           cd $NodeModulesPath
           npm install node-gyp@latest
 
+      - name: Install dependencies
+        shell: bash
+        run: |
+          npm ci
+
       # Build and release if it's the main repository
       - name: Build and release on Mac
         if: startsWith(matrix.os, 'macOS') && github.repository == 'organization/alspotron'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pnpm release:mac
+          npm run release:mac
 
       - name: Build and release on Linux
         if: startsWith(matrix.os, 'ubuntu') && github.repository == 'organization/alspotron'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pnpm release:linux
+          npm run release:linux
 
       - name: Build and release on Windows
         if: startsWith(matrix.os, 'windows') && github.repository == 'organization/alspotron'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pnpm release:win
+          npm run release:win
 
       # Only build without release if it is a fork
       - name: Build on Mac
         if: startsWith(matrix.os, 'macOS') && github.repository != 'organization/alspotron'
         run: |
-          pnpm dist:mac
+          npm run dist:mac
 
       - name: Build on Linux
         if: startsWith(matrix.os, 'ubuntu') && github.repository != 'organization/alspotron'
         run: |
-          pnpm dist:linux
+          npm run dist:linux
 
       - name: Build on Windows
         if: startsWith(matrix.os, 'windows') && github.repository != 'organization/alspotron'
         run: |
-          pnpm dist:win
+          npm run dist:win
 
   release:
     runs-on: ubuntu-latest
@@ -94,20 +89,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-          run_install: false
-
       - name: Setup NodeJS
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        shell: bash
+        run: |
+          npm ci
 
       - name: Get version
         run: |
