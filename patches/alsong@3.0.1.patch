@@ -1,7 +1,7 @@
-diff --git a/node_modules/alsong/src/resolvers/AlsongResolver.js b/node_modules/alsong/src/resolvers/AlsongResolver.js
+diff --git a/src/resolvers/AlsongResolver.js b/src/resolvers/AlsongResolver.js
 index 9a0754a..06b532d 100644
---- a/node_modules/alsong/src/resolvers/AlsongResolver.js
-+++ b/node_modules/alsong/src/resolvers/AlsongResolver.js
+--- a/src/resolvers/AlsongResolver.js
++++ b/src/resolvers/AlsongResolver.js
 @@ -25,7 +25,13 @@ const AlsongResolver = {
  		return Promise.all(
  			lyricList
@@ -17,10 +17,10 @@ index 9a0754a..06b532d 100644
  		);
  	},
  	
-diff --git a/node_modules/alsong/src/resolvers/index.js b/node_modules/alsong/src/resolvers/index.js
+diff --git a/src/resolvers/index.js b/src/resolvers/index.js
 index 44703f1..5bec587 100644
---- a/node_modules/alsong/src/resolvers/index.js
-+++ b/node_modules/alsong/src/resolvers/index.js
+--- a/src/resolvers/index.js
++++ b/src/resolvers/index.js
 @@ -1,7 +1,7 @@
 -const AlsongV1 = require('./v1');
 +// const AlsongV1 = require('./v1');
@@ -31,10 +31,10 @@ index 44703f1..5bec587 100644
 +	// v1: AlsongV1,
  	v2: AlsongV2
  };
-diff --git a/node_modules/alsong/src/resolvers/v2/index.js b/node_modules/alsong/src/resolvers/v2/index.js
+diff --git a/src/resolvers/v2/index.js b/src/resolvers/v2/index.js
 index 3762f9b..130796e 100644
---- a/node_modules/alsong/src/resolvers/v2/index.js
-+++ b/node_modules/alsong/src/resolvers/v2/index.js
+--- a/src/resolvers/v2/index.js
++++ b/src/resolvers/v2/index.js
 @@ -1,40 +1,27 @@
 -const axios = require('axios');
 +const forge = require('node-forge');
@@ -176,10 +176,10 @@ index 3762f9b..130796e 100644
  		}
  	}
  };
-diff --git a/node_modules/alsong/src/utils/LyricUtils.js b/node_modules/alsong/src/utils/LyricUtils.js
+diff --git a/src/utils/LyricUtils.js b/src/utils/LyricUtils.js
 index 2a636c6..f46204d 100644
---- a/node_modules/alsong/src/utils/LyricUtils.js
-+++ b/node_modules/alsong/src/utils/LyricUtils.js
+--- a/src/utils/LyricUtils.js
++++ b/src/utils/LyricUtils.js
 @@ -1,18 +1,27 @@
  const LyricUtils = {
  	parseLyric(lyric) {
