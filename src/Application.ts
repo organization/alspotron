@@ -185,7 +185,7 @@ class Application {
           }) as () => void)
           .on('completed', () => {
             updateProgressBar.detail = getTranslation('updater.popup.download-completed', config().language);
-            autoUpdater.quitAndInstall(false);
+            autoUpdater.quitAndInstall(true, true);
           });
 
         autoUpdater.on('download-progress', (it: ProgressInfo) => {
