@@ -122,14 +122,6 @@
     "mica-electron": "1.5.2",
     "node-window-manager": "2.2.4"
   },
-  "overrides": {
-    "xml2js": "0.6.2",
-    "axios": "1.6.0",
-    "simple-update-notifier": "2.0.0",
-    "@electron/get": "2.0.3",
-    "electron": "28.0.0-alpha.6",
-    "http-errors": "2.0.0"
-  },
   "build": {
     "productName": "Alspotron",
     "asar": true,
@@ -251,6 +243,15 @@
   "pnpm": {
     "patchedDependencies": {
       "alsong@3.0.1": "patches/alsong@3.0.1.patch"
+    },
+    "overrides": {
+      "xml2js": "0.6.2",
+      "axios": "1.6.0",
+      "simple-update-notifier": "2.0.0",
+      "@electron/get": "2.0.3",
+      "electron": "28.0.0-alpha.6",
+      "http-errors": "2.0.0",
+      "app-builder-bin": "4.2.0"
     }
   },
   "packageManager": "pnpm@8.10.0"
