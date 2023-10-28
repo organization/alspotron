@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdirSync, readdirSync, existsSync } from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -155,10 +155,11 @@ export const setLyricMapper = (params: Partial<LyricMapper>, useFallback = true)
     await fs.writeFile(path.join(defaultConfigDirectory, 'lyrics.json'), JSON.stringify(lyricMapperSignal[0](), null, 2), 'utf-8').catch(() => null);
   }, 1000);
 };
-(async () => {
-  const str = await fs.readFile(path.join(defaultConfigDirectory, 'lyrics.json'), 'utf-8').catch(() => '{}');
+(() => {
   try {
-    const lyricMapper = JSON.parse(str);
+    const lyricMapper = JSON.parse(
+      readFileSync(path.join(defaultConfigDirectory, 'lyrics.json'), 'utf-8')
+    );
     lyricMapperSignal[1](lyricMapper as LyricMapper);
   } catch {
     setLyricMapper({});
@@ -251,24 +252,24 @@ export const setTheme = (name: string, style: DeepPartial<StyleConfig> | null, u
   }, 1000);
 };
 
-(async () => {
+(() => {
   try {
     const themeFolderPath = path.join(defaultConfigDirectory, '/theme');
-    await fs.mkdir(themeFolderPath).catch(() => null);
+    if (!existsSync(themeFolderPath)) mkdirSync(themeFolderPath);
 
-    const fileList = await fs.readdir(themeFolderPath, { withFileTypes: true }).catch(() => []);
+    const fileList = readdirSync(themeFolderPath, { withFileTypes: true });
     const nameList = fileList.filter((it) => it.isFile()).map((it) => it.name);
 
     const initThemeList: Record<string, StyleConfig> = {};
-    await Promise.all(nameList.map(async (filename) => {
+    nameList.map((filename) => {
       if (filename.match(/\.json$/)?.[0] !== '.json') return;
 
       const name = filename.replace(/\.json$/, '');
-      const data = await fs.readFile(path.join(themeFolderPath, filename), 'utf-8').catch(() => null);
+      const data = readFileSync(path.join(themeFolderPath, filename), 'utf-8');
       if (data === null) return;
 
       initThemeList[name] = JSON.parse(data) as StyleConfig;
-    }));
+    });
     
     themeListSignal[1](initThemeList);
   
