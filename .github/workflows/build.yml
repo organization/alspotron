@@ -36,6 +36,11 @@ jobs:
           cd $NodeModulesPath
           npm install node-gyp@latest
 
+      # https://github.com/actions/runner/issues/2958#issuecomment-1793782647
+      - name: Fix distutils (macOS only)
+        if: startsWith(matrix.os, 'macos')
+        run: sudo -H pip install setuptools
+
       - name: Install dependencies
         shell: bash
         run: |
