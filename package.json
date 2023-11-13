@@ -101,7 +101,7 @@
     "font-list": "1.5.1",
     "glasstron": "0.1.1",
     "html-parse-string": "0.0.9",
-    "i18next": "23.7.3",
+    "i18next": "23.7.6",
     "koa": "2.14.2",
     "koa-bodyparser": "4.4.1",
     "koa-router": "12.0.1",
