@@ -79,9 +79,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     return 'manual';
   });
 
-  const onUpdate = (_event: unknown, message: { data: UpdateData }) => {
-    const data: UpdateData = message.data;
-
+  const onUpdate = (_event: unknown, data: UpdateData) => {
     setOriginalData(data);
 
     if (typeof data.title === 'string') {
@@ -131,7 +129,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   };
 
   window.ipcRenderer.on('update', onUpdate);
-  window.ipcRenderer.invoke('get-last-update').then((update?: { data: UpdateData }) => {
+  window.ipcRenderer.invoke('get-last-update').then((update?: UpdateData) => {
     if (update) {
       onUpdate(null, update);
     }

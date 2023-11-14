@@ -1,13 +1,8 @@
 import path from 'node:path';
 
-import Koa from 'koa';
-import cors from '@koa/cors';
-import zodRouter from 'koa-zod-router';
-import { z } from 'zod';
-import bodyParser from 'koa-bodyparser';
 import ProgressBar from 'electron-progressbar';
 import { hmc } from 'hmc-win32';
-import { autoUpdater } from 'electron-differential-updater';
+import { autoUpdater, UpdateInfo } from 'electron-differential-updater';
 import { IS_WINDOWS_11, MicaBrowserWindow } from 'mica-electron';
 import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
 import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructorOptions, nativeImage, screen, shell, Tray } from 'electron';
@@ -15,7 +10,11 @@ import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructo
 import { createEffect, on } from 'solid-js';
 import deepmerge from 'deepmerge';
 
+import { ProgressInfo } from 'electron-builder';
+
 import PluginManager from './plugins/plugin-manager';
+
+import { initServer } from './server';
 
 import {
   Config,
@@ -38,10 +37,7 @@ import { getTranslation } from '../common/intl';
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
 
-import type { ProgressInfo } from 'electron-builder';
-import type { UpdateInfo } from 'builder-util-runtime';
-
-import type { RequestBody } from '../common/types';
+import type { UpdateData } from '../common/types';
 
 import type { IOverlay } from './electron-overlay';
 import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
@@ -75,12 +71,11 @@ app.commandLine.appendSwitch('enable-transparent-visuals');
 
 class Application {
   private tray!: Tray;
-  private app!: Koa;
   private overlay!: Overlay;
   private pluginManager!: PluginManager;
   private markQuit = false;
   private scaleFactor = 1.0;
-  private lastUpdate: RequestBody | null = null;
+  private lastUpdate: UpdateData | null = null;
   private contextMenu: Menu | null = null;
 
   public mainWindow!: BrowserWindow;
@@ -136,6 +131,21 @@ class Application {
       );
       this.overlay = module.exports as Overlay;
     }
+  }
+
+  initServer() {
+    initServer({
+      onUpdate: (body) => {
+        this.lastUpdate = body;
+        this.overridePlugin(
+          'update',
+          (updateData) => {
+            this.broadcast('update', updateData);
+          },
+          this.lastUpdate,
+        );
+      },
+    });
   }
 
   initPluginLoader() {
@@ -301,53 +311,6 @@ class Application {
       this.initMenu();
       this.tray.setContextMenu(this.contextMenu);
     }));
-  }
-
-  initServer() {
-    this.app = new Koa();
-    this.app.use(cors());
-    this.app.use(bodyParser());
-
-    const router = zodRouter();
-
-    router.post(
-      '/',
-      async (ctx, next) => {
-        ctx.status = 200;
-
-        this.lastUpdate = ctx.request.body;
-        this.overridePlugin(
-          'update',
-          (updateData) => {
-            this.broadcast('update', updateData);
-          },
-          this.lastUpdate,
-        );
-
-        await next();
-      },
-      {
-        body: z.object({
-          data: z.object({
-            status: z.string(),
-            title: z.string().optional(),
-            artists: z.array(z.string()).optional(),
-            progress: z.number().optional(),
-            duration: z.number().optional(),
-            cover_url: z.string().optional(),
-            lyrics: z.record(z.string(), z.array(z.string())).optional(),
-          }),
-        }),
-      },
-    );
-
-    router.post('/shutdown', () => {
-      app.quit();
-    });
-
-    this.app.use(router.routes()).use(router.allowedMethods());
-
-    this.app.listen(1608, '127.0.0.1');
   }
 
   public addOverlayWindow(

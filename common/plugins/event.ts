@@ -4,7 +4,7 @@ import { Config, GameList, LyricMapper, StyleConfig } from '../config';
 import { UpdateData } from '../types';
 
 export interface PluginEventMap {
-  'update': (updateContext: { data: UpdateData }) => void;
+  'update': (updateContext: UpdateData) => void;
   'config': (config: DeepPartial<Config>) => void;
   'game-list': (gameList: Partial<GameList>) => void;
   'lyric-mapper': (lyricMapper: Partial<LyricMapper>) => void;
@@ -23,7 +23,7 @@ export interface PluginEventMap {
   'remove-overlay-from-process': (processId: number) => void;
 }
 export interface OverrideParameterMap {
-  'update': [updateContext: { data: UpdateData }];
+  'update': [updateContext: UpdateData];
   'config': [config: DeepPartial<Config>];
   'game-list': [gameList: Partial<GameList>];
   'set-theme': [themeList: DeepPartial<StyleConfig> | null];
