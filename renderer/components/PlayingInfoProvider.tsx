@@ -1,9 +1,7 @@
 import { FlatMap } from 'tstl/experimental';
-import alsong, { LyricMetadata } from 'alsong';
 import {
-  Accessor,
+  Accessor, batch,
   createContext,
-  createDeferred,
   createEffect,
   createMemo,
   createSignal,
@@ -18,8 +16,9 @@ import useLyricMapper from '../hooks/useLyricMapper';
 import usePluginOverride from '../hooks/usePluginOverride';
 import { UpdateData } from '../../common/types';
 import { ConfigLyricMode } from '../../common/constants';
+import { useLyricProvider } from '../hooks/useLyricProvider';
+import { LyricData, LyricMetadata } from '../../common/provider';
 
-export type Lyric = Awaited<ReturnType<typeof alsong.getLyricById>>;
 export type Status = 'idle' | 'playing' | 'stopped';
 export type LyricMode = 'auto' | 'manual' | 'player' | 'none';
 export type PlayingInfo = {
@@ -28,17 +27,14 @@ export type PlayingInfo = {
   title: Accessor<string>;
   artist: Accessor<string>;
   status: Accessor<Status>;
-  coverUrl: Accessor<string | undefined>;
+  coverUrl: Accessor<string | null>;
   lyrics: Accessor<FlatMap<number, string[]> | null>;
-  playerLyrics: Accessor<Record<number, string[]> | undefined>;
+  playerLyrics: Accessor<Record<number, string[]> | null>;
   originalData: Accessor<UpdateData | null>;
-  originalLyric: Accessor<LyricInfo | null>;
+  originalLyric: Accessor<LyricData | null>;
   lyricMode: Accessor<LyricMode>;
+  isMapped: Accessor<boolean>;
 };
-
-export type LyricInfo =
-  | { useMapper: boolean, kind: 'alsong', data: Lyric }
-  | { useMapper: boolean, kind: 'default', data: UpdateData & { lyric: Record<number, string[]> } };
 
 const PlayingInfoContext = createContext<PlayingInfo>({
   progress: () => 0,
@@ -46,12 +42,13 @@ const PlayingInfoContext = createContext<PlayingInfo>({
   title: () => 'Not Playing' as const,
   artist: () => 'N/A' as const,
   status: () => 'idle' as const,
-  coverUrl: () => undefined,
+  coverUrl: () => null,
   lyrics: () => null,
-  playerLyrics: () => undefined,
+  playerLyrics: () => null,
   originalData: () => null,
   originalLyric: () => null,
   lyricMode: () => 'auto' as const,
+  isMapped: () => false,
 });
 const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [progress, setProgress] = createSignal(0);
@@ -59,12 +56,14 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [title, setTitle] = createSignal('Not Playing');
   const [artist, setArtist] = createSignal('N/A');
   const [status, setStatus] = createSignal<Status>('idle');
-  const [coverUrl, setCoverUrl] = createSignal<string>();
+  const [coverUrl, setCoverUrl] = createSignal<string | null>(null);
   const [lyrics, setLyrics] = createSignal<FlatMap<number, string[]> | null>(null);
-  const [playerLyrics, setPlayerLyrics] = createSignal<Record<number, string[]>>();
+  const [playerLyrics, setPlayerLyrics] = createSignal<Record<number, string[]> | null>(null);
   const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
-  const [originalLyric, setOriginalLyric] = createSignal<LyricInfo | null>(null);
+  const [originalLyric, setOriginalLyric] = createSignal<LyricData | null>(null);
+  const [isMapped, setIsMapped] = createSignal(false);
 
+  const provider = useLyricProvider();
   const [lyricMapper] = useLyricMapper();
 
   const lyricMode = createMemo(() => {
@@ -82,50 +81,70 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const onUpdate = (_event: unknown, data: UpdateData) => {
     setOriginalData(data);
 
-    if (typeof data.title === 'string') {
-      setTitle(data.title);
-    }
+    batch(() => {
+      if (typeof data.title === 'string') {
+        setTitle(data.title);
+      }
 
-    if (['idle', 'playing', 'stopped'].includes(data.status)) {
-      setStatus(data.status as Status);
-    }
+      if (['idle', 'playing', 'stopped'].includes(data.status)) {
+        setStatus(data.status as Status);
+      }
 
-    if (Array.isArray(data.artists)) {
-      setArtist(data.artists.join(', '));
-    }
+      if (Array.isArray(data.artists)) {
+        setArtist(data.artists.join(', '));
+      }
 
-    if (typeof data.progress === 'number') {
-      setProgress(data.progress);
-    }
+      if (typeof data.progress === 'number') {
+        setProgress(data.progress);
+      }
 
-    if (typeof data.duration === 'number') {
-      setDuration(data.duration);
-    }
+      if (typeof data.duration === 'number') {
+        setDuration(data.duration);
+      }
 
-    if (typeof data.cover_url === 'string' && /^(?:file|https?):\/\//.exec(data.cover_url)) {
-      setCoverUrl(data.cover_url);
-    } else {
-      setCoverUrl(undefined);
-    }
+      if (typeof data.cover_url === 'string' && /^(?:file|https?):\/\//.exec(data.cover_url)) {
+        setCoverUrl(data.cover_url);
+      } else {
+        setCoverUrl(null);
+      }
 
-    if (typeof data.lyrics === 'object') {
-      setPlayerLyrics(data.lyrics);
-    }
+      if (typeof data.lyrics === 'object') {
+        setPlayerLyrics(data.lyrics);
+      }
+    });
   };
 
-  const getLyric = async (data: UpdateData): Promise<Lyric> => {
-    if (!Array.isArray(data.artists) || !data.title) return {} as Lyric;
+  const getLyric = async (data: UpdateData): Promise<LyricData | null> => {
+    const lyricProvider = provider();
+
+    if (!lyricProvider) return null;
+    if (!Array.isArray(data.artists) || !data.title) return null;
 
     const artist = data?.artists?.join(', ') ?? '';
     const title = data?.title ?? '';
 
     let metadata: LyricMetadata[] = [];
     await usePluginOverride('search-lyrics', async (artist, title, options) => {
-      metadata = await alsong(artist, title, options).catch(() => []);
+      metadata = await lyricProvider.searchLyrics({
+        artist,
+        title,
+        playtime: options?.playtime,
+      }).catch(() => []);
     }, artist, title, { playtime: data?.duration });
 
-    if (metadata.length <= 0) return {} as Lyric;
-    return await alsong.getLyricById(metadata[0].lyricId).catch(() => ({ lyric: data.lyrics } as Lyric));
+    if (metadata.length <= 0) return null;
+
+    const result = await provider()?.getLyricById(metadata[0].id);
+    if (result) return result;
+    if (data.lyrics) {
+      return {
+        id: 'auto',
+        title: data.title ?? '',
+        lyric: data.lyrics,
+      } satisfies LyricData;
+    }
+
+    return null;
   };
 
   window.ipcRenderer.on('update', onUpdate);
@@ -143,68 +162,68 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     }, 100);
   });
 
+
   onCleanup(() => window.ipcRenderer.off('update', originalData));
 
-  createEffect(on([createDeferred(() => title() || coverUrl()), lyricMapper], async () => {
+  const onLyricChange = async () => {
     const data = originalData();
     const mapper = lyricMapper();
+    const lyricProvider = provider();
 
-    if (!data) return;
+    if (!data || !lyricProvider) return;
+
     const coverDataURL = data.cover_url ?? 'unknown';
-
     const id: number | undefined = mapper[`${data.title}:${coverDataURL}`];
 
-    let lyricInfo: LyricInfo | null = null;
-    if (id === ConfigLyricMode.NONE) {
-      setLyrics(null);
-    } else if (id === ConfigLyricMode.PLAYER) {
-      const lyricsFromPlayer = playerLyrics();
-      if (lyricsFromPlayer) {
-        lyricInfo = {
-          useMapper: !!id,
-          kind: 'default',
-          data: {
-            ...data,
-            lyric: lyricsFromPlayer,
-          },
-        } satisfies LyricInfo;
+    let lyricData: LyricData | null = null;
+    switch (id) {
+      case ConfigLyricMode.NONE: {
+        setLyrics(null);
+        break;
       }
-    } else {
-      const alsongLyric = id
-        ? await alsong.getLyricById(id).catch(() => null)
-        : await getLyric(data);
+      case ConfigLyricMode.PLAYER: {
+        const lyricsFromPlayer = playerLyrics();
+        if (lyricsFromPlayer) {
+          lyricData = {
+            id: 'player',
+            title: data.title ?? '',
+            lyric: lyricsFromPlayer,
+          } satisfies LyricData;
+        }
+        break;
+      }
+      default: { // AUTO
+        const providerLyric = id
+          ? await provider()?.getLyricById(String(id)).catch(() => null)
+          : await getLyric(data) ?? null;
 
-      if (alsongLyric) {
-        lyricInfo = {
-          useMapper: !!id,
-          kind: 'alsong',
-          data: alsongLyric,
-        } satisfies LyricInfo;
-      } else if (data.lyrics) {
-        lyricInfo = {
-          useMapper: !!id,
-          kind: 'default',
-          data: {
-            ...data,
+        if (providerLyric) {
+          lyricData = providerLyric;
+        } else if (data.lyrics) {
+          lyricData = {
+            id: 'auto',
+            title: data.title ?? '',
             lyric: data.lyrics,
-          },
-        } satisfies LyricInfo;
+          } satisfies LyricData;
+        }
       }
     }
 
-    setOriginalLyric(lyricInfo);
-    if (lyricInfo?.data?.lyric) {
+    setIsMapped(!!id);
+    setOriginalLyric(lyricData);
+    if (lyricData) {
       const treeMap = new FlatMap<number, string[]>();
 
-      for (const key in lyricInfo.data.lyric) {
-        treeMap.emplace(~~key, lyricInfo.data.lyric[key]);
+      for (const key in lyricData.lyric) {
+        treeMap.emplace(~~key, lyricData.lyric[key]);
       }
 
       setLyrics(treeMap);
     } else {
       setLyrics(null);
     }
-  }));
+  };
+  createEffect(on([title, lyricMapper], onLyricChange));
 
   const playingInfo = {
     title,
@@ -218,6 +237,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     originalData,
     originalLyric,
     lyricMode,
+    isMapped,
   } satisfies PlayingInfo;
 
   return (

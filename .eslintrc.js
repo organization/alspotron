@@ -22,7 +22,7 @@ module.exports = {
     '@typescript-eslint/no-floating-promises': 'off',
     '@typescript-eslint/no-misused-promises': ['off', { checksVoidReturn: false }],
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-    "@typescript-eslint/no-non-null-assertion": "off",
+    '@typescript-eslint/no-non-null-assertion': 'off',
     'import/first': 'error',
     'import/newline-after-import': 'error',
     'import/no-default-export': 'off',
@@ -62,4 +62,14 @@ module.exports = {
     'quote-props': ['error', 'consistent'],
   },
   ignorePatterns: ['dist', 'node_modules'],
+  settings: {
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx']
+    },
+    'import/resolver': {
+      typescript: {
+        project: './tsconfig.json',
+      },
+    },
+  }
 };
