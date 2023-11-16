@@ -7,8 +7,8 @@ import { createLogger } from './v1-logger';
 
 import { Plugin, PluginContext, PluginProvider } from '../../../common/plugins';
 import { Json } from '../../../utils/types';
-import { config, setConfig } from '../../../common/config';
 import { VersionedPluginLoader } from '../types';
+import { config } from '../../config';
 
 const v1ManifestSchema = z.object({
   id: z.string(),
@@ -65,11 +65,11 @@ const loader: VersionedPluginLoader = async (pluginPath, rawManifest, runner, op
         newPlugin.js.listeners[event] ??= [];
         newPlugin.js.listeners[event]?.push(listener);
       },
-      useConfig: () => [config, setConfig],
+      useConfig: () => [config.get.bind(null), config.set.bind(null)],
       useSetting: (options) => {
         newPlugin.js.settings.push(options);
 
-        return () => (config().plugins.config[newPlugin.id] as Record<string, unknown>)?.[options.key];
+        return () => (config.get().plugins.config[newPlugin.id] as Record<string, unknown>)?.[options.key];
       },
       useOverride(target, fn) {
         newPlugin.js.overrides[target] ??= [];

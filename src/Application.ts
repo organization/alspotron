@@ -4,32 +4,25 @@ import ProgressBar from 'electron-progressbar';
 import { hmc } from 'hmc-win32';
 import { autoUpdater, UpdateInfo } from 'electron-differential-updater';
 import { IS_WINDOWS_11, MicaBrowserWindow } from 'mica-electron';
-import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
+
 import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructorOptions, nativeImage, screen, shell, Tray } from 'electron';
 
-import { createEffect, on } from 'solid-js';
 import deepmerge from 'deepmerge';
 
 import { ProgressInfo } from 'electron-builder';
+
+import { PartialDeep } from 'type-fest';
+
+import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
+
+
 
 import PluginManager from './plugins/plugin-manager';
 
 import { initServer } from './server';
 
-import {
-  Config,
-  config,
-  GameList,
-  gameList,
-  LyricMapper,
-  lyricMapper,
-  setConfig,
-  setGameList,
-  setLyricMapper,
-  setTheme,
-  StyleConfig,
-  themeList,
-} from '../common/config';
+import { config, gameList, lyricMapper, themeList } from './config';
+
 import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../common/constants';
 
 import { getTranslation } from '../common/intl';
@@ -37,10 +30,14 @@ import { getTranslation } from '../common/intl';
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
 
+import { Config, GameList, LyricMapper, StyleConfig } from '../common/types';
+
 import type { UpdateData } from '../common/types';
 
 import type { IOverlay } from './electron-overlay';
 import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
+
+
 
 type Overlay = typeof IOverlay;
 
@@ -111,14 +108,15 @@ class Application {
     if (process.platform === 'win32') {
       // HACK: import statement is not work because Electron's threading model is different from Windows COM's
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const wql = require('@jellybrick/wql-process-monitor') as typeof import('@jellybrick/wql-process-monitor');
-      wql.promises.subscribe({
-        creation: true,
-        deletion: true,
-        filterWindowsNoise: true,
-      }).then((listener) => {
-        listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
-        listener.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
+      import('@jellybrick/wql-process-monitor').then((wql) => {
+        wql.promises.subscribe({
+          creation: true,
+          deletion: true,
+          filterWindowsNoise: true,
+        }).then((listener) => {
+          listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
+          listener.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
+        });
       });
 
       const electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
@@ -152,9 +150,9 @@ class Application {
     console.log('[Alspotron] load all plugins');
     
     this.pluginManager = new PluginManager({
-      config: () => config().plugins,
+      config: () => config.get().plugins,
       folder: path.resolve(app.getPath('userData'), 'plugins'),
-      set: (config) => setConfig({ plugins: config }),
+      set: (newConfig) => config.set({ plugins: newConfig }),
     });
     this.pluginManager.loadPluginsFromConfig().catch((e) => {
       console.error('[Alspotron] Cannot load plugins', e);
@@ -170,38 +168,38 @@ class Application {
 
       const { response } = await dialog.showMessageBox({
         type: 'info',
-        buttons: [getTranslation('updater.download-and-auto-install', config().language)],
-        title: `${getTranslation('updater.update-alert', config().language)} (${it.version})`,
-        message: getTranslation('updater.update-available', config().language).replace('{{version}}', it.version),
-        detail: getTranslation('updater.download-at', config().language).replace('{{link}}', downloadLink),
+        buttons: [getTranslation('updater.download-and-auto-install', config.get().language)],
+        title: `${getTranslation('updater.update-alert', config.get().language)} (${it.version})`,
+        message: getTranslation('updater.update-available', config.get().language).replace('{{version}}', it.version),
+        detail: getTranslation('updater.download-at', config.get().language).replace('{{link}}', downloadLink),
         defaultId: 0,
       });
       
       if (response === 0) {
         const updateProgressBar = new ProgressBar({
           indeterminate: false,
-          title: getTranslation('updater.popup.title', config().language),
-          text: getTranslation('updater.popup.text', config().language),
+          title: getTranslation('updater.popup.title', config.get().language),
+          text: getTranslation('updater.popup.text', config.get().language),
           initialValue: 0,
         });
 
         // What The F @types/electron-progressbar
         updateProgressBar
           .on('progress', ((value: number) => {
-            updateProgressBar.detail = `${getTranslation('updater.popup.percent', config().language)} (${value.toFixed(2)}%)`;
+            updateProgressBar.detail = `${getTranslation('updater.popup.percent', config.get().language)} (${value.toFixed(2)}%)`;
           }) as () => void)
           .on('aborted', ((value: number) => {
-            updateProgressBar.detail = `${getTranslation('updater.popup.download-aborted', config().language)} ${value.toFixed(2)}%`;
+            updateProgressBar.detail = `${getTranslation('updater.popup.download-aborted', config.get().language)} ${value.toFixed(2)}%`;
           }) as () => void)
           .on('completed', () => {
-            updateProgressBar.detail = getTranslation('updater.popup.download-completed', config().language);
+            updateProgressBar.detail = getTranslation('updater.popup.download-completed', config.get().language);
             autoUpdater.quitAndInstall(true, true);
           });
 
         autoUpdater.on('download-progress', (it: ProgressInfo) => {
           if (!updateProgressBar.isCompleted()) {
             updateProgressBar.value = it.percent;
-            updateProgressBar.text = `${getTranslation('updater.popup.percent', config().language)} (${it.percent.toFixed(2)}%, ${it.transferred} / ${it.total})`;
+            updateProgressBar.text = `${getTranslation('updater.popup.percent', config.get().language)} (${it.percent.toFixed(2)}%, ${it.transferred} / ${it.total})`;
           }
         });
 
@@ -218,7 +216,7 @@ class Application {
     const menu: (MenuItemConstructorOptions | MenuItem)[] = [
       {
         type: 'normal',
-        label: getTranslation('tray.lyrics.label', config().language),
+        label: getTranslation('tray.lyrics.label', config.get().language),
         click: () => {
           if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
             if (this.lyricsWindow.isMinimized()) this.lyricsWindow.restore();
@@ -230,7 +228,7 @@ class Application {
       },
       {
         type: 'normal',
-        label: getTranslation('tray.setting.label', config().language),
+        label: getTranslation('tray.setting.label', config.get().language),
         click: () => {
           if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
             if (this.settingsWindow.isMinimized()) this.settingsWindow.restore();
@@ -246,7 +244,7 @@ class Application {
       {
         type: 'normal',
         role: 'quit',
-        label: getTranslation('tray.exit.label', config().language),
+        label: getTranslation('tray.exit.label', config.get().language),
         click: () => {
           this.markQuit = true;
           app.quit();
@@ -254,17 +252,17 @@ class Application {
       },
     ];
 
-    if (config().developer) {
+    if (config.get().developer) {
       menu.push(
         {
           type: 'separator',
         },
         {
           type: 'submenu',
-          label: getTranslation('tray.devtools.label', config().language),
+          label: getTranslation('tray.devtools.label', config.get().language),
           submenu: [
             {
-              label: getTranslation('tray.devtools.lyric-viewer.label', config().language),
+              label: getTranslation('tray.devtools.lyric-viewer.label', config.get().language),
               click: () => {
                 if (this.mainWindow && !this.mainWindow.isDestroyed()) {
                   this.mainWindow.webContents.openDevTools({ mode: 'detach' });
@@ -272,7 +270,7 @@ class Application {
               },
             },
             {
-              label: getTranslation('tray.devtools.lyrics.label', config().language),
+              label: getTranslation('tray.devtools.lyrics.label', config.get().language),
               click: () => {
                 if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
                   this.lyricsWindow.webContents.openDevTools({ mode: 'detach' });
@@ -280,7 +278,7 @@ class Application {
               },
             },
             {
-              label: getTranslation('tray.devtools.setting.label', config().language),
+              label: getTranslation('tray.devtools.setting.label', config.get().language),
               click: () => {
                 if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
                   this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
@@ -307,10 +305,15 @@ class Application {
       if (this.contextMenu) this.tray.popUpContextMenu(this.contextMenu);
     });
 
-    createEffect(on(() => config().developer, () => {
-      this.initMenu();
-      this.tray.setContextMenu(this.contextMenu);
-    }));
+    let lastValue = config.get().developer;
+    config.watch((config) => {
+      if (lastValue !== config.developer) {
+        this.initMenu();
+        this.tray.setContextMenu(this.contextMenu);
+
+        lastValue = config.developer;
+      }
+    });
   }
 
   public addOverlayWindow(
@@ -526,9 +529,9 @@ class Application {
     ipcMain.handle('check-update', async () => autoUpdater.checkForUpdatesAndNotify());
     ipcMain.handle('get-last-update', () => this.lastUpdate);
 
-    ipcMain.handle('set-config', async (_, data: DeepPartial<Config>) => {
+    ipcMain.handle('set-config', async (_, data: PartialDeep<Config>) => {
       await this.overridePlugin('config', (data) => {
-        setConfig(data);
+        config.set(data);
 
         this.updateWindowConfig(this.mainWindow);
         if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
@@ -538,44 +541,46 @@ class Application {
           this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
         }
       }, data);
-      this.broadcast('config', config());
+      this.broadcast('config', config.get());
     });
     ipcMain.on('get-config', (event) => {
-      event.returnValue = config();
+      event.returnValue = config.get();
     });
     ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
     ipcMain.handle('reset-config', () => {
-      setConfig(DEFAULT_CONFIG, false);
-      setLyricMapper({}, false);
-      setGameList({}, false);
+      config.set(DEFAULT_CONFIG, false);
+      lyricMapper.set({}, false);
+      gameList.set({}, false);
 
       this.pluginManager.getPlugins()
         .forEach((plugin) => this.pluginManager.removePlugin(plugin));
 
-      this.broadcast('config', config());
-      this.broadcast('game-list', gameList());
+      this.broadcast('config', config.get());
+      this.broadcast('game-list', gameList.get());
     });
     ipcMain.handle('set-lyric-mapper', async (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
       await this.overridePlugin('lyric-mapper', (data) => {
-        setLyricMapper(data, useFallback);
+        lyricMapper.set(data, useFallback);
       }, data);
-      this.broadcast('lyric-mapper', lyricMapper());
+      this.broadcast('lyric-mapper', lyricMapper.get());
     });
-    ipcMain.handle('get-lyric-mapper', () => lyricMapper());
+    ipcMain.handle('get-lyric-mapper', () => lyricMapper.get());
     ipcMain.handle('set-game-list', async (_, data: Partial<GameList>, useFallback: boolean = true) => {
       await this.overridePlugin('game-list', (data) => {
-        setGameList(data, useFallback);
+        gameList.set(data, useFallback);
       }, data);
-      this.broadcast('game-list', gameList());
+      this.broadcast('game-list', gameList.get());
     });
-    ipcMain.handle('get-game-list', () => gameList());
-    ipcMain.handle('set-theme', async (_, name: string, data: DeepPartial<StyleConfig> | null, useFallback: boolean = true) => {
+    ipcMain.handle('get-game-list', () => gameList.get());
+    ipcMain.handle('set-theme', async (_, name: string, data: PartialDeep<StyleConfig> | null, useFallback: boolean = true) => {
       await this.overridePlugin('set-theme', (data) => {
-        setTheme(name, data, useFallback);
+        themeList.set({
+          [name]: data ?? undefined,
+        }, useFallback);
       }, data);
-      this.broadcast('theme-list', themeList());
+      this.broadcast('theme-list', themeList.get());
     });
-    ipcMain.handle('get-theme-list', () => themeList());
+    ipcMain.handle('get-theme-list', () => themeList.get());
 
     ipcMain.handle('window-minimize', () => {
       this.overridePlugin('window-minimize', () => {
@@ -647,7 +652,7 @@ class Application {
       }, target);
       this.broadcastPlugin('after-remove-plugin', target);
 
-      setConfig({ plugins: { list: { [id]: undefined } } });
+      config.set({ plugins: { list: { [id]: undefined } } });
     });
     ipcMain.handle('reload-plugin', async (_, id: string) => {
       const target = this.pluginManager.getPlugins().find((it) => it.id === id);
@@ -794,9 +799,12 @@ class Application {
   updateWindowConfig(window: BrowserWindow | null, options?: { isOverlay: boolean, gameProcessId?: number }) {
     if (!window) return;
 
-    const { windowPosition, selectedTheme, style: legacyStyle } = config();
-    const themes = themeList() ?? {};
-    const style = deepmerge(deepmerge(DEFAULT_STYLE, legacyStyle ?? DEFAULT_STYLE), themes[selectedTheme] ?? DEFAULT_STYLE);
+    const {
+      windowPosition,
+      selectedTheme,
+    } = config.get();
+    const themes = themeList.get();
+    const style = deepmerge(DEFAULT_STYLE, themes[selectedTheme] ?? DEFAULT_STYLE);
     let activeDisplay: Electron.Display;
     if (options?.isOverlay && process.platform === 'win32') {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -862,7 +870,7 @@ class Application {
         preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
       },
-      title: getTranslation('title.setting', config().language),
+      title: getTranslation('title.setting', config.get().language),
       titleBarStyle: 'hiddenInset',
       frame: false,
       transparent: true,
@@ -902,7 +910,7 @@ class Application {
         preload: path.join(__dirname, './preload.js'),
         nodeIntegration: true,
       },
-      title: getTranslation('title.lyrics', config().language),
+      title: getTranslation('title.lyrics', config.get().language),
       titleBarStyle: 'hiddenInset',
       frame: false,
       transparent: true,
@@ -939,7 +947,7 @@ class Application {
   }
   
   private onProcessCreation(pid: number, _?: string, filePath?: string) {
-    const gamePathList = Object.keys(gameList() ?? {});
+    const gamePathList = Object.keys(gameList.get() ?? {});
 
     if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
       let tryCount = 0;

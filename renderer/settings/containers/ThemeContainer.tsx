@@ -3,7 +3,6 @@ import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
 import { useNavigate, useParams } from '@solidjs/router';
 
-import { StyleConfig } from '../../../common/config';
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
 
@@ -14,6 +13,9 @@ import UserCSSEditor from '../components/UserCSSEditor';
 import { cx } from '../../utils/classNames';
 import Switch from '../../components/Switch';
 import LyricPreview from '../components/LyricPreview';
+
+import type { PartialDeep } from 'type-fest';
+import type { StyleConfig } from '../../../common/types';
 
 const ANIMATION_LIST = [
   'none',
@@ -95,7 +97,7 @@ const ThemeContainer = () => {
       code: value,
     });
   };
-  const setTheme = (style: DeepPartial<StyleConfig>) => {
+  const setTheme = (style: PartialDeep<StyleConfig>) => {
     const nowThemeName = themeName();
 
     setThemeList(nowThemeName, style);

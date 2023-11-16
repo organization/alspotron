@@ -7,7 +7,7 @@ import LyricProgressBar from '../../main/components/LyricProgressBar';
 import LyricsTransition from '../../main/components/LyricsTransition';
 import { cx } from '../../utils/classNames';
 
-import type { StyleConfig } from '../../../common/config';
+import type { StyleConfig } from '../../../common/types';
 
 const isMac = /Mac/.test(navigator.userAgent);
 const isWindow = /Windows/.test(navigator.userAgent);

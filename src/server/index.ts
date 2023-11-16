@@ -3,7 +3,7 @@ import { validator } from 'hono/validator';
 import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
 
-import { bodySchema, UpdateData } from '../../common/types';
+import { bodySchema, UpdateData } from '../../common/types/tunaObs';
 
 export type ServerListener = {
   onUpdate?: (data: UpdateData) => void;

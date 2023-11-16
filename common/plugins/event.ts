@@ -1,11 +1,13 @@
 import { Plugin } from './plugin';
 
-import { Config, GameList, LyricMapper, StyleConfig } from '../config';
+import { Config, GameList, LyricMapper, StyleConfig } from '../../common/types';
 import { UpdateData } from '../types';
+
+import type { PartialDeep } from 'type-fest';
 
 export interface PluginEventMap {
   'update': (updateContext: UpdateData) => void;
-  'config': (config: DeepPartial<Config>) => void;
+  'config': (config: PartialDeep<Config>) => void;
   'game-list': (gameList: Partial<GameList>) => void;
   'lyric-mapper': (lyricMapper: Partial<LyricMapper>) => void;
   'registered-process-list': (pidList: number[]) => void;
@@ -24,9 +26,9 @@ export interface PluginEventMap {
 }
 export interface OverrideParameterMap {
   'update': [updateContext: UpdateData];
-  'config': [config: DeepPartial<Config>];
+  'config': [config: PartialDeep<Config>];
   'game-list': [gameList: Partial<GameList>];
-  'set-theme': [themeList: DeepPartial<StyleConfig> | null];
+  'set-theme': [themeList: PartialDeep<StyleConfig> | null];
   'lyric-mapper': [lyricMapper: Partial<LyricMapper>];
   'window-minimize': [];
   'window-maximize': [maximize: boolean];

@@ -1,4 +1,4 @@
-import { Config, StyleConfig } from './config';
+import { Config, StyleConfig } from './types';
 
 export const ConfigLyricMode = {
   NONE: -1,

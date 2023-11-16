@@ -1,11 +1,13 @@
 import { app } from 'electron';
 
 import Application from './src/Application';
+import { waitConfigInit } from './src/config';
 
 const application = new Application();
 
 (async () => {
   await app.whenReady();
+  await waitConfigInit();
 
   application.initPluginLoader();
 

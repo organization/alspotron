@@ -7,7 +7,7 @@ import Selector from '../../components/Select';
 
 import useConfig from '../../hooks/useConfig';
 import { getTranslation } from '../../../common/intl';
-import { Config } from '../../../common/config';
+import { Config } from '../../../common/types';
 import Modal from '../../components/Modal';
 import Switch from '../../components/Switch';
 

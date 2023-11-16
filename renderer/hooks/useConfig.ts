@@ -1,6 +1,7 @@
 import { createSignal } from 'solid-js';
 
-import { Config } from '../../common/config';
+import type { PartialDeep } from 'type-fest';
+import type { Config } from '../../common/types';
 
 const useConfig = () => {
   const [config, setConfig] = createSignal<Config | null>(null);
@@ -18,7 +19,7 @@ const useConfig = () => {
     setConfig(data);
   });
 
-  const setPublicConfig = async (newMapper: DeepPartial<Config>) => {
+  const setPublicConfig = async (newMapper: PartialDeep<Config>) => {
     await window.ipcRenderer.invoke('set-config', newMapper);
   };
 
