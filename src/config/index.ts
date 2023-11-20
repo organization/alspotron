@@ -1,7 +1,7 @@
 import { config } from './config';
-import { lyricMapper } from './lyricMapper';
-import { themeList } from './themeList';
-import { gameList } from './gameList';
+import { lyricMapper } from './lyric-mapper';
+import { themeList } from './theme-list';
+import { gameList } from './game-list';
 
 let resolver: () => void = () => null;
 const init = {
