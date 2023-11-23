@@ -45,6 +45,9 @@ export const StyleConfigSchema = z.object({
   userCSS: z.string().nullable(),
 });
 
+export const InternalConfigSchema = z.object({
+  version: z.string().optional(),
+});
 export const ConfigSchema = z.object({
   version: z.literal(1),
   selectedTheme: z.string().catch(DEFAULT_CONFIG.selectedTheme),
@@ -83,6 +86,8 @@ export const ConfigSchema = z.object({
     disabled: z.record(z.boolean().optional()),
     config: z.record(z.record(z.unknown())),
   }),
+
+  __internal__: InternalConfigSchema.optional(),
 });
 export const LyricMapperSchema = z.record(z.number().optional());
 export const ThemeListSchema = z.record(StyleConfigSchema.optional());

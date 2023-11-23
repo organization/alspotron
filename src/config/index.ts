@@ -11,6 +11,8 @@ import { State } from './state';
 
 import { ConfigSchema, GameListSchema, LyricMapperSchema, ThemeListSchema } from '../../common/types';
 
+import packageJson from '../../package.json';
+
 let resolver: () => void = () => null;
 const init = {
   config: 0,
@@ -39,7 +41,6 @@ gameList.watchOnce(() => {
   tryMigration();
 });
 
-const migrator = createMigrator(migrateTable);
 const tryMigration = () => {
   const isLoaded = Object.values(init).every((it) => it === 1);
 
@@ -49,7 +50,12 @@ const tryMigration = () => {
   }
 
   if (isLoaded) {
-    console.log('[Alspotron] Migrating data...');
+    const internalConfig = config.get()['__internal__'];
+    const prevVersion = typeof internalConfig?.version === 'string' ? internalConfig.version : '0.0.0';
+    const nowVersion = packageJson.version;
+    console.log('[Alspotron] Migrating data...', prevVersion, '->', nowVersion);
+
+    const migrator = createMigrator(migrateTable, prevVersion);
     const result = migrator({
       config: config.get(),
       lyricMapper: lyricMapper.get(),
@@ -77,7 +83,16 @@ const tryMigration = () => {
     if (result.themeList) applyMigration(themeListParsed, themeList);
     if (result.gameList) applyMigration(gameListParsed, gameList);
 
-    if (!isFailed) console.log('[Alspotron] Migrating data... Done');
+    if (!isFailed) {
+      // For internal use
+      config.set({
+        __internal__: {
+          version: nowVersion,
+        },
+      } as never);
+
+      console.log('[Alspotron] Migrating data... Done');
+    }
     resolver();
   }
 };
