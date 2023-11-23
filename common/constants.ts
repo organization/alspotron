@@ -6,7 +6,7 @@ export const ConfigLyricMode = {
 };
 export type ConfigLyricMode = typeof ConfigLyricMode[keyof typeof ConfigLyricMode];
 
-export const DEFAULT_STYLE: StyleConfig = {
+export const DEFAULT_STYLE = {
   font: 'KoPubWorldDotum',
   fontWeight: '400',
   animation: 'pretty',
@@ -34,7 +34,7 @@ export const DEFAULT_STYLE: StyleConfig = {
     stoppedOpacity: 0.5,
     containerRowGap: 1,
     multipleContainerRowGap: 1,
-    direction: 'column',
+    direction: 'column' as const,
     nextLyric: 0,
     previousLyric: 0,
     nextLyricScale: 0.9,
@@ -46,13 +46,13 @@ export const DEFAULT_STYLE: StyleConfig = {
   userCSS: null,
 };
 
-export const DEFAULT_CONFIG: Config = {
-  version: 1,
+export const DEFAULT_CONFIG = {
+  version: 1 as const,
 
   selectedTheme: 'Default Theme',
 
   windowPosition: {
-    anchor: 'bottom-right',
+    anchor: 'bottom-right' as const,
     display: null,
     top: 32,
     left: 32,
@@ -62,7 +62,7 @@ export const DEFAULT_CONFIG: Config = {
 
   syncThrottle: 1000 * 3,
 
-  language: 'ko',
+  language: 'ko' as const,
   developer: false,
 
   plugins: {
@@ -70,4 +70,4 @@ export const DEFAULT_CONFIG: Config = {
     disabled: {},
     config: {},
   },
-} satisfies Config;
+};

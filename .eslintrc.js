@@ -37,7 +37,7 @@ module.exports = {
     ],
     'import/prefer-default-export': 'off',
     'solid/style-prop': ['error', { allowString: true }],
-    'camelcase': ['error', { properties: 'never' }],
+    'camelcase': ['error', { properties: 'never', allow: ['^LEGACY_'] }],
     'class-methods-use-this': 'off',
     'lines-around-comment': [
       'error',

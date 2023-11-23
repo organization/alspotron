@@ -1,22 +1,30 @@
 import fs from 'node:fs/promises';
 
-import { z } from 'zod';
+import { z, ZodTypeDef } from 'zod';
 import { deepmerge } from 'deepmerge-ts';
 
 import type { PartialDeep } from 'type-fest';
 
+export type StateMiddlewareOption<T> = {
+  raw?: PartialDeep<T>;
+};
+export type StateMiddleware<T> = (value: T, next: (value: T) => T, options?: StateMiddlewareOption<T>) => unknown;
 export type StateOptions<T> = {
   file?: {
     path?: string;
-    schema?: z.ZodType<T>;
+    schema?: z.ZodType<T, ZodTypeDef, unknown>;
     autoSync?: boolean | number;
+    middleware?: StateMiddleware<unknown>;
   };
+  middleware?: StateMiddleware<T>;
 };
 export class State<T> {
   private value: T;
   private path?: string;
-  private schema?: z.ZodType<T>;
+  private _schema?: z.ZodType<T, ZodTypeDef, unknown>;
   private throttle?: number;
+  private fileMiddleware?: StateMiddleware<unknown>;
+  private stateMiddleware?: StateMiddleware<T>;
 
   private readonly defaultValue: T;
 
@@ -37,10 +45,26 @@ export class State<T> {
     return this.value;
   }
 
+  public get schema() {
+    return this._schema;
+  }
+
   public set(value: PartialDeep<T>, useFallback = true): void {
     const newValue = useFallback
       ? deepmerge(this.defaultValue, this.value, value) as T
       : value as T;
+
+    const setter = (data: T) => {
+      this.value = data;
+
+      return data;
+    };
+
+    if (this.stateMiddleware) {
+      this.stateMiddleware(newValue, setter, { raw: value });
+    } else {
+      setter(newValue);
+    }
 
     this.value = newValue;
     this.watchers.forEach((fn) => fn(newValue));
@@ -78,7 +102,27 @@ export class State<T> {
     let config: T = this.value;
     try {
       const rawConfig = JSON.parse(str);
-      config = this.schema?.parse(rawConfig) ?? deepmerge(this.defaultValue, rawConfig) as T;
+
+      const setter = (data: unknown) => {
+        const parsed = this._schema?.safeParse(data);
+        if (parsed?.success) {
+          config = parsed.data;
+        } else {
+          config = deepmerge(this.defaultValue, data) as T;
+        }
+
+        return config;
+      };
+
+      if (this.fileMiddleware) {
+        this.fileMiddleware(
+          rawConfig,
+          setter,
+        );
+      } else {
+        setter(rawConfig);
+      }
+
     } catch {}
 
     this.set(config as PartialDeep<T>);
@@ -92,11 +136,13 @@ export class State<T> {
 
   public setOptions(options: StateOptions<T>): void {
     if (options.file?.path) this.path = options.file.path;
-    if (options.file?.schema) this.schema = options.file.schema;
+    if (options.file?.schema) this._schema = options.file.schema;
     if (options.file?.autoSync) {
       this.throttle = typeof options.file?.autoSync === 'number'
         ? options.file.autoSync
         : 1000;
     }
+    if (options.file?.middleware) this.fileMiddleware = options.file.middleware;
+    if (options.middleware) this.stateMiddleware = options.middleware;
   }
 }

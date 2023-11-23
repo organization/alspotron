@@ -1,40 +1,45 @@
 import { z } from 'zod';
 
+import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../constants';
+
 export const StyleConfigSchema = z.object({
-  font: z.string(),
-  fontWeight: z.string(),
-  animation: z.string(),
-  animationAtOnce: z.boolean(),
-  maxHeight: z.number(),
-  proximityOpacity: z.number(),
-  proximitySensitivity: z.number(),
-  rowGap: z.number(),
+  font: z.string().catch(DEFAULT_STYLE.font),
+  fontWeight: z.string().catch(DEFAULT_STYLE.fontWeight),
+  animation: z.string().catch(DEFAULT_STYLE.animation),
+  animationAtOnce: z.boolean().catch(DEFAULT_STYLE.animationAtOnce),
+  maxHeight: z.number().catch(DEFAULT_STYLE.maxHeight),
+  proximityOpacity: z.number().catch(DEFAULT_STYLE.proximityOpacity),
+  proximitySensitivity: z.number().catch(DEFAULT_STYLE.proximitySensitivity),
+  rowGap: z.number().catch(DEFAULT_STYLE.rowGap),
 
   nowPlaying: z.object({
-    color: z.string(),
-    background: z.string(),
-    backgroundProgress: z.string(),
-    fontSize: z.number(),
-    maxWidth: z.number(),
-    visible: z.boolean(),
-    stoppedOpacity: z.number(),
+    color: z.string().catch(DEFAULT_STYLE.nowPlaying.color),
+    background: z.string().catch(DEFAULT_STYLE.nowPlaying.background),
+    backgroundProgress: z.string().catch(DEFAULT_STYLE.nowPlaying.backgroundProgress),
+    fontSize: z.number().catch(DEFAULT_STYLE.nowPlaying.fontSize),
+    maxWidth: z.number().catch(DEFAULT_STYLE.nowPlaying.maxWidth),
+    visible: z.boolean().catch(DEFAULT_STYLE.nowPlaying.visible),
+    stoppedOpacity: z.number().catch(DEFAULT_STYLE.nowPlaying.stoppedOpacity),
   }),
 
   lyric: z.object({
-    color: z.string(),
-    background: z.string(),
-    fontSize: z.number(),
-    maxWidth: z.number(),
-    stoppedOpacity: z.number(),
-    containerRowGap: z.number(),
-    multipleContainerRowGap: z.number(),
-    direction: z.union([z.literal('column'), z.literal('column-reverse')]),
-    nextLyric: z.number(),
-    previousLyric: z.number(),
-    nextLyricScale: z.number(),
-    previousLyricScale: z.number(),
-    nextLyricOpacity: z.number(),
-    previousLyricOpacity: z.number(),
+    color: z.string().catch(DEFAULT_STYLE.lyric.color),
+    background: z.string().catch(DEFAULT_STYLE.lyric.background),
+    fontSize: z.number().catch(DEFAULT_STYLE.lyric.fontSize),
+    maxWidth: z.number().catch(DEFAULT_STYLE.lyric.maxWidth),
+    stoppedOpacity: z.number().catch(DEFAULT_STYLE.lyric.stoppedOpacity),
+    containerRowGap: z.number().catch(DEFAULT_STYLE.lyric.containerRowGap),
+    multipleContainerRowGap: z.number().catch(DEFAULT_STYLE.lyric.multipleContainerRowGap),
+    direction: z.union([
+      z.literal('column'),
+      z.literal('column-reverse'),
+    ]).catch(DEFAULT_STYLE.lyric.direction),
+    nextLyric: z.number().catch(DEFAULT_STYLE.lyric.nextLyric),
+    previousLyric: z.number().catch(DEFAULT_STYLE.lyric.previousLyric),
+    nextLyricScale: z.number().catch(DEFAULT_STYLE.lyric.nextLyricScale),
+    previousLyricScale: z.number().catch(DEFAULT_STYLE.lyric.previousLyricScale),
+    nextLyricOpacity: z.number().catch(DEFAULT_STYLE.lyric.nextLyricOpacity),
+    previousLyricOpacity: z.number().catch(DEFAULT_STYLE.lyric.previousLyricOpacity),
   }),
 
   userCSS: z.string().nullable(),
@@ -42,7 +47,7 @@ export const StyleConfigSchema = z.object({
 
 export const ConfigSchema = z.object({
   version: z.literal(1),
-  selectedTheme: z.string(),
+  selectedTheme: z.string().catch(DEFAULT_CONFIG.selectedTheme),
 
   windowPosition: z.object({
     anchor: z.union([
@@ -55,12 +60,12 @@ export const ConfigSchema = z.object({
       z.literal('bottom-left'),
       z.literal('bottom'),
       z.literal('bottom-right'),
-    ]),
-    display: z.number().nullable(),
-    top: z.number().nullable(),
-    left: z.number().nullable(),
-    bottom: z.number().nullable(),
-    right: z.number().nullable(),
+    ]).catch(DEFAULT_CONFIG.windowPosition.anchor),
+    display: z.number().nullable().catch(DEFAULT_CONFIG.windowPosition.display),
+    top: z.number().catch(DEFAULT_CONFIG.windowPosition.top),
+    left: z.number().catch(DEFAULT_CONFIG.windowPosition.left),
+    bottom: z.number().catch(DEFAULT_CONFIG.windowPosition.bottom),
+    right: z.number().catch(DEFAULT_CONFIG.windowPosition.right),
   }),
 
   syncThrottle: z.number(),
@@ -70,8 +75,8 @@ export const ConfigSchema = z.object({
     z.literal('en'),
     z.literal('ja'),
     z.literal('de'),
-  ]),
-  developer: z.boolean(),
+  ]).catch(DEFAULT_CONFIG.language),
+  developer: z.boolean().catch(DEFAULT_CONFIG.developer),
 
   plugins: z.object({
     list: z.record(z.string().optional()),

@@ -1,9 +1,4 @@
-import { getTranslation } from '../../intl';
-import { Config, StyleConfig } from '../../../common/types';
-import deepmerge from 'deepmerge';
-import { DEFAULT_STYLE } from '../../constants';
-
-type LegacyConfig = {
+export type LEGACY_Config0_16_0 = {
   style: {
     font: string;
     fontWeight: string;
@@ -69,38 +64,3 @@ type LegacyConfig = {
   }
 }
 
-
-export const migrate = (configData: LegacyConfig): Config => {
-  const name = getTranslation('setting.theme.legacy-theme', configData.language);
-
-  const style: StyleConfig = deepmerge(DEFAULT_STYLE, {
-    ...configData.style,
-    lyric: {
-      ...configData.style.lyric,
-      direction: configData?.windowPosition?.direction ?? 'column',
-      nextLyric: configData?.lyric?.nextLyric ?? 0,
-      previousLyric: configData?.lyric?.previousLyric ?? 0,
-    }
-  });
-
-  return {
-    version: 1,
-    selectedTheme: name,
-
-    windowPosition: {
-      anchor: configData.windowPosition.anchor,
-      display: configData.windowPosition.display,
-      top: configData.windowPosition.top,
-      left: configData.windowPosition.left,
-      bottom: configData.windowPosition.bottom,
-      right: configData.windowPosition.right,
-    },
-
-    syncThrottle: configData.syncThrottle,
-
-    language: configData.language,
-    developer: configData.developer,
-
-    plugins: configData.plugins,
-  };
-};
