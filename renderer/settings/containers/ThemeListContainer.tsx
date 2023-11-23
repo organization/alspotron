@@ -65,7 +65,7 @@ const ThemeListContainer = () => {
     }
 
     const isSelected = config()?.selectedTheme === oldName;
-    setTheme(newName, original);
+    setTheme(newName, original ?? null);
     setTheme(oldName, null);
     setConfig({
       selectedTheme: isSelected ? newName : config()?.selectedTheme,

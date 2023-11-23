@@ -1,8 +1,15 @@
+import { SafeParseReturnType } from 'zod';
+import { PartialDeep } from 'type-fest';
+
 import { config } from './config';
 import { lyricMapper } from './lyric-mapper';
 import { themeList } from './theme-list';
 import { gameList } from './game-list';
 import { createMigrator, migrateTable } from './migration';
+
+import { State } from './state';
+
+import { ConfigSchema, GameListSchema, LyricMapperSchema, ThemeListSchema } from '../../common/types';
 
 let resolver: () => void = () => null;
 const init = {
@@ -34,7 +41,6 @@ gameList.watchOnce(() => {
 
 const migrator = createMigrator(migrateTable);
 const tryMigration = () => {
-  console.log('[Alspotron] Checking data...', init, isInit());
   const isLoaded = Object.values(init).every((it) => it === 1);
 
   if (isInit()) {
@@ -51,42 +57,28 @@ const tryMigration = () => {
       gameList: gameList.get(),
     });
 
-    const configParsed = config.schema?.safeParse(result.config);
-    const lyricMapperParsed = lyricMapper.schema?.safeParse(result.lyricMapper);
-    const themeListParsed = themeList.schema?.safeParse(result.themeList);
-    const gameListParsed = gameList.schema?.safeParse(result.gameList);
-
-    if (configParsed?.success) config.set(configParsed.data);
-    else config.set(config.get());
-
-    if (lyricMapperParsed?.success) lyricMapper.set(lyricMapperParsed.data);
-    else lyricMapper.set(lyricMapper.get());
-
-    if (themeListParsed?.success) themeList.set(themeListParsed.data);
-    else themeList.set(themeList.get());
-
-    if (gameListParsed?.success) gameList.set(gameListParsed.data);
-    else gameList.set(gameList.get());
+    const configParsed = ConfigSchema.safeParse(result.config);
+    const lyricMapperParsed = LyricMapperSchema.safeParse(result.lyricMapper);
+    const themeListParsed = ThemeListSchema.safeParse(result.themeList);
+    const gameListParsed = GameListSchema.safeParse(result.gameList);
 
     let isFailed = false;
-    if (config.schema && !configParsed?.success) {
-      isFailed = true;
-      console.warn('[Alspotron] Cannot migrate config', configParsed?.error, result.config);
-    }
-    if (lyricMapper.schema && !lyricMapperParsed?.success) {
-      isFailed = true;
-      console.warn('[Alspotron] Cannot migrate lyricMapper', lyricMapperParsed?.error, result.lyricMapper);
-    }
-    if (themeList.schema && !themeListParsed?.success) {
-      isFailed = true;
-      console.warn('[Alspotron] Cannot migrate themeList', themeListParsed?.error, result.themeList);
-    }
-    if (gameList.schema && !gameListParsed?.success) {
-      isFailed = true;
-      console.warn('[Alspotron] Cannot migrate gameList', gameListParsed?.error, result.gameList);
-    }
+    const applyMigration = <I, O>(parsed: SafeParseReturnType<I, O>, state: State<O>) => {
+      if (parsed.success) {
+        state.set(parsed.data as PartialDeep<O>);
+      } else {
+        isFailed = true;
+        console.warn('[Alspotron] Cannot migrate', parsed.error, parsed);
+      }
+    };
+
+    if (result.config) applyMigration(configParsed, config);
+    if (result.lyricMapper) applyMigration(lyricMapperParsed, lyricMapper);
+    if (result.themeList) applyMigration(themeListParsed, themeList);
+    if (result.gameList) applyMigration(gameListParsed, gameList);
 
     if (!isFailed) console.log('[Alspotron] Migrating data... Done');
+    resolver();
   }
 };
 

@@ -85,6 +85,7 @@ export const ConfigSchema = z.object({
   }),
 });
 export const LyricMapperSchema = z.record(z.number().optional());
+export const ThemeListSchema = z.record(StyleConfigSchema.optional());
 export const GameListSchema = z.record(z.string().optional());
 
 export type StyleConfig = z.infer<typeof StyleConfigSchema>;
@@ -92,4 +93,4 @@ export type Config = z.infer<typeof ConfigSchema>;
 
 export type LyricMapper = z.infer<typeof LyricMapperSchema>;
 export type GameList = z.infer<typeof GameListSchema>;
-export type ThemeList = Record<string, StyleConfig>;
+export type ThemeList = z.infer<typeof ThemeListSchema>;

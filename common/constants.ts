@@ -1,5 +1,3 @@
-import { Config, StyleConfig } from './types';
-
 export const ConfigLyricMode = {
   NONE: -1,
   PLAYER: -2,

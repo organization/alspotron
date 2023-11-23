@@ -108,15 +108,14 @@ class Application {
     if (process.platform === 'win32') {
       // HACK: import statement is not work because Electron's threading model is different from Windows COM's
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      import('@jellybrick/wql-process-monitor').then((wql) => {
-        wql.promises.subscribe({
-          creation: true,
-          deletion: true,
-          filterWindowsNoise: true,
-        }).then((listener) => {
-          listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
-          listener.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
-        });
+      const wql = require('@jellybrick/wql-process-monitor') as typeof import('@jellybrick/wql-process-monitor');
+      wql.promises.subscribe({
+        creation: true,
+        deletion: true,
+        filterWindowsNoise: true,
+      }).then((listener) => {
+        listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
+        listener.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
       });
 
       const electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
