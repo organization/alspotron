@@ -1,3 +1,5 @@
+import { LyricProviderList } from './provider';
+
 export const ConfigLyricMode = {
   NONE: -1,
   PLAYER: -2,
@@ -68,4 +70,6 @@ export const DEFAULT_CONFIG = {
     disabled: {},
     config: {},
   },
+
+  provider: LyricProviderList[0].provider as 'alsong',
 };

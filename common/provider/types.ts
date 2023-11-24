@@ -35,4 +35,11 @@ export abstract class BaseLyricProvider {
   abstract getLyric(params: SearchParams): Promise<LyricData | null>;
 
   abstract searchLyrics(params: SearchParams): Promise<LyricMetadata[]>;
+
+  static onBeforeSendHeaders(_details: Electron.OnBeforeSendHeadersListenerDetails): Electron.BeforeSendResponse {
+    return {};
+  }
+  static onHeadersReceived(_details: Electron.OnHeadersReceivedListenerDetails): Electron.HeadersReceivedResponse {
+    return {};
+  }
 }

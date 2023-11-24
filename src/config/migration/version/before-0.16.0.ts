@@ -29,6 +29,8 @@ export const LEGACY_migrator0_16_0: Migrator = {
       developer: configData.developer,
 
       plugins: configData.plugins,
+
+      provider: DEFAULT_CONFIG.provider,
     } satisfies Config;
   },
   themeList: (_, context) => {

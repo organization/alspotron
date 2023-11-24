@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../constants';
+import { LyricProviderList } from '../provider';
 
 export const StyleConfigSchema = z.object({
   font: z.string().catch(DEFAULT_STYLE.font),
@@ -86,6 +87,13 @@ export const ConfigSchema = z.object({
     disabled: z.record(z.boolean().optional()),
     config: z.record(z.record(z.unknown())),
   }),
+
+  provider: z.literal(LyricProviderList[0]!.provider).catch(DEFAULT_CONFIG.provider),
+  /*
+    z.union([
+      z.literal(LyricProviderList[0]!.provider),
+    ]).catch(DEFAULT_CONFIG.provider),
+  */
 
   __internal__: InternalConfigSchema.optional(),
 });

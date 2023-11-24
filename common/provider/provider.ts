@@ -6,3 +6,7 @@ export const LyricProviderList = [
 
 export type LyricProviderKind = typeof LyricProviderList[number]['provider'];
 export type LyricProvider = typeof LyricProviderList[number];
+
+export const getLyricProvider = (provider: LyricProviderKind): LyricProvider | undefined => {
+  return LyricProviderList.find((v) => v.provider === provider);
+};

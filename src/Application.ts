@@ -1,59 +1,43 @@
 import path from 'node:path';
 
 import ProgressBar from 'electron-progressbar';
-import { hmc } from 'hmc-win32';
 import { autoUpdater, UpdateInfo } from 'electron-differential-updater';
-import { IS_WINDOWS_11, MicaBrowserWindow } from 'mica-electron';
-
-import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructorOptions, nativeImage, screen, shell, Tray } from 'electron';
-
-import deepmerge from 'deepmerge';
-
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  Menu,
+  MenuItem,
+  MenuItemConstructorOptions,
+  nativeImage,
+  screen,
+  Tray
+} from 'electron';
 import { ProgressInfo } from 'electron-builder';
-
 import { PartialDeep } from 'type-fest';
 
-import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
-
-
-
 import PluginManager from './plugins/plugin-manager';
-
 import { initServer } from './server';
-
 import { config, gameList, lyricMapper, themeList } from './config';
 
-import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../common/constants';
+import { LyricWindow, SettingWindow } from './window';
 
+import { LyricSearchWindow } from './window/search';
+
+import { OverlayManager } from './overlay';
+
+import { DEFAULT_CONFIG } from '../common/constants';
 import { getTranslation } from '../common/intl';
-
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
 
 import { Config, GameList, LyricMapper, StyleConfig } from '../common/types';
 
+import { getLyricProvider } from '../common/provider';
+
 import type { UpdateData } from '../common/types';
-
-import type { IOverlay } from './electron-overlay';
 import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
-
-
-
-type Overlay = typeof IOverlay;
-
-const iconPath = getFile('./assets/icon_square.png');
-const glassOptions: Partial<GlasstronOptions> = {
-  blur: true,
-  blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
-  blurGnomeSigma: 100,
-  blurCornerRadius: 20,
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-};
-const micaOptions = {
-  show: false,
-};
-
-const PlatformBrowserWindow = process.platform === 'win32' && IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow;
 
 // Set application name for Windows 10+ notifications
 if (process.platform === 'win32') {
@@ -67,67 +51,19 @@ if (!app.requestSingleInstanceLock()) {
 app.commandLine.appendSwitch('enable-transparent-visuals');
 
 class Application {
+  public lyricWindow!: LyricWindow;
+  public settingWindow: BrowserWindow | null = null;
+  public lyricSearchWindow: BrowserWindow | null = null;
+
+  private overlayManager: OverlayManager;
+
   private tray!: Tray;
-  private overlay!: Overlay;
   private pluginManager!: PluginManager;
-  private markQuit = false;
-  private scaleFactor = 1.0;
   private lastUpdate: UpdateData | null = null;
   private contextMenu: Menu | null = null;
 
-  public mainWindow!: BrowserWindow;
-  public overlayWindow: BrowserWindow | null = null;
-  public settingsWindow: BrowserWindow | null = null;
-  public lyricsWindow: BrowserWindow | null = null;
-  public mainWindowOptions = {
-    width: 800,
-    height: 600,
-    movable: false,
-    resizable: false,
-    minimizable: false,
-    maximizable: false,
-    transparent: true,
-    frame: false,
-    focusable: false,
-    alwaysOnTop: true,
-    skipTaskbar: true,
-    hasShadow: false,
-    hiddenInMissionControl: true,
-    roundedCorners: false,
-    webPreferences: {
-      preload: path.join(__dirname, './preload.js'),
-      nodeIntegration: true,
-    },
-    show: false,
-    icon: iconPath,
-  };
-  private onOverlayWindowUpdate: (() => void) | null = null;
-  private registeredPidList: number[] = [];
-
-  constructor() {
-    if (process.platform === 'win32') {
-      // HACK: import statement is not work because Electron's threading model is different from Windows COM's
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const wql = require('@jellybrick/wql-process-monitor') as typeof import('@jellybrick/wql-process-monitor');
-      wql.promises.subscribe({
-        creation: true,
-        deletion: true,
-        filterWindowsNoise: true,
-      }).then((listener) => {
-        listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
-        listener.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
-      });
-
-      const electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
-      const module = { exports: {} };
-      (process as NodeJS.Process & { dlopen: (module: { exports: unknown }, path: string, flags?: unknown) => void }).dlopen(
-        module,
-        app.isPackaged ?
-          path.join(process.resourcesPath, `./assets/${electronOverlayWithArch}`) :
-          path.join(__dirname, '..', `./assets/${electronOverlayWithArch}`),
-      );
-      this.overlay = module.exports as Overlay;
-    }
+  constructor(overlayManager: OverlayManager) {
+    this.overlayManager = overlayManager;
   }
 
   initServer() {
@@ -147,7 +83,7 @@ class Application {
 
   initPluginLoader() {
     console.log('[Alspotron] load all plugins');
-    
+
     this.pluginManager = new PluginManager({
       config: () => config.get().plugins,
       folder: path.resolve(app.getPath('userData'), 'plugins'),
@@ -173,7 +109,7 @@ class Application {
         detail: getTranslation('updater.download-at', config.get().language).replace('{{link}}', downloadLink),
         defaultId: 0,
       });
-      
+
       if (response === 0) {
         const updateProgressBar = new ProgressBar({
           indeterminate: false,
@@ -217,11 +153,11 @@ class Application {
         type: 'normal',
         label: getTranslation('tray.lyrics.label', config.get().language),
         click: () => {
-          if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
-            if (this.lyricsWindow.isMinimized()) this.lyricsWindow.restore();
-            this.lyricsWindow.show();
+          if (this.lyricSearchWindow && !this.lyricSearchWindow.isDestroyed()) {
+            if (this.lyricSearchWindow.isMinimized()) this.lyricSearchWindow.restore();
+            this.lyricSearchWindow.show();
           } else {
-            this.initLyricsWindow();
+            this.initLyricSearchWindow();
           }
         },
       },
@@ -229,11 +165,11 @@ class Application {
         type: 'normal',
         label: getTranslation('tray.setting.label', config.get().language),
         click: () => {
-          if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
-            if (this.settingsWindow.isMinimized()) this.settingsWindow.restore();
-            this.settingsWindow.show();
+          if (this.settingWindow && !this.settingWindow.isDestroyed()) {
+            if (this.settingWindow.isMinimized()) this.settingWindow.restore();
+            this.settingWindow.show();
           } else {
-            this.initSettingsWindow();
+            this.initSettingWindow();
           }
         }
       },
@@ -245,7 +181,7 @@ class Application {
         role: 'quit',
         label: getTranslation('tray.exit.label', config.get().language),
         click: () => {
-          this.markQuit = true;
+          this.overlayManager.stopOverlay();
           app.quit();
         }
       },
@@ -263,24 +199,24 @@ class Application {
             {
               label: getTranslation('tray.devtools.lyric-viewer.label', config.get().language),
               click: () => {
-                if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-                  this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+                if (this.lyricWindow && !this.lyricWindow.isDestroyed()) {
+                  this.lyricWindow.webContents.openDevTools({ mode: 'detach' });
                 }
               },
             },
             {
               label: getTranslation('tray.devtools.lyrics.label', config.get().language),
               click: () => {
-                if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
-                  this.lyricsWindow.webContents.openDevTools({ mode: 'detach' });
+                if (this.lyricSearchWindow && !this.lyricSearchWindow.isDestroyed()) {
+                  this.lyricSearchWindow.webContents.openDevTools({ mode: 'detach' });
                 }
               },
             },
             {
               label: getTranslation('tray.devtools.setting.label', config.get().language),
               click: () => {
-                if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
-                  this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
+                if (this.settingWindow && !this.settingWindow.isDestroyed()) {
+                  this.settingWindow.webContents.openDevTools({ mode: 'detach' });
                 }
               },
             }
@@ -315,114 +251,6 @@ class Application {
     });
   }
 
-  public addOverlayWindow(
-    name: string,
-    window: Electron.BrowserWindow,
-    dragborder = 0,
-    captionHeight = 0,
-    transparent = false
-  ) {
-    this.markQuit = false;
-
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
-    const display = screen.getDisplayNearestPoint(
-      windowManager.getWindows().find((window) => window.processId == this.registeredPidList[0])?.getBounds() as Electron.Point ??
-      screen.getCursorScreenPoint()
-    );
-
-    const resizable = window.isResizable();
-    this.overlay.addWindow(window.id, {
-      name,
-      transparent,
-      resizable,
-      maxWidth: resizable
-        ? display.bounds.width
-        : window.getBounds().width,
-      maxHeight: resizable
-        ? display.bounds.height
-        : window.getBounds().height,
-      minWidth: resizable ? 100 : window.getBounds().width,
-      minHeight: resizable ? 100 : window.getBounds().height,
-      nativeHandle: window.getNativeWindowHandle().readUInt32LE(0),
-      rect: {
-        x: Math.floor(window.getBounds().x * this.scaleFactor),
-        y: Math.floor(window.getBounds().y * this.scaleFactor),
-        width: Math.floor(window.getBounds().width * this.scaleFactor),
-        height: Math.floor(window.getBounds().height * this.scaleFactor),
-      },
-      caption: {
-        left: dragborder,
-        right: dragborder,
-        top: dragborder,
-        height: captionHeight,
-      },
-      dragBorderWidth: dragborder,
-    });
-
-    window.webContents.on('paint', (_, __, image: Electron.NativeImage) => {
-      if (this.markQuit) return;
-
-      this.overlay.sendFrameBuffer(
-        window.id,
-        image.getBitmap(),
-        image.getSize().width,
-        image.getSize().height
-      );
-    });
-
-    window.on('resize', () => {
-      this.overlay.sendWindowBounds(window.id, {
-        rect: {
-          x: window.getBounds().x,
-          y: window.getBounds().y,
-          width: Math.floor(window.getBounds().width * this.scaleFactor),
-          height: Math.floor(window.getBounds().height * this.scaleFactor),
-        },
-      });
-    });
-
-    const windowId = window.id;
-    window.on('closed', () => {
-      this.overlay.closeWindow(windowId);
-    });
-
-    window.webContents.on('cursor-changed', (_, type) => {
-      let cursor: string | null;
-
-      if (type === 'default') cursor = 'IDC_ARROW';
-      else if (type === 'pointer') cursor = 'IDC_HAND';
-      else if (type === 'crosshair') cursor = 'IDC_CROSS';
-      else if (type === 'text') cursor = 'IDC_IBEAM';
-      else if (type === 'wait') cursor = 'IDC_WAIT';
-      else if (type === 'help') cursor = 'IDC_HELP';
-      else if (type === 'move') cursor = 'IDC_SIZEALL';
-      else if (type === 'nwse-resize') cursor = 'IDC_SIZENWSE';
-      else if (type === 'nesw-resize') cursor = 'IDC_SIZENESW';
-      else if (type === 'ns-resize') cursor = 'IDC_SIZENS';
-      else if (type === 'ew-resize') cursor = 'IDC_SIZEWE';
-      else if (type === 'none') cursor = '';
-      else cursor = null;
-
-      if (cursor) this.overlay.sendCommand({ command: 'cursor', cursor });
-    });
-  }
-
-  removeOverlay(window: BrowserWindow) {
-    this.markQuit = true;
-    this.overlay.closeWindow(window.id);
-  }
-
-  initOverlay() {
-    this.initOverlayWindow();
-    this.overlay.start();
-  }
-
-  stopOverlay() {
-    this.removeOverlayWindow();
-    this.overlay.stop();
-  }
-
   async overridePlugin<Target extends keyof OverrideMap>(
     target: Target,
     originalFn: (...args: OverrideParameterMap[Target]) => Promise<void> | void,
@@ -433,12 +261,13 @@ class Application {
         ? plugin.js.overrides[target] ?? []
         : []
       );
-    
+
     await Promise.all(overrideFnList.map(async (overrideFn, index) => {
       const fn = (
         index === overrideFnList.length - 1
           ? originalFn
-          : async () => {}
+          : async () => {
+          }
       ) as (...args: OverrideParameterMap[Target]) => Promise<void>;
 
       await overrideFn(fn, ...args);
@@ -453,10 +282,10 @@ class Application {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
     this.broadcastPlugin(event as keyof PluginEventMap, ...args as any);
 
-    if (this.mainWindow) this.mainWindow.webContents.send(event, ...args);
-    if (this.overlayWindow && !this.overlayWindow.isDestroyed()) this.overlayWindow.webContents.send(event, ...args);
-    if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) this.lyricsWindow.webContents.send(event, ...args);
-    if (this.settingsWindow && !this.settingsWindow.isDestroyed()) this.settingsWindow.webContents.send(event, ...args);
+    if (this.lyricWindow) this.lyricWindow.webContents.send(event, ...args);
+    if (this.overlayManager.overlayWindow && !this.overlayManager.overlayWindow.isDestroyed()) this.overlayManager.overlayWindow.webContents.send(event, ...args);
+    if (this.lyricSearchWindow && !this.lyricSearchWindow.isDestroyed()) this.lyricSearchWindow.webContents.send(event, ...args);
+    if (this.settingWindow && !this.settingWindow.isDestroyed()) this.settingWindow.webContents.send(event, ...args);
   }
 
   broadcastPlugin<T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) {
@@ -470,7 +299,7 @@ class Application {
     ipcMain.on('get-primary-screen', (event) => {
       event.returnValue = screen.getPrimaryDisplay();
     });
-    ipcMain.handle('get-registered-process-list', () => this.registeredPidList);
+    ipcMain.handle('get-registered-process-list', () => []); //this.registeredPidList);
     ipcMain.handle('get-icon', (_, path: string) => {
       if (process.platform === 'win32') {
         try {
@@ -488,24 +317,24 @@ class Application {
       }
     });
     ipcMain.handle('start-overlay', () => {
-      this.initOverlay();
-
-      this.overridePlugin('start-overlay', () => {
-        if (this.overlayWindow) {
-          this.addOverlayWindow(
-            'StatusBar',
-            this.overlayWindow,
-            0,
-            0,
-            true,
-          );
-        }
-      });
-      this.broadcastPlugin('start-overlay');
+      // this.initOverlay();
+      //
+      // this.overridePlugin('start-overlay', () => {
+      //   if (this.overlayWindow) {
+      //     this.addOverlayWindow(
+      //       'StatusBar',
+      //       this.overlayWindow,
+      //       0,
+      //       0,
+      //       true,
+      //     );
+      //   }
+      // });
+      // this.broadcastPlugin('start-overlay');
     });
     ipcMain.handle('stop-overlay', () => {
       this.overridePlugin('stop-overlay', () => {
-        this.stopOverlay();
+        this.overlayManager.stopOverlay();
       });
       this.broadcastPlugin('stop-overlay');
     });
@@ -513,14 +342,14 @@ class Application {
       if (process.platform !== 'win32') return;
 
       this.overridePlugin('inject-overlay-to-process', (processId, name, filePath) => {
-        this.onProcessCreation(processId, name, filePath);
+        // this.onProcessCreation(processId, name, filePath);
       }, processId, name, filePath);
       this.broadcastPlugin('inject-overlay-to-process', processId, name, filePath);
     });
     ipcMain.handle('remove-overlay-from-process', (_, processId: number) => {
       this.broadcastPlugin('remove-overlay-from-process', processId);
       this.overridePlugin('remove-overlay-from-process', (processId) => {
-        this.onProcessDeletion(processId);
+        // this.onProcessDeletion(processId);
       }, processId);
     });
     ipcMain.handle('get-current-version', () => autoUpdater.currentVersion.version);
@@ -531,14 +360,14 @@ class Application {
     ipcMain.handle('set-config', async (_, data: PartialDeep<Config>) => {
       await this.overridePlugin('config', (data) => {
         config.set(data);
-
-        this.updateWindowConfig(this.mainWindow);
-        if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
-          this.overlayWindow.close();
-          this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
-          this.initOverlayWindow();
-          this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
-        }
+        //
+        // this.updateWindowConfig(this.lyricWindow);
+        // if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
+        //   this.overlayWindow.close();
+        //   this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
+        //   this.initOverlayWindow();
+        //   this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
+        // }
       }, data);
       this.broadcast('config', config.get());
     });
@@ -606,18 +435,18 @@ class Application {
     });
     ipcMain.handle('open-devtool', (_, target: string) => {
       if (target === 'main') {
-        if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-          this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+        if (this.lyricWindow && !this.lyricWindow.isDestroyed()) {
+          this.lyricWindow.webContents.openDevTools({ mode: 'detach' });
         }
       }
       if (target === 'lyrics') {
-        if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
-          this.lyricsWindow.webContents.openDevTools({ mode: 'detach' });
+        if (this.lyricSearchWindow && !this.lyricSearchWindow.isDestroyed()) {
+          this.lyricSearchWindow.webContents.openDevTools({ mode: 'detach' });
         }
       }
       if (target === 'settings') {
-        if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
-          this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
+        if (this.settingWindow && !this.settingWindow.isDestroyed()) {
+          this.settingWindow.webContents.openDevTools({ mode: 'detach' });
         }
       }
     });
@@ -669,7 +498,7 @@ class Application {
       await this.overridePlugin('change-plugin-state', async (target, state) => {
         await this.pluginManager.setPluginState(target.id, state);
       }, target, state);
-      
+
       this.broadcastPlugin('change-plugin-state', target, state);
     });
     ipcMain.handle('broadcast-plugin', (_, event: keyof PluginEventMap, ...args) => {
@@ -691,31 +520,42 @@ class Application {
     });
   }
 
-  setCorsHandler(window: BrowserWindow) {
-    window.webContents.session.webRequest.onBeforeSendHeaders(
+  initMainWindow() {
+    this.lyricWindow = new LyricWindow();
+    this.setCorsHandler(this.lyricWindow.webContents);
+
+    this.lyricWindow.show();
+  }
+
+  initSettingWindow() {
+    this.settingWindow = new SettingWindow();
+
+    this.settingWindow.show();
+  }
+
+  initLyricSearchWindow() {
+    this.lyricSearchWindow = new LyricSearchWindow();
+    this.setCorsHandler(this.lyricSearchWindow.webContents);
+
+    this.lyricSearchWindow.show();
+  }
+
+  private setCorsHandler(webContents: Electron.WebContents) {
+    webContents.session.webRequest.onBeforeSendHeaders(
       (details, callback) => {
-        const isEgg = details.url.startsWith('https://lyric.altools.com');
-        if (isEgg) {
-          delete details.requestHeaders['Referer'];
-          delete details.requestHeaders['sec-ch-ua'];
-          delete details.requestHeaders['sec-ch-ua-mobile'];
-          delete details.requestHeaders['sec-ch-ua-platform'];
-          delete details.requestHeaders['Sec-Fetch-Dest'];
-          delete details.requestHeaders['Sec-Fetch-Mode'];
-          delete details.requestHeaders['Sec-Fetch-Site'];
-          callback({
-            requestHeaders: {
-              ...details.requestHeaders,
-              'Origin': '*',
-              'User-Agent': 'Dalvik/2.2.0 (Linux; U; Android 11; Pixel 4a Build/RQ3A.210805.001.A1)',
-            },
-          });
-        } else {
-          callback({});
+        const provider = getLyricProvider(config.get().provider);
+
+        if (provider) {
+          const result = provider.onBeforeSendHeaders(details);
+
+          callback(result);
+          return;
         }
+
+        callback({});
       },
     );
-    window.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    webContents.session.webRequest.onHeadersReceived((details, callback) => {
       const isEgg = details.url.startsWith('https://lyric.altools.com');
       if (isEgg) {
         callback({
@@ -728,282 +568,6 @@ class Application {
         callback({});
       }
     });
-  }
-
-  initMainWindow() {
-    Menu.setApplicationMenu(null);
-    this.mainWindow = new BrowserWindow(this.mainWindowOptions);
-    this.setCorsHandler(this.mainWindow);
-
-    this.mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
-    this.mainWindow.setVisibleOnAllWorkspaces(true, {
-      visibleOnFullScreen: true,
-    });
-    this.mainWindow.setIgnoreMouseEvents(true, { forward: true });
-
-    if (app.isPackaged) {
-      this.mainWindow.loadFile(path.join(__dirname, './index.html'));
-    } else {
-      this.mainWindow.loadURL('http://localhost:5173');
-    }
-
-    const onMainWindowUpdate = () => this.updateWindowConfig(this.mainWindow);
-    screen.on('display-metrics-changed', onMainWindowUpdate);
-    screen.on('display-added', onMainWindowUpdate);
-    screen.on('display-removed', onMainWindowUpdate);
-
-    onMainWindowUpdate();
-  }
-
-  initOverlayWindow() {
-    if (process.platform === 'win32') {
-      this.overlayWindow = new BrowserWindow({
-        ...this.mainWindowOptions,
-        webPreferences: {
-          ...this.mainWindowOptions.webPreferences,
-          offscreen: true,
-        }
-      });
-      this.setCorsHandler(this.overlayWindow);
-      this.overlayWindow.setIgnoreMouseEvents(true, { forward: true });
-      if (app.isPackaged) {
-        this.overlayWindow.loadFile(path.join(__dirname, './index.html'));
-      } else {
-        this.overlayWindow.loadURL('http://localhost:5173');
-      }
-
-      this.onOverlayWindowUpdate = () => this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
-      screen.on('display-metrics-changed', this.onOverlayWindowUpdate);
-      screen.on('display-added', this.onOverlayWindowUpdate);
-      screen.on('display-removed', this.onOverlayWindowUpdate);
-
-      this.onOverlayWindowUpdate();
-    }
-  }
-
-  removeOverlayWindow() {
-    if (this.overlayWindow) {
-      this.removeOverlay(this.overlayWindow);
-      if (this.onOverlayWindowUpdate) {
-        screen.removeListener('display-metrics-changed', this.onOverlayWindowUpdate);
-        screen.removeListener('display-added', this.onOverlayWindowUpdate);
-        screen.removeListener('display-removed', this.onOverlayWindowUpdate);
-        this.onOverlayWindowUpdate = null;
-      }
-      this.overlayWindow.close();
-      this.overlayWindow = null;
-    }
-  }
-
-  updateWindowConfig(window: BrowserWindow | null, options?: { isOverlay: boolean, gameProcessId?: number }) {
-    if (!window) return;
-
-    const {
-      windowPosition,
-      selectedTheme,
-    } = config.get();
-    const themes = themeList.get();
-    const style = deepmerge(DEFAULT_STYLE, themes[selectedTheme] ?? DEFAULT_STYLE);
-    let activeDisplay: Electron.Display;
-    if (options?.isOverlay && process.platform === 'win32') {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
-      activeDisplay = screen.getDisplayNearestPoint(
-        windowManager.getWindows().find((window) => window.processId == options.gameProcessId)?.getBounds() as Electron.Point ??
-        screen.getCursorScreenPoint()
-      );
-    } else {
-      activeDisplay = screen.getAllDisplays().find((display) => display.id === windowPosition.display) ?? screen.getPrimaryDisplay();
-    }
-
-    const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
-    const windowHeight = style.maxHeight;
-
-    const anchorX = (() => {
-      if (windowPosition.anchor.includes('left')) {
-        return activeDisplay.bounds.x + (windowPosition?.left ?? 0);
-      }
-
-      if (windowPosition.anchor.includes('right')) {
-        return activeDisplay.bounds.x
-          + (activeDisplay.bounds.width - windowWidth)
-          - (windowPosition?.right ?? 0);
-      }
-
-      return activeDisplay.bounds.x
-        + ((activeDisplay.bounds.width - windowWidth) / 2);
-
-    })();
-
-    const anchorY = (() => {
-      if (windowPosition.anchor.includes('top')) {
-        return activeDisplay.bounds.y + (windowPosition?.top ?? 0);
-      }
-
-      if (windowPosition.anchor.includes('bottom')) {
-        return activeDisplay.bounds.y
-          + activeDisplay.bounds.height - windowHeight
-          - (windowPosition?.bottom ?? 0);
-      }
-
-      return activeDisplay.bounds.y
-        + ((activeDisplay.bounds.height - windowHeight) / 2);
-    })();
-
-    // electron issue: https://github.com/electron/electron/issues/16711#issuecomment-1311824063
-    const resizable = window.isResizable();
-    window.unmaximize();
-    window.setResizable(true);
-    window.setSize(windowWidth, windowHeight);
-    window.setResizable(resizable);
-    window.setPosition(Math.round(anchorX), Math.round(anchorY));
-  }
-
-  initSettingsWindow() {
-    this.settingsWindow = new PlatformBrowserWindow({
-      ...glassOptions,
-      ...micaOptions,
-      width: 800,
-      height: 800,
-      webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
-        nodeIntegration: true,
-      },
-      title: getTranslation('title.setting', config.get().language),
-      titleBarStyle: 'hiddenInset',
-      frame: false,
-      transparent: true,
-      vibrancy: 'fullscreen-ui',
-      autoHideMenuBar: true,
-      icon: iconPath,
-    });
-
-    if (this.settingsWindow instanceof MicaBrowserWindow) {
-      this.settingsWindow.setAutoTheme();
-      this.settingsWindow.setMicaAcrylicEffect();
-    }
-
-    this.settingsWindow.show();
-    this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
-      shell.openExternal(url);
-
-      return { action: 'deny' };
-    });
-
-    if (app.isPackaged) {
-      this.settingsWindow.loadFile(path.join(__dirname, './settings.html'));
-    } else {
-      this.settingsWindow.loadURL('http://localhost:5173/settings.html');
-    }
-
-    this.settingsWindow.show();
-  }
-
-  initLyricsWindow() {
-    this.lyricsWindow = new PlatformBrowserWindow({
-      ...glassOptions,
-      ...micaOptions,
-      width: 1000,
-      height: 600,
-      webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
-        nodeIntegration: true,
-      },
-      title: getTranslation('title.lyrics', config.get().language),
-      titleBarStyle: 'hiddenInset',
-      frame: false,
-      transparent: true,
-      vibrancy: 'fullscreen-ui',
-      autoHideMenuBar: true,
-      icon: iconPath,
-    });
-    this.setCorsHandler(this.lyricsWindow);
-
-    if (this.lyricsWindow instanceof MicaBrowserWindow) {
-      this.lyricsWindow.setAutoTheme();
-      this.lyricsWindow.setMicaAcrylicEffect();
-    }
-
-    this.lyricsWindow.show();
-    if (app.isPackaged) {
-      this.lyricsWindow.loadFile(path.join(__dirname, './lyrics.html'));
-    } else {
-      this.lyricsWindow.loadURL('http://localhost:5173/lyrics.html');
-    }
-
-    this.lyricsWindow.show();
-  }
-
-  injectOverlay() {
-    if (process.platform === 'win32') {
-      const windowList = this.overlay.getTopWindows(true);
-      hmc.getDetailsProcessList()
-        .filter(({ pid }) => windowList.some((window) => window.processId === pid))
-        .forEach(({ pid, name, path }) => {
-          this.onProcessCreation(pid, name, path);
-        });
-    }
-  }
-  
-  private onProcessCreation(pid: number, _?: string, filePath?: string) {
-    const gamePathList = Object.keys(gameList.get() ?? {});
-
-    if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
-      let tryCount = 0;
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
-
-      const tryToInject = () => {
-        tryCount += 1;
-        if (tryCount > 20) return;
-
-        const isInit = this.overlay.getTopWindows(true).some((window) => window.processId == pid);
-        if (isInit) {
-          let isFirstRun = false;
-          if (this.registeredPidList.length == 0) {
-            const window = windowManager.getWindows().find((window) => window.processId == pid);
-
-            if (window) {
-              this.scaleFactor = window.getMonitor().getScaleFactor();
-            }
-
-            this.initOverlay();
-            isFirstRun = true;
-          }
-
-          for (const window of this.overlay.getTopWindows(true)) {
-            if (window.processId == pid) {
-              this.overlay.injectProcess(window);
-
-              this.registeredPidList.push(pid);
-              this.broadcast('registered-process-list', this.registeredPidList);
-            }
-          }
-
-          if (this.overlayWindow && isFirstRun) {
-            this.addOverlayWindow(
-              'StatusBar',
-              this.overlayWindow,
-              0,
-              0,
-              true,
-            );
-          }
-        } else {
-          setTimeout(tryToInject, 1000);
-        }
-      };
-
-      tryToInject();
-    }
-  }
-  private onProcessDeletion(pid: number, _?: string) {
-    const index = this.registeredPidList.findIndex((it) => it === Number(pid));
-    if (index >= 0) this.registeredPidList.splice(index, 1);
-
-    this.broadcast('registered-process-list', this.registeredPidList);
-
-    if (this.registeredPidList.length <= 0) this.stopOverlay();
   }
 }
 

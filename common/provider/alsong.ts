@@ -60,4 +60,39 @@ export class AlsongLyricProvider extends BaseLyricProvider {
     const result = await this.alsong(artist, title, { playtime: params.playtime }).catch(() => []);
     return result.map(convertLyricMetadata);
   }
+
+  static override onBeforeSendHeaders(details: Electron.OnBeforeSendHeadersListenerDetails) {
+    const isEgg = details.url.startsWith('https://lyric.altools.com');
+    if (isEgg) {
+      delete details.requestHeaders['Referer'];
+      delete details.requestHeaders['sec-ch-ua'];
+      delete details.requestHeaders['sec-ch-ua-mobile'];
+      delete details.requestHeaders['sec-ch-ua-platform'];
+      delete details.requestHeaders['Sec-Fetch-Dest'];
+      delete details.requestHeaders['Sec-Fetch-Mode'];
+      delete details.requestHeaders['Sec-Fetch-Site'];
+      return {
+        requestHeaders: {
+          ...details.requestHeaders,
+          'Origin': '*',
+          'User-Agent': 'Dalvik/2.2.0 (Linux; U; Android 11; Pixel 4a Build/RQ3A.210805.001.A1)',
+        },
+      };
+    }
+
+    return {};
+  }
+  static override onHeadersReceived(details: Electron.OnHeadersReceivedListenerDetails) {
+    const isEgg = details.url.startsWith('https://lyric.altools.com');
+    if (isEgg) {
+      return {
+        responseHeaders: {
+          'Access-Control-Allow-Origin': ['*'],
+          ...details.responseHeaders,
+        },
+      };
+    }
+
+    return {};
+  }
 }

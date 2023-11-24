@@ -1,3 +1,10 @@
+declare namespace NodeJS {
+  interface Process {
+    // why: https://nodejs.org/api/process.html#processdlopenmodule-filename-flags
+    dlopen(module: { exports: unknown }, path: string, flags?: unknown): void;
+  }
+}
+
 declare module '@jellybrick/wql-process-monitor' {
   import Emittery from 'emittery';
 

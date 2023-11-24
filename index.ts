@@ -3,7 +3,11 @@ import { app } from 'electron';
 import Application from './src/Application';
 import { waitConfigInit } from './src/config';
 
-const application = new Application();
+import { OverlayManager } from './src/overlay';
+
+const overlayManager = new OverlayManager();
+// overlayManager.init();
+const application = new Application(overlayManager);
 
 (async () => {
   await app.whenReady();
@@ -17,9 +21,6 @@ const application = new Application();
   application.initHook();
 
   application.initMainWindow();
-
-  application.mainWindow.show();
-  application.injectOverlay();
 
   console.log('[Alspotron] App is ready');
 })();
