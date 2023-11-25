@@ -4,6 +4,8 @@ import { app, BrowserWindow, Menu, screen } from 'electron';
 
 import { deepmerge } from 'deepmerge-ts';
 
+import { WindowProvider } from './types';
+
 import { config, themeList } from '../config';
 import { DEFAULT_STYLE } from '../../common/constants';
 import { getFile } from '../../utils/resource';
@@ -32,22 +34,24 @@ const LYRIC_WINDOW_OPTIONS = {
   icon: iconPath,
 };
 
-export class LyricWindow extends BrowserWindow {
+export class LyricWindowProvider implements WindowProvider {
+  public window: BrowserWindow;
+
   constructor(options: Electron.BrowserWindowConstructorOptions = {}) {
-    super(deepmerge(LYRIC_WINDOW_OPTIONS, options));
+    this.window = new BrowserWindow(deepmerge(LYRIC_WINDOW_OPTIONS, options));
 
     Menu.setApplicationMenu(null);
 
-    this.setAlwaysOnTop(true, 'screen-saver', 1);
-    this.setVisibleOnAllWorkspaces(true, {
+    this.window.setAlwaysOnTop(true, 'screen-saver', 1);
+    this.window.setVisibleOnAllWorkspaces(true, {
       visibleOnFullScreen: true,
     });
-    this.setIgnoreMouseEvents(true, { forward: true });
+    this.window.setIgnoreMouseEvents(true, { forward: true });
 
     if (app.isPackaged) {
-      this.loadFile(path.join(__dirname, './index.html'));
+      this.window.loadFile(path.join(__dirname, './index.html'));
     } else {
-      this.loadURL('http://localhost:5173');
+      this.window.loadURL('http://localhost:5173');
     }
 
     screen.on('display-metrics-changed', this.updateWindowConfig.bind(this));
@@ -59,8 +63,8 @@ export class LyricWindow extends BrowserWindow {
     config.watch(this.updateWindowConfig.bind(this));
   }
 
-  override close() {
-    super.close();
+  close() {
+    this.window.close();
 
     screen.removeListener('display-metrics-changed', this.updateWindowConfig.bind(this));
     screen.removeListener('display-added', this.updateWindowConfig.bind(this));
@@ -109,12 +113,12 @@ export class LyricWindow extends BrowserWindow {
     })();
 
     // electron issue: https://github.com/electron/electron/issues/16711#issuecomment-1311824063
-    const resizable = this.isResizable();
-    this.unmaximize();
-    this.setResizable(true);
-    this.setSize(windowWidth, windowHeight);
-    this.setResizable(resizable);
-    this.setPosition(Math.round(anchorX), Math.round(anchorY));
+    const resizable = this.window.isResizable();
+    this.window.unmaximize();
+    this.window.setResizable(true);
+    this.window.setSize(windowWidth, windowHeight);
+    this.window.setResizable(resizable);
+    this.window.setPosition(Math.round(anchorX), Math.round(anchorY));
   }
 
   protected getActiveDisplay() {

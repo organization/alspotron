@@ -1,24 +1,28 @@
 import path from 'node:path';
 
+import { EventEmitter } from 'events';
+
 import { app, screen } from 'electron';
 import { hmc } from 'hmc-win32';
 
 import { gameList } from './config';
 import { IOverlay } from './electron-overlay';
-import { OverlayWindow } from './window';
+import { OverlayWindowProvider } from './window';
 
 type IOverlay = typeof IOverlay;
 let wql: typeof import('@jellybrick/wql-process-monitor') | undefined;
 let nodeWindowManager: typeof import('node-window-manager') | undefined;
 
-export class OverlayManager {
+export class OverlayManager extends EventEmitter {
   private overlay: IOverlay | null = null;
-  private window: OverlayWindow | null = null;
+  private provider: OverlayWindowProvider | null = null;
   private registeredPidList: number[] = [];
   private scaleFactor = 1.0;
   private markQuit = false;
 
   constructor() {
+    super();
+
     if (process.platform === 'win32') {
       console.log('load wql process monitor');
       /* eslint-disable @typescript-eslint/no-var-requires */
@@ -31,8 +35,12 @@ export class OverlayManager {
     this.init();
   }
 
-  public get overlayWindow() {
-    return this.window;
+  public get windowProvider() {
+    return this.provider;
+  }
+
+  public get registeredProcessList() {
+    return this.registeredPidList;
   }
 
   private init() {
@@ -72,13 +80,78 @@ export class OverlayManager {
   public stopOverlay() {
     this.markQuit = true;
 
-    if (this.window) {
-      this.overlay?.closeWindow(this.window.id);
-      this.window.close();
+    if (this.provider) {
+      this.overlay?.closeWindow(this.provider.window.id);
+      this.provider.close();
     }
 
-    this.window = null;
+    this.provider = null;
     this.overlay?.stop();
+  }
+
+  public async createProcess(pid: number) {
+    if (!wql || !nodeWindowManager) return;
+    const windowManager = nodeWindowManager.windowManager;
+
+    return new Promise((resolve) => {
+      let injectCount = 0;
+
+      const interval = setInterval(() => {
+        const isInit = this.overlay?.getTopWindows(true).some((window) => window.processId == pid);
+        if (!isInit || !this.overlay || !nodeWindowManager) return;
+
+        injectCount += 1;
+        if (injectCount > 20) {
+          clearInterval(interval);
+          resolve(false);
+          console.warn('[Alspotron] Failed to inject process.');
+          return;
+        }
+
+        let isFirstRun = false;
+        if (this.registeredPidList.length === 0) {
+          const window = windowManager.getWindows().find((window) => window.processId == pid);
+          if (window) this.scaleFactor = window.getMonitor().getScaleFactor();
+
+          this.provider = new OverlayWindowProvider(nodeWindowManager);
+          this.overlay.start();
+          isFirstRun = true;
+        }
+
+        for (const window of this.overlay.getTopWindows(true)) {
+          if (window.processId === pid) {
+            this.overlay.injectProcess(window);
+
+            this.registeredPidList.push(pid);
+            this.emit('register-process', pid);
+            this.provider?.setAttachedProcess(this.registeredPidList[0]);
+          }
+        }
+
+        if (this.provider && isFirstRun) {
+          this.addOverlayWindow(
+            'StatusBar',
+            this.provider.window,
+            0,
+            0,
+            true,
+          );
+        }
+
+        clearInterval(interval);
+        resolve(true);
+      }, 1000);
+    });
+  }
+
+  public deleteProcess(pid: number) {
+    const index = this.registeredPidList.findIndex((it) => it === Number(pid));
+    if (index >= 0) this.registeredPidList.splice(index, 1);
+
+    this.emit('unregister-process', pid, index >= 0);
+
+    if (this.registeredPidList.length <= 0) this.stopOverlay();
+    else this.provider?.setAttachedProcess(this.registeredPidList[0]);
   }
 
   private onProcessCreation(pid: number, _?: string, filePath?: string) {
@@ -87,67 +160,12 @@ export class OverlayManager {
     const gamePathList = Object.keys(gameList.get() ?? {});
 
     if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
-      let tryCount = 0;
-      const windowManager = nodeWindowManager.windowManager;
-
-      const tryToInject = () => {
-        if (!this.overlay) return;
-
-        tryCount += 1;
-        if (tryCount > 20) return;
-
-        const isInit = this.overlay.getTopWindows(true).some((window) => window.processId == pid);
-        if (!isInit) {
-          setTimeout(tryToInject, 1000);
-          return;
-        }
-
-        let isFirstRun = false;
-        if (this.registeredPidList.length === 0) {
-          const window = windowManager.getWindows().find((window) => window.processId == pid);
-
-          if (window) {
-            this.scaleFactor = window.getMonitor().getScaleFactor();
-          }
-
-          this.window = new OverlayWindow(nodeWindowManager!);
-          this.overlay.start();
-          isFirstRun = true;
-        }
-
-        for (const window of this.overlay.getTopWindows(true)) {
-          if (window.processId == pid) {
-            this.overlay.injectProcess(window);
-
-            this.registeredPidList.push(pid);
-            this.overlayWindow?.setAttachedProcess(this.registeredPidList[0]);
-            // this.broadcast('registered-process-list', this.registeredPidList);
-          }
-        }
-
-        if (this.window && isFirstRun) {
-          this.addOverlayWindow(
-            'StatusBar',
-            this.window,
-            0,
-            0,
-            true,
-          );
-        }
-      };
-
-      tryToInject();
+      this.createProcess(pid);
     }
   }
 
   private onProcessDeletion(pid: number, _?: string) {
-    const index = this.registeredPidList.findIndex((it) => it === Number(pid));
-    if (index >= 0) this.registeredPidList.splice(index, 1);
-
-    // this.broadcast('registered-process-list', this.registeredPidList);
-
-    if (this.registeredPidList.length <= 0) this.stopOverlay();
-    else this.overlayWindow?.setAttachedProcess(this.registeredPidList[0]);
+    this.deleteProcess(pid);
   }
 
   private addOverlayWindow(
@@ -220,9 +238,8 @@ export class OverlayManager {
       });
     });
 
-    const windowId = window.id;
     window.on('closed', () => {
-      this.overlay?.closeWindow(windowId);
+      this.overlay?.closeWindow(window.id);
     });
 
     window.webContents.on('cursor-changed', (_, type) => {

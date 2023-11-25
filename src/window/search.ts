@@ -5,6 +5,8 @@ import { IS_WINDOWS_11, MicaBrowserWindow } from 'mica-electron';
 
 import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
 
+import { WindowProvider } from './types';
+
 import { getTranslation } from '../../common/intl';
 import { config } from '../config';
 import { getFile } from '../../utils/resource';
@@ -22,9 +24,11 @@ const micaOptions = {
 };
 const iconPath = getFile('./assets/icon_square.png');
 
-export class LyricSearchWindow extends PlatformBrowserWindow {
+export class LyricSearchWindowProvider implements WindowProvider {
+  public window: Electron.BrowserWindow;
+
   constructor() {
-    super({
+    this.window = new PlatformBrowserWindow({
       ...glassOptions,
       ...micaOptions,
       width: 1000,
@@ -42,15 +46,15 @@ export class LyricSearchWindow extends PlatformBrowserWindow {
       icon: iconPath,
     });
 
-    if (this instanceof MicaBrowserWindow) {
-      this.setAutoTheme();
-      this.setMicaAcrylicEffect();
+    if (this.window instanceof MicaBrowserWindow) {
+      this.window.setAutoTheme();
+      this.window.setMicaAcrylicEffect();
     }
 
     if (app.isPackaged) {
-      this.loadFile(path.join(__dirname, './lyrics.html'));
+      this.window.loadFile(path.join(__dirname, './lyrics.html'));
     } else {
-      this.loadURL('http://localhost:5173/lyrics.html');
+      this.window.loadURL('http://localhost:5173/lyrics.html');
     }
   }
 }

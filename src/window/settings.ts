@@ -5,6 +5,8 @@ import { app, shell } from 'electron';
 
 import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
 
+import { WindowProvider } from './types';
+
 import { config } from '../config';
 import { getTranslation } from '../../common/intl';
 import { getFile } from '../../utils/resource';
@@ -22,9 +24,11 @@ const micaOptions = {
 };
 const iconPath = getFile('./assets/icon_square.png');
 
-export class SettingWindow extends PlatformBrowserWindow {
+export class SettingWindowProvider implements WindowProvider {
+  public window: Electron.BrowserWindow;
+
   constructor() {
-    super({
+    this.window = new PlatformBrowserWindow({
       ...glassOptions,
       ...micaOptions,
       width: 800,
@@ -42,21 +46,21 @@ export class SettingWindow extends PlatformBrowserWindow {
       icon: iconPath,
     });
 
-    if (this instanceof MicaBrowserWindow) {
-      this.setAutoTheme();
-      this.setMicaAcrylicEffect();
+    if (this.window instanceof MicaBrowserWindow) {
+      this.window.setAutoTheme();
+      this.window.setMicaAcrylicEffect();
     }
 
-    this.webContents.setWindowOpenHandler(({ url }) => {
+    this.window.webContents.setWindowOpenHandler(({ url }) => {
       shell.openExternal(url);
 
       return { action: 'deny' };
     });
 
     if (app.isPackaged) {
-      this.loadFile(path.join(__dirname, './settings.html'));
+      this.window.loadFile(path.join(__dirname, './settings.html'));
     } else {
-      this.loadURL('http://localhost:5173/settings.html');
+      this.window.loadURL('http://localhost:5173/settings.html');
     }
   }
 }

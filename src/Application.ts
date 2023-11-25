@@ -21,9 +21,7 @@ import PluginManager from './plugins/plugin-manager';
 import { initServer } from './server';
 import { config, gameList, lyricMapper, themeList } from './config';
 
-import { LyricWindow, SettingWindow } from './window';
-
-import { LyricSearchWindow } from './window/search';
+import { LyricWindowProvider, SettingWindowProvider, LyricSearchWindowProvider } from './window';
 
 import { OverlayManager } from './overlay';
 
@@ -51,9 +49,9 @@ if (!app.requestSingleInstanceLock()) {
 app.commandLine.appendSwitch('enable-transparent-visuals');
 
 class Application {
-  public lyricWindow!: LyricWindow;
-  public settingWindow: BrowserWindow | null = null;
-  public lyricSearchWindow: BrowserWindow | null = null;
+  public lyricWindowProvider!: LyricWindowProvider;
+  public settingWindowProvider: SettingWindowProvider | null = null;
+  public lyricSearchWindowProvider: LyricSearchWindowProvider | null = null;
 
   private overlayManager: OverlayManager;
 
@@ -64,6 +62,13 @@ class Application {
 
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
+
+    this.overlayManager.on('register-process', () => {
+      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
+    });
+    this.overlayManager.on('unregister-process', () => {
+      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
+    });
   }
 
   initServer() {
@@ -153,9 +158,9 @@ class Application {
         type: 'normal',
         label: getTranslation('tray.lyrics.label', config.get().language),
         click: () => {
-          if (this.lyricSearchWindow && !this.lyricSearchWindow.isDestroyed()) {
-            if (this.lyricSearchWindow.isMinimized()) this.lyricSearchWindow.restore();
-            this.lyricSearchWindow.show();
+          if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
+            if (this.lyricSearchWindowProvider.window.isMinimized()) this.lyricSearchWindowProvider.window.restore();
+            this.lyricSearchWindowProvider.window.show();
           } else {
             this.initLyricSearchWindow();
           }
@@ -165,9 +170,9 @@ class Application {
         type: 'normal',
         label: getTranslation('tray.setting.label', config.get().language),
         click: () => {
-          if (this.settingWindow && !this.settingWindow.isDestroyed()) {
-            if (this.settingWindow.isMinimized()) this.settingWindow.restore();
-            this.settingWindow.show();
+          if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
+            if (this.settingWindowProvider.window.isMinimized()) this.settingWindowProvider.window.restore();
+            this.settingWindowProvider.window.show();
           } else {
             this.initSettingWindow();
           }
@@ -199,24 +204,24 @@ class Application {
             {
               label: getTranslation('tray.devtools.lyric-viewer.label', config.get().language),
               click: () => {
-                if (this.lyricWindow && !this.lyricWindow.isDestroyed()) {
-                  this.lyricWindow.webContents.openDevTools({ mode: 'detach' });
+                if (this.lyricWindowProvider && !this.lyricWindowProvider.window.isDestroyed()) {
+                  this.lyricWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
                 }
               },
             },
             {
               label: getTranslation('tray.devtools.lyrics.label', config.get().language),
               click: () => {
-                if (this.lyricSearchWindow && !this.lyricSearchWindow.isDestroyed()) {
-                  this.lyricSearchWindow.webContents.openDevTools({ mode: 'detach' });
+                if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
+                  this.lyricSearchWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
                 }
               },
             },
             {
               label: getTranslation('tray.devtools.setting.label', config.get().language),
               click: () => {
-                if (this.settingWindow && !this.settingWindow.isDestroyed()) {
-                  this.settingWindow.webContents.openDevTools({ mode: 'detach' });
+                if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
+                  this.settingWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
                 }
               },
             }
@@ -282,10 +287,10 @@ class Application {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
     this.broadcastPlugin(event as keyof PluginEventMap, ...args as any);
 
-    if (this.lyricWindow) this.lyricWindow.webContents.send(event, ...args);
-    if (this.overlayManager.overlayWindow && !this.overlayManager.overlayWindow.isDestroyed()) this.overlayManager.overlayWindow.webContents.send(event, ...args);
-    if (this.lyricSearchWindow && !this.lyricSearchWindow.isDestroyed()) this.lyricSearchWindow.webContents.send(event, ...args);
-    if (this.settingWindow && !this.settingWindow.isDestroyed()) this.settingWindow.webContents.send(event, ...args);
+    if (this.lyricWindowProvider) this.lyricWindowProvider.window.webContents.send(event, ...args);
+    if (this.overlayManager.windowProvider && !this.overlayManager.windowProvider.window.isDestroyed()) this.overlayManager.windowProvider.window.webContents.send(event, ...args);
+    if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) this.lyricSearchWindowProvider.window.webContents.send(event, ...args);
+    if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) this.settingWindowProvider.window.webContents.send(event, ...args);
   }
 
   broadcastPlugin<T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) {
@@ -338,18 +343,23 @@ class Application {
       });
       this.broadcastPlugin('stop-overlay');
     });
-    ipcMain.handle('inject-overlay-to-process', (_, processId: number, name?: string, filePath?: string) => {
+    ipcMain.handle('inject-overlay-to-process', async (_, processId: number, name?: string, filePath?: string) => {
       if (process.platform !== 'win32') return;
 
-      this.overridePlugin('inject-overlay-to-process', (processId, name, filePath) => {
-        // this.onProcessCreation(processId, name, filePath);
+      await this.overridePlugin('inject-overlay-to-process', async (processId, name, filePath) => {
+        const gamePathList = Object.keys(gameList.get() ?? {});
+
+        if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
+          await this.overlayManager.createProcess(processId);
+        }
       }, processId, name, filePath);
+
       this.broadcastPlugin('inject-overlay-to-process', processId, name, filePath);
     });
     ipcMain.handle('remove-overlay-from-process', (_, processId: number) => {
       this.broadcastPlugin('remove-overlay-from-process', processId);
       this.overridePlugin('remove-overlay-from-process', (processId) => {
-        // this.onProcessDeletion(processId);
+        this.overlayManager.deleteProcess(processId);
       }, processId);
     });
     ipcMain.handle('get-current-version', () => autoUpdater.currentVersion.version);
@@ -360,14 +370,6 @@ class Application {
     ipcMain.handle('set-config', async (_, data: PartialDeep<Config>) => {
       await this.overridePlugin('config', (data) => {
         config.set(data);
-        //
-        // this.updateWindowConfig(this.lyricWindow);
-        // if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
-        //   this.overlayWindow.close();
-        //   this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
-        //   this.initOverlayWindow();
-        //   this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
-        // }
       }, data);
       this.broadcast('config', config.get());
     });
@@ -435,18 +437,18 @@ class Application {
     });
     ipcMain.handle('open-devtool', (_, target: string) => {
       if (target === 'main') {
-        if (this.lyricWindow && !this.lyricWindow.isDestroyed()) {
-          this.lyricWindow.webContents.openDevTools({ mode: 'detach' });
+        if (this.lyricWindowProvider && !this.lyricWindowProvider.window.isDestroyed()) {
+          this.lyricWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
         }
       }
       if (target === 'lyrics') {
-        if (this.lyricSearchWindow && !this.lyricSearchWindow.isDestroyed()) {
-          this.lyricSearchWindow.webContents.openDevTools({ mode: 'detach' });
+        if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
+          this.lyricSearchWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
         }
       }
       if (target === 'settings') {
-        if (this.settingWindow && !this.settingWindow.isDestroyed()) {
-          this.settingWindow.webContents.openDevTools({ mode: 'detach' });
+        if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
+          this.settingWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
         }
       }
     });
@@ -521,23 +523,23 @@ class Application {
   }
 
   initMainWindow() {
-    this.lyricWindow = new LyricWindow();
-    this.setCorsHandler(this.lyricWindow.webContents);
+    this.lyricWindowProvider = new LyricWindowProvider();
+    this.setCorsHandler(this.lyricWindowProvider.window.webContents);
 
-    this.lyricWindow.show();
+    this.lyricWindowProvider.window.show();
   }
 
   initSettingWindow() {
-    this.settingWindow = new SettingWindow();
+    this.settingWindowProvider = new SettingWindowProvider();
 
-    this.settingWindow.show();
+    this.settingWindowProvider.window.show();
   }
 
   initLyricSearchWindow() {
-    this.lyricSearchWindow = new LyricSearchWindow();
-    this.setCorsHandler(this.lyricSearchWindow.webContents);
+    this.lyricSearchWindowProvider = new LyricSearchWindowProvider();
+    this.setCorsHandler(this.lyricSearchWindowProvider.window.webContents);
 
-    this.lyricSearchWindow.show();
+    this.lyricSearchWindowProvider.window.show();
   }
 
   private setCorsHandler(webContents: Electron.WebContents) {

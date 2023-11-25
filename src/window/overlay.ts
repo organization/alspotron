@@ -1,11 +1,11 @@
 import { screen } from 'electron';
 
-import { LyricWindow } from './lyric';
+import { LyricWindowProvider } from './lyric';
 
 import { getLyricProvider } from '../../common/provider';
 import { config } from '../config';
 
-export class OverlayWindow extends LyricWindow {
+export class OverlayWindowProvider extends LyricWindowProvider {
   private nodeWindowManager: typeof import('node-window-manager');
 
   private pid = 0;
@@ -19,7 +19,7 @@ export class OverlayWindow extends LyricWindow {
 
     this.nodeWindowManager = nodeWindowManager;
 
-    this.webContents.session.webRequest.onBeforeSendHeaders(
+    this.window.webContents.session.webRequest.onBeforeSendHeaders(
       (details, callback) => {
         const provider = getLyricProvider(config.get().provider);
 
@@ -33,7 +33,7 @@ export class OverlayWindow extends LyricWindow {
         callback({});
       },
     );
-    this.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    this.window.webContents.session.webRequest.onHeadersReceived((details, callback) => {
       const isEgg = details.url.startsWith('https://lyric.altools.com');
       if (isEgg) {
         callback({
