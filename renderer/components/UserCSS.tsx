@@ -4,7 +4,7 @@ import { compile, serialize, stringify, prefixer, middleware, Middleware } from 
 import useStyle from '../hooks/useStyle';
 import { userCSSSelectors, userCSSTransitions } from '../utils/userCSSSelectors';
 
-import type { StyleConfig } from '../../common/types';
+import type { StyleConfig } from '../../common/schema';
 
 const userCSSMiddleware: Middleware = (element) => {
   if (element.type !== 'rule') {

@@ -9,7 +9,7 @@ import { createMigrator, migrateTable } from './migration';
 
 import { State } from './state';
 
-import { ConfigSchema, GameListSchema, LyricMapperSchema, ThemeListSchema } from '../../common/types';
+import { ConfigSchema, GameListSchema, LyricMapperSchema, ThemeListSchema } from '../../common/schema';
 
 import packageJson from '../../package.json';
 

@@ -1,7 +1,7 @@
 import PluginLoader, { PluginLoaderOptions } from './plugin-loader';
 
 import { Plugin, PluginEventMap, PluginState } from '../../common/plugins';
-import { Config } from '../../common/types';
+import { Config } from '../../common/schema';
 
 import type { PartialDeep } from 'type-fest';
 

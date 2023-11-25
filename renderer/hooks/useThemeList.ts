@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js';
 
 import type { PartialDeep } from 'type-fest';
-import type { StyleConfig, ThemeList } from '../../common/types';
+import type { StyleConfig, ThemeList } from '../../common/schema';
 
 const useThemeList = () => {
   const [themeList, setThemeList] = createSignal<Required<ThemeList>>({});

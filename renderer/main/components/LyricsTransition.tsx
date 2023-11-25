@@ -8,7 +8,7 @@ import { cx } from '../../utils/classNames';
 import { Status } from '../../components/PlayingInfoProvider';
 import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
 
-import type { StyleConfig } from '../../../common/types';
+import type { StyleConfig } from '../../../common/schema';
 
 type LyricsProps = {
   lyrics: string[];

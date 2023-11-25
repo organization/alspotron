@@ -1,7 +1,6 @@
 import { Plugin } from './plugin';
 
-import { Config, GameList, LyricMapper, StyleConfig } from '../../common/types';
-import { UpdateData } from '../types';
+import { Config, GameList, LyricMapper, StyleConfig, UpdateData } from '../schema';
 
 import type { PartialDeep } from 'type-fest';
 

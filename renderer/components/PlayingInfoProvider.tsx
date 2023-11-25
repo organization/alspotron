@@ -14,7 +14,7 @@ import {
 
 import useLyricMapper from '../hooks/useLyricMapper';
 import usePluginOverride from '../hooks/usePluginOverride';
-import { UpdateData } from '../../common/types/tunaObs';
+import { UpdateData } from '../../common/schema';
 import { ConfigLyricMode } from '../../common/constants';
 import { useLyricProvider } from '../hooks/useLyricProvider';
 import { LyricData, LyricMetadata } from '../../common/provider';

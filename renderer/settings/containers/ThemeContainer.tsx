@@ -15,7 +15,7 @@ import Switch from '../../components/Switch';
 import LyricPreview from '../components/LyricPreview';
 
 import type { PartialDeep } from 'type-fest';
-import type { StyleConfig } from '../../../common/types';
+import type { StyleConfig } from '../../../common/schema';
 
 const ANIMATION_LIST = [
   'none',

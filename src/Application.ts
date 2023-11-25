@@ -30,11 +30,11 @@ import { getTranslation } from '../common/intl';
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
 
-import { Config, GameList, LyricMapper, StyleConfig } from '../common/types';
+import { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
 
 import { getLyricProvider } from '../common/provider';
 
-import type { UpdateData } from '../common/types';
+import type { UpdateData } from '../common/schema';
 import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
 
 // Set application name for Windows 10+ notifications

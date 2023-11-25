@@ -1,6 +1,6 @@
 import { deepmerge } from 'deepmerge-ts';
 
-import { Config, StyleConfig, LEGACY_Config0_16_0 } from '../../../../common/types';
+import { Config, StyleConfig, LEGACY_Config0_16_0 } from '../../../../common/schema';
 import { getTranslation } from '../../../../common/intl';
 import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../../../../common/constants';
 import { Migrator } from '../types';

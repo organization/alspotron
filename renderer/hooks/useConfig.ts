@@ -1,7 +1,7 @@
 import { createSignal } from 'solid-js';
 
 import type { PartialDeep } from 'type-fest';
-import type { Config } from '../../common/types';
+import type { Config } from '../../common/schema';
 
 const useConfig = () => {
   const [config, setConfig] = createSignal<Config | null>(null);

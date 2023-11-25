@@ -4,7 +4,7 @@ import { State } from './state';
 
 import { defaultConfigDirectory } from './config';
 
-import { GameList, GameListSchema } from '../../common/types';
+import { GameList, GameListSchema } from '../../common/schema';
 
 
 const gameListPath = path.join(defaultConfigDirectory, 'gameList.json');

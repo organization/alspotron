@@ -5,7 +5,7 @@ import { SettingOption } from './option';
 import { PluginEventMap, OverrideMap } from './event';
 
 import type { PartialDeep } from 'type-fest';
-import type { Config } from '../types';
+import type { Config } from '../schema';
 
 export type PluginState = 'enable' | 'disable';
 export type PluginUnload = () => void;
