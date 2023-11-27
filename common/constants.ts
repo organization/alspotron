@@ -62,7 +62,7 @@ export const DEFAULT_CONFIG = {
 
   syncThrottle: 1000 * 3,
 
-  language: 'ko' as const,
+  language: 'ko' as 'ko' | 'en' | 'ja' | 'de',
   developer: false,
 
   plugins: {

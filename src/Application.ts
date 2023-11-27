@@ -60,6 +60,232 @@ class Application {
   private lastUpdate: UpdateData | null = null;
   private contextMenu: Menu | null = null;
 
+  public onMap = {
+    'get-all-screens': (event) => {
+      event.returnValue = screen.getAllDisplays();
+    },
+    'get-primary-screen': (event) => {
+      event.returnValue = screen.getPrimaryDisplay();
+    },
+    'get-config': (event) => {
+      event.returnValue = config.get();
+    },
+  } satisfies Record<string, (event: Electron.IpcMainEvent) => void>;
+
+  public handleMap = {
+    'get-registered-process-list': () => [], //this.registeredPidList);
+    'get-icon': (_, path: string) => {
+      if (process.platform === 'win32') {
+        try {
+          // HACK: dynamic import is not working
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const extractIcon = (require('extract-file-icon') as typeof import('extract-file-icon'));
+          const result = extractIcon(path, 32);
+
+          return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
+        } catch (e: unknown) {
+          console.error(e);
+        }
+
+        return null;
+      }
+    },
+    'start-overlay': () => {
+      // this.initOverlay();
+      //
+      // this.overridePlugin('start-overlay', () => {
+      //   if (this.overlayWindow) {
+      //     this.addOverlayWindow(
+      //       'StatusBar',
+      //       this.overlayWindow,
+      //       0,
+      //       0,
+      //       true,
+      //     );
+      //   }
+      // });
+      // this.broadcastPlugin('start-overlay');
+    },
+    'stop-overlay': () => {
+      this.overridePlugin('stop-overlay', () => {
+        this.overlayManager.stopOverlay();
+      });
+      this.broadcastPlugin('stop-overlay');
+    },
+    'inject-overlay-to-process': async (_, processId: number, name?: string, filePath?: string) => {
+      if (process.platform !== 'win32') return;
+
+      await this.overridePlugin('inject-overlay-to-process', async (processId, name, filePath) => {
+        const gamePathList = Object.keys(gameList.get() ?? {});
+
+        if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
+          await this.overlayManager.createProcess(processId);
+        }
+      }, processId, name, filePath);
+
+      this.broadcastPlugin('inject-overlay-to-process', processId, name, filePath);
+    },
+    'remove-overlay-from-process': (_, processId: number) => {
+      this.broadcastPlugin('remove-overlay-from-process', processId);
+      this.overridePlugin('remove-overlay-from-process', (processId) => {
+        this.overlayManager.deleteProcess(processId);
+      }, processId);
+    },
+    'get-current-version': () => autoUpdater.currentVersion.version,
+    'compare-with-current-version': (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion),
+    'check-update': async () => autoUpdater.checkForUpdatesAndNotify(),
+    'get-last-update': () => this.lastUpdate,
+
+    'set-config': async (_, data: PartialDeep<Config>) => {
+      await this.overridePlugin('config', (data) => {
+        config.set(data);
+      }, data);
+      this.broadcast('config', config.get());
+    },
+    'get-default-config': () => DEFAULT_CONFIG,
+    'reset-config': () => {
+      config.set(DEFAULT_CONFIG, false);
+      lyricMapper.set({}, false);
+      gameList.set({}, false);
+
+      this.pluginManager.getPlugins()
+        .forEach((plugin) => this.pluginManager.removePlugin(plugin));
+
+      this.broadcast('config', config.get());
+      this.broadcast('game-list', gameList.get());
+    },
+    'set-lyric-mapper': async (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
+      await this.overridePlugin('lyric-mapper', (data) => {
+        lyricMapper.set(data, useFallback);
+      }, data);
+      this.broadcast('lyric-mapper', lyricMapper.get());
+    },
+    'get-lyric-mapper': () => lyricMapper.get(),
+    'set-game-list': async (_, data: Partial<GameList>, useFallback: boolean = true) => {
+      await this.overridePlugin('game-list', (data) => {
+        gameList.set(data, useFallback);
+      }, data);
+      this.broadcast('game-list', gameList.get());
+    },
+    'get-game-list': () => gameList.get(),
+    'set-theme': async (_, name: string, data: PartialDeep<StyleConfig> | null, useFallback: boolean = true) => {
+      await this.overridePlugin('set-theme', (data) => {
+        themeList.set({
+          [name]: data ?? undefined,
+        }, useFallback);
+      }, data);
+      this.broadcast('theme-list', themeList.get());
+    },
+    'get-theme-list': () => themeList.get(),
+
+    'window-minimize': () => {
+      this.overridePlugin('window-minimize', () => {
+        BrowserWindow.getFocusedWindow()?.minimize();
+      });
+      this.broadcastPlugin('window-minimize');
+    },
+    'window-maximize': () => {
+      const isMaximized = BrowserWindow.getFocusedWindow()?.isMaximized() ?? false;
+
+      this.overridePlugin('window-maximize', (isMaximized) => {
+        if (isMaximized) BrowserWindow.getFocusedWindow()?.unmaximize();
+        else BrowserWindow.getFocusedWindow()?.maximize();
+      }, isMaximized);
+
+      this.broadcastPlugin('window-maximize', !isMaximized);
+    },
+    'window-is-maximized': () => BrowserWindow.getFocusedWindow()?.isMaximized(),
+    'window-close': () => {
+      this.overridePlugin('window-close', () => {
+        BrowserWindow.getFocusedWindow()?.close();
+      });
+      this.broadcastPlugin('window-close');
+    },
+    'open-devtool': (_, target: string) => {
+      if (target === 'main') {
+        if (this.lyricWindowProvider && !this.lyricWindowProvider.window.isDestroyed()) {
+          this.lyricWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+        }
+      }
+      if (target === 'lyrics') {
+        if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
+          this.lyricSearchWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+        }
+      }
+      if (target === 'settings') {
+        if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
+          this.settingWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+        }
+      }
+    },
+    'get-plugin-list': () => pure(this.pluginManager.getPlugins()),
+    'add-plugin': async (_, pluginPath: string) => {
+      this.broadcastPlugin('before-add-plugin', pluginPath);
+
+      let error: Error | null = null;
+      await this.overridePlugin('add-plugin', async (pluginPath) => {
+        const result = await this.pluginManager.addPlugin(pluginPath);
+        if (result instanceof Error) {
+          error = result;
+          return;
+        }
+
+        this.broadcastPlugin('add-plugin', result, result.path);
+      }, pluginPath);
+
+      return error;
+    },
+    'get-plugin': (_, id: string) => pure(this.pluginManager.getPlugins().find((it) => it.id === id)),
+    'remove-plugin': (_, id: string) => {
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
+
+      if (!target) return;
+
+      this.broadcastPlugin('before-remove-plugin', target);
+      this.overridePlugin('remove-plugin', (target) => {
+        this.pluginManager.removePlugin(target);
+      }, target);
+      this.broadcastPlugin('after-remove-plugin', target);
+
+      config.set({ plugins: { list: { [id]: undefined } } });
+    },
+    'reload-plugin': async (_, id: string) => {
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
+      if (!target) return;
+
+      await this.overridePlugin('reload-plugin', async (target) => {
+        await this.pluginManager.reloadPlugin(target);
+      }, target);
+    },
+    'set-plugin-state': async (_, id: string, state: 'disable' | 'enable') => {
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
+      if (!target) return;
+
+      await this.overridePlugin('change-plugin-state', async (target, state) => {
+        await this.pluginManager.setPluginState(target.id, state);
+      }, target, state);
+
+      this.broadcastPlugin('change-plugin-state', target, state);
+    },
+    'broadcast-plugin': (_, event: keyof PluginEventMap, ...args) => {
+      this.broadcastPlugin(event, ...args as Parameters<PluginEventMap[typeof event]>);
+    },
+    'override-plugin': (_, target: keyof OverrideMap, ...args) => {
+      return new Promise((resolve) => {
+        let isResolved = false;
+
+        (async () => {
+          await this.overridePlugin(target, (...provided) => {
+            isResolved = true;
+            resolve(provided);
+          }, ...args as never);
+
+          if (!isResolved) resolve(false);
+        })();
+      });
+    },
+  } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => void>;
+
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
 
@@ -298,228 +524,15 @@ class Application {
   }
 
   initHook() {
-    ipcMain.on('get-all-screens', (event) => {
-      event.returnValue = screen.getAllDisplays();
-    });
-    ipcMain.on('get-primary-screen', (event) => {
-      event.returnValue = screen.getPrimaryDisplay();
-    });
-    ipcMain.handle('get-registered-process-list', () => []); //this.registeredPidList);
-    ipcMain.handle('get-icon', (_, path: string) => {
-      if (process.platform === 'win32') {
-        try {
-          // HACK: dynamic import is not working
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const extractIcon = (require('extract-file-icon') as typeof import('extract-file-icon'));
-          const result = extractIcon(path, 32);
-
-          return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
-        } catch (e: unknown) {
-          console.error(e);
-        }
-
-        return null;
-      }
-    });
-    ipcMain.handle('start-overlay', () => {
-      // this.initOverlay();
-      //
-      // this.overridePlugin('start-overlay', () => {
-      //   if (this.overlayWindow) {
-      //     this.addOverlayWindow(
-      //       'StatusBar',
-      //       this.overlayWindow,
-      //       0,
-      //       0,
-      //       true,
-      //     );
-      //   }
-      // });
-      // this.broadcastPlugin('start-overlay');
-    });
-    ipcMain.handle('stop-overlay', () => {
-      this.overridePlugin('stop-overlay', () => {
-        this.overlayManager.stopOverlay();
+    Object.entries(this.handleMap)
+      .forEach(([event, handler]) => {
+        ipcMain.handle(event, handler as (event: Electron.IpcMainInvokeEvent) => unknown);
       });
-      this.broadcastPlugin('stop-overlay');
-    });
-    ipcMain.handle('inject-overlay-to-process', async (_, processId: number, name?: string, filePath?: string) => {
-      if (process.platform !== 'win32') return;
 
-      await this.overridePlugin('inject-overlay-to-process', async (processId, name, filePath) => {
-        const gamePathList = Object.keys(gameList.get() ?? {});
-
-        if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
-          await this.overlayManager.createProcess(processId);
-        }
-      }, processId, name, filePath);
-
-      this.broadcastPlugin('inject-overlay-to-process', processId, name, filePath);
-    });
-    ipcMain.handle('remove-overlay-from-process', (_, processId: number) => {
-      this.broadcastPlugin('remove-overlay-from-process', processId);
-      this.overridePlugin('remove-overlay-from-process', (processId) => {
-        this.overlayManager.deleteProcess(processId);
-      }, processId);
-    });
-    ipcMain.handle('get-current-version', () => autoUpdater.currentVersion.version);
-    ipcMain.handle('compare-with-current-version', (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion));
-    ipcMain.handle('check-update', async () => autoUpdater.checkForUpdatesAndNotify());
-    ipcMain.handle('get-last-update', () => this.lastUpdate);
-
-    ipcMain.handle('set-config', async (_, data: PartialDeep<Config>) => {
-      await this.overridePlugin('config', (data) => {
-        config.set(data);
-      }, data);
-      this.broadcast('config', config.get());
-    });
-    ipcMain.on('get-config', (event) => {
-      event.returnValue = config.get();
-    });
-    ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
-    ipcMain.handle('reset-config', () => {
-      config.set(DEFAULT_CONFIG, false);
-      lyricMapper.set({}, false);
-      gameList.set({}, false);
-
-      this.pluginManager.getPlugins()
-        .forEach((plugin) => this.pluginManager.removePlugin(plugin));
-
-      this.broadcast('config', config.get());
-      this.broadcast('game-list', gameList.get());
-    });
-    ipcMain.handle('set-lyric-mapper', async (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
-      await this.overridePlugin('lyric-mapper', (data) => {
-        lyricMapper.set(data, useFallback);
-      }, data);
-      this.broadcast('lyric-mapper', lyricMapper.get());
-    });
-    ipcMain.handle('get-lyric-mapper', () => lyricMapper.get());
-    ipcMain.handle('set-game-list', async (_, data: Partial<GameList>, useFallback: boolean = true) => {
-      await this.overridePlugin('game-list', (data) => {
-        gameList.set(data, useFallback);
-      }, data);
-      this.broadcast('game-list', gameList.get());
-    });
-    ipcMain.handle('get-game-list', () => gameList.get());
-    ipcMain.handle('set-theme', async (_, name: string, data: PartialDeep<StyleConfig> | null, useFallback: boolean = true) => {
-      await this.overridePlugin('set-theme', (data) => {
-        themeList.set({
-          [name]: data ?? undefined,
-        }, useFallback);
-      }, data);
-      this.broadcast('theme-list', themeList.get());
-    });
-    ipcMain.handle('get-theme-list', () => themeList.get());
-
-    ipcMain.handle('window-minimize', () => {
-      this.overridePlugin('window-minimize', () => {
-        BrowserWindow.getFocusedWindow()?.minimize();
+    Object.entries(this.onMap)
+      .forEach(([event, handler]) => {
+        ipcMain.on(event, handler as (event: Electron.IpcMainEvent) => unknown);
       });
-      this.broadcastPlugin('window-minimize');
-    });
-    ipcMain.handle('window-maximize', () => {
-      const isMaximized = BrowserWindow.getFocusedWindow()?.isMaximized() ?? false;
-
-      this.overridePlugin('window-maximize', (isMaximized) => {
-        if (isMaximized) BrowserWindow.getFocusedWindow()?.unmaximize();
-        else BrowserWindow.getFocusedWindow()?.maximize();
-      }, isMaximized);
-
-      this.broadcastPlugin('window-maximize', !isMaximized);
-    });
-    ipcMain.handle('window-is-maximized', () => BrowserWindow.getFocusedWindow()?.isMaximized());
-    ipcMain.handle('window-close', () => {
-      this.overridePlugin('window-close', () => {
-        BrowserWindow.getFocusedWindow()?.close();
-      });
-      this.broadcastPlugin('window-close');
-    });
-    ipcMain.handle('open-devtool', (_, target: string) => {
-      if (target === 'main') {
-        if (this.lyricWindowProvider && !this.lyricWindowProvider.window.isDestroyed()) {
-          this.lyricWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
-        }
-      }
-      if (target === 'lyrics') {
-        if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
-          this.lyricSearchWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
-        }
-      }
-      if (target === 'settings') {
-        if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
-          this.settingWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
-        }
-      }
-    });
-
-    ipcMain.handle('get-plugin-list', () => pure(this.pluginManager.getPlugins()));
-    ipcMain.handle('add-plugin', async (_, pluginPath: string) => {
-      this.broadcastPlugin('before-add-plugin', pluginPath);
-
-      let error: Error | null = null;
-      await this.overridePlugin('add-plugin', async (pluginPath) => {
-        const result = await this.pluginManager.addPlugin(pluginPath);
-        if (result instanceof Error) {
-          error = result;
-          return;
-        }
-
-        this.broadcastPlugin('add-plugin', result, result.path);
-      }, pluginPath);
-
-      return error;
-    });
-    ipcMain.handle('get-plugin', (_, id: string) => pure(this.pluginManager.getPlugins().find((it) => it.id === id)));
-    ipcMain.handle('remove-plugin', (_, id: string) => {
-      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
-
-      if (!target) return;
-
-      this.broadcastPlugin('before-remove-plugin', target);
-      this.overridePlugin('remove-plugin', (target) => {
-        this.pluginManager.removePlugin(target);
-      }, target);
-      this.broadcastPlugin('after-remove-plugin', target);
-
-      config.set({ plugins: { list: { [id]: undefined } } });
-    });
-    ipcMain.handle('reload-plugin', async (_, id: string) => {
-      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
-      if (!target) return;
-
-      await this.overridePlugin('reload-plugin', async (target) => {
-        await this.pluginManager.reloadPlugin(target);
-      }, target);
-    });
-
-    ipcMain.handle('set-plugin-state', async (_, id: string, state: 'disable' | 'enable') => {
-      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
-      if (!target) return;
-
-      await this.overridePlugin('change-plugin-state', async (target, state) => {
-        await this.pluginManager.setPluginState(target.id, state);
-      }, target, state);
-
-      this.broadcastPlugin('change-plugin-state', target, state);
-    });
-    ipcMain.handle('broadcast-plugin', (_, event: keyof PluginEventMap, ...args) => {
-      this.broadcastPlugin(event, ...args as Parameters<PluginEventMap[typeof event]>);
-    });
-    ipcMain.handle('override-plugin', (_, target: keyof OverrideMap, ...args) => {
-      return new Promise((resolve) => {
-        let isResolved = false;
-
-        (async () => {
-          await this.overridePlugin(target, (...provided) => {
-            isResolved = true;
-            resolve(provided);
-          }, ...args as never);
-
-          if (!isResolved) resolve(false);
-        })();
-      });
-    });
   }
 
   initMainWindow() {
