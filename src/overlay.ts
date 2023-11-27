@@ -77,6 +77,19 @@ export class OverlayManager extends EventEmitter {
       });
   }
 
+  public startOverlay() {
+    if (!nodeWindowManager) return false;
+
+    this.provider = new OverlayWindowProvider(nodeWindowManager);
+    this.addOverlayWindow(
+      'StatusBar',
+      this.provider.window,
+      0,
+      0,
+      true,
+    );
+  }
+
   public stopOverlay() {
     this.markQuit = true;
 

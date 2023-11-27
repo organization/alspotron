@@ -73,7 +73,7 @@ class Application {
   } satisfies Record<string, (event: Electron.IpcMainEvent) => void>;
 
   public handleMap = {
-    'get-registered-process-list': () => [], //this.registeredPidList);
+    'get-registered-process-list': () => this.overlayManager.registeredProcessList,
     'get-icon': (_, path: string) => {
       if (process.platform === 'win32') {
         try {
@@ -91,20 +91,10 @@ class Application {
       }
     },
     'start-overlay': () => {
-      // this.initOverlay();
-      //
-      // this.overridePlugin('start-overlay', () => {
-      //   if (this.overlayWindow) {
-      //     this.addOverlayWindow(
-      //       'StatusBar',
-      //       this.overlayWindow,
-      //       0,
-      //       0,
-      //       true,
-      //     );
-      //   }
-      // });
-      // this.broadcastPlugin('start-overlay');
+      this.overridePlugin('start-overlay', () => {
+        this.overlayManager.startOverlay();
+      });
+      this.broadcastPlugin('start-overlay');
     },
     'stop-overlay': () => {
       this.overridePlugin('stop-overlay', () => {
@@ -201,7 +191,7 @@ class Application {
       });
       this.broadcastPlugin('window-close');
     },
-    'open-devtool': (_, target: string) => {
+    'open-devtool': (_, target: 'main' | 'lyrics' | 'settings') => {
       if (target === 'main') {
         if (this.lyricWindowProvider && !this.lyricWindowProvider.window.isDestroyed()) {
           this.lyricWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
