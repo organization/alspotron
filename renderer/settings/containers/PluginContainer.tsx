@@ -43,8 +43,13 @@ const PluginContainer = () => {
 
   const onAddPlugin: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = async (event) => {
     const file = event.target.files?.item(0);
+    if (!file) {
+      setOpen(true);
+      setError(new Error('No file selected'));
+      return;
+    }
 
-    const error = await window.ipcRenderer.invoke('add-plugin', file?.path) as Error | null;
+    const error = await window.ipcRenderer.invoke('add-plugin', file.path);
 
     if (error) {
       setOpen(true);

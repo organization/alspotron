@@ -19,8 +19,11 @@ const PluginCard = (props: PluginCardProps) => {
   const plugin = () => plugins().find((plugin) => plugin.id === props.id);
 
   const togglePluginState = async () => {
-    const newState = plugin()?.state === 'enable' ? 'disable' : 'enable';
-    await window.ipcRenderer.invoke('set-plugin-state', plugin()?.id, newState);    
+    const target = plugin();
+    if (!target) return;
+
+    const newState = target.state === 'enable' ? 'disable' : 'enable';
+    await window.ipcRenderer.invoke('set-plugin-state', target.id, newState);
     refresh();
 
     console.log(plugin());

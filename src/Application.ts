@@ -194,7 +194,7 @@ class Application {
 
       this.broadcastPlugin('window-maximize', !isMaximized);
     },
-    'window-is-maximized': () => BrowserWindow.getFocusedWindow()?.isMaximized(),
+    'window-is-maximized': () => !!BrowserWindow.getFocusedWindow()?.isMaximized(),
     'window-close': () => {
       this.overridePlugin('window-close', () => {
         BrowserWindow.getFocusedWindow()?.close();
@@ -233,7 +233,7 @@ class Application {
         this.broadcastPlugin('add-plugin', result, result.path);
       }, pluginPath);
 
-      return error;
+      return error as Error | null;
     },
     'get-plugin': (_, id: string) => pure(this.pluginManager.getPlugins().find((it) => it.id === id)),
     'remove-plugin': (_, id: string) => {
