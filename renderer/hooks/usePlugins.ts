@@ -15,7 +15,7 @@ const refreshPlugins = () => {
 };
 
 const broadcast = <T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) => {
-  window.ipcRenderer.invoke('broadcast', event, ...args);
+  window.ipcRenderer.invoke('broadcast-plugin', event, ...args as never[]);
 };
 
 window.addEventListener('load', () => {

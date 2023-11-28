@@ -5,7 +5,7 @@ import useThemeList from './useThemeList';
 
 import { DEFAULT_STYLE } from '../../common/constants';
 
-import type { StyleConfig } from '../../common/config';
+import type { StyleConfig } from '../../common/schema';
 
 const useStyle = (): Accessor<StyleConfig> => {
   const [config] = useConfig();
@@ -17,7 +17,7 @@ const useStyle = (): Accessor<StyleConfig> => {
 
     return (
       list[configData?.selectedTheme ?? '']
-        ?? configData?.style
+        // ?? configData?.style
         ?? DEFAULT_STYLE
     );
   });

@@ -12,7 +12,7 @@ import { formatTime } from '../../utils/formatTime';
 import { userCSSSelectors, userCSSVariables } from '../../utils/userCSSSelectors';
 
 import type { JSX } from 'solid-js/jsx-runtime';
-import type { StyleConfig } from '../../../common/config';
+import type { StyleConfig } from '../../../common/schema';
 
 interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
   style?: string;

@@ -10,7 +10,7 @@ declare module 'alsong' {
     comment: string
   };
 
-  type Lyric = {
+  export type Lyric = {
     lyricId: number,
     title: string,
     artist: string,
@@ -65,7 +65,7 @@ declare module 'alsong' {
     getHash(music: AlsongMusic): Promise<string>;
   }
 
-  interface Alsong {
+  export interface Alsong {
     (artist: string, title: string, option?: AlsongOption): Promise<LyricMetadata[]>;
 
     (music: AlsongMusic): Promise<Lyric | null>;

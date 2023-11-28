@@ -1,18 +1,20 @@
 import PluginLoader, { PluginLoaderOptions } from './plugin-loader';
 
 import { Plugin, PluginEventMap, PluginState } from '../../common/plugins';
-import { Config } from '../../common/config';
+import { Config } from '../../common/schema';
+
+import type { PartialDeep } from 'type-fest';
 
 export interface PluginManagerOptions extends PluginLoaderOptions {
   config: () => Config['plugins'];
-  set: (config: DeepPartial<Config['plugins']>) => void;
+  set: (config: PartialDeep<Config['plugins']>) => void;
 }
 class PluginManager {
   private loader: PluginLoader;
 
   private plugins: Plugin[] = [];
   private config: () => Config['plugins'];
-  private setConfig: (config: DeepPartial<Config['plugins']>) => void;
+  private setConfig: (config: PartialDeep<Config['plugins']>) => void;
 
   constructor(options: PluginManagerOptions) {
     this.config = options.config;

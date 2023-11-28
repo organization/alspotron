@@ -6,7 +6,10 @@ import hmc from 'hmc-win32';
 
 declare global {
   interface Window {
-    ipcRenderer: typeof electronIpcRenderer;
+    ipcRenderer: Omit<typeof electronIpcRenderer, 'invoke' | 'send'> & {
+      invoke: <T extends keyof IpcHandleMap>(channel: T, ...args: IpcHandleMap[T][0]) => Promise<IpcHandleMap[T][1]>;
+      send: <T extends keyof IpcOnMap>(channel: T, ...args: IpcOnMap[T][0]) => void;
+    };
     fs: typeof fs;
     getFont: typeof getFonts;
     isWindows: boolean;
@@ -16,8 +19,4 @@ declare global {
     systemRoot: string;
     hmc: typeof hmc;
   }
-
-  export type DeepPartial<T> = T extends object ? {
-    [P in keyof T]?: DeepPartial<T[P]>;
-  } : T;
 }

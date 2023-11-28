@@ -7,7 +7,6 @@ import Selector from '../../components/Select';
 
 import useConfig from '../../hooks/useConfig';
 import { getTranslation } from '../../../common/intl';
-import { Config } from '../../../common/config';
 import Modal from '../../components/Modal';
 import Switch from '../../components/Switch';
 
@@ -20,7 +19,7 @@ const LanguageContainer = () => {
   const [resetLastOpen, setResetLastOpen] = createSignal(false);
   
   const onResetConfig = async () => {
-    await window.ipcRenderer.invoke('reset-config') as Config;
+    await window.ipcRenderer.invoke('reset-config');
 
     setResetLastOpen(false);
     setResetOpen(false);

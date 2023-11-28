@@ -19,7 +19,7 @@
   };
 
   const getLyric = async () => {
-    const uri = Spicetify.URI.from(Spicetify.Player.data.item.uri);
+    const uri = Spicetify.URI.from(Spicetify.Player.data.track.uri);
     const lines = await LyricResolvers.current(uri);
     return lines.reduce((lyric, line) => {
       lyric[line.time] = line.words.map(v => v.string).filter(v => v);
@@ -30,15 +30,15 @@
   let previousInfo = {};
   const getInfo = async () => {
     const uri = Spicetify.Player.data.item.uri;
-    let imageUrl = Spicetify.Player.data.item.metadata.image_xlarge_url;
+    let imageUrl = Spicetify.Player.data.track.metadata.image_xlarge_url;
     if (imageUrl?.indexOf('localfile') === -1) {
       imageUrl = `https://i.scdn.co/image/${imageUrl.substring(imageUrl.lastIndexOf(":") + 1)}`;
     }
 
     const info = {
       status: 'playing',
-      title: Spicetify.Player.data.item.metadata.title,
-      artists: [Spicetify.Player.data.item.metadata.artist_name],
+      title: Spicetify.Player.data.track.metadata.title,
+      artists: [Spicetify.Player.data.track.metadata.artist_name],
       cover_url: imageUrl,
       uri: uri,
       duration: Spicetify.Player.getDuration(),

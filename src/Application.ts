@@ -1,66 +1,41 @@
 import path from 'node:path';
 
-import Koa from 'koa';
-import cors from '@koa/cors';
-import zodRouter from 'koa-zod-router';
-import { z } from 'zod';
-import bodyParser from 'koa-bodyparser';
 import ProgressBar from 'electron-progressbar';
-import { hmc } from 'hmc-win32';
-import { autoUpdater } from 'electron-differential-updater';
-import { IS_WINDOWS_11, MicaBrowserWindow } from 'mica-electron';
-import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
-import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, MenuItemConstructorOptions, nativeImage, screen, shell, Tray } from 'electron';
-
-import { createEffect, on } from 'solid-js';
-import deepmerge from 'deepmerge';
+import { autoUpdater, UpdateInfo } from 'electron-differential-updater';
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  Menu,
+  MenuItem,
+  MenuItemConstructorOptions,
+  nativeImage,
+  screen,
+  Tray
+} from 'electron';
+import { ProgressInfo } from 'electron-builder';
+import { PartialDeep } from 'type-fest';
 
 import PluginManager from './plugins/plugin-manager';
+import { initServer } from './server';
+import { config, gameList, lyricMapper, themeList } from './config';
 
-import {
-  Config,
-  config,
-  GameList,
-  gameList,
-  LyricMapper,
-  lyricMapper,
-  setConfig,
-  setGameList,
-  setLyricMapper,
-  setTheme,
-  StyleConfig,
-  themeList,
-} from '../common/config';
-import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../common/constants';
+import { LyricWindowProvider, SettingWindowProvider, LyricSearchWindowProvider } from './window';
 
+import { OverlayManager } from './overlay';
+
+import { DEFAULT_CONFIG } from '../common/constants';
 import { getTranslation } from '../common/intl';
-
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
 
-import type { ProgressInfo } from 'electron-builder';
-import type { UpdateInfo } from 'builder-util-runtime';
+import { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
 
-import type { RequestBody } from '../common/types';
+import { getLyricProvider } from '../common/provider';
 
-import type { IOverlay } from './electron-overlay';
+import type { UpdateData } from '../common/schema';
 import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
-
-type Overlay = typeof IOverlay;
-
-const iconPath = getFile('./assets/icon_square.png');
-const glassOptions: Partial<GlasstronOptions> = {
-  blur: true,
-  blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
-  blurGnomeSigma: 100,
-  blurCornerRadius: 20,
-  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-};
-const micaOptions = {
-  show: false,
-};
-
-const PlatformBrowserWindow = process.platform === 'win32' && IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow;
 
 // Set application name for Windows 10+ notifications
 if (process.platform === 'win32') {
@@ -74,77 +49,259 @@ if (!app.requestSingleInstanceLock()) {
 app.commandLine.appendSwitch('enable-transparent-visuals');
 
 class Application {
+  public lyricWindowProvider!: LyricWindowProvider;
+  public settingWindowProvider: SettingWindowProvider | null = null;
+  public lyricSearchWindowProvider: LyricSearchWindowProvider | null = null;
+
+  private overlayManager: OverlayManager;
+
   private tray!: Tray;
-  private app!: Koa;
-  private overlay!: Overlay;
   private pluginManager!: PluginManager;
-  private markQuit = false;
-  private scaleFactor = 1.0;
-  private lastUpdate: RequestBody | null = null;
+  private lastUpdate: UpdateData | null = null;
   private contextMenu: Menu | null = null;
 
-  public mainWindow!: BrowserWindow;
-  public overlayWindow: BrowserWindow | null = null;
-  public settingsWindow: BrowserWindow | null = null;
-  public lyricsWindow: BrowserWindow | null = null;
-  public mainWindowOptions = {
-    width: 800,
-    height: 600,
-    movable: false,
-    resizable: false,
-    minimizable: false,
-    maximizable: false,
-    transparent: true,
-    frame: false,
-    focusable: false,
-    alwaysOnTop: true,
-    skipTaskbar: true,
-    hasShadow: false,
-    hiddenInMissionControl: true,
-    roundedCorners: false,
-    webPreferences: {
-      preload: path.join(__dirname, './preload.js'),
-      nodeIntegration: true,
+  public onMap = {
+    'get-all-screens': (event) => {
+      event.returnValue = screen.getAllDisplays();
     },
-    show: false,
-    icon: iconPath,
-  };
-  private onOverlayWindowUpdate: (() => void) | null = null;
-  private registeredPidList: number[] = [];
+    'get-primary-screen': (event) => {
+      event.returnValue = screen.getPrimaryDisplay();
+    },
+    'get-config': (event) => {
+      event.returnValue = config.get();
+    },
+  } satisfies Record<string, (event: Electron.IpcMainEvent) => void>;
 
-  constructor() {
-    if (process.platform === 'win32') {
-      // HACK: import statement is not work because Electron's threading model is different from Windows COM's
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const wql = require('@jellybrick/wql-process-monitor') as typeof import('@jellybrick/wql-process-monitor');
-      wql.promises.subscribe({
-        creation: true,
-        deletion: true,
-        filterWindowsNoise: true,
-      }).then((listener) => {
-        listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
-        listener.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
+  public handleMap = {
+    'get-registered-process-list': () => this.overlayManager.registeredProcessList,
+    'get-icon': (_, path: string) => {
+      if (process.platform === 'win32') {
+        try {
+          // HACK: dynamic import is not working
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const extractIcon = (require('extract-file-icon') as typeof import('extract-file-icon'));
+          const result = extractIcon(path, 32);
+
+          return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
+        } catch (e: unknown) {
+          console.error(e);
+        }
+
+        return null;
+      }
+    },
+    'start-overlay': () => {
+      this.overridePlugin('start-overlay', () => {
+        this.overlayManager.startOverlay();
       });
+      this.broadcastPlugin('start-overlay');
+    },
+    'stop-overlay': () => {
+      this.overridePlugin('stop-overlay', () => {
+        this.overlayManager.stopOverlay();
+      });
+      this.broadcastPlugin('stop-overlay');
+    },
+    'inject-overlay-to-process': async (_, processId: number, name?: string, filePath?: string) => {
+      if (process.platform !== 'win32') return;
 
-      const electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
-      const module = { exports: {} };
-      (process as NodeJS.Process & { dlopen: (module: { exports: unknown }, path: string, flags?: unknown) => void }).dlopen(
-        module,
-        app.isPackaged ?
-          path.join(process.resourcesPath, `./assets/${electronOverlayWithArch}`) :
-          path.join(__dirname, '..', `./assets/${electronOverlayWithArch}`),
-      );
-      this.overlay = module.exports as Overlay;
-    }
+      await this.overridePlugin('inject-overlay-to-process', async (processId, name, filePath) => {
+        const gamePathList = Object.keys(gameList.get() ?? {});
+
+        if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
+          await this.overlayManager.createProcess(processId);
+        }
+      }, processId, name, filePath);
+
+      this.broadcastPlugin('inject-overlay-to-process', processId, name, filePath);
+    },
+    'remove-overlay-from-process': (_, processId: number) => {
+      this.broadcastPlugin('remove-overlay-from-process', processId);
+      this.overridePlugin('remove-overlay-from-process', (processId) => {
+        this.overlayManager.deleteProcess(processId);
+      }, processId);
+    },
+    'get-current-version': () => autoUpdater.currentVersion.version,
+    'compare-with-current-version': (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion),
+    'check-update': async () => autoUpdater.checkForUpdatesAndNotify(),
+    'get-last-update': () => this.lastUpdate,
+
+    'set-config': async (_, data: PartialDeep<Config>) => {
+      await this.overridePlugin('config', (data) => {
+        config.set(data);
+      }, data);
+    },
+    'get-default-config': () => DEFAULT_CONFIG,
+    'reset-config': () => {
+      config.set(DEFAULT_CONFIG, false);
+      lyricMapper.set({}, false);
+      gameList.set({}, false);
+
+      this.pluginManager.getPlugins()
+        .forEach((plugin) => this.pluginManager.removePlugin(plugin));
+    },
+    'set-lyric-mapper': async (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
+      await this.overridePlugin('lyric-mapper', (data) => {
+        lyricMapper.set(data, useFallback);
+      }, data);
+    },
+    'get-lyric-mapper': () => lyricMapper.get(),
+    'set-game-list': async (_, data: Partial<GameList>, useFallback: boolean = true) => {
+      await this.overridePlugin('game-list', (data) => {
+        gameList.set(data, useFallback);
+      }, data);
+    },
+    'get-game-list': () => gameList.get(),
+    'set-theme': async (_, name: string, data: PartialDeep<StyleConfig> | null, useFallback: boolean = true) => {
+      await this.overridePlugin('set-theme', (data) => {
+        themeList.set({
+          [name]: data ?? undefined,
+        }, useFallback);
+      }, data);
+    },
+    'get-theme-list': () => themeList.get(),
+
+    'window-minimize': () => {
+      this.overridePlugin('window-minimize', () => {
+        BrowserWindow.getFocusedWindow()?.minimize();
+      });
+      this.broadcastPlugin('window-minimize');
+    },
+    'window-maximize': () => {
+      const isMaximized = BrowserWindow.getFocusedWindow()?.isMaximized() ?? false;
+
+      this.overridePlugin('window-maximize', (isMaximized) => {
+        if (isMaximized) BrowserWindow.getFocusedWindow()?.unmaximize();
+        else BrowserWindow.getFocusedWindow()?.maximize();
+      }, isMaximized);
+
+      this.broadcastPlugin('window-maximize', !isMaximized);
+    },
+    'window-is-maximized': () => !!BrowserWindow.getFocusedWindow()?.isMaximized(),
+    'window-close': () => {
+      this.overridePlugin('window-close', () => {
+        BrowserWindow.getFocusedWindow()?.close();
+      });
+      this.broadcastPlugin('window-close');
+    },
+    'open-devtool': (_, target: 'main' | 'lyrics' | 'settings') => {
+      if (target === 'main') {
+        if (this.lyricWindowProvider && !this.lyricWindowProvider.window.isDestroyed()) {
+          this.lyricWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+        }
+      }
+      if (target === 'lyrics') {
+        if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
+          this.lyricSearchWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+        }
+      }
+      if (target === 'settings') {
+        if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
+          this.settingWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+        }
+      }
+    },
+    'get-plugin-list': () => pure(this.pluginManager.getPlugins()),
+    'add-plugin': async (_, pluginPath: string) => {
+      this.broadcastPlugin('before-add-plugin', pluginPath);
+
+      let error: Error | null = null;
+      await this.overridePlugin('add-plugin', async (pluginPath) => {
+        const result = await this.pluginManager.addPlugin(pluginPath);
+        if (result instanceof Error) {
+          error = result;
+          return;
+        }
+
+        this.broadcastPlugin('add-plugin', result, result.path);
+      }, pluginPath);
+
+      return error as Error | null;
+    },
+    'get-plugin': (_, id: string) => pure(this.pluginManager.getPlugins().find((it) => it.id === id)),
+    'remove-plugin': (_, id: string) => {
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
+
+      if (!target) return;
+
+      this.broadcastPlugin('before-remove-plugin', target);
+      this.overridePlugin('remove-plugin', (target) => {
+        this.pluginManager.removePlugin(target);
+      }, target);
+      this.broadcastPlugin('after-remove-plugin', target);
+
+      config.set({ plugins: { list: { [id]: undefined } } });
+    },
+    'reload-plugin': async (_, id: string) => {
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
+      if (!target) return;
+
+      await this.overridePlugin('reload-plugin', async (target) => {
+        await this.pluginManager.reloadPlugin(target);
+      }, target);
+    },
+    'set-plugin-state': async (_, id: string, state: 'disable' | 'enable') => {
+      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
+      if (!target) return;
+
+      await this.overridePlugin('change-plugin-state', async (target, state) => {
+        await this.pluginManager.setPluginState(target.id, state);
+      }, target, state);
+
+      this.broadcastPlugin('change-plugin-state', target, state);
+    },
+    'broadcast-plugin': (_, event: keyof PluginEventMap, ...args) => {
+      this.broadcastPlugin(event, ...args as Parameters<PluginEventMap[typeof event]>);
+    },
+    'override-plugin': (_, target: keyof OverrideMap, ...args) => {
+      return new Promise((resolve) => {
+        let isResolved = false;
+
+        (async () => {
+          await this.overridePlugin(target, (...provided) => {
+            isResolved = true;
+            resolve(provided);
+          }, ...args as never);
+
+          if (!isResolved) resolve(false);
+        })();
+      });
+    },
+  } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown>;
+
+  constructor(overlayManager: OverlayManager) {
+    this.overlayManager = overlayManager;
+
+    this.overlayManager.on('register-process', () => {
+      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
+    });
+    this.overlayManager.on('unregister-process', () => {
+      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
+    });
+  }
+
+  initServer() {
+    initServer({
+      onUpdate: (body) => {
+        this.lastUpdate = body;
+        this.overridePlugin(
+          'update',
+          (updateData) => {
+            this.broadcast('update', updateData);
+          },
+          this.lastUpdate,
+        );
+      },
+    });
   }
 
   initPluginLoader() {
     console.log('[Alspotron] load all plugins');
-    
+
     this.pluginManager = new PluginManager({
-      config: () => config().plugins,
+      config: () => config.get().plugins,
       folder: path.resolve(app.getPath('userData'), 'plugins'),
-      set: (config) => setConfig({ plugins: config }),
+      set: (newConfig) => config.set({ plugins: newConfig }),
     });
     this.pluginManager.loadPluginsFromConfig().catch((e) => {
       console.error('[Alspotron] Cannot load plugins', e);
@@ -160,38 +317,38 @@ class Application {
 
       const { response } = await dialog.showMessageBox({
         type: 'info',
-        buttons: [getTranslation('updater.download-and-auto-install', config().language)],
-        title: `${getTranslation('updater.update-alert', config().language)} (${it.version})`,
-        message: getTranslation('updater.update-available', config().language).replace('{{version}}', it.version),
-        detail: getTranslation('updater.download-at', config().language).replace('{{link}}', downloadLink),
+        buttons: [getTranslation('updater.download-and-auto-install', config.get().language)],
+        title: `${getTranslation('updater.update-alert', config.get().language)} (${it.version})`,
+        message: getTranslation('updater.update-available', config.get().language).replace('{{version}}', it.version),
+        detail: getTranslation('updater.download-at', config.get().language).replace('{{link}}', downloadLink),
         defaultId: 0,
       });
-      
+
       if (response === 0) {
         const updateProgressBar = new ProgressBar({
           indeterminate: false,
-          title: getTranslation('updater.popup.title', config().language),
-          text: getTranslation('updater.popup.text', config().language),
+          title: getTranslation('updater.popup.title', config.get().language),
+          text: getTranslation('updater.popup.text', config.get().language),
           initialValue: 0,
         });
 
         // What The F @types/electron-progressbar
         updateProgressBar
           .on('progress', ((value: number) => {
-            updateProgressBar.detail = `${getTranslation('updater.popup.percent', config().language)} (${value.toFixed(2)}%)`;
+            updateProgressBar.detail = `${getTranslation('updater.popup.percent', config.get().language)} (${value.toFixed(2)}%)`;
           }) as () => void)
           .on('aborted', ((value: number) => {
-            updateProgressBar.detail = `${getTranslation('updater.popup.download-aborted', config().language)} ${value.toFixed(2)}%`;
+            updateProgressBar.detail = `${getTranslation('updater.popup.download-aborted', config.get().language)} ${value.toFixed(2)}%`;
           }) as () => void)
           .on('completed', () => {
-            updateProgressBar.detail = getTranslation('updater.popup.download-completed', config().language);
+            updateProgressBar.detail = getTranslation('updater.popup.download-completed', config.get().language);
             autoUpdater.quitAndInstall(true, true);
           });
 
         autoUpdater.on('download-progress', (it: ProgressInfo) => {
           if (!updateProgressBar.isCompleted()) {
             updateProgressBar.value = it.percent;
-            updateProgressBar.text = `${getTranslation('updater.popup.percent', config().language)} (${it.percent.toFixed(2)}%, ${it.transferred} / ${it.total})`;
+            updateProgressBar.text = `${getTranslation('updater.popup.percent', config.get().language)} (${it.percent.toFixed(2)}%, ${it.transferred} / ${it.total})`;
           }
         });
 
@@ -208,25 +365,25 @@ class Application {
     const menu: (MenuItemConstructorOptions | MenuItem)[] = [
       {
         type: 'normal',
-        label: getTranslation('tray.lyrics.label', config().language),
+        label: getTranslation('tray.lyrics.label', config.get().language),
         click: () => {
-          if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
-            if (this.lyricsWindow.isMinimized()) this.lyricsWindow.restore();
-            this.lyricsWindow.show();
+          if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
+            if (this.lyricSearchWindowProvider.window.isMinimized()) this.lyricSearchWindowProvider.window.restore();
+            this.lyricSearchWindowProvider.window.show();
           } else {
-            this.initLyricsWindow();
+            this.initLyricSearchWindow();
           }
         },
       },
       {
         type: 'normal',
-        label: getTranslation('tray.setting.label', config().language),
+        label: getTranslation('tray.setting.label', config.get().language),
         click: () => {
-          if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
-            if (this.settingsWindow.isMinimized()) this.settingsWindow.restore();
-            this.settingsWindow.show();
+          if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
+            if (this.settingWindowProvider.window.isMinimized()) this.settingWindowProvider.window.restore();
+            this.settingWindowProvider.window.show();
           } else {
-            this.initSettingsWindow();
+            this.initSettingWindow();
           }
         }
       },
@@ -236,44 +393,44 @@ class Application {
       {
         type: 'normal',
         role: 'quit',
-        label: getTranslation('tray.exit.label', config().language),
+        label: getTranslation('tray.exit.label', config.get().language),
         click: () => {
-          this.markQuit = true;
+          this.overlayManager.stopOverlay();
           app.quit();
         }
       },
     ];
 
-    if (config().developer) {
+    if (config.get().developer) {
       menu.push(
         {
           type: 'separator',
         },
         {
           type: 'submenu',
-          label: getTranslation('tray.devtools.label', config().language),
+          label: getTranslation('tray.devtools.label', config.get().language),
           submenu: [
             {
-              label: getTranslation('tray.devtools.lyric-viewer.label', config().language),
+              label: getTranslation('tray.devtools.lyric-viewer.label', config.get().language),
               click: () => {
-                if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-                  this.mainWindow.webContents.openDevTools({ mode: 'detach' });
+                if (this.lyricWindowProvider && !this.lyricWindowProvider.window.isDestroyed()) {
+                  this.lyricWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
                 }
               },
             },
             {
-              label: getTranslation('tray.devtools.lyrics.label', config().language),
+              label: getTranslation('tray.devtools.lyrics.label', config.get().language),
               click: () => {
-                if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
-                  this.lyricsWindow.webContents.openDevTools({ mode: 'detach' });
+                if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
+                  this.lyricSearchWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
                 }
               },
             },
             {
-              label: getTranslation('tray.devtools.setting.label', config().language),
+              label: getTranslation('tray.devtools.setting.label', config.get().language),
               click: () => {
-                if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
-                  this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
+                if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
+                  this.settingWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
                 }
               },
             }
@@ -297,165 +454,15 @@ class Application {
       if (this.contextMenu) this.tray.popUpContextMenu(this.contextMenu);
     });
 
-    createEffect(on(() => config().developer, () => {
-      this.initMenu();
-      this.tray.setContextMenu(this.contextMenu);
-    }));
-  }
+    let lastValue = config.get().developer;
+    config.watch((config) => {
+      if (lastValue !== config.developer) {
+        this.initMenu();
+        this.tray.setContextMenu(this.contextMenu);
 
-  initServer() {
-    this.app = new Koa();
-    this.app.use(cors());
-    this.app.use(bodyParser());
-
-    const router = zodRouter();
-
-    router.post(
-      '/',
-      async (ctx, next) => {
-        ctx.status = 200;
-
-        this.lastUpdate = ctx.request.body;
-        this.overridePlugin(
-          'update',
-          (updateData) => {
-            this.broadcast('update', updateData);
-          },
-          this.lastUpdate,
-        );
-
-        await next();
-      },
-      {
-        body: z.object({
-          data: z.object({
-            status: z.string(),
-            title: z.string().optional(),
-            artists: z.array(z.string()).optional(),
-            progress: z.number().optional(),
-            duration: z.number().optional(),
-            cover_url: z.string().optional(),
-            lyrics: z.record(z.string(), z.array(z.string())).optional(),
-          }),
-        }),
-      },
-    );
-
-    router.post('/shutdown', () => {
-      app.quit();
+        lastValue = config.developer;
+      }
     });
-
-    this.app.use(router.routes()).use(router.allowedMethods());
-
-    this.app.listen(1608, '127.0.0.1');
-  }
-
-  public addOverlayWindow(
-    name: string,
-    window: Electron.BrowserWindow,
-    dragborder = 0,
-    captionHeight = 0,
-    transparent = false
-  ) {
-    this.markQuit = false;
-
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
-    const display = screen.getDisplayNearestPoint(
-      windowManager.getWindows().find((window) => window.processId == this.registeredPidList[0])?.getBounds() as Electron.Point ??
-      screen.getCursorScreenPoint()
-    );
-
-    const resizable = window.isResizable();
-    this.overlay.addWindow(window.id, {
-      name,
-      transparent,
-      resizable,
-      maxWidth: resizable
-        ? display.bounds.width
-        : window.getBounds().width,
-      maxHeight: resizable
-        ? display.bounds.height
-        : window.getBounds().height,
-      minWidth: resizable ? 100 : window.getBounds().width,
-      minHeight: resizable ? 100 : window.getBounds().height,
-      nativeHandle: window.getNativeWindowHandle().readUInt32LE(0),
-      rect: {
-        x: Math.floor(window.getBounds().x * this.scaleFactor),
-        y: Math.floor(window.getBounds().y * this.scaleFactor),
-        width: Math.floor(window.getBounds().width * this.scaleFactor),
-        height: Math.floor(window.getBounds().height * this.scaleFactor),
-      },
-      caption: {
-        left: dragborder,
-        right: dragborder,
-        top: dragborder,
-        height: captionHeight,
-      },
-      dragBorderWidth: dragborder,
-    });
-
-    window.webContents.on('paint', (_, __, image: Electron.NativeImage) => {
-      if (this.markQuit) return;
-
-      this.overlay.sendFrameBuffer(
-        window.id,
-        image.getBitmap(),
-        image.getSize().width,
-        image.getSize().height
-      );
-    });
-
-    window.on('resize', () => {
-      this.overlay.sendWindowBounds(window.id, {
-        rect: {
-          x: window.getBounds().x,
-          y: window.getBounds().y,
-          width: Math.floor(window.getBounds().width * this.scaleFactor),
-          height: Math.floor(window.getBounds().height * this.scaleFactor),
-        },
-      });
-    });
-
-    const windowId = window.id;
-    window.on('closed', () => {
-      this.overlay.closeWindow(windowId);
-    });
-
-    window.webContents.on('cursor-changed', (_, type) => {
-      let cursor: string | null;
-
-      if (type === 'default') cursor = 'IDC_ARROW';
-      else if (type === 'pointer') cursor = 'IDC_HAND';
-      else if (type === 'crosshair') cursor = 'IDC_CROSS';
-      else if (type === 'text') cursor = 'IDC_IBEAM';
-      else if (type === 'wait') cursor = 'IDC_WAIT';
-      else if (type === 'help') cursor = 'IDC_HELP';
-      else if (type === 'move') cursor = 'IDC_SIZEALL';
-      else if (type === 'nwse-resize') cursor = 'IDC_SIZENWSE';
-      else if (type === 'nesw-resize') cursor = 'IDC_SIZENESW';
-      else if (type === 'ns-resize') cursor = 'IDC_SIZENS';
-      else if (type === 'ew-resize') cursor = 'IDC_SIZEWE';
-      else if (type === 'none') cursor = '';
-      else cursor = null;
-
-      if (cursor) this.overlay.sendCommand({ command: 'cursor', cursor });
-    });
-  }
-
-  removeOverlay(window: BrowserWindow) {
-    this.markQuit = true;
-    this.overlay.closeWindow(window.id);
-  }
-
-  initOverlay() {
-    this.initOverlayWindow();
-    this.overlay.start();
-  }
-
-  stopOverlay() {
-    this.removeOverlayWindow();
-    this.overlay.stop();
   }
 
   async overridePlugin<Target extends keyof OverrideMap>(
@@ -468,12 +475,13 @@ class Application {
         ? plugin.js.overrides[target] ?? []
         : []
       );
-    
+
     await Promise.all(overrideFnList.map(async (overrideFn, index) => {
       const fn = (
         index === overrideFnList.length - 1
           ? originalFn
-          : async () => {}
+          : async () => {
+          }
       ) as (...args: OverrideParameterMap[Target]) => Promise<void>;
 
       await overrideFn(fn, ...args);
@@ -488,10 +496,10 @@ class Application {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
     this.broadcastPlugin(event as keyof PluginEventMap, ...args as any);
 
-    if (this.mainWindow) this.mainWindow.webContents.send(event, ...args);
-    if (this.overlayWindow && !this.overlayWindow.isDestroyed()) this.overlayWindow.webContents.send(event, ...args);
-    if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) this.lyricsWindow.webContents.send(event, ...args);
-    if (this.settingsWindow && !this.settingsWindow.isDestroyed()) this.settingsWindow.webContents.send(event, ...args);
+    if (this.lyricWindowProvider) this.lyricWindowProvider.window.webContents.send(event, ...args);
+    if (this.overlayManager.windowProvider && !this.overlayManager.windowProvider.window.isDestroyed()) this.overlayManager.windowProvider.window.webContents.send(event, ...args);
+    if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) this.lyricSearchWindowProvider.window.webContents.send(event, ...args);
+    if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) this.settingWindowProvider.window.webContents.send(event, ...args);
   }
 
   broadcastPlugin<T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) {
@@ -499,256 +507,66 @@ class Application {
   }
 
   initHook() {
-    ipcMain.on('get-all-screens', (event) => {
-      event.returnValue = screen.getAllDisplays();
+    config.watch((config) => {
+      this.broadcast('config', config);
     });
-    ipcMain.on('get-primary-screen', (event) => {
-      event.returnValue = screen.getPrimaryDisplay();
+    lyricMapper.watch((lyricMapper) => {
+      this.broadcast('lyric-mapper', lyricMapper);
     });
-    ipcMain.handle('get-registered-process-list', () => this.registeredPidList);
-    ipcMain.handle('get-icon', (_, path: string) => {
-      if (process.platform === 'win32') {
-        try {
-          // HACK: dynamic import is not working
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const extractIcon = (require('extract-file-icon') as typeof import('extract-file-icon'));
-          const result = extractIcon(path, 32);
-
-          return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
-        } catch (e: unknown) {
-          console.error(e);
-        }
-
-        return null;
-      }
+    gameList.watch((gameList) => {
+      this.broadcast('game-list', gameList);
     });
-    ipcMain.handle('start-overlay', () => {
-      this.initOverlay();
+    themeList.watch((themeList) => {
+      this.broadcast('theme-list', themeList);
+    });
 
-      this.overridePlugin('start-overlay', () => {
-        if (this.overlayWindow) {
-          this.addOverlayWindow(
-            'StatusBar',
-            this.overlayWindow,
-            0,
-            0,
-            true,
-          );
-        }
+    Object.entries(this.handleMap)
+      .forEach(([event, handler]) => {
+        ipcMain.handle(event, handler as (event: Electron.IpcMainInvokeEvent) => unknown);
       });
-      this.broadcastPlugin('start-overlay');
-    });
-    ipcMain.handle('stop-overlay', () => {
-      this.overridePlugin('stop-overlay', () => {
-        this.stopOverlay();
+
+    Object.entries(this.onMap)
+      .forEach(([event, handler]) => {
+        ipcMain.on(event, handler as (event: Electron.IpcMainEvent) => unknown);
       });
-      this.broadcastPlugin('stop-overlay');
-    });
-    ipcMain.handle('inject-overlay-to-process', (_, processId: number, name?: string, filePath?: string) => {
-      if (process.platform !== 'win32') return;
+  }
 
-      this.overridePlugin('inject-overlay-to-process', (processId, name, filePath) => {
-        this.onProcessCreation(processId, name, filePath);
-      }, processId, name, filePath);
-      this.broadcastPlugin('inject-overlay-to-process', processId, name, filePath);
-    });
-    ipcMain.handle('remove-overlay-from-process', (_, processId: number) => {
-      this.broadcastPlugin('remove-overlay-from-process', processId);
-      this.overridePlugin('remove-overlay-from-process', (processId) => {
-        this.onProcessDeletion(processId);
-      }, processId);
-    });
-    ipcMain.handle('get-current-version', () => autoUpdater.currentVersion.version);
-    ipcMain.handle('compare-with-current-version', (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion));
-    ipcMain.handle('check-update', async () => autoUpdater.checkForUpdatesAndNotify());
-    ipcMain.handle('get-last-update', () => this.lastUpdate);
+  initMainWindow() {
+    this.lyricWindowProvider = new LyricWindowProvider();
+    this.setCorsHandler(this.lyricWindowProvider.window.webContents);
 
-    ipcMain.handle('set-config', async (_, data: DeepPartial<Config>) => {
-      await this.overridePlugin('config', (data) => {
-        setConfig(data);
+    this.lyricWindowProvider.window.show();
+  }
 
-        this.updateWindowConfig(this.mainWindow);
-        if (process.platform === 'win32' && this.overlayWindow && !this.overlayWindow.isDestroyed()) {
-          this.overlayWindow.close();
-          this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
-          this.initOverlayWindow();
-          this.addOverlayWindow('StatusBar', this.overlayWindow, 0, 0, true);
-        }
-      }, data);
-      this.broadcast('config', config());
-    });
-    ipcMain.on('get-config', (event) => {
-      event.returnValue = config();
-    });
-    ipcMain.handle('get-default-config', () => DEFAULT_CONFIG);
-    ipcMain.handle('reset-config', () => {
-      setConfig(DEFAULT_CONFIG, false);
-      setLyricMapper({}, false);
-      setGameList({}, false);
+  initSettingWindow() {
+    this.settingWindowProvider = new SettingWindowProvider();
 
-      this.pluginManager.getPlugins()
-        .forEach((plugin) => this.pluginManager.removePlugin(plugin));
+    this.settingWindowProvider.window.show();
+  }
 
-      this.broadcast('config', config());
-      this.broadcast('game-list', gameList());
-    });
-    ipcMain.handle('set-lyric-mapper', async (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
-      await this.overridePlugin('lyric-mapper', (data) => {
-        setLyricMapper(data, useFallback);
-      }, data);
-      this.broadcast('lyric-mapper', lyricMapper());
-    });
-    ipcMain.handle('get-lyric-mapper', () => lyricMapper());
-    ipcMain.handle('set-game-list', async (_, data: Partial<GameList>, useFallback: boolean = true) => {
-      await this.overridePlugin('game-list', (data) => {
-        setGameList(data, useFallback);
-      }, data);
-      this.broadcast('game-list', gameList());
-    });
-    ipcMain.handle('get-game-list', () => gameList());
-    ipcMain.handle('set-theme', async (_, name: string, data: DeepPartial<StyleConfig> | null, useFallback: boolean = true) => {
-      await this.overridePlugin('set-theme', (data) => {
-        setTheme(name, data, useFallback);
-      }, data);
-      this.broadcast('theme-list', themeList());
-    });
-    ipcMain.handle('get-theme-list', () => themeList());
+  initLyricSearchWindow() {
+    this.lyricSearchWindowProvider = new LyricSearchWindowProvider();
+    this.setCorsHandler(this.lyricSearchWindowProvider.window.webContents);
 
-    ipcMain.handle('window-minimize', () => {
-      this.overridePlugin('window-minimize', () => {
-        BrowserWindow.getFocusedWindow()?.minimize();
-      });
-      this.broadcastPlugin('window-minimize');
-    });
-    ipcMain.handle('window-maximize', () => {
-      const isMaximized = BrowserWindow.getFocusedWindow()?.isMaximized() ?? false;
+    this.lyricSearchWindowProvider.window.show();
+  }
 
-      this.overridePlugin('window-maximize', (isMaximized) => {
-        if (isMaximized) BrowserWindow.getFocusedWindow()?.unmaximize();
-        else BrowserWindow.getFocusedWindow()?.maximize();
-      }, isMaximized);
+  private setCorsHandler(webContents: Electron.WebContents) {
+    webContents.session.webRequest.onBeforeSendHeaders(
+      (details, callback) => {
+        const provider = getLyricProvider(config.get().provider);
 
-      this.broadcastPlugin('window-maximize', !isMaximized);
-    });
-    ipcMain.handle('window-is-maximized', () => BrowserWindow.getFocusedWindow()?.isMaximized());
-    ipcMain.handle('window-close', () => {
-      this.overridePlugin('window-close', () => {
-        BrowserWindow.getFocusedWindow()?.close();
-      });
-      this.broadcastPlugin('window-close');
-    });
-    ipcMain.handle('open-devtool', (_, target: string) => {
-      if (target === 'main') {
-        if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-          this.mainWindow.webContents.openDevTools({ mode: 'detach' });
-        }
-      }
-      if (target === 'lyrics') {
-        if (this.lyricsWindow && !this.lyricsWindow.isDestroyed()) {
-          this.lyricsWindow.webContents.openDevTools({ mode: 'detach' });
-        }
-      }
-      if (target === 'settings') {
-        if (this.settingsWindow && !this.settingsWindow.isDestroyed()) {
-          this.settingsWindow.webContents.openDevTools({ mode: 'detach' });
-        }
-      }
-    });
+        if (provider) {
+          const result = provider.onBeforeSendHeaders(details);
 
-    ipcMain.handle('get-plugin-list', () => pure(this.pluginManager.getPlugins()));
-    ipcMain.handle('add-plugin', async (_, pluginPath: string) => {
-      this.broadcastPlugin('before-add-plugin', pluginPath);
-
-      let error: Error | null = null;
-      await this.overridePlugin('add-plugin', async (pluginPath) => {
-        const result = await this.pluginManager.addPlugin(pluginPath);
-        if (result instanceof Error) {
-          error = result;
+          callback(result);
           return;
         }
 
-        this.broadcastPlugin('add-plugin', result, result.path);
-      }, pluginPath);
-
-      return error;
-    });
-    ipcMain.handle('get-plugin', (_, id: string) => pure(this.pluginManager.getPlugins().find((it) => it.id === id)));
-    ipcMain.handle('remove-plugin', (_, id: string) => {
-      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
-
-      if (!target) return;
-
-      this.broadcastPlugin('before-remove-plugin', target);
-      this.overridePlugin('remove-plugin', (target) => {
-        this.pluginManager.removePlugin(target);
-      }, target);
-      this.broadcastPlugin('after-remove-plugin', target);
-
-      setConfig({ plugins: { list: { [id]: undefined } } });
-    });
-    ipcMain.handle('reload-plugin', async (_, id: string) => {
-      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
-      if (!target) return;
-
-      await this.overridePlugin('reload-plugin', async (target) => {
-        await this.pluginManager.reloadPlugin(target);
-      }, target);
-    });
-
-    ipcMain.handle('set-plugin-state', async (_, id: string, state: 'disable' | 'enable') => {
-      const target = this.pluginManager.getPlugins().find((it) => it.id === id);
-      if (!target) return;
-
-      await this.overridePlugin('change-plugin-state', async (target, state) => {
-        await this.pluginManager.setPluginState(target.id, state);
-      }, target, state);
-      
-      this.broadcastPlugin('change-plugin-state', target, state);
-    });
-    ipcMain.handle('broadcast-plugin', (_, event: keyof PluginEventMap, ...args) => {
-      this.broadcastPlugin(event, ...args as Parameters<PluginEventMap[typeof event]>);
-    });
-    ipcMain.handle('override-plugin', (_, target: keyof OverrideMap, ...args) => {
-      return new Promise((resolve) => {
-        let isResolved = false;
-
-        (async () => {
-          await this.overridePlugin(target, (...provided) => {
-            isResolved = true;
-            resolve(provided);
-          }, ...args as never);
-
-          if (!isResolved) resolve(false);
-        })();
-      });
-    });
-  }
-
-  setCorsHandler(window: BrowserWindow) {
-    window.webContents.session.webRequest.onBeforeSendHeaders(
-      (details, callback) => {
-        const isEgg = details.url.startsWith('https://lyric.altools.com');
-        if (isEgg) {
-          delete details.requestHeaders['Referer'];
-          delete details.requestHeaders['sec-ch-ua'];
-          delete details.requestHeaders['sec-ch-ua-mobile'];
-          delete details.requestHeaders['sec-ch-ua-platform'];
-          delete details.requestHeaders['Sec-Fetch-Dest'];
-          delete details.requestHeaders['Sec-Fetch-Mode'];
-          delete details.requestHeaders['Sec-Fetch-Site'];
-          callback({
-            requestHeaders: {
-              ...details.requestHeaders,
-              'Origin': '*',
-              'User-Agent': 'Dalvik/2.2.0 (Linux; U; Android 11; Pixel 4a Build/RQ3A.210805.001.A1)',
-            },
-          });
-        } else {
-          callback({});
-        }
+        callback({});
       },
     );
-    window.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+    webContents.session.webRequest.onHeadersReceived((details, callback) => {
       const isEgg = details.url.startsWith('https://lyric.altools.com');
       if (isEgg) {
         callback({
@@ -761,279 +579,6 @@ class Application {
         callback({});
       }
     });
-  }
-
-  initMainWindow() {
-    Menu.setApplicationMenu(null);
-    this.mainWindow = new BrowserWindow(this.mainWindowOptions);
-    this.setCorsHandler(this.mainWindow);
-
-    this.mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
-    this.mainWindow.setVisibleOnAllWorkspaces(true, {
-      visibleOnFullScreen: true,
-    });
-    this.mainWindow.setIgnoreMouseEvents(true, { forward: true });
-
-    if (app.isPackaged) {
-      this.mainWindow.loadFile(path.join(__dirname, './index.html'));
-    } else {
-      this.mainWindow.loadURL('http://localhost:5173');
-    }
-
-    const onMainWindowUpdate = () => this.updateWindowConfig(this.mainWindow);
-    screen.on('display-metrics-changed', onMainWindowUpdate);
-    screen.on('display-added', onMainWindowUpdate);
-    screen.on('display-removed', onMainWindowUpdate);
-
-    onMainWindowUpdate();
-  }
-
-  initOverlayWindow() {
-    if (process.platform === 'win32') {
-      this.overlayWindow = new BrowserWindow({
-        ...this.mainWindowOptions,
-        webPreferences: {
-          ...this.mainWindowOptions.webPreferences,
-          offscreen: true,
-        }
-      });
-      this.setCorsHandler(this.overlayWindow);
-      this.overlayWindow.setIgnoreMouseEvents(true, { forward: true });
-      if (app.isPackaged) {
-        this.overlayWindow.loadFile(path.join(__dirname, './index.html'));
-      } else {
-        this.overlayWindow.loadURL('http://localhost:5173');
-      }
-
-      this.onOverlayWindowUpdate = () => this.updateWindowConfig(this.overlayWindow, { isOverlay: true, gameProcessId: this.registeredPidList[0] });
-      screen.on('display-metrics-changed', this.onOverlayWindowUpdate);
-      screen.on('display-added', this.onOverlayWindowUpdate);
-      screen.on('display-removed', this.onOverlayWindowUpdate);
-
-      this.onOverlayWindowUpdate();
-    }
-  }
-
-  removeOverlayWindow() {
-    if (this.overlayWindow) {
-      this.removeOverlay(this.overlayWindow);
-      if (this.onOverlayWindowUpdate) {
-        screen.removeListener('display-metrics-changed', this.onOverlayWindowUpdate);
-        screen.removeListener('display-added', this.onOverlayWindowUpdate);
-        screen.removeListener('display-removed', this.onOverlayWindowUpdate);
-        this.onOverlayWindowUpdate = null;
-      }
-      this.overlayWindow.close();
-      this.overlayWindow = null;
-    }
-  }
-
-  updateWindowConfig(window: BrowserWindow | null, options?: { isOverlay: boolean, gameProcessId?: number }) {
-    if (!window) return;
-
-    const { windowPosition, selectedTheme, style: legacyStyle } = config();
-    const themes = themeList() ?? {};
-    const style = deepmerge(deepmerge(DEFAULT_STYLE, legacyStyle ?? DEFAULT_STYLE), themes[selectedTheme] ?? DEFAULT_STYLE);
-    let activeDisplay: Electron.Display;
-    if (options?.isOverlay && process.platform === 'win32') {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
-      activeDisplay = screen.getDisplayNearestPoint(
-        windowManager.getWindows().find((window) => window.processId == options.gameProcessId)?.getBounds() as Electron.Point ??
-        screen.getCursorScreenPoint()
-      );
-    } else {
-      activeDisplay = screen.getAllDisplays().find((display) => display.id === windowPosition.display) ?? screen.getPrimaryDisplay();
-    }
-
-    const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
-    const windowHeight = style.maxHeight;
-
-    const anchorX = (() => {
-      if (windowPosition.anchor.includes('left')) {
-        return activeDisplay.bounds.x + (windowPosition?.left ?? 0);
-      }
-
-      if (windowPosition.anchor.includes('right')) {
-        return activeDisplay.bounds.x
-          + (activeDisplay.bounds.width - windowWidth)
-          - (windowPosition?.right ?? 0);
-      }
-
-      return activeDisplay.bounds.x
-        + ((activeDisplay.bounds.width - windowWidth) / 2);
-
-    })();
-
-    const anchorY = (() => {
-      if (windowPosition.anchor.includes('top')) {
-        return activeDisplay.bounds.y + (windowPosition?.top ?? 0);
-      }
-
-      if (windowPosition.anchor.includes('bottom')) {
-        return activeDisplay.bounds.y
-          + activeDisplay.bounds.height - windowHeight
-          - (windowPosition?.bottom ?? 0);
-      }
-
-      return activeDisplay.bounds.y
-        + ((activeDisplay.bounds.height - windowHeight) / 2);
-    })();
-
-    // electron issue: https://github.com/electron/electron/issues/16711#issuecomment-1311824063
-    const resizable = window.isResizable();
-    window.unmaximize();
-    window.setResizable(true);
-    window.setSize(windowWidth, windowHeight);
-    window.setResizable(resizable);
-    window.setPosition(Math.round(anchorX), Math.round(anchorY));
-  }
-
-  initSettingsWindow() {
-    this.settingsWindow = new PlatformBrowserWindow({
-      ...glassOptions,
-      ...micaOptions,
-      width: 800,
-      height: 800,
-      webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
-        nodeIntegration: true,
-      },
-      title: getTranslation('title.setting', config().language),
-      titleBarStyle: 'hiddenInset',
-      frame: false,
-      transparent: true,
-      vibrancy: 'fullscreen-ui',
-      autoHideMenuBar: true,
-      icon: iconPath,
-    });
-
-    if (this.settingsWindow instanceof MicaBrowserWindow) {
-      this.settingsWindow.setAutoTheme();
-      this.settingsWindow.setMicaAcrylicEffect();
-    }
-
-    this.settingsWindow.show();
-    this.settingsWindow.webContents.setWindowOpenHandler(({ url }) => {
-      shell.openExternal(url);
-
-      return { action: 'deny' };
-    });
-
-    if (app.isPackaged) {
-      this.settingsWindow.loadFile(path.join(__dirname, './settings.html'));
-    } else {
-      this.settingsWindow.loadURL('http://localhost:5173/settings.html');
-    }
-
-    this.settingsWindow.show();
-  }
-
-  initLyricsWindow() {
-    this.lyricsWindow = new PlatformBrowserWindow({
-      ...glassOptions,
-      ...micaOptions,
-      width: 1000,
-      height: 600,
-      webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
-        nodeIntegration: true,
-      },
-      title: getTranslation('title.lyrics', config().language),
-      titleBarStyle: 'hiddenInset',
-      frame: false,
-      transparent: true,
-      vibrancy: 'fullscreen-ui',
-      autoHideMenuBar: true,
-      icon: iconPath,
-    });
-    this.setCorsHandler(this.lyricsWindow);
-
-    if (this.lyricsWindow instanceof MicaBrowserWindow) {
-      this.lyricsWindow.setAutoTheme();
-      this.lyricsWindow.setMicaAcrylicEffect();
-    }
-
-    this.lyricsWindow.show();
-    if (app.isPackaged) {
-      this.lyricsWindow.loadFile(path.join(__dirname, './lyrics.html'));
-    } else {
-      this.lyricsWindow.loadURL('http://localhost:5173/lyrics.html');
-    }
-
-    this.lyricsWindow.show();
-  }
-
-  injectOverlay() {
-    if (process.platform === 'win32') {
-      const windowList = this.overlay.getTopWindows(true);
-      hmc.getDetailsProcessList()
-        .filter(({ pid }) => windowList.some((window) => window.processId === pid))
-        .forEach(({ pid, name, path }) => {
-          this.onProcessCreation(pid, name, path);
-        });
-    }
-  }
-  
-  private onProcessCreation(pid: number, _?: string, filePath?: string) {
-    const gamePathList = Object.keys(gameList() ?? {});
-
-    if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
-      let tryCount = 0;
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const windowManager = (require('node-window-manager') as typeof import('node-window-manager')).windowManager;
-
-      const tryToInject = () => {
-        tryCount += 1;
-        if (tryCount > 20) return;
-
-        const isInit = this.overlay.getTopWindows(true).some((window) => window.processId == pid);
-        if (isInit) {
-          let isFirstRun = false;
-          if (this.registeredPidList.length == 0) {
-            const window = windowManager.getWindows().find((window) => window.processId == pid);
-
-            if (window) {
-              this.scaleFactor = window.getMonitor().getScaleFactor();
-            }
-
-            this.initOverlay();
-            isFirstRun = true;
-          }
-
-          for (const window of this.overlay.getTopWindows(true)) {
-            if (window.processId == pid) {
-              this.overlay.injectProcess(window);
-
-              this.registeredPidList.push(pid);
-              this.broadcast('registered-process-list', this.registeredPidList);
-            }
-          }
-
-          if (this.overlayWindow && isFirstRun) {
-            this.addOverlayWindow(
-              'StatusBar',
-              this.overlayWindow,
-              0,
-              0,
-              true,
-            );
-          }
-        } else {
-          setTimeout(tryToInject, 1000);
-        }
-      };
-
-      tryToInject();
-    }
-  }
-  private onProcessDeletion(pid: number, _?: string) {
-    const index = this.registeredPidList.findIndex((it) => it === Number(pid));
-    if (index >= 0) this.registeredPidList.splice(index, 1);
-
-    this.broadcast('registered-process-list', this.registeredPidList);
-
-    if (this.registeredPidList.length <= 0) this.stopOverlay();
   }
 }
 

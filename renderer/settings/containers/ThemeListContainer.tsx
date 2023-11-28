@@ -7,7 +7,7 @@ import Modal from '../../components/Modal';
 import useConfig from '../../hooks/useConfig';
 import { DEFAULT_STYLE } from '../../../common/constants';
 import useThemeList from '../../hooks/useThemeList';
-import { StyleConfig } from '../../../common/config';
+import { StyleConfig } from '../../../common/schema';
 
 const ThemeListContainer = () => {
   const [config, setConfig] = useConfig();
@@ -65,7 +65,7 @@ const ThemeListContainer = () => {
     }
 
     const isSelected = config()?.selectedTheme === oldName;
-    setTheme(newName, original);
+    setTheme(newName, original ?? null);
     setTheme(oldName, null);
     setConfig({
       selectedTheme: isSelected ? newName : config()?.selectedTheme,

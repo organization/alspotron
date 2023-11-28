@@ -12,15 +12,10 @@ import Selector from '../components/Select';
 import { ConfigLyricMode } from '../../common/constants';
 
 const SideBar = () => {
-  const { coverUrl, title, lyrics, playerLyrics, originalLyric, lyricMode } = usePlayingInfo();
+  const { coverUrl, title, lyrics, playerLyrics, originalLyric, lyricMode, isMapped } = usePlayingInfo();
   const [, lyricTime] = useLyric();
   const [, setLyricMapper] = useLyricMapper();
   const [t] = useTransContext();
-
-  const alsongLyric = () => {
-    const lyricInfo = originalLyric();
-    return lyricInfo?.kind === 'alsong' ? lyricInfo.data : null;
-  };
 
   const lyricItems = createMemo(() => {
     if (lyricMode() === 'player') {
@@ -50,8 +45,6 @@ const SideBar = () => {
 
     setLyricMapper(newMapper);
   };
-
-  const isMappedLyric = () => originalLyric()?.useMapper ?? false;
 
   return (
     <div
@@ -86,12 +79,12 @@ const SideBar = () => {
           <Show when={originalLyric()}>
             <Marquee class={'w-full'} gap={32}>
               <div class={'text-xs text-black/50 dark:text-white/50'}>
-                <Trans key={'lyrics.lyric-id'} />: {alsongLyric()?.lyricId ?? 'N/A'}
+                <Trans key={'lyrics.lyric-id'} />: {originalLyric()?.id ?? 'N/A'}
               {' · '}
-                <Trans key={'lyrics.lyric-author'} />: {alsongLyric()?.register?.name ?? 'N/A'}
+                <Trans key={'lyrics.lyric-author'} />: {originalLyric()?.register?.name ?? 'N/A'}
               {' · '}
                 <Switch fallback={t('lyrics.auto-recognized')}>
-                  <Match when={isMappedLyric()}>
+                  <Match when={isMapped()}>
                     <Trans key={'lyrics.manually-specified'} />
                   </Match>
                 </Switch>
@@ -99,10 +92,10 @@ const SideBar = () => {
             </Marquee>
           </Show>
           <Marquee class={'w-full'} gap={32}>
-            {alsongLyric()?.title ?? 'N/A'}
+            {originalLyric()?.title ?? 'N/A'}
           </Marquee>
           <div class={'text-sm'}>
-            {alsongLyric()?.artist ?? 'N/A'}
+            {originalLyric()?.artist ?? 'N/A'}
           </div>
         </div>
       </Card>

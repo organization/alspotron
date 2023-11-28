@@ -1,11 +1,12 @@
 import { Plugin } from './plugin';
 
-import { Config, GameList, LyricMapper, StyleConfig } from '../config';
-import { UpdateData } from '../types';
+import { Config, GameList, LyricMapper, StyleConfig, UpdateData } from '../schema';
+
+import type { PartialDeep } from 'type-fest';
 
 export interface PluginEventMap {
-  'update': (updateContext: { data: UpdateData }) => void;
-  'config': (config: DeepPartial<Config>) => void;
+  'update': (updateContext: UpdateData) => void;
+  'config': (config: PartialDeep<Config>) => void;
   'game-list': (gameList: Partial<GameList>) => void;
   'lyric-mapper': (lyricMapper: Partial<LyricMapper>) => void;
   'registered-process-list': (pidList: number[]) => void;
@@ -23,10 +24,10 @@ export interface PluginEventMap {
   'remove-overlay-from-process': (processId: number) => void;
 }
 export interface OverrideParameterMap {
-  'update': [updateContext: { data: UpdateData }];
-  'config': [config: DeepPartial<Config>];
+  'update': [updateContext: UpdateData];
+  'config': [config: PartialDeep<Config>];
   'game-list': [gameList: Partial<GameList>];
-  'set-theme': [themeList: DeepPartial<StyleConfig> | null];
+  'set-theme': [themeList: PartialDeep<StyleConfig> | null];
   'lyric-mapper': [lyricMapper: Partial<LyricMapper>];
   'window-minimize': [];
   'window-maximize': [maximize: boolean];

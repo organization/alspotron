@@ -4,7 +4,8 @@ import { PluginLogger } from './logger';
 import { SettingOption } from './option';
 import { PluginEventMap, OverrideMap } from './event';
 
-import { Config } from '../config';
+import type { PartialDeep } from 'type-fest';
+import type { Config } from '../schema';
 
 export type PluginState = 'enable' | 'disable';
 export type PluginUnload = () => void;
@@ -16,7 +17,7 @@ export interface PluginContext {
   // off<K extends keyof PluginEventMap>(event: K, listener: PluginEventMap[K]): void;
   // emit<K extends keyof PluginEventMap>(event: K, ...args: Parameters<PluginEventMap[K]>): void;
 
-  useConfig(): [Accessor<Config>, (config: DeepPartial<Config>) => void];
+  useConfig(): [Accessor<Config>, (config: PartialDeep<Config>) => void];
   useSetting(options: SettingOption, onValueChange?: () => void): unknown;
   useOverride<Target extends keyof OverrideMap>(target: Target, fn: OverrideMap[Target]): void;
 
