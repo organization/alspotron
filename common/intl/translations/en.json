@@ -66,8 +66,9 @@
   "setting.about.alspotron-translator.japanese": "Alspotron Japanese translator",
   "setting.about.alspotron-translator.german": "Alspotron German translator",
 
-  "setting.general.select-language-menu": "Language preference",
+  "setting.general.general-menu": "General options",
   "setting.general.select-language": "Change language",
+  "setting.general.streaming-mode": "Streaming Mode",
   "setting.general.language.alert": "Some settings requires an app restart to show changes in effect.",
   "setting.general.lyric-menu": "Lyric preference",
   "setting.general.next-lyric-count": "Count of next lyrics to show",

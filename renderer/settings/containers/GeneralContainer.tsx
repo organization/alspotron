@@ -31,7 +31,7 @@ const LanguageContainer = () => {
         <Trans key={'setting.title.general'} />
       </div>
       <div class={'text-md mt-4 mb-1 px-4'}>
-        <Trans key={'setting.general.select-language-menu'} />
+        <Trans key={'setting.general.general-menu'} />
       </div>
       <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -51,6 +51,12 @@ const LanguageContainer = () => {
             }}
             format={(str) => getTranslation('language.name', str)}
           />
+        </Card>
+        <Card class={'flex flex-row justify-between items-center gap-1'}>
+          <div class={'text-md'}>
+            <Trans key={'setting.general.streaming-mode'} />
+          </div>
+          <Switch value={config()?.streamingMode} onChange={(checked) => setConfig({ streamingMode: checked })} />
         </Card>
       </div>
       <div class={'text-md mt-4 mb-1 px-4'}>

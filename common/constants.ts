@@ -71,5 +71,6 @@ export const DEFAULT_CONFIG = {
     config: {},
   },
 
+  streamingMode: false,
   provider: LyricProviderList[0].provider as 'alsong',
 };

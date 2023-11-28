@@ -66,8 +66,9 @@
   "setting.about.alspotron-translator.japanese": "Japanische Übersetzung von Alspotify",
   "setting.about.alspotron-translator.german": "Deutsche Übersetzung von Alspotify",
 
-  "setting.general.select-language-menu": "Spracheinstellungen",
+  "setting.general.general-menu": "General options",
   "setting.general.select-language": "Sprache ändern",
+  "setting.general.streaming-mode": "Streaming Mode",
   "setting.general.language.alert": "Einige Einstellungen werden erst nach Neustart angewendet.",
   "setting.general.lyric-menu": "Lyric preference",
   "setting.general.next-lyric-count": "Count of next lyrics to show",

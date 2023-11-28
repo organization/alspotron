@@ -30,6 +30,7 @@ export const LEGACY_migrator0_16_0: Migrator = {
 
       plugins: configData.plugins,
 
+      streamingMode: DEFAULT_CONFIG.streamingMode,
       provider: DEFAULT_CONFIG.provider,
     } satisfies Config;
   },

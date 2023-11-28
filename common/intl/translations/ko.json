@@ -66,8 +66,9 @@
   "setting.about.alspotron-translator.japanese": "Alspotron 일본어 번역자",
   "setting.about.alspotron-translator.german": "Alspotron 독일어 번역자",
 
-  "setting.general.select-language-menu": "언어 관련 설정",
+  "setting.general.general-menu": "일반 설정",
   "setting.general.select-language": "언어 변경",
+  "setting.general.streaming-mode": "방송 모드",
   "setting.general.language.alert": "일부 설정은 재시작 후 적용됩니다.",
   "setting.general.lyric-menu": "가사 설정",
   "setting.general.next-lyric-count": "미리볼 다음 가사의 개수",

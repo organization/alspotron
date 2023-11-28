@@ -20,9 +20,7 @@ const LYRIC_WINDOW_OPTIONS = {
   maximizable: false,
   transparent: true,
   frame: false,
-  focusable: false,
   alwaysOnTop: true,
-  skipTaskbar: true,
   hasShadow: false,
   hiddenInMissionControl: true,
   roundedCorners: false,
@@ -38,7 +36,10 @@ export class LyricWindowProvider implements WindowProvider {
   public window: BrowserWindow;
 
   constructor(options: Electron.BrowserWindowConstructorOptions = {}) {
-    this.window = new BrowserWindow(deepmerge(LYRIC_WINDOW_OPTIONS, options));
+    this.window = new BrowserWindow(deepmerge(LYRIC_WINDOW_OPTIONS, options, {
+      focusable: config.get().streamingMode,
+      skipTaskbar: !config.get().streamingMode,
+    }));
 
     Menu.setApplicationMenu(null);
 
@@ -75,8 +76,17 @@ export class LyricWindowProvider implements WindowProvider {
     const {
       windowPosition,
       selectedTheme,
+      streamingMode
     } = config.get();
     const style = themeList.get()[selectedTheme] ?? DEFAULT_STYLE;
+
+    if (streamingMode) {
+      this.window.setSkipTaskbar(false);
+      this.window.setFocusable(true);
+    } else {
+      this.window.setSkipTaskbar(true);
+      this.window.setFocusable(false);
+    }
 
     const activeDisplay = this.getActiveDisplay();
     const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);

@@ -507,8 +507,16 @@ class Application {
   }
 
   initHook() {
+    let lastConfig = config.get();
+
     config.watch((config) => {
       this.broadcast('config', config);
+
+      if (lastConfig.streamingMode !== config.streamingMode) {
+        this.lyricWindowProvider.updateWindowConfig();
+      }
+
+      lastConfig = config;
     });
     lyricMapper.watch((lyricMapper) => {
       this.broadcast('lyric-mapper', lyricMapper);

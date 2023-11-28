@@ -88,6 +88,7 @@ export const ConfigSchema = z.object({
     config: z.record(z.record(z.unknown())),
   }),
 
+  streamingMode: z.boolean().catch(DEFAULT_CONFIG.streamingMode),
   provider: z.literal(LyricProviderList[0]!.provider).catch(DEFAULT_CONFIG.provider),
   /*
     z.union([
