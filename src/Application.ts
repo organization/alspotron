@@ -267,7 +267,7 @@ class Application {
         })();
       });
     },
-  } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => void>;
+  } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown>;
 
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
