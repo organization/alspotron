@@ -130,7 +130,6 @@ class Application {
       await this.overridePlugin('config', (data) => {
         config.set(data);
       }, data);
-      this.broadcast('config', config.get());
     },
     'get-default-config': () => DEFAULT_CONFIG,
     'reset-config': () => {
@@ -140,22 +139,17 @@ class Application {
 
       this.pluginManager.getPlugins()
         .forEach((plugin) => this.pluginManager.removePlugin(plugin));
-
-      this.broadcast('config', config.get());
-      this.broadcast('game-list', gameList.get());
     },
     'set-lyric-mapper': async (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
       await this.overridePlugin('lyric-mapper', (data) => {
         lyricMapper.set(data, useFallback);
       }, data);
-      this.broadcast('lyric-mapper', lyricMapper.get());
     },
     'get-lyric-mapper': () => lyricMapper.get(),
     'set-game-list': async (_, data: Partial<GameList>, useFallback: boolean = true) => {
       await this.overridePlugin('game-list', (data) => {
         gameList.set(data, useFallback);
       }, data);
-      this.broadcast('game-list', gameList.get());
     },
     'get-game-list': () => gameList.get(),
     'set-theme': async (_, name: string, data: PartialDeep<StyleConfig> | null, useFallback: boolean = true) => {
@@ -164,7 +158,6 @@ class Application {
           [name]: data ?? undefined,
         }, useFallback);
       }, data);
-      this.broadcast('theme-list', themeList.get());
     },
     'get-theme-list': () => themeList.get(),
 
@@ -514,6 +507,19 @@ class Application {
   }
 
   initHook() {
+    config.watch((config) => {
+      this.broadcast('config', config);
+    });
+    lyricMapper.watch((lyricMapper) => {
+      this.broadcast('lyric-mapper', lyricMapper);
+    });
+    gameList.watch((gameList) => {
+      this.broadcast('game-list', gameList);
+    });
+    themeList.watch((themeList) => {
+      this.broadcast('theme-list', themeList);
+    });
+
     Object.entries(this.handleMap)
       .forEach(([event, handler]) => {
         ipcMain.handle(event, handler as (event: Electron.IpcMainInvokeEvent) => unknown);
