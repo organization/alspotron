@@ -258,7 +258,7 @@ const ThemeContainer = () => {
                 class={'w-full items-end'}
                 style={`row-gap: ${theme()?.lyric.containerRowGap}rem;`}
                 lyrics={animationPreview()}
-                status="playing"
+                status={'playing'}
               />
             </div>
           </div>,
