@@ -3,13 +3,17 @@ export const userCSSSelectors = {
   'lyrics-item': 'alspotron-usercss-lyrics-item',
   'lyrics': 'alspotron-usercss-lyrics',
   'lyrics-wrapper': 'alspotron-usercss-lyrics-wrapper',
-  'lyrics-transition-wrapper': 'alspotron-usercss-lyrics-trasntion-wrapper',
+  'lyrics-transition-wrapper': 'alspotron-usercss-lyrics-transition-wrapper',
   'lyrics-container': 'alspotron-usercss-lyrics-container',
   'nowplaying': 'alspotron-usercss-nowplaying',
+  'nowplaying--stopped': 'alspotron-usercss-nowplaying--stopped',
+  'nowplaying--idle': 'alspotron-usercss-nowplaying--idle',
+  'nowplaying--playing': 'alspotron-usercss-nowplaying--playing',
   'nowplaying-progress': 'alspotron-usercss-nowplaying-progress',
   'nowplaying-progress-bar': 'alspotron-usercss-nowplaying-progress-bar',
+  'nowplaying-container': 'alspotron-usercss-nowplaying-container',
   'nowplaying-cover': 'alspotron-usercss-nowplaying-cover',
-  'nowplaying-cover--disabled': 'alspotron-usercss-nowplaying-cover--disabled',
+  'nowplaying-cover--empty': 'alspotron-usercss-nowplaying-cover--empty',
   'nowplaying-playing-text': 'alspotron-usercss-playing-text',
   'nowplaying-marquee': 'alspotron-usercss-nowplaying-marquee',
   'nowplaying-title': 'alspotron-usercss-nowplaying-title',
@@ -24,6 +28,7 @@ export const userCSSTransitions = {
 };
 
 export const userCSSVariables = {
+  'var-cover-url': '--cover-url',
   'var-nowplaying-percent': '--nowplaying-percent',
   'var-nowplaying-duration': '--nowplaying-duration',
   'var-nowplaying-progress': '--nowplaying-progress',
