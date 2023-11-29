@@ -12,7 +12,7 @@ export const useClassStyle = (className: string, style: Accessor<string>) => {
   })
 
   createEffect(on(style, () => {
-    stylesheet.insertRule(`*:is(.${className}) {\n${style()}\n}`, stylesheet.cssRules.length);
+    stylesheet.replaceSync(`*:is(.${className}) {\n${style()}\n}`);
   }));
 
   onCleanup(() => {

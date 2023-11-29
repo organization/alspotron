@@ -110,7 +110,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     transition: all 0.225s ease-out;
   `);
 
-  useClassStyle(`${userCSSSelectors['nowplaying--stopped']} .${userCSSSelectors['nowplaying-cover']}`, () => `
+  useClassStyle(`${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['nowplaying-cover']}`, () => `
     filter: grayscale(100%);
     scale: 95%;
   `);
@@ -143,9 +143,6 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
       `}
       classList={{
         [userCSSSelectors.nowplaying]: true,
-        [userCSSSelectors['nowplaying--stopped']]: status() === 'stopped',
-        [userCSSSelectors['nowplaying--idle']]: status() === 'idle',
-        [userCSSSelectors['nowplaying--playing']]: status() === 'playing',
         [style.class ?? '']: !!style.class,
       }}
       {...containerProps}

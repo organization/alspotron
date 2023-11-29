@@ -1,4 +1,4 @@
-import { createMemo, For, JSX, Match, on, splitProps, Switch, untrack } from 'solid-js';
+import { For, JSX, Match, splitProps, Switch, untrack } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
 import LyricsItem from './LyricsItem';
@@ -13,20 +13,15 @@ import type { StyleConfig } from '../../../common/schema';
 type LyricsProps = {
   lyrics: string[];
   status: Status;
-  style: string;
 };
 
 const Lyrics = (props: LyricsProps) => (
   <For each={props.lyrics}>
-    {(item, index) => item && (
+    {(item, index) => (
       <LyricsItem
-        class={cx(userCSSSelectors['lyrics-item'], 'w-fit')}
+        class={cx(userCSSSelectors['lyrics-item'])}
         status={props.status}
-        style={`
-          --order: calc(${index()} + var(--order-offset, 0));
-          ${userCSSVariables['var-lyric-order']}: var(--order);
-          ${props.style};
-        `}
+        style={`${userCSSVariables['var-lyric-order']}: calc(${index()} + var(${userCSSVariables['var-lyric-order-offset']}, 0));`}
       >
         {item}
       </LyricsItem>
@@ -37,7 +32,6 @@ const Lyrics = (props: LyricsProps) => (
 type LyricsTransitionGroupProps = {
   animation: string;
   lyrics: string[];
-  lyricsStyle: string;
   lyricsStatus: Status;
   container: ({ children }: { children: JSX.Element }) => JSX.Element;
 };
@@ -52,7 +46,7 @@ const LyricsTransitionGroupAllAtOnce = (props: LyricsTransitionGroupProps) => {
         <For each={lyricTransitionGroup()}>
           {(lyrics) => (
             <Container>
-              <Lyrics lyrics={lyrics} style={props.lyricsStyle} status={props.lyricsStatus} />
+              <Lyrics lyrics={lyrics} status={props.lyricsStatus} />
             </Container>
           )}
         </For>
@@ -67,7 +61,7 @@ const LyricsTransitionGroupSequential = (props: LyricsTransitionGroupProps) => {
   return (
     <Container>
       <TransitionGroup name={props.animation} appear>
-        <Lyrics lyrics={props.lyrics} style={props.lyricsStyle} status={props.lyricsStatus} />
+        <Lyrics lyrics={props.lyrics} status={props.lyricsStatus} />
       </TransitionGroup>
     </Container>
   );
@@ -95,14 +89,6 @@ const LyricsTransition = (props: LyricTransitionProps) => {
     return `lyric-${configuredName}`;
   };
 
-  const lyricsStyle = createMemo(on(style, (styleData) => `
-    font-family: ${styleData.font};
-    font-weight: ${styleData.fontWeight};
-    font-size: ${styleData.lyric.fontSize}px;
-    color: ${styleData.lyric.color};
-    background-color: ${styleData.lyric.background};
-  `));
-
   const Container = (containerProps: { children: JSX.Element }) => (
     <div class={cx('flex flex-col', userCSSSelectors.lyrics, props.class)} {...passedProps}>
       {containerProps.children}
@@ -126,7 +112,6 @@ const LyricsTransition = (props: LyricTransitionProps) => {
       container={Container}
       lyrics={lyricsProps.lyrics}
       lyricsStatus={lyricsProps.status}
-      lyricsStyle={lyricsStyle()}
     />
   );
 };

@@ -7,10 +7,9 @@ import Lyrics from './components/Lyrics';
 import PlayingInfoProvider from '../components/PlayingInfoProvider';
 import UserCSS from '../components/UserCSS';
 import useConfig from '../hooks/useConfig';
-import { userCSSSelectors, userCSSVariables } from '../utils/userCSSSelectors';
+import { userCSSSelectors } from '../utils/userCSSSelectors';
 import usePluginsCSS from '../hooks/usePluginsCSS';
 import useStyle from '../hooks/useStyle';
-import { useClassStyle } from '../hooks/useClassStyle';
 
 
 const useProximityStyle = () => {
@@ -90,14 +89,7 @@ const App = () => {
   usePluginsCSS();
 
   const style = useStyle();
-
   const proximityHandles = useProximityStyle();
-
-  useClassStyle(userCSSSelectors.wrapper, () => `
-    display: flex;
-    flex-direction: column;
-    row-gap: ${style()?.rowGap ?? '2'}rem;
-  `);
 
   return (
     <PlayingInfoProvider>
@@ -107,8 +99,7 @@ const App = () => {
       >
         <Lyrics />
         <Show when={style().nowPlaying?.visible ?? true}>
-          <LyricProgressBar
-          />
+          <LyricProgressBar />
         </Show>
       </AnchoredView>
       <UserCSS />
