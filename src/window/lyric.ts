@@ -33,6 +33,8 @@ const LYRIC_WINDOW_OPTIONS = {
 };
 
 export class LyricWindowProvider implements WindowProvider {
+  private readonly onUpdateWindowConfig: () => void;
+
   public window: BrowserWindow;
 
   constructor(options: Electron.BrowserWindowConstructorOptions = {}) {
@@ -55,24 +57,25 @@ export class LyricWindowProvider implements WindowProvider {
       this.window.loadURL('http://localhost:5173');
     }
 
-    screen.on('display-metrics-changed', this.updateWindowConfig.bind(this));
-    screen.on('display-added', this.updateWindowConfig.bind(this));
-    screen.on('display-removed', this.updateWindowConfig.bind(this));
+    this.onUpdateWindowConfig = this.updateWindowConfig; //.bind(this);
+    screen.on('display-metrics-changed', this.onUpdateWindowConfig);
+    screen.on('display-added', this.onUpdateWindowConfig);
+    screen.on('display-removed', this.onUpdateWindowConfig);
 
     this.updateWindowConfig();
 
-    config.watch(this.updateWindowConfig.bind(this));
+    config.watch(this.onUpdateWindowConfig);
   }
 
   close() {
     this.window.close();
 
-    screen.removeListener('display-metrics-changed', this.updateWindowConfig.bind(this));
-    screen.removeListener('display-added', this.updateWindowConfig.bind(this));
-    screen.removeListener('display-removed', this.updateWindowConfig.bind(this));
+    screen.removeListener('display-metrics-changed', this.onUpdateWindowConfig);
+    screen.removeListener('display-added', this.onUpdateWindowConfig);
+    screen.removeListener('display-removed', this.onUpdateWindowConfig);
   }
 
-  public updateWindowConfig() {
+  public updateWindowConfig(activeDisplay: Electron.Display = this.getActiveDisplay()) {
     const {
       windowPosition,
       selectedTheme,
@@ -88,7 +91,7 @@ export class LyricWindowProvider implements WindowProvider {
       this.window.setFocusable(false);
     }
 
-    const activeDisplay = this.getActiveDisplay();
+    console.log('check', this instanceof LyricWindowProvider);
     const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
     const windowHeight = style.maxHeight;
 

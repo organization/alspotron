@@ -52,10 +52,14 @@ export class OverlayWindowProvider extends LyricWindowProvider {
     this.pid = pid;
   }
 
+  override updateWindowConfig() {
+    super.updateWindowConfig(this.getActiveDisplay());
+  }
+
   override getActiveDisplay() {
     if (this.nodeWindowManager) {
       const windowManager = this.nodeWindowManager.windowManager;
-
+      console.log('getActiveDisplay', 'overridden');
       return screen.getDisplayNearestPoint(
         windowManager.getWindows().find((window) => window.processId == this.pid)?.getBounds() as Electron.Point ??
         screen.getCursorScreenPoint()

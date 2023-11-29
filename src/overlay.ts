@@ -8,6 +8,7 @@ import { hmc } from 'hmc-win32';
 import { gameList } from './config';
 import { IOverlay } from './electron-overlay';
 import { OverlayWindowProvider } from './window';
+import { clearTimeout } from 'timers';
 
 type IOverlay = typeof IOverlay;
 let wql: typeof import('@jellybrick/wql-process-monitor') | undefined;
@@ -69,6 +70,12 @@ export class OverlayManager extends EventEmitter {
 
     this.overlay = module.exports as IOverlay;
 
+    this.injectOverlay();
+  }
+
+  public injectOverlay() {
+    if (!this.overlay) return;
+
     const windowList = this.overlay.getTopWindows(true);
     hmc.getDetailsProcessList()
       .filter(({ pid }) => windowList.some((window) => window.processId === pid))
@@ -102,25 +109,29 @@ export class OverlayManager extends EventEmitter {
     this.overlay?.stop();
   }
 
-  public async createProcess(pid: number) {
+  public createProcess(pid: number) {
     if (!wql || !nodeWindowManager) return;
     const windowManager = nodeWindowManager.windowManager;
 
-    return new Promise((resolve) => {
       let injectCount = 0;
 
-      const interval = setInterval(() => {
-        const isInit = this.overlay?.getTopWindows(true).some((window) => window.processId == pid);
-        if (!isInit || !this.overlay || !nodeWindowManager) return;
+      const tryToInject = () => {
+        if (!this.overlay || !nodeWindowManager) return;
+        const isInit = this.overlay.getTopWindows(true).some((window) => window.processId == pid);
 
         injectCount += 1;
         if (injectCount > 20) {
-          clearInterval(interval);
-          resolve(false);
+          // resolve(false);
           console.warn('[Alspotron] Failed to inject process.');
           return;
         }
 
+        if (!isInit) {
+          setTimeout(tryToInject, 1000);
+          return;
+        }
+
+        console.log('[Alspotron] try to inject process:', pid);
         let isFirstRun = false;
         if (this.registeredPidList.length === 0) {
           const window = windowManager.getWindows().find((window) => window.processId == pid);
@@ -151,10 +162,10 @@ export class OverlayManager extends EventEmitter {
           );
         }
 
-        clearInterval(interval);
-        resolve(true);
-      }, 1000);
-    });
+        // resolve(true);
+      };
+
+      setTimeout(tryToInject, 10000);
   }
 
   public deleteProcess(pid: number) {
@@ -239,6 +250,7 @@ export class OverlayManager extends EventEmitter {
     });
 
     window.on('resize', () => {
+      console.log('resize overlay');
       if (this.markQuit || !this.overlay) return;
 
       this.overlay.sendWindowBounds(window.id, {

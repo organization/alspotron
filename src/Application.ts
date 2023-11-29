@@ -575,7 +575,7 @@ class Application {
       },
     );
     webContents.session.webRequest.onHeadersReceived((details, callback) => {
-      const isEgg = details.url.startsWith('https://lyric.altools.com');
+      const isEgg = details.url.startsWith('https://lyric.altools.com'); // TODO: use provider receiver
       if (isEgg) {
         callback({
           responseHeaders: {
