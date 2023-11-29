@@ -23,7 +23,6 @@ const LyricsItem = (props: LyricsItemProps) => {
     if (!init()) return `transition-delay: calc(255ms + var(${userCSSVariables['var-lyric-order']}) * 75ms);`;
 
     return `
-      --top: ${dom.offsetTop}px;
       transition-delay: calc(var(${userCSSVariables['var-lyric-order']}) * 75ms);
     `;
   });

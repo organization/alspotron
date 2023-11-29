@@ -68,6 +68,7 @@ const LyricsTransitionGroupSequential = (props: LyricsTransitionGroupProps) => {
 };
 
 type LyricTransitionProps = JSX.HTMLAttributes<HTMLDivElement> & {
+  animation: string;
   lyrics: string[];
   status: Status;
   style: string;
@@ -75,19 +76,10 @@ type LyricTransitionProps = JSX.HTMLAttributes<HTMLDivElement> & {
 };
 
 const LyricsTransition = (props: LyricTransitionProps) => {
-  const [, lyricsProps, passedProps] = splitProps(props, ['class'], ['lyrics', 'status']);
+  const [, lyricsProps, passedProps] = splitProps(props, ['class'], ['lyrics', 'status', 'animation']);
 
   const theme = useStyle();
   const style = () => props.theme ?? theme();
-
-  const animation = () => {
-    const configuredName = style()?.animation ?? 'pretty';
-    if (configuredName === 'custom') {
-      return userCSSTransitions['transition-lyric'];
-    }
-
-    return `lyric-${configuredName}`;
-  };
 
   const Container = (containerProps: { children: JSX.Element }) => (
     <div class={cx('flex flex-col', userCSSSelectors.lyrics, props.class)} {...passedProps}>
@@ -108,7 +100,7 @@ const LyricsTransition = (props: LyricTransitionProps) => {
 
   return (
     <LyricsTransitionGroup
-      animation={animation()}
+      animation={lyricsProps.animation}
       container={Container}
       lyrics={lyricsProps.lyrics}
       lyricsStatus={lyricsProps.status}

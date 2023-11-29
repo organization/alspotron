@@ -104,7 +104,7 @@ const Lyrics = (props: LyricsProps) => {
     
     width: fit-content;
     
-    padding: 0.25rem 0.5rem; /* y-1 x-2 */
+    padding: 0.25rem 0.5rem;
     whitespace: pre-line;
     text-align: center;
     
@@ -148,6 +148,7 @@ const Lyrics = (props: LyricsProps) => {
                   }}
                 >
                   <LyricsTransition
+                    animation={animation()}
                     lyrics={lyrics}
                     status={status()}
                     style={`${userCSSVariables['var-lyric-order-offset']}: ${orderOffset() + (index() * offset())};`}
