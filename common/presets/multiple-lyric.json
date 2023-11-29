@@ -1,0 +1,36 @@
+{
+  "font": "Pretendard Variable",
+  "fontWeight": "400",
+  "animation": "fade",
+  "animationAtOnce": true,
+  "maxHeight": 400,
+  "proximityOpacity": 0,
+  "proximitySensitivity": 2,
+  "rowGap": 1,
+  "nowPlaying": {
+    "color": "#FFFFFF",
+    "background": "rgba(29, 29, 29, .50)",
+    "backgroundProgress": "rgba(29, 29, 29, .80)",
+    "fontSize": 15,
+    "maxWidth": 600,
+    "visible": true,
+    "stoppedOpacity": 0.5
+  },
+  "lyric": {
+    "color": "#FFFFFF",
+    "background": "rgba(29, 29, 29, .70)",
+    "fontSize": 12,
+    "maxWidth": 700,
+    "stoppedOpacity": 0.5,
+    "containerRowGap": 0.25,
+    "multipleContainerRowGap": 1,
+    "direction": "column",
+    "nextLyric": 1,
+    "previousLyric": 1,
+    "nextLyricScale": 0.9,
+    "previousLyricScale": 0.9,
+    "nextLyricOpacity": 0.5,
+    "previousLyricOpacity": 0.5
+  },
+  "userCSS": ""
+}

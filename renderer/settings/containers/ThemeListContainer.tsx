@@ -5,9 +5,11 @@ import { useNavigate } from '@solidjs/router';
 import Card from '../../components/Card';
 import Modal from '../../components/Modal';
 import useConfig from '../../hooks/useConfig';
-import { DEFAULT_STYLE } from '../../../common/constants';
 import useThemeList from '../../hooks/useThemeList';
+
+import presetThemes from '../../../common/presets';
 import { StyleConfig } from '../../../common/schema';
+import { DEFAULT_STYLE, PRESET_PREFIX } from '../../../common/constants';
 
 const ThemeListContainer = () => {
   const [config, setConfig] = useConfig();
@@ -79,7 +81,7 @@ const ThemeListContainer = () => {
     const isSelected = config()?.selectedTheme === name;
     setTheme(name, null);
     setConfig({
-      selectedTheme: isSelected ? Object.keys(themeList())[0] : config()?.selectedTheme,
+      selectedTheme: isSelected ? `${PRESET_PREFIX}${Object.keys(presetThemes)[0]}` : config()?.selectedTheme,
     });
     setDeleteOpen(false);
   };
@@ -107,8 +109,47 @@ const ThemeListContainer = () => {
         <Trans key={'setting.title.theme'} />
       </div>
       <div class={'text-md mt-4 mb-1'}>
+        <Trans key={'setting.theme.built-in-themes'} />
+      </div>
+      <For each={Object.keys(presetThemes)}>
+        {(name) => (
+          <Card class={'flex flex-row justify-start items-center gap-4'}>
+            <Show
+              when={config()?.selectedTheme === name}
+              fallback={<div class={'w-6 h-6'} />}
+            >
+              <svg
+                class={'w-6 h-6 fill-none'}
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M4.53 12.97a.75.75 0 0 0-1.06 1.06l4.5 4.5a.75.75 0 0 0 1.06 0l11-11a.75.75 0 0 0-1.06-1.06L8.5 16.94l-3.97-3.97Z"
+                  class={'fill-green-500'}
+                />
+              </svg>
+            </Show>
+            <div class={'text-md'}>
+              <Trans key={`setting.theme.preset.${name}`} />
+            </div>
+            <div class={'flex-1'} />
+            <button
+              class={config()?.selectedTheme === `${PRESET_PREFIX}${name}` ? 'btn-primary-disabled' : 'btn-primary'}
+              onClick={() => onSelectTheme(`${PRESET_PREFIX}${name}`)}
+            >
+              <Trans key={'setting.theme.apply-theme'} />
+            </button>
+          </Card>
+        )}
+      </For>
+      <div class={'text-md mt-4 mb-1'}>
         <Trans key={'setting.theme.available-themes'} />
       </div>
+      <Show when={Object.keys(themeList()).length === 0}>
+        <div class={'text-md text-gray-500 p-5 text-center'}>
+          <Trans key={'setting.theme.no-available-themes'} />
+        </div>
+      </Show>
       <For each={Object.keys(themeList())}>
         {(name) => (
           <Card
@@ -116,7 +157,6 @@ const ThemeListContainer = () => {
             subCards={[
               <div class={'w-full h-full flex justify-start items-center gap-3'}>
                 <button
-                  disabled={Object.keys(themeList()).length <= 1}
                   class={'btn-error flex justify-center items-center'}
                   onClick={() => onDelete(name)}
                 >

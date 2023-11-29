@@ -56,6 +56,4 @@ const loadFromFile = async () => {
 };
 loadFromFile()
   .then((value) => themeList.set(value))
-  .catch(() => themeList.set({
-    'Default Theme': DEFAULT_STYLE
-  }));
+  .catch(() => themeList.set({}));
