@@ -89,7 +89,10 @@ const ThemeContainer = () => {
     parentRef?.addEventListener('scroll', onScroll);
   });
   (async () => {
-    setFontList(await window.getFont({ disableQuoting: true }));
+    const fontList = await window.getFont({ disableQuoting: true });
+    if (!fontList.includes('Pretendard JP Variable')) fontList.push('Pretendard JP Variable');
+
+    setFontList(fontList);
   })();
   onCleanup(() => {
     if (typeof interval === 'number') clearInterval(interval);

@@ -7,7 +7,7 @@ export const ConfigLyricMode = {
 export type ConfigLyricMode = typeof ConfigLyricMode[keyof typeof ConfigLyricMode];
 
 export const DEFAULT_STYLE = {
-  font: 'KoPubWorldDotum',
+  font: 'Pretendard JP Variable',
   fontWeight: '400',
   animation: 'pretty',
   animationAtOnce: false,
