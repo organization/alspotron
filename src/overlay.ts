@@ -8,7 +8,6 @@ import { hmc } from 'hmc-win32';
 import { gameList } from './config';
 import { IOverlay } from './electron-overlay';
 import { OverlayWindowProvider } from './window';
-import { clearTimeout } from 'timers';
 
 type IOverlay = typeof IOverlay;
 let wql: typeof import('@jellybrick/wql-process-monitor') | undefined;
@@ -53,8 +52,8 @@ export class OverlayManager extends EventEmitter {
       filterWindowsNoise: true,
     })
       .then((listener) => {
-        listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
-        listener.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
+        listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(Number(pid), name, filePath));
+        listener.on('deletion', ([name, pid]) => this.onProcessDeletion(Number(pid), name));
       });
 
 
@@ -143,7 +142,7 @@ export class OverlayManager extends EventEmitter {
         }
 
         for (const window of this.overlay.getTopWindows(true)) {
-          if (window.processId === pid) {
+          if (window.processId == pid && !this.registeredPidList.includes(pid)) {
             this.overlay.injectProcess(window);
 
             this.registeredPidList.push(pid);
@@ -165,11 +164,11 @@ export class OverlayManager extends EventEmitter {
         // resolve(true);
       };
 
-      setTimeout(tryToInject, 10000);
+      tryToInject();
   }
 
   public deleteProcess(pid: number) {
-    const index = this.registeredPidList.findIndex((it) => it === Number(pid));
+    const index = this.registeredPidList.findIndex((it) => it === pid);
     if (index >= 0) this.registeredPidList.splice(index, 1);
 
     this.emit('unregister-process', pid, index >= 0);
@@ -261,10 +260,6 @@ export class OverlayManager extends EventEmitter {
           height: Math.floor(window.getBounds().height * this.scaleFactor),
         },
       });
-    });
-
-    window.on('closed', () => {
-      this.overlay?.closeWindow(window.id);
     });
 
     window.webContents.on('cursor-changed', (_, type) => {

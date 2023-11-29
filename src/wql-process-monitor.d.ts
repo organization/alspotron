@@ -62,22 +62,22 @@ declare module '@jellybrick/wql-process-monitor' {
     /**
      * Subscribe to process creation and deletion events.
      * @param option
-     * @returns {Promise<Emittery<{creation: [string, number, string?], deletion: [string, number]}>>}
+     * @returns {Promise<Emittery<{creation: [string, string, string?], deletion: [string, string]}>>}
      */
     subscribe(option?: Options): Promise<Emittery<{
       /**
        * Process creation event
        * @param {string} processName process name
-       * @param {number} processId process identifier
+       * @param {string} processId process identifier
        * @param {string} filepath file location path (if available*)
        */
-      creation: [string, number, string?],
+      creation: [string, string, string?],
       /**
        * Process deletion event
        * @param {string} processName process name
-       * @param {number} processId process identifier
+       * @param {string} processId process identifier
        */
-      deletion: [string, number]
+      deletion: [string, string]
     }>>;
 
     /**
@@ -100,22 +100,22 @@ declare module '@jellybrick/wql-process-monitor' {
     /**
      * Subscribe to process creation and deletion events.
      * @param option
-     * @returns {Emittery<{creation: [string, number, string?], deletion: [string, number]}>}
+     * @returns {Emittery<{creation: [string, string, string?], deletion: [string, string]}>}
      */
     subscribe(option?: Options): Emittery<{
       /**
        * Process creation event
        * @param {string} processName process name
-       * @param {number} processId process identifier
+       * @param {string} processId process identifier
        * @param {string} filepath file location path (if available*)
        */
-      creation: [string, number, string?],
+      creation: [string, string, string?],
       /**
        * Process deletion event
        * @param {string} processName process name
-       * @param {number} processId process identifier
+       * @param {string} processId process identifier
        */
-      deletion: [string, number]
+      deletion: [string, string]
     }>;
 
     /**
