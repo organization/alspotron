@@ -11,6 +11,8 @@ import { formatTime } from '../../utils/formatTime';
 
 import { userCSSSelectors, userCSSVariables } from '../../utils/userCSSSelectors';
 
+import { useClassStyle } from '../../hooks/useClassStyle';
+
 import type { JSX } from 'solid-js/jsx-runtime';
 import type { StyleConfig } from '../../../common/schema';
 
@@ -51,59 +53,119 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     }
   });
 
+  useClassStyle(userCSSSelectors.nowplaying, () => {
+    const style = themeStyle();
+
+    return `
+      position: relative;
+      
+      max-width: ${style.nowPlaying.maxWidth}px;
+      padding: 0.75rem;
+
+      color: ${style.nowPlaying.color};
+      background-color: ${style.nowPlaying.background};
+      font-family: ${style.font};
+      font-weight: ${style.fontWeight};
+      opacity: ${status() !== 'playing' ? style.nowPlaying.stoppedOpacity : 1};
+      border-radius: 0.375rem;
+      
+      overflow: hidden;
+      
+      will-change: opacity, transform;
+      transition: all 0.225s ease-out;
+    `;
+  });
+
+  useClassStyle(userCSSSelectors['nowplaying-progress-bar'], () => `
+    position: absolute;
+    inset: 0;
+  `);
+
+  useClassStyle(userCSSSelectors['nowplaying-progress'], () => `
+    position: absolute;
+    inset: 0;
+    
+    background-color: ${themeStyle().nowPlaying.backgroundProgress};
+    
+    transform-origin: left;
+    transform: scaleX(var(${userCSSVariables['var-nowplaying-percent']}));
+    
+    ${progressTransition() ? 'transition: transform 0.225s cubic-bezier(0.34, 1.56, 0.64, 1);' : ''}
+  `);
+
+  useClassStyle(userCSSSelectors['nowplaying-container'], () => `
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5rem;
+  `);
+
+  useClassStyle(userCSSSelectors['nowplaying-cover'], () => `
+    width: 1.5rem;
+    height: 1.5rem;
+    
+    object-fit: contain;
+
+    transition: all 0.225s ease-out;
+  `);
+
+  useClassStyle(`${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['nowplaying-cover']}`, () => `
+    filter: grayscale(100%);
+    scale: 95%;
+  `);
+
+  const textStyle = () => `
+    font-size: ${themeStyle().nowPlaying.fontSize}px;
+  `;
+  useClassStyle(userCSSSelectors['nowplaying-playing-text'], () => `
+    ${textStyle()}
+    
+    width: fit-content;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5rem;
+  `);
+
+  useClassStyle(userCSSSelectors['nowplaying-artist'], textStyle);
+  useClassStyle(userCSSSelectors['nowplaying-divider'], textStyle);
+  useClassStyle(userCSSSelectors['nowplaying-title'], textStyle);
+
   return (
     <div
       style={`
-        --percent: ${progress() / duration() * 100}%;
-        ${userCSSVariables['var-nowplaying-percent']}: var(--percent);
+        ${userCSSVariables['var-nowplaying-percent']}: ${duration() > 0 ? (progress() / duration() * 100) : 0}%;
         ${userCSSVariables['var-nowplaying-duration']}: '${formatTime(duration())}';
         ${userCSSVariables['var-nowplaying-progress']}: '${formatTime(progress())}';
-        opacity: ${status() !== 'playing' ? themeStyle().nowPlaying.stoppedOpacity : 1};
-        will-change: opacity, transform;
         ${style.style ?? ''}
       `}
-      class={cx(
-        `
-          relative p-3 transition-all duration-[225ms] ease-out z-0
-          bg-gray-900/50 text-gray-50 rounded-md overflow-hidden
-        `,
-        userCSSSelectors.nowplaying,
-        style.class,
-      )}
+      classList={{
+        [userCSSSelectors.nowplaying]: true,
+        [style.class ?? '']: !!style.class,
+      }}
       {...containerProps}
     >
-      <div class={cx('absolute inset-0 z-[-1]', userCSSSelectors['nowplaying-progress-bar'])}>
+      <div class={userCSSSelectors['nowplaying-progress-bar']}>
         <span
-          class={cx(
-            `
-              absolute inset-0 bg-gray-500 scale-x-[--percent] origin-left
-              ${progressTransition() ? 'transition-transform duration-225 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]' : ''}
-            `,
-            userCSSSelectors['nowplaying-progress'],
-            style.progressClass
-          )}
+          class={cx(userCSSSelectors['nowplaying-progress'], style.progressClass)}
           style={style.progressStyle}
         />
      </div>
-      <div class={'flex flex-row justify-start items-center gap-2 z-20'}>
+      <div class={userCSSSelectors['nowplaying-container']}>
         <img
           src={coverUrl() ?? icon}
-          class={`
-            w-6 h-6 object-contain transition-all duration-[225ms] ease-out
-            ${userCSSSelectors['nowplaying-cover']}
-            ${status() === 'stopped' ? 'grayscale' : ''}
-            ${status() === 'stopped' ? 'scale-95' : ''}
-          `}
           classList={{
-            [userCSSSelectors['nowplaying-cover--disabled']]: !!coverUrl()
+            [userCSSSelectors['nowplaying-cover']]: true,
+            [userCSSSelectors['nowplaying-cover--empty']]: !coverUrl(),
           }}
-          alt={'Thumbnail'} />
+          style={`${userCSSVariables['var-cover-url']}: '${coverUrl() ?? icon}';`}
+          alt={'Thumbnail'}
+        />
         <Marquee gap={32} class={userCSSSelectors['nowplaying-marquee']}>
           <div
-            class={cx(
-              'w-fit flex flex-row justify-start items-center gap-2',
-              userCSSSelectors['nowplaying-playing-text'],
-            )}
+            class={userCSSSelectors['nowplaying-playing-text']}
             style={style.textStyle}
           >
             <span

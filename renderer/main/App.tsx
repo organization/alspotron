@@ -7,7 +7,6 @@ import Lyrics from './components/Lyrics';
 import PlayingInfoProvider from '../components/PlayingInfoProvider';
 import UserCSS from '../components/UserCSS';
 import useConfig from '../hooks/useConfig';
-import { cx } from '../utils/classNames';
 import { userCSSSelectors } from '../utils/userCSSSelectors';
 import usePluginsCSS from '../hooks/usePluginsCSS';
 import useStyle from '../hooks/useStyle';
@@ -90,54 +89,17 @@ const App = () => {
   usePluginsCSS();
 
   const style = useStyle();
-
-  const lyricStyle = () => {
-    let result = '';
-    const styleData = style();
-
-    if (styleData?.nowPlaying.maxWidth) result += `max-width: ${styleData.nowPlaying.maxWidth}px;`;
-    if (styleData?.nowPlaying.color) result += `color: ${styleData.nowPlaying.color};`;
-    if (styleData?.nowPlaying.background) result += `background-color: ${styleData.nowPlaying.background};`;
-    if (styleData?.font) result += `font-family: ${styleData.font};`;
-    if (styleData?.fontWeight) result += `font-weight: ${styleData.fontWeight};`;
-
-    return result;
-  };
-
-  const textStyle = () => {
-    let result = '';
-
-    const styleData = style();
-    if (styleData?.nowPlaying.fontSize) result += `font-size: ${styleData.nowPlaying.fontSize}px;`;
-    
-    return result;
-  };
-
-  const progressStyle = () => {
-    let result = '';
-
-    const styleData = style();
-    if (styleData?.nowPlaying.backgroundProgress) result += `background-color: ${styleData.nowPlaying.backgroundProgress};`;
-
-    return result;
-  };
-
   const proximityHandles = useProximityStyle();
 
   return (
     <PlayingInfoProvider>
       <AnchoredView
-        class={cx('flex flex-col', userCSSSelectors.wrapper)}
-        style={`row-gap: ${style()?.rowGap ?? 2}rem;`}
+        class={userCSSSelectors.wrapper}
         {...proximityHandles}
       >
         <Lyrics />
         <Show when={style().nowPlaying?.visible ?? true}>
-          <LyricProgressBar
-            style={lyricStyle()}
-            textStyle={textStyle()}
-            progressStyle={progressStyle()}
-          />
+          <LyricProgressBar />
         </Show>
       </AnchoredView>
       <UserCSS />

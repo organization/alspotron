@@ -175,6 +175,12 @@
   "setting.theme.import-from-file": "Import from file",
   "setting.theme.export-as-file": "Export as a file",
   "setting.theme.import-theme-failed": "Failed to import a theme",
+  "setting.theme.built-in-themes": "Built-in themes",
+  "setting.theme.no-available-themes": "Available themes not found.",
+  "setting.theme.preset.default": "Default Theme",
+  "setting.theme.preset.album-cover": "Album Cover Theme",
+  "setting.theme.preset.multiple-lyric": "Lyric Theme",
+
   "setting.user-css-warning.bold": "注意！",
   "setting.user-css-warning.0": "カスタムCSSセレクタを使用している場合、更新後にCSS設定が壊れてしまうことがあります。",
   "setting.user-css-warning.1": "カスタムCSSは実験的な機能です。Alspotron Teamはアップデート後のカスタムCSSの動作を保証しません。",

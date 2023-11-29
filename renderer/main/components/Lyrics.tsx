@@ -1,5 +1,5 @@
 
-import { For, createMemo, on, splitProps } from 'solid-js';
+import { Accessor, For, splitProps } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
 import LyricsTransition from './LyricsTransition';
@@ -8,12 +8,15 @@ import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import useLyric from '../../hooks/useLyric';
 
 import { cx } from '../../utils/classNames';
-import { userCSSSelectors, userCSSTransitions } from '../../utils/userCSSSelectors';
+import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
 
 import useConfig from '../../hooks/useConfig';
 import useStyle from '../../hooks/useStyle';
 
+import { useClassStyle } from '../../hooks/useClassStyle';
+
 import type { JSX } from 'solid-js/jsx-runtime';
+import type { Config, StyleConfig } from '../../../common/schema';
 
 type LyricsProps = {
   style?: string;
@@ -39,6 +42,78 @@ const anchorTypeToOriginType = (anchor?: string, y = '0') => {
   }
 };
 
+export const useLyricsStyle = (
+  style: Accessor<StyleConfig | null>,
+  config: Accessor<Config | null>,
+) => {
+  useClassStyle(userCSSSelectors['lyrics-container'], () => `
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
+    row-gap: ${style()?.lyric.multipleContainerRowGap}rem;
+ 
+  `);
+  useClassStyle(`${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['lyrics-container']}`, () => `
+    opacity: ${style()?.lyric.stoppedOpacity};
+  `);
+
+  useClassStyle(userCSSSelectors['lyrics-transition-wrapper'], () => `
+    top: var(--top, 0);
+    width: fit-content;
+  `);
+
+  useClassStyle(userCSSSelectors['lyrics-wrapper'], () => `
+    transition: all 0.6s;
+  `);
+  useClassStyle(userCSSSelectors['lyrics-wrapper--previous'], () => `
+    scale: ${style()?.lyric.previousLyricScale};
+    opacity: ${style()?.lyric.previousLyricOpacity};
+    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor, '100%')};
+  `);
+  useClassStyle(userCSSSelectors['lyrics-wrapper--next'], () => `
+    scale: ${style()?.lyric.nextLyricScale};
+    opacity: ${style()?.lyric.nextLyricOpacity};
+    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
+  `);
+
+  useClassStyle(userCSSSelectors['lyrics'], () => `
+    display: flex;
+    flex-direction: ${style()?.lyric.direction ?? 'column'};
+    align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
+    row-gap: ${style()?.lyric.containerRowGap}rem;
+
+    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
+   `);
+
+  useClassStyle(userCSSSelectors['lyrics-item'], () => `
+    top: var(--top);
+    
+    width: fit-content;
+    
+    padding: 0.25rem 0.5rem;
+    whitespace: pre-line;
+    text-align: center;
+    
+    transition: all 0.225s ease-out;
+    transition-delay: var(--transition-delay, 0s);
+    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
+    will-change: transform;
+
+    font-family: ${style()?.font};
+    font-weight: ${style()?.fontWeight};
+    font-size: ${style()?.lyric.fontSize}px;
+    color: ${style()?.lyric.color};
+    background-color: ${style()?.lyric.background};
+  `);
+
+  useClassStyle(`${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['lyrics-item']}`, () => `
+    scale: 0.95;
+  `);
+};
+
 const Lyrics = (props: LyricsProps) => {
   const [config] = useConfig();
   const style = useStyle();
@@ -58,34 +133,11 @@ const Lyrics = (props: LyricsProps) => {
     return `lyric-${configuredName}`;
   };
 
-  const previousStyle = createMemo(on(config, (configData) => configData ? `
-    scale: ${style().lyric.previousLyricScale};
-    opacity: ${style().lyric.previousLyricOpacity};
-    transform-origin: ${anchorTypeToOriginType(configData.windowPosition.anchor, '100%')};
-  ` : ''));
-
-  const nextStyle = createMemo(on(config, (configData) => configData ? `
-    scale: ${style().lyric.nextLyricScale};
-    opacity: ${style().lyric.nextLyricOpacity};
-    transform-origin: ${anchorTypeToOriginType(configData.windowPosition.anchor)};
-  ` : ''));
-
-  const getStyle = (index: number) => {
-    const previousLength = getPreviousLyricLength() ?? 0;
-    if (index < previousLength) return previousStyle();
-    if (index > previousLength) return nextStyle();
-
-    return '';
-  };
+  useLyricsStyle(style, config);
 
   return (
       <div
-        class={cx('w-full flex flex-col justify-center', props.class, userCSSSelectors['lyrics-container'])}
-        style={`
-          row-gap: ${style().lyric.multipleContainerRowGap}rem;
-          opacity: ${status() !== 'playing' ? style().lyric.stoppedOpacity : 1}; ${props.style ?? ''};
-          align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
-        `}
+        class={cx(userCSSSelectors['lyrics-container'], props.class)}
         {...containerProps}
       >
         <TransitionGroup
@@ -94,21 +146,23 @@ const Lyrics = (props: LyricsProps) => {
         >
           <For each={lyricsRange()}>
             {(lyrics, index) => (
-              <div class={cx('w-fit transition-all', userCSSSelectors['lyrics-transition-wrapper'])}>
+              <div
+                onTransitionStart={(event) => event.currentTarget.style.setProperty('--top', `${event.currentTarget?.offsetTop}px`)}
+                class={userCSSSelectors['lyrics-transition-wrapper']}
+              >
                 <div
-                  style={getStyle(index())}
-                  class={cx('transition-all duration-500', userCSSSelectors['lyrics-wrapper'])}
+                  classList={{
+                    [userCSSSelectors['lyrics-wrapper']]: true,
+                    [userCSSSelectors['lyrics-wrapper--previous']]: index() < (getPreviousLyricLength() ?? 0),
+                    [userCSSSelectors['lyrics-wrapper--current']]: index() === (getPreviousLyricLength() ?? 0),
+                    [userCSSSelectors['lyrics-wrapper--next']]: index() > (getPreviousLyricLength() ?? 0),
+                  }}
                 >
                   <LyricsTransition
+                    animation={animation()}
                     lyrics={lyrics}
                     status={status()}
-                    style={`
-                      --order-offset: ${orderOffset() + (index() * offset())};
-                      row-gap: ${style().lyric.containerRowGap}rem;
-                      flex-direction: ${style()?.lyric?.direction ?? 'column'};
-                      align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
-                      transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
-                    `}
+                    style={`${userCSSVariables['var-lyric-order-offset']}: ${orderOffset() + (index() * offset())};`}
                     {...containerProps}
                   />
                 </div>

@@ -29,7 +29,7 @@ export const DEFAULT_STYLE = {
   lyric: {
     color: '#FFFFFF',
     background: 'rgba(29, 29, 29, .70)',
-    fontSize: 15,
+    fontSize: 13,
     maxWidth: 700,
     stoppedOpacity: 0.5,
     containerRowGap: 1,
@@ -74,3 +74,5 @@ export const DEFAULT_CONFIG = {
   streamingMode: false,
   provider: LyricProviderList[0].provider as 'alsong',
 };
+
+export const PRESET_PREFIX = '__preset__';

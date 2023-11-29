@@ -7,6 +7,10 @@ import LyricProgressBar from '../../main/components/LyricProgressBar';
 import LyricsTransition from '../../main/components/LyricsTransition';
 import { cx } from '../../utils/classNames';
 
+import { userCSSTransitions } from '../../utils/userCSSSelectors';
+import { useLyricsStyle } from '../../main/components/Lyrics';
+import useConfig from '../../hooks/useConfig';
+
 import type { StyleConfig } from '../../../common/schema';
 
 const isMac = /Mac/.test(navigator.userAgent);
@@ -19,6 +23,7 @@ export interface LyricPreviewProps extends JSX.HTMLAttributes<HTMLDivElement> {
 const LyricPreview = (props: LyricPreviewProps) => {
   const [local, leftProps] = splitProps(props, ['theme']);
   const [t] = useTransContext();
+  const [config] = useConfig();
 
   const PREVIEW_TEXT_A = [
     t('setting.theme.animation.preview-text-a.0'),
@@ -34,41 +39,19 @@ const LyricPreview = (props: LyricPreviewProps) => {
 
   const [animationPreview, setAnimationPreview] = createSignal(PREVIEW_TEXT_A);
 
-  const lyricStyle = () => {
-    let result = '';
-    const style = props.theme;
+  const animation = () => {
+    const configuredName = props.theme?.animation ?? 'pretty';
+    if (configuredName === 'custom') {
+      return userCSSTransitions['transition-lyric'];
+    }
 
-    if (style?.nowPlaying.maxWidth) result += `max-width: ${style.nowPlaying.maxWidth}px;`;
-    if (style?.nowPlaying.color) result += `color: ${style.nowPlaying.color};`;
-    if (style?.nowPlaying.background) result += `background-color: ${style.nowPlaying.background};`;
-    if (style?.font) result += `font-family: ${style.font};`;
-    if (style?.fontWeight) result += `font-weight: ${style.fontWeight};`;
-
-    return result;
+    return `lyric-${configuredName}`;
   };
 
-  const textStyle = () => {
-    let result = '';
-
-    const style = props.theme;
-    if (style?.nowPlaying.fontSize) result += `font-size: ${style.nowPlaying.fontSize}px;`;
-    
-    return result;
-  };
-
-  const progressStyle = () => {
-    let result = '';
-
-    const style = props.theme;
-    if (style?.nowPlaying.backgroundProgress) result += `background-color: ${style.nowPlaying.backgroundProgress};`;
-
-    return result;
-  };
-
-  let interval: NodeJS.Timer | null = null;
+  let interval: number | null = null;
   onMount(() => {
     let isTick = false;
-    interval = setInterval(() => {
+    interval = window.setInterval(() => {
       const nextPreview = untrack(() => isTick ? PREVIEW_TEXT_A : PREVIEW_TEXT_B);
 
       isTick = !isTick;
@@ -79,6 +62,8 @@ const LyricPreview = (props: LyricPreviewProps) => {
   onCleanup(() => {
     if (typeof interval === 'number') clearInterval(interval);
   });
+
+  useLyricsStyle(() => props.theme, config);
 
   return (
     <Card
@@ -91,20 +76,15 @@ const LyricPreview = (props: LyricPreviewProps) => {
       )}
       subCards={[
         <>
-          <LyricProgressBar
-            theme={props.theme}
-            style={lyricStyle()}
-            textStyle={textStyle()}
-            progressStyle={progressStyle()}
-          />
+          <LyricProgressBar theme={props.theme} />
           <UserCSS theme={props.theme} />
         </>,
         <LyricsTransition
-          theme={props.theme}
+          animation={animation()}
           class={'w-full items-end'}
           style={`row-gap: ${local.theme.lyric.containerRowGap}rem;`}
           lyrics={animationPreview()}
-          status="playing"
+          status={'playing'}
         />,
       ]}
     >
