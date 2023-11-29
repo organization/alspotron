@@ -179,6 +179,7 @@
   "setting.theme.preset.default": "기본 테마",
   "setting.theme.preset.album-cover": "앨범 커버 테마",
   "setting.theme.preset.multiple-lyric": "가사 테마",
+  "setting.theme.preset.dynamic-island": "다이나믹 아일랜드 테마",
 
   "setting.user-css-warning.bold": "주의!",
   "setting.user-css-warning.0": "제공된 셀렉터, 변수 외의 다른 셀렉터 등을 사용하실 경우 업데이트 시 CSS가 깨질 확률이 높습니다.",
