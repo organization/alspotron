@@ -14,8 +14,12 @@ import { cx } from '../../utils/classNames';
 import Switch from '../../components/Switch';
 import LyricPreview from '../components/LyricPreview';
 
-import type { PartialDeep } from 'type-fest';
+import { userCSSTransitions } from '../../utils/userCSSSelectors';
+import { useLyricsStyle } from '../../main/components/Lyrics';
+import useConfig from '../../hooks/useConfig';
+
 import type { StyleConfig } from '../../../common/schema';
+import type { PartialDeep } from 'type-fest';
 
 const ANIMATION_LIST = [
   'none',
@@ -33,6 +37,7 @@ const ThemeContainer = () => {
   const navigate = useNavigate();
   const [themeList, setThemeList] = useThemeList();
   const [t] = useTransContext();
+  const [config] = useConfig();
 
   const PREVIEW_TEXT_A = [
     t('setting.theme.animation.preview-text-a.0'),
@@ -53,6 +58,14 @@ const ThemeContainer = () => {
 
   const themeName = () => decodeURIComponent(params.name);
   const theme = () => themeList()[themeName()];
+  const animation = () => {
+    const configuredName = theme()?.animation ?? 'pretty';
+    if (configuredName === 'custom') {
+      return userCSSTransitions['transition-lyric'];
+    }
+
+    return `lyric-${configuredName}`;
+  };
 
   let previewRef: HTMLDivElement | undefined;
   let parentRef: HTMLDivElement | undefined;
@@ -116,6 +129,8 @@ const ThemeContainer = () => {
     link.click();
     URL.revokeObjectURL(link.href);
   };
+
+  useLyricsStyle(() => theme() ?? null, config);
 
   return <div ref={parentRef} class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
     <div class={'text-3xl mb-1 px-4 flex justify-start items-center gap-2 select-none'}>
@@ -237,8 +252,9 @@ const ThemeContainer = () => {
             <div class={'text-md'}>
               <Trans key={'setting.theme.preview'} />
             </div>
-            <div class={'relative w-full h-32 flex flex-col justify-start items-start gap-4'}>
+            <div class={'relative w-full max-h-32 flex flex-col justify-start items-start gap-4'}>
               <LyricsTransition
+                animation={animation()}
                 class={'w-full items-end'}
                 style={`row-gap: ${theme()?.lyric.containerRowGap}rem;`}
                 lyrics={animationPreview()}

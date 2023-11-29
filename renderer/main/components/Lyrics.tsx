@@ -1,5 +1,5 @@
 
-import { For, createMemo, on, splitProps } from 'solid-js';
+import { Accessor, For, splitProps } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
 import LyricsTransition from './LyricsTransition';
@@ -13,8 +13,10 @@ import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../ut
 import useConfig from '../../hooks/useConfig';
 import useStyle from '../../hooks/useStyle';
 
-import type { JSX } from 'solid-js/jsx-runtime';
 import { useClassStyle } from '../../hooks/useClassStyle';
+
+import type { JSX } from 'solid-js/jsx-runtime';
+import type { Config, StyleConfig } from '../../../common/schema';
 
 type LyricsProps = {
   style?: string;
@@ -40,6 +42,78 @@ const anchorTypeToOriginType = (anchor?: string, y = '0') => {
   }
 };
 
+export const useLyricsStyle = (
+  style: Accessor<StyleConfig | null>,
+  config: Accessor<Config | null>,
+) => {
+  useClassStyle(userCSSSelectors['lyrics-container'], () => `
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
+    row-gap: ${style()?.lyric.multipleContainerRowGap}rem;
+ 
+  `);
+  useClassStyle(`${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['lyrics-container']}`, () => `
+    opacity: ${style()?.lyric.stoppedOpacity};
+  `);
+
+  useClassStyle(userCSSSelectors['lyrics-transition-wrapper'], () => `
+    top: var(--top, 0);
+    width: fit-content;
+  `);
+
+  useClassStyle(userCSSSelectors['lyrics-wrapper'], () => `
+    transition: all 0.6s;
+  `);
+  useClassStyle(userCSSSelectors['lyrics-wrapper--previous'], () => `
+    scale: ${style()?.lyric.previousLyricScale};
+    opacity: ${style()?.lyric.previousLyricOpacity};
+    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor, '100%')};
+  `);
+  useClassStyle(userCSSSelectors['lyrics-wrapper--next'], () => `
+    scale: ${style()?.lyric.nextLyricScale};
+    opacity: ${style()?.lyric.nextLyricOpacity};
+    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
+  `);
+
+  useClassStyle(userCSSSelectors['lyrics'], () => `
+    display: flex;
+    flex-direction: ${style()?.lyric.direction ?? 'column'};
+    align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
+    row-gap: ${style()?.lyric.containerRowGap}rem;
+
+    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
+   `);
+
+  useClassStyle(userCSSSelectors['lyrics-item'], () => `
+    top: var(--top);
+    
+    width: fit-content;
+    
+    padding: 0.25rem 0.5rem;
+    whitespace: pre-line;
+    text-align: center;
+    
+    transition: all 0.225s ease-out;
+    transition-delay: var(--transition-delay, 0s);
+    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
+    will-change: transform;
+
+    font-family: ${style()?.font};
+    font-weight: ${style()?.fontWeight};
+    font-size: ${style()?.lyric.fontSize}px;
+    color: ${style()?.lyric.color};
+    background-color: ${style()?.lyric.background};
+  `);
+
+  useClassStyle(`${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['lyrics-item']}`, () => `
+    scale: 0.95;
+  `);
+};
+
 const Lyrics = (props: LyricsProps) => {
   const [config] = useConfig();
   const style = useStyle();
@@ -59,72 +133,7 @@ const Lyrics = (props: LyricsProps) => {
     return `lyric-${configuredName}`;
   };
 
-  useClassStyle(userCSSSelectors['lyrics-container'], () => `
-    width: 100%;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
-    row-gap: ${style().lyric.multipleContainerRowGap}rem;
- 
-  `);
-  useClassStyle(`${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['lyrics-container']}`, () => `
-    opacity: ${style().lyric.stoppedOpacity};
-  `);
-
-  useClassStyle(userCSSSelectors['lyrics-transition-wrapper'], () => `
-    top: var(--top, 0);
-    width: fit-content;
-  `);
-
-  useClassStyle(userCSSSelectors['lyrics-wrapper'], () => `
-    transition: all 0.6s;
-  `);
-  useClassStyle(userCSSSelectors['lyrics-wrapper--previous'], () => `
-    scale: ${style().lyric.previousLyricScale};
-    opacity: ${style().lyric.previousLyricOpacity};
-    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor, '100%')};
-  `);
-  useClassStyle(userCSSSelectors['lyrics-wrapper--next'], () => `
-    scale: ${style().lyric.nextLyricScale};
-    opacity: ${style().lyric.nextLyricOpacity};
-    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
-  `);
-
-  useClassStyle(userCSSSelectors['lyrics'], () => `
-    display: flex;
-    flex-direction: ${style().lyric.direction ?? 'column'};
-    align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
-    row-gap: ${style().lyric.containerRowGap}rem;
-
-    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
-   `);
-
-  useClassStyle(userCSSSelectors['lyrics-item'], () => `
-    top: var(--top);
-    
-    width: fit-content;
-    
-    padding: 0.25rem 0.5rem;
-    whitespace: pre-line;
-    text-align: center;
-    
-    transition: all 0.225s ease-out;
-    transition-delay: var(--transition-delay, 0s);
-    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
-    will-change: transform;
-
-    font-family: ${style().font};
-    font-weight: ${style().fontWeight};
-    font-size: ${style().lyric.fontSize}px;
-    color: ${style().lyric.color};
-    background-color: ${style().lyric.background};
-  `);
-
-  useClassStyle(`${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['lyrics-item']}`, () => `
-    scale: 0.95;
-  `);
+  useLyricsStyle(style, config);
 
   return (
       <div
