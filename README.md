@@ -92,9 +92,13 @@
 
 1.  설정 
 
-|                                                   위치 설정                                                  |                                                   테마 설정                                                  |
+|                                                   일반 설정                                                  |                                                   위치 설정                                                  |
 | :------------------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------: |
-| ![image](https://github.com/organization/alspotron/assets/16558115/9dd2d0c5-ff55-423d-b9bb-589a7c4bb658) | ![image](https://github.com/organization/alspotron/assets/16558115/b70f646a-ae67-4cab-b065-32c6c3664850) |
+| ![alspotron-settings-general](https://github.com/organization/alspotron/assets/13764936/8e4ec704-d533-4d82-ad60-ffa3f0793a9c) | ![alspotron-settings-position](https://github.com/organization/alspotron/assets/13764936/70f1fc41-0497-4b48-b3de-d745e7bb7c0b) |
+|                                                   테마 설정                                                  |                                                   테마 상세 설정                                                  |
+| ![alspotron-settings-theme-list](https://github.com/organization/alspotron/assets/13764936/c7d0436f-7bfa-4b36-a89e-dab36d0948bd) | ![alspotron-settings-theme](https://github.com/organization/alspotron/assets/13764936/f47f9483-411d-4536-b6bc-1e73655de254) |
+|                                                   플러그인 설정                                                  |
+| ![alspotron-settings-plugin](https://github.com/organization/alspotron/assets/13764936/dae59ec5-e9ea-49d7-bc5e-20a78a867d22) |
 
 2.  트레이 아이콘의 `가사 선택`을 선택하여 현재 재생 중인 노래의 가사를 다른 가사로 교체할 수 있습니다.
 
