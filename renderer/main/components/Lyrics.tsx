@@ -79,7 +79,7 @@ const Lyrics = (props: LyricsProps) => {
   `);
 
   useClassStyle(userCSSSelectors['lyrics-wrapper'], () => `
-    transition: all 0.25s;
+    transition: all 0.6s;
   `);
   useClassStyle(userCSSSelectors['lyrics-wrapper--previous'], () => `
     scale: ${style().lyric.previousLyricScale};
@@ -93,9 +93,11 @@ const Lyrics = (props: LyricsProps) => {
   `);
 
   useClassStyle(userCSSSelectors['lyrics'], () => `
-    row-gap: ${style().lyric.containerRowGap}rem;
+    display: flex;
     flex-direction: ${style().lyric.direction ?? 'column'};
     align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
+    row-gap: ${style().lyric.containerRowGap}rem;
+
     transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
    `);
 
