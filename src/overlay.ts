@@ -2,10 +2,10 @@ import path from 'node:path';
 
 import { EventEmitter } from 'events';
 
-import { app, screen } from 'electron';
+import { app } from 'electron';
 import { hmc } from 'hmc-win32';
 
-import { gameList } from './config';
+import { config, gameList } from './config';
 import { IOverlay } from './electron-overlay';
 import { OverlayWindowProvider } from './window';
 
@@ -43,31 +43,8 @@ export class OverlayManager extends EventEmitter {
     return this.registeredPidList;
   }
 
-  private init() {
-    if (!wql || !nodeWindowManager) return;
-
-    wql.promises.subscribe({
-      creation: true,
-      deletion: true,
-      filterWindowsNoise: true,
-    })
-      .then((listener) => {
-        listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(pid, name, filePath));
-        listener.on('deletion', ([name, pid]) => this.onProcessDeletion(pid, name));
-      });
-
-
-    const electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
-    const module = { exports: {} };
-
-    process.dlopen(
-      module,
-      app.isPackaged ?
-        path.join(process.resourcesPath, `./assets/${electronOverlayWithArch}`) :
-        path.join(__dirname, '..', `./assets/${electronOverlayWithArch}`),
-    );
-
-    this.overlay = module.exports as IOverlay;
+  public injectOverlay() {
+    if (!this.overlay) return;
 
     const windowList = this.overlay.getTopWindows(true);
     hmc.getDetailsProcessList()
@@ -102,28 +79,33 @@ export class OverlayManager extends EventEmitter {
     this.overlay?.stop();
   }
 
-  public async createProcess(pid: number) {
-    if (!wql || !nodeWindowManager) return;
+  public async createProcess(pid: number): Promise<boolean> {
+    if (!wql || !nodeWindowManager) return Promise.resolve(false);
     const windowManager = nodeWindowManager.windowManager;
 
     return new Promise((resolve) => {
       let injectCount = 0;
 
-      const interval = setInterval(() => {
-        const isInit = this.overlay?.getTopWindows(true).some((window) => window.processId == pid);
-        if (!isInit || !this.overlay || !nodeWindowManager) return;
+      const tryToInject = () => {
+        if (!this.overlay || !nodeWindowManager) return;
+        const isInit = this.overlay.getTopWindows(true).some((window) => window.processId === pid);
 
         injectCount += 1;
         if (injectCount > 20) {
-          clearInterval(interval);
           resolve(false);
           console.warn('[Alspotron] Failed to inject process.');
           return;
         }
 
+        if (!isInit) {
+          setTimeout(tryToInject, 1000);
+          return;
+        }
+
+        console.log('[Alspotron] try to inject process:', pid);
         let isFirstRun = false;
         if (this.registeredPidList.length === 0) {
-          const window = windowManager.getWindows().find((window) => window.processId == pid);
+          const window = windowManager.getWindows().find((window) => window.processId === pid);
           if (window) this.scaleFactor = window.getMonitor().getScaleFactor();
 
           this.provider = new OverlayWindowProvider(nodeWindowManager);
@@ -132,7 +114,7 @@ export class OverlayManager extends EventEmitter {
         }
 
         for (const window of this.overlay.getTopWindows(true)) {
-          if (window.processId === pid) {
+          if (window.processId === pid && !this.registeredPidList.includes(pid)) {
             this.overlay.injectProcess(window);
 
             this.registeredPidList.push(pid);
@@ -151,20 +133,50 @@ export class OverlayManager extends EventEmitter {
           );
         }
 
-        clearInterval(interval);
         resolve(true);
-      }, 1000);
+      };
+
+      tryToInject();
     });
   }
 
   public deleteProcess(pid: number) {
-    const index = this.registeredPidList.findIndex((it) => it === Number(pid));
+    const index = this.registeredPidList.findIndex((it) => it === pid);
     if (index >= 0) this.registeredPidList.splice(index, 1);
 
     this.emit('unregister-process', pid, index >= 0);
 
     if (this.registeredPidList.length <= 0) this.stopOverlay();
     else this.provider?.setAttachedProcess(this.registeredPidList[0]);
+  }
+
+  private init() {
+    if (!wql || !nodeWindowManager) return;
+
+    wql.promises.subscribe({
+      creation: true,
+      deletion: true,
+      filterWindowsNoise: true,
+    })
+      .then((listener) => {
+        listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(Number(pid), name, filePath));
+        listener.on('deletion', ([name, pid]) => this.onProcessDeletion(Number(pid), name));
+      });
+
+
+    const electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
+    const module = { exports: {} };
+
+    process.dlopen(
+      module,
+      app.isPackaged ?
+        path.join(process.resourcesPath, `./assets/${electronOverlayWithArch}`) :
+        path.join(__dirname, '..', `./assets/${electronOverlayWithArch}`),
+    );
+
+    this.overlay = module.exports as IOverlay;
+
+    this.injectOverlay();
   }
 
   private onProcessCreation(pid: number, _?: string, filePath?: string) {
@@ -191,26 +203,16 @@ export class OverlayManager extends EventEmitter {
     this.markQuit = false;
 
     const windowManager = nodeWindowManager?.windowManager;
-    if (!windowManager || !this.overlay) return;
+    if (!windowManager || !this.overlay || !this.provider) return;
 
-    const display = screen.getDisplayNearestPoint(
-      windowManager.getWindows().find((window) => window.processId == this.registeredPidList[0])?.getBounds() as Electron.Point ??
-      screen.getCursorScreenPoint()
-    );
-
-    const resizable = window.isResizable();
     this.overlay.addWindow(window.id, {
       name,
       transparent,
-      resizable,
-      maxWidth: resizable
-        ? display.bounds.width
-        : window.getBounds().width,
-      maxHeight: resizable
-        ? display.bounds.height
-        : window.getBounds().height,
-      minWidth: resizable ? 100 : window.getBounds().width,
-      minHeight: resizable ? 100 : window.getBounds().height,
+      resizable: true,
+      maxWidth: window.getBounds().width,
+      maxHeight:  window.getBounds().height,
+      minWidth: 100,
+      minHeight: 100,
       nativeHandle: window.getNativeWindowHandle().readUInt32LE(0),
       rect: {
         x: Math.floor(window.getBounds().x * this.scaleFactor),
@@ -238,10 +240,16 @@ export class OverlayManager extends EventEmitter {
       );
     });
 
-    window.on('resize', () => {
-      if (this.markQuit || !this.overlay) return;
+    let isFocused = false;
+    let throttle: NodeJS.Timeout | null = null;
+    const onUpdate = () => {
+      const targetWindow = windowManager.getWindows().find((window) => window.processId === this.registeredPidList[0]);
+      const newScaleFactor = targetWindow?.getMonitor().getScaleFactor();
 
-      this.overlay.sendWindowBounds(window.id, {
+      if (typeof newScaleFactor === 'number') this.scaleFactor = newScaleFactor;
+      if (throttle !== null) clearTimeout(throttle);
+
+      this.overlay?.sendWindowBounds(window.id, {
         rect: {
           x: window.getBounds().x,
           y: window.getBounds().y,
@@ -249,10 +257,42 @@ export class OverlayManager extends EventEmitter {
           height: Math.floor(window.getBounds().height * this.scaleFactor),
         },
       });
+      this.provider?.updateWindowConfig();
+
+      throttle = setTimeout(() => {
+        if (!isFocused) return;
+
+        this.overlay?.sendWindowBounds(window.id, {
+          rect: {
+            x: window.getBounds().x,
+            y: window.getBounds().y,
+            width: Math.floor(window.getBounds().width * this.scaleFactor),
+            height: Math.floor(window.getBounds().height * this.scaleFactor),
+          },
+        });
+        this.provider?.updateWindowConfig();
+        throttle = null;
+      }, 1000);
+    };
+
+    config.watch(onUpdate);
+    onUpdate();
+
+    const updateEvents = ['graphics.window.event.resize'];
+    this.overlay.setEventCallback((event, params) => {
+      if (this.markQuit || !this.overlay) return;
+
+      if (event === 'graphics.window.event.focus') {
+        isFocused = !!(params as Record<string, unknown>).focused;
+      }
+
+      if (updateEvents.includes(event)) {
+        onUpdate();
+      }
     });
 
-    window.on('closed', () => {
-      this.overlay?.closeWindow(window.id);
+    window.on('close', () => {
+      config.unwatch(onUpdate);
     });
 
     window.webContents.on('cursor-changed', (_, type) => {

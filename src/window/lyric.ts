@@ -1,5 +1,7 @@
 import path from 'node:path';
 
+import { EventEmitter } from 'events';
+
 import { app, BrowserWindow, Menu, screen } from 'electron';
 
 import { deepmerge } from 'deepmerge-ts';
@@ -32,10 +34,14 @@ const LYRIC_WINDOW_OPTIONS = {
   icon: iconPath,
 };
 
-export class LyricWindowProvider implements WindowProvider {
+export class LyricWindowProvider extends EventEmitter implements WindowProvider {
+  protected onUpdateWindowConfig = () => this.updateWindowConfig();
+
   public window: BrowserWindow;
 
   constructor(options: Electron.BrowserWindowConstructorOptions = {}) {
+    super();
+
     this.window = new BrowserWindow(deepmerge(LYRIC_WINDOW_OPTIONS, options, {
       focusable: config.get().streamingMode,
       skipTaskbar: !config.get().streamingMode,
@@ -55,21 +61,23 @@ export class LyricWindowProvider implements WindowProvider {
       this.window.loadURL('http://localhost:5173');
     }
 
-    screen.on('display-metrics-changed', this.updateWindowConfig.bind(this));
-    screen.on('display-added', this.updateWindowConfig.bind(this));
-    screen.on('display-removed', this.updateWindowConfig.bind(this));
+    screen.addListener('display-metrics-changed', this.onUpdateWindowConfig);
+    screen.addListener('display-added', this.onUpdateWindowConfig);
+    screen.addListener('display-removed', this.onUpdateWindowConfig);
 
     this.updateWindowConfig();
 
-    config.watch(this.updateWindowConfig.bind(this));
+    config.watch(this.onUpdateWindowConfig);
   }
 
   close() {
-    this.window.close();
+    screen.removeListener('display-metrics-changed', this.onUpdateWindowConfig);
+    screen.removeListener('display-added', this.onUpdateWindowConfig);
+    screen.removeListener('display-removed', this.onUpdateWindowConfig);
 
-    screen.removeListener('display-metrics-changed', this.updateWindowConfig.bind(this));
-    screen.removeListener('display-added', this.updateWindowConfig.bind(this));
-    screen.removeListener('display-removed', this.updateWindowConfig.bind(this));
+    config.unwatch(this.onUpdateWindowConfig);
+
+    this.window.close();
   }
 
   public updateWindowConfig() {
@@ -88,38 +96,38 @@ export class LyricWindowProvider implements WindowProvider {
       this.window.setFocusable(false);
     }
 
-    const activeDisplay = this.getActiveDisplay();
-    const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), activeDisplay.bounds.width);
+    const bounds = this.getDisplayBounds();
+    const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), bounds.width);
     const windowHeight = style.maxHeight;
 
     const anchorX = (() => {
       if (windowPosition.anchor.includes('left')) {
-        return activeDisplay.bounds.x + (windowPosition?.left ?? 0);
+        return bounds.x + (windowPosition?.left ?? 0);
       }
 
       if (windowPosition.anchor.includes('right')) {
-        return activeDisplay.bounds.x
-          + (activeDisplay.bounds.width - windowWidth)
+        return bounds.x
+          + (bounds.width - windowWidth)
           - (windowPosition?.right ?? 0);
       }
 
-      return activeDisplay.bounds.x
-        + ((activeDisplay.bounds.width - windowWidth) / 2);
+      return bounds.x
+        + ((bounds.width - windowWidth) / 2);
     })();
 
     const anchorY = (() => {
       if (windowPosition.anchor.includes('top')) {
-        return activeDisplay.bounds.y + (windowPosition?.top ?? 0);
+        return bounds.y + (windowPosition?.top ?? 0);
       }
 
       if (windowPosition.anchor.includes('bottom')) {
-        return activeDisplay.bounds.y
-          + activeDisplay.bounds.height - windowHeight
+        return bounds.y
+          + bounds.height - windowHeight
           - (windowPosition?.bottom ?? 0);
       }
 
-      return activeDisplay.bounds.y
-        + ((activeDisplay.bounds.height - windowHeight) / 2);
+      return bounds.y
+        + ((bounds.height - windowHeight) / 2);
     })();
 
     // electron issue: https://github.com/electron/electron/issues/16711#issuecomment-1311824063
@@ -131,9 +139,10 @@ export class LyricWindowProvider implements WindowProvider {
     this.window.setPosition(Math.round(anchorX), Math.round(anchorY));
   }
 
-  protected getActiveDisplay() {
+  protected getDisplayBounds() {
     const { windowPosition } = config.get();
+    const display = screen.getAllDisplays().find((display) => display.id === windowPosition.display) ?? screen.getPrimaryDisplay();
 
-    return screen.getAllDisplays().find((display) => display.id === windowPosition.display) ?? screen.getPrimaryDisplay();
+    return display.bounds;
   }
 }
