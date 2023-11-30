@@ -27,14 +27,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       # https://github.com/actions/setup-node/issues/280#issuecomment-1139455898
-      - name: Update node-gyp (windows only)
-        if: startsWith(matrix.os, 'windows')
-        run: |
-          $WhereNode = Get-Command node | Select-Object -ExpandProperty Definition
-          $NodeDirPath = Split-Path $WhereNode -Parent
-          $NodeModulesPath = $NodeDirPath + "\node_modules\npm\node_modules\@npmcli\run-script"
-          cd $NodeModulesPath
-          npm install node-gyp@latest
+      # - name: Update node-gyp (windows only)
+      #  if: startsWith(matrix.os, 'windows')
+      #  run: |
+      #    $WhereNode = Get-Command node | Select-Object -ExpandProperty Definition
+      #    $NodeDirPath = Split-Path $WhereNode -Parent
+      #    $NodeModulesPath = $NodeDirPath + "\node_modules\npm\node_modules\@npmcli\run-script"
+      #    cd $NodeModulesPath
+      #    npm install node-gyp@latest
 
       # https://github.com/actions/runner/issues/2958#issuecomment-1793782647
       - name: Fix distutils (macOS only)
