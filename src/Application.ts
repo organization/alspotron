@@ -575,17 +575,16 @@ class Application {
       },
     );
     webContents.session.webRequest.onHeadersReceived((details, callback) => {
-      const isEgg = details.url.startsWith('https://lyric.altools.com'); // TODO: use provider receiver
-      if (isEgg) {
-        callback({
-          responseHeaders: {
-            'Access-Control-Allow-Origin': ['*'],
-            ...details.responseHeaders,
-          },
-        });
-      } else {
-        callback({});
+      const provider = getLyricProvider(config.get().provider);
+
+      if (provider) {
+        const result = provider.onHeadersReceived(details);
+
+        callback(result);
+        return;
       }
+
+      callback({});
     });
   }
 }
