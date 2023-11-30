@@ -68,7 +68,7 @@ declare module '@jellybrick/wql-process-monitor' {
       /**
        * Process creation event
        * @param {string} processName process name
-       * @param {string} processId process identifier
+       * @param {string} processId process identifier (Process id should be number...)
        * @param {string} filepath file location path (if available*)
        */
       creation: [string, string, string?],
@@ -106,7 +106,7 @@ declare module '@jellybrick/wql-process-monitor' {
       /**
        * Process creation event
        * @param {string} processName process name
-       * @param {string} processId process identifier
+       * @param {string} processId process identifier (Process id should be number...)
        * @param {string} filepath file location path (if available*)
        */
       creation: [string, string, string?],
