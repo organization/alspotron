@@ -1,6 +1,6 @@
 {
   "name": "alspotron",
-  "version": "0.16.4",
+  "version": "0.17.0",
   "description": "Alspotron is a lyric viewer for YouTube Music / Spotify.",
   "main": "./dist/index.js",
   "scripts": {
