@@ -34,17 +34,16 @@ export class OverlayWindowProvider extends LyricWindowProvider {
       },
     );
     this.window.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-      const isEgg = details.url.startsWith('https://lyric.altools.com');
-      if (isEgg) {
-        callback({
-          responseHeaders: {
-            'Access-Control-Allow-Origin': ['*'],
-            ...details.responseHeaders,
-          },
-        });
-      } else {
-        callback({});
+      const provider = getLyricProvider(config.get().provider);
+
+      if (provider) {
+        const result = provider.onHeadersReceived(details);
+
+        callback(result);
+        return;
       }
+
+      callback({});
     });
 
     this.updateWindowConfig();
