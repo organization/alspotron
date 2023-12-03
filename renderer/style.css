@@ -53,6 +53,10 @@
     @apply shadow-[inset_0_0_0_3px] shadow-primary-600
   }
 
+  .input-group {
+    @apply relative;
+  }
+
   .input {
     @apply bg-white/60 text-black hover:bg-white/50 focus:bg-white/40
     dark:bg-gray-600/60 dark:text-white dark:hover:bg-gray-600/50 dark:focus:bg-gray-600/40
@@ -67,6 +71,18 @@
   .input.color::-webkit-color-swatch {
     @apply max-w-[16px] max-h-[16px] rounded-full border-none mx-auto;
     opacity: var(--opacity, 1);
+  }
+  .input::-webkit-outer-spin-button,
+  .input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .suffix {
+    @apply absolute top-0 right-2 h-full flex items-center text-black/50 dark:text-white/50;
+  }
+  .suffix-focus-within {
+    @apply text-black/75 dark:text-white/75;
   }
 
   .select-container {

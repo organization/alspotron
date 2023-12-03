@@ -168,37 +168,57 @@ const PositionContainer = () => {
         `}
       >
         <div />
-        <input
-          type={'number'}
-          class={'input'}
-          placeholder={t('setting.position.top-margin')}
-          value={config()?.windowPosition.top ?? undefined}
-          onChange={(event) => setConfig({ windowPosition: { top: Number(event.target.value) } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-full h-full'}
+            placeholder={t('setting.position.top-margin')}
+            value={config()?.windowPosition.top ?? undefined}
+            onChange={(event) => setConfig({ windowPosition: { top: Number(event.target.value) } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            px
+          </span>
+        </label>
         <div />
-        <input
-          type={'number'}
-          class={'input'}
-          placeholder={t('setting.position.left-margin')}
-          value={config()?.windowPosition.left ?? undefined}
-          onChange={(event) => setConfig({ windowPosition: { left: Number(event.target.value) } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-full h-full'}
+            placeholder={t('setting.position.left-margin')}
+            value={config()?.windowPosition.left ?? undefined}
+            onChange={(event) => setConfig({ windowPosition: { left: Number(event.target.value) } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            px
+          </span>
+        </label>
         <img src={icon} class={'w-12 h-12 object-contain self-center justify-self-center'} alt={'Icon'}/>
-        <input
-          type={'number'}
-          class={'input'}
-          placeholder={t('setting.position.right-margin')}
-          value={config()?.windowPosition.right ?? undefined}
-          onChange={(event) => setConfig({ windowPosition: { right: Number(event.target.value) } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-full h-full'}
+            placeholder={t('setting.position.right-margin')}
+            value={config()?.windowPosition.right ?? undefined}
+            onChange={(event) => setConfig({ windowPosition: { right: Number(event.target.value) } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            px
+          </span>
+        </label>
         <div />
-        <input
-          type={'number'}
-          class={'input'}
-          placeholder={t('setting.position.bottom-margin')}
-          value={config()?.windowPosition.bottom ?? undefined}
-          onChange={(event) => setConfig({ windowPosition: { bottom: Number(event.target.value) } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-full h-full'}
+            placeholder={t('setting.position.bottom-margin')}
+            value={config()?.windowPosition.bottom ?? undefined}
+            onChange={(event) => setConfig({ windowPosition: { bottom: Number(event.target.value) } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            px
+          </span>
+        </label>
       </Card>
     </div>
   )

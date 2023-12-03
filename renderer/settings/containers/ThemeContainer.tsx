@@ -303,12 +303,17 @@ const ThemeContainer = () => {
         <div class={'text-md'}>
           <Trans key={'setting.theme.proximity-opacity'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.proximityOpacity}
-          onChange={(event) => setTheme({ proximityOpacity: event.target.valueAsNumber })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48 after:content-[\'test\'] after:absolute after:right-[0.5rem] after:top-[50%] after:transform-[translateY(-50%) scale(0.5)]'}
+            value={(theme()?.proximityOpacity ?? 0) * 100}
+            onChange={(event) => setTheme({ proximityOpacity: event.target.valueAsNumber / 100 })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            %
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
@@ -325,23 +330,33 @@ const ThemeContainer = () => {
         <div class={'text-md'}>
           <Trans key={'setting.theme.max-height'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.maxHeight}
-          onChange={(event) => setTheme({ maxHeight: event.target.valueAsNumber })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={theme()?.maxHeight}
+            onChange={(event) => setTheme({ maxHeight: event.target.valueAsNumber })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            px
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
           <Trans key={'setting.theme.margin-between-lyrics-and-progressbar'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.rowGap}
-          onChange={(event) => setTheme({ rowGap: event.target.valueAsNumber })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={theme()?.rowGap}
+            onChange={(event) => setTheme({ rowGap: event.target.valueAsNumber })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            rem
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
         <div class={'font-md'}>
@@ -356,7 +371,6 @@ const ThemeContainer = () => {
           class={'select'}
         />
       </Card>
-
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
       <Trans key={'setting.theme.now-playing'} />
@@ -366,12 +380,17 @@ const ThemeContainer = () => {
         <div class={'text-md'}>
           <Trans key={'setting.theme.font-size'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.nowPlaying.fontSize}
-          onChange={(event) => setTheme({ nowPlaying: { fontSize: event.target.valueAsNumber } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={theme()?.nowPlaying.fontSize}
+            onChange={(event) => setTheme({ nowPlaying: { fontSize: event.target.valueAsNumber } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            px
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
@@ -404,23 +423,33 @@ const ThemeContainer = () => {
         <div class={'text-md'}>
           <Trans key={'setting.theme.max-width'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.nowPlaying.maxWidth}
-          onChange={(event) => setTheme({ nowPlaying: { maxWidth: event.target.valueAsNumber } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={theme()?.nowPlaying.maxWidth}
+            onChange={(event) => setTheme({ nowPlaying: { maxWidth: event.target.valueAsNumber } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            px
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
           <Trans key={'setting.theme.stopped-opacity'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.nowPlaying.stoppedOpacity}
-          onChange={(event) => setTheme({ nowPlaying: { stoppedOpacity: event.target.valueAsNumber } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={(theme()?.nowPlaying.stoppedOpacity ?? 0) * 100}
+            onChange={(event) => setTheme({ nowPlaying: { stoppedOpacity: event.target.valueAsNumber / 100 } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            %
+          </span>
+        </label>
       </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
@@ -431,12 +460,17 @@ const ThemeContainer = () => {
         <div class={'text-md'}>
           <Trans key={'setting.theme.font-size'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.lyric.fontSize}
-          onChange={(event) => setTheme({ lyric: { fontSize: event.target.valueAsNumber } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={theme()?.lyric.fontSize}
+            onChange={(event) => setTheme({ lyric: { fontSize: event.target.valueAsNumber } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            px
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
@@ -460,34 +494,49 @@ const ThemeContainer = () => {
         <div class={'text-md'}>
           <Trans key={'setting.theme.stopped-opacity'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.lyric.stoppedOpacity}
-          onChange={(event) => setTheme({ lyric: { stoppedOpacity: event.target.valueAsNumber } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={(theme()?.lyric.stoppedOpacity ?? 0) * 100}
+            onChange={(event) => setTheme({ lyric: { stoppedOpacity: event.target.valueAsNumber / 100 } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            %
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
           <Trans key={'setting.theme.margin-between-lyrics-containers'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.lyric.containerRowGap}
-          onChange={(event) => setTheme({ lyric: { containerRowGap: event.target.valueAsNumber } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={theme()?.lyric.containerRowGap}
+            onChange={(event) => setTheme({ lyric: { containerRowGap: event.target.valueAsNumber } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            rem
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
           <Trans key={'setting.theme.margin-between-multiple-lyrics-containers'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.lyric.multipleContainerRowGap}
-          onChange={(event) => setTheme({ lyric: { multipleContainerRowGap: event.target.valueAsNumber } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={theme()?.lyric.multipleContainerRowGap}
+            onChange={(event) => setTheme({ lyric: { multipleContainerRowGap: event.target.valueAsNumber } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            rem
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
         <div class={'font-md'}>
@@ -532,45 +581,65 @@ const ThemeContainer = () => {
         <div class={'text-md'}>
           <Trans key={'setting.theme.next-lyrics-opacity'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.lyric.nextLyricOpacity}
-          onChange={(event) => setTheme({ lyric: { nextLyricOpacity: event.target.valueAsNumber } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={(theme()?.lyric.nextLyricOpacity ?? 0) * 100}
+            onChange={(event) => setTheme({ lyric: { nextLyricOpacity: event.target.valueAsNumber / 100 } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            %
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
           <Trans key={'setting.theme.previous-lyrics-opacity'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.lyric.previousLyricOpacity}
-          onChange={(event) => setTheme({ lyric: { previousLyricOpacity: event.target.valueAsNumber } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={(theme()?.lyric.previousLyricOpacity ?? 0) * 100}
+            onChange={(event) => setTheme({ lyric: { previousLyricOpacity: event.target.valueAsNumber / 100 } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            %
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
           <Trans key={'setting.theme.next-lyrics-scale'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.lyric.nextLyricScale}
-          onChange={(event) => setTheme({ lyric: { nextLyricScale: event.target.valueAsNumber } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={(theme()?.lyric.nextLyricScale ?? 0) * 100}
+            onChange={(event) => setTheme({ lyric: { nextLyricScale: event.target.valueAsNumber / 100 } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            %
+          </span>
+        </label>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
           <Trans key={'setting.theme.previous-lyrics-scale'} />
         </div>
-        <input
-          type={'number'}
-          class={'input w-48'}
-          value={theme()?.lyric.previousLyricScale}
-          onChange={(event) => setTheme({ lyric: { previousLyricScale: event.target.valueAsNumber } })}
-        />
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={(theme()?.lyric.previousLyricScale ?? 0) * 100}
+            onChange={(event) => setTheme({ lyric: { previousLyricScale: event.target.valueAsNumber / 100 } })}
+          />
+          <span class={'suffix group-focus-within:suffix-focus-within'}>
+            %
+          </span>
+        </label>
       </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
