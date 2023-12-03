@@ -30,6 +30,7 @@ export const LEGACY_migrator0_16_0: Migrator = {
 
       plugins: configData.plugins,
 
+      hardwareAcceleration: DEFAULT_CONFIG.hardwareAcceleration,
       streamingMode: DEFAULT_CONFIG.streamingMode,
       provider: DEFAULT_CONFIG.provider,
     } satisfies Config;
