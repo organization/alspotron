@@ -9,10 +9,12 @@ import useConfig from '../../hooks/useConfig';
 import { getTranslation } from '../../../common/intl';
 import Modal from '../../components/Modal';
 import Switch from '../../components/Switch';
+import useServer from '../../hooks/useServer';
 
 const LanguageContainer = () => {
   const [t, { changeLanguage }] = useTransContext();
   const [config, setConfig] = useConfig();
+  const [, restartServer] = useServer();
 
   const [open, setOpen] = createSignal(false);
   const [resetOpen, setResetOpen] = createSignal(false);
@@ -34,6 +36,15 @@ const LanguageContainer = () => {
         <Trans key={'setting.general.general-menu'} />
       </div>
       <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
+
+        <Card class={'flex flex-row justify-between items-center gap-1'}>
+          <div class={'text-md'}>
+            <Trans key={'setting.general.restart-server'} />
+          </div>
+          <button class={'btn-primary'} onClick={restartServer}>
+            <Trans key={'setting.general.restart'} />
+          </button>
+        </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
           <div class={'text-md'}>
             <Trans key={'setting.general.select-language'} />

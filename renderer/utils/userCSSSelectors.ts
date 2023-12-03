@@ -3,6 +3,8 @@ export const userCSSSelectors = {
   'wrapper--stopped': 'alspotron-usercss-wrapper--stopped',
   'wrapper--idle': 'alspotron-usercss-wrapper--idle',
   'wrapper--playing': 'alspotron-usercss-wrapper--playing',
+  'alert': 'alspotron-usercss-alert',
+  'alert--disconnected': 'alspotron-usercss-alert--disconnected',
   'lyrics-item': 'alspotron-usercss-lyrics-item',
   'lyrics': 'alspotron-usercss-lyrics',
   'lyrics-wrapper': 'alspotron-usercss-lyrics-wrapper',

@@ -25,6 +25,7 @@
   "lyrics.lyric-author": "アップローダー",
   "lyrics.auto-recognized": "認識完了",
   "lyrics.manually-specified": "手動設定",
+  "lyrics.disconnected": "Server disconnected",
 
   "setting.title.position": "位置",
   "setting.title.theme": "テーマ",
@@ -67,6 +68,9 @@
   "setting.about.alspotron-translator.german": "Alspotron ドイツ語翻訳者",
 
   "setting.general.general-menu": "General options",
+  "setting.general.restart": "Restart",
+  "setting.general.restart-server": "Restart server",
+  "setting.general.restart-program": "Restart program",
   "setting.general.select-language": "言語を選択",
   "setting.general.streaming-mode": "Streaming Mode",
   "setting.general.language.alert": "Alspotronを再起動すると言語設定が適用されます。",

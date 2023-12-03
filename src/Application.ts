@@ -18,7 +18,7 @@ import { ProgressInfo } from 'electron-builder';
 import { PartialDeep } from 'type-fest';
 
 import PluginManager from './plugins/plugin-manager';
-import { initServer } from './server';
+import { Server } from './server';
 import { config, gameList, lyricMapper, themeList } from './config';
 
 import { LyricWindowProvider, SettingWindowProvider, LyricSearchWindowProvider } from './window';
@@ -54,6 +54,7 @@ class Application {
   public lyricSearchWindowProvider: LyricSearchWindowProvider | null = null;
 
   private overlayManager: OverlayManager;
+  private server: Server;
 
   private tray!: Tray;
   private pluginManager!: PluginManager;
@@ -267,10 +268,17 @@ class Application {
         })();
       });
     },
+
+    'server-state': () => this.server.isOpen() ? 'connected' : 'disconnected',
+    'restart-server': () => {
+      if (!this.server) this.initServer();
+      else this.server.open();
+    },
   } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown>;
 
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
+    this.server = new Server();
 
     this.overlayManager.on('register-process', () => {
       this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
@@ -281,17 +289,27 @@ class Application {
   }
 
   initServer() {
-    initServer({
-      onUpdate: (body) => {
-        this.lastUpdate = body;
-        this.overridePlugin(
-          'update',
-          (updateData) => {
-            this.broadcast('update', updateData);
-          },
-          this.lastUpdate,
-        );
-      },
+    this.server.open();
+
+    this.server.on('start', () => {
+      this.broadcast('server-state', 'connected');
+    });
+    this.server.on('shutdown', () => {
+      this.broadcast('server-state', 'disconnected');
+    });
+    this.server.on('error', (err) => {
+      this.broadcast('server-state', 'disconnected', err);
+    });
+
+    this.server.on('update', (body: UpdateData) => {
+      this.lastUpdate = body;
+      this.overridePlugin(
+        'update',
+        (updateData) => {
+          this.broadcast('update', updateData);
+        },
+        this.lastUpdate,
+      );
     });
   }
 

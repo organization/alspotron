@@ -4,6 +4,8 @@ import AnchoredView from './components/AnchoredView';
 import LyricProgressBar from './components/LyricProgressBar';
 import Lyrics from './components/Lyrics';
 
+import { AlertView } from './components/AlertView';
+
 import PlayingInfoProvider from '../components/PlayingInfoProvider';
 import UserCSS from '../components/UserCSS';
 import useConfig from '../hooks/useConfig';
@@ -97,6 +99,7 @@ const App = () => {
         class={userCSSSelectors.wrapper}
         {...proximityHandles}
       >
+        <AlertView />
         <Lyrics />
         <Show when={style().nowPlaying?.visible ?? true}>
           <LyricProgressBar />

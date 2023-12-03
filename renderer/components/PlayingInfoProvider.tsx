@@ -163,7 +163,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   });
 
 
-  onCleanup(() => window.ipcRenderer.off('update', originalData));
+  onCleanup(() => window.ipcRenderer.removeListener('update', originalData));
 
   const onLyricChange = async () => {
     const data = originalData();

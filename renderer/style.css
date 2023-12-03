@@ -228,3 +228,13 @@ html, body, #app {
   transform: scale(0.9);
   opacity: 0;
 }
+
+/* keyframes */
+@keyframes background {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 100% 0;
+  }
+}
