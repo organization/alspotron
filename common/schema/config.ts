@@ -89,6 +89,7 @@ export const ConfigSchema = z.object({
   }),
 
   streamingMode: z.boolean().catch(DEFAULT_CONFIG.streamingMode),
+  hardwareAcceleration: z.boolean().catch(DEFAULT_CONFIG.hardwareAcceleration),
   provider: z.literal(LyricProviderList[0]!.provider).catch(DEFAULT_CONFIG.provider),
   /*
     z.union([

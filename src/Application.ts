@@ -48,6 +48,8 @@ if (!app.requestSingleInstanceLock()) {
 }
 app.commandLine.appendSwitch('enable-transparent-visuals');
 
+if (!config.get().hardwareAcceleration) app.disableHardwareAcceleration();
+
 class Application {
   public lyricWindowProvider!: LyricWindowProvider;
   public settingWindowProvider: SettingWindowProvider | null = null;
@@ -273,6 +275,10 @@ class Application {
     'restart-server': () => {
       if (!this.server) this.initServer();
       else this.server.open();
+    },
+    'restart-application': () => {
+      app.relaunch();
+      app.exit(0);
     },
   } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown>;
 

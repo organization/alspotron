@@ -85,6 +85,10 @@
   "setting.general.reset-alert-title": "정말로 모든 설정을 초기화 하시겠습니까?",
   "setting.general.reset-alert": "모든 설정이 초기화 되며, 이 작업은 되돌릴 수 없습니다.",
   "setting.general.reset-last-alert": "이 화면에서 초기화 버튼을 누르면 정말로 모든 설정이 초기화 됩니다. 초기화전 설정을 백업하였는지 확인하십시오.",
+  "setting.general.restart-alert-title": "정말로 어플리케이션을 재시작 하시겠습니까?",
+  "setting.general.restart-alert": "재시작 버튼을 누르면 어플리케이션이 재시작 됩니다.",
+  "setting.general.require-alert": "이 설정을 적용하기 위해서는 재시작이 필요합니다.",
+  "setting.general.hardware-acceleration": "하드웨어 가속 사용",
 
   "setting.position.select-position-to-display-lyrics": "가사를 표시할 위치",
   "setting.position.left-top": "왼쪽 상단",

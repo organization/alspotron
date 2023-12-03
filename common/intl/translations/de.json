@@ -85,6 +85,10 @@
   "setting.general.reset-alert-title": "Do you really want to reset all settings?",
   "setting.general.reset-alert": "All settings will be reset, and this action is irreversible.",
   "setting.general.reset-last-alert": "Pressing the button on this screen will indeed reset all your settings. Make sure you have backed up your settings before resetting.",
+  "setting.general.restart-alert-title": "Do you really want to restart Alspotron?",
+  "setting.general.restart-alert": "Alspotron will be restarted when you press the button.",
+  "setting.general.require-alert": "This setting requires an app restart to show changes in effect.",
+  "setting.general.hardware-acceleration": "Hardware acceleration",
 
   "setting.position.select-position-to-display-lyrics": "Anzeigeposition für Lyrics auswählen",
   "setting.position.left-top": "links oben",
