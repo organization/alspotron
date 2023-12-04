@@ -9,7 +9,7 @@ import useLyric from '../hooks/useLyric';
 import useLyricMapper from '../hooks/useLyricMapper';
 import LyricProgressBar from '../main/components/LyricProgressBar';
 import Selector from '../components/Select';
-import { ConfigLyricMode } from '../../common/constants';
+import { LyricMapperMode } from '../../common/schema';
 
 const SideBar = () => {
   const { coverUrl, title, lyrics, playerLyrics, originalLyric, lyricMode, isMapped } = usePlayingInfo();
@@ -35,12 +35,14 @@ const SideBar = () => {
   });
 
   const onChangeLyricMode = (mode: LyricMode) => {
-    let newValue: number | undefined = undefined;
-    if (mode === 'player') newValue = ConfigLyricMode.PLAYER;
-    if (mode === 'none') newValue = ConfigLyricMode.NONE;
+    let newMode: LyricMapperMode | undefined = undefined;
+    if (mode === 'player') newMode = { type: 'player' };
+    if (mode === 'none') newMode = { type: 'none' };
 
     const newMapper = {
-      [`${title()}:${coverUrl() ?? 'unknown'}`]: newValue,
+      [`${title()}:${coverUrl() ?? 'unknown'}`]: {
+        mode: newMode,
+      },
     };
 
     setLyricMapper(newMapper);
