@@ -2,21 +2,27 @@ import { createMemo } from 'solid-js';
 
 import useStyle from './useStyle';
 
+import useLyricMapper from './useLyricMapper';
+
 import { usePlayingInfo } from '../components/PlayingInfoProvider';
+import { getLyricMapperId } from '../../common/utils';
 
 const BIAS = 225; // ms
 const TRANSITION_DURATION = 225; // ms
 
 const useLyric = () => {
   const style = useStyle();
-  const { lyrics, progress } = usePlayingInfo();
+  const [lyricMapper] = useLyricMapper();
+  const { title, coverUrl, lyrics, progress } = usePlayingInfo();
 
   const lastIter = () => {
     const tempLyrics = lyrics();
     if (tempLyrics === null) return null;
 
+    const mapper = lyricMapper()[getLyricMapperId(title(), coverUrl())];
+    const delay = mapper?.delay ?? 0;
     const last = tempLyrics.lower_bound(
-      progress() + (
+      progress() + delay + (
         BIAS + (
           style().animation !== 'none' && !style().animationAtOnce ?
             TRANSITION_DURATION :

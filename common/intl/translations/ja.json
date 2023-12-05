@@ -26,6 +26,8 @@
   "lyrics.auto-recognized": "認識完了",
   "lyrics.manually-specified": "手動設定",
   "lyrics.disconnected": "Server disconnected",
+  "lyrics.mode": "Lyrics mode",
+  "lyrics.delay": "Lyrics delay",
 
   "setting.title.position": "位置",
   "setting.title.theme": "テーマ",

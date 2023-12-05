@@ -99,13 +99,34 @@ export const ConfigSchema = z.object({
 
   __internal__: InternalConfigSchema.optional(),
 });
-export const LyricMapperSchema = z.record(z.number().optional());
+export const LyricMapperModeNoneSchema = z.object({
+  type: z.literal('none'),
+});
+export const LyricMapperModePlayerSchema = z.object({
+  type: z.literal('player'),
+});
+export const LyricMapperModeProviderSchema = z.object({
+  type: z.literal('provider'),
+  id: z.string().optional(),
+  provider: z.string().optional(),
+});
+export const LyricMapperModeSchema = z.union([
+  LyricMapperModeNoneSchema,
+  LyricMapperModePlayerSchema,
+  LyricMapperModeProviderSchema,
+]);
+export const LyricMapperSchema = z.record(z.object({
+  mode: LyricMapperModeSchema.optional(),
+  delay: z.number().optional(),
+}).optional());
+
 export const ThemeListSchema = z.record(StyleConfigSchema.optional());
 export const GameListSchema = z.record(z.string().optional());
 
 export type StyleConfig = z.infer<typeof StyleConfigSchema>;
 export type Config = z.infer<typeof ConfigSchema>;
 
+export type LyricMapperMode = z.infer<typeof LyricMapperModeSchema>;
 export type LyricMapper = z.infer<typeof LyricMapperSchema>;
 export type GameList = z.infer<typeof GameListSchema>;
 export type ThemeList = z.infer<typeof ThemeListSchema>;

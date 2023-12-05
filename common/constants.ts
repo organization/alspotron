@@ -1,11 +1,5 @@
 import { LyricProviderList } from './provider';
 
-export const ConfigLyricMode = {
-  NONE: -1,
-  PLAYER: -2,
-};
-export type ConfigLyricMode = typeof ConfigLyricMode[keyof typeof ConfigLyricMode];
-
 export const DEFAULT_STYLE = {
   font: 'Pretendard JP Variable',
   fontWeight: '400',

@@ -15,9 +15,9 @@ import {
 import useLyricMapper from '../hooks/useLyricMapper';
 import usePluginOverride from '../hooks/usePluginOverride';
 import { UpdateData } from '../../common/schema';
-import { ConfigLyricMode } from '../../common/constants';
 import { useLyricProvider } from '../hooks/useLyricProvider';
 import { LyricData, LyricMetadata } from '../../common/provider';
+import { getLyricMapperId } from '../../common/utils';
 
 export type Status = 'idle' | 'playing' | 'stopped';
 export type LyricMode = 'auto' | 'manual' | 'player' | 'none';
@@ -69,11 +69,11 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const lyricMode = createMemo(() => {
     const mapper = lyricMapper();
 
-    const mode: number | undefined = mapper[`${title()}:${coverUrl() ?? 'unknown'}`];
+    const mode = mapper[getLyricMapperId(title(), coverUrl())]?.mode;
 
     if (mode === undefined) return 'auto';
-    if (mode === ConfigLyricMode.NONE) return 'none';
-    if (mode === ConfigLyricMode.PLAYER) return 'player';
+    if (mode.type === 'none') return 'none';
+    if (mode.type === 'player') return 'player';
 
     return 'manual';
   });
@@ -173,15 +173,15 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     if (!data || !lyricProvider) return;
 
     const coverDataURL = data.cover_url ?? 'unknown';
-    const id: number | undefined = mapper[`${data.title}:${coverDataURL}`];
+    const mapperData = mapper[`${data.title}:${coverDataURL}`];
 
     let lyricData: LyricData | null = null;
-    switch (id) {
-      case ConfigLyricMode.NONE: {
+    switch (mapperData?.mode?.type) {
+      case 'none': {
         setLyrics(null);
         break;
       }
-      case ConfigLyricMode.PLAYER: {
+      case 'player': {
         const lyricsFromPlayer = playerLyrics();
         if (lyricsFromPlayer) {
           lyricData = {
@@ -193,8 +193,9 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
         break;
       }
       default: { // AUTO
+        const id = mapperData?.mode?.id;
         const providerLyric = id
-          ? await provider()?.getLyricById(String(id)).catch(() => null)
+          ? await provider()?.getLyricById(id).catch(() => null)
           : await getLyric(data) ?? null;
 
         if (providerLyric) {
@@ -209,7 +210,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
       }
     }
 
-    setIsMapped(!!id);
+    setIsMapped(!!mapperData);
     setOriginalLyric(lyricData);
     if (lyricData) {
       const treeMap = new FlatMap<number, string[]>();

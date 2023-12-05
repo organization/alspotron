@@ -63,12 +63,15 @@ const LyricsMapEditor = () => {
     setLoading(true);
 
     let coverUrl = data.cover_url;
-    if (!coverUrl) {
-      coverUrl = 'unknown';
-    }
+    if (!coverUrl) coverUrl = 'unknown';
 
     const newMapper = {
-      [`${data.title}:${coverUrl}`]: metadata.lyricId,
+      [`${data.title}:${coverUrl}`]: {
+        mode: {
+          type: 'provider' as const,
+          id: metadata.lyricId.toString(),
+        },
+      },
     };
 
     await setLyricMapper(newMapper);
