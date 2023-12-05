@@ -10,13 +10,15 @@ import useLyricMapper from '../hooks/useLyricMapper';
 import LyricProgressBar from '../main/components/LyricProgressBar';
 import Selector from '../components/Select';
 import { LyricMapperMode } from '../../common/schema';
+import { getLyricMapperId } from '../../common/utils';
 
 const SideBar = () => {
   const { coverUrl, title, lyrics, playerLyrics, originalLyric, lyricMode, isMapped } = usePlayingInfo();
   const [, lyricTime] = useLyric();
-  const [, setLyricMapper] = useLyricMapper();
+  const [lyricMapper, setLyricMapper] = useLyricMapper();
   const [t] = useTransContext();
 
+  const lyricMapperItem = () => lyricMapper()[getLyricMapperId(title(), coverUrl())];
   const lyricItems = createMemo(() => {
     if (lyricMode() === 'player') {
       return Object.entries(playerLyrics() ?? {}).map(([time, lyrics]) => new Entry(~~time, lyrics));
@@ -40,7 +42,7 @@ const SideBar = () => {
     if (mode === 'none') newMode = { type: 'none' };
 
     const newMapper = {
-      [`${title()}:${coverUrl() ?? 'unknown'}`]: {
+      [getLyricMapperId(title(), coverUrl())]: {
         mode: newMode,
       },
     };
@@ -51,7 +53,7 @@ const SideBar = () => {
   return (
     <div
       class={`
-        w-[312px] h-full p-4
+        w-[360px] h-full p-4
         flex flex-col justify-start items-stretch gap-2
         text-black dark:text-white
       `}
@@ -66,7 +68,8 @@ const SideBar = () => {
       <Card
         class={'w-full flex flex-row justify-start items-center gap-1'}
         subCards={[
-          <div class={'w-full h-full flex items-center'}>
+          <div class={'w-full h-full flex justify-between items-center'}>
+            <Trans key={'lyrics.mode'} />
             <Selector
               mode={'select'}
               options={['auto', 'player', 'none'] as LyricMode[]}
@@ -74,6 +77,26 @@ const SideBar = () => {
               format={(mode) => t(`lyrics.mode.${mode}`)}
               onChange={onChangeLyricMode}
             />
+          </div>,
+          <div class={'w-full h-full flex justify-between items-center'}>
+            <Trans key={'lyrics.delay'} />
+            <label class={'input-group group'}>
+              <input
+                type={'number'}
+                class={'input'}
+                value={lyricMapperItem()?.delay ?? 0}
+                onInput={(e) => {
+                  setLyricMapper({
+                    [getLyricMapperId(title(), coverUrl())]: {
+                      delay: ~~(e.currentTarget.valueAsNumber ?? 0),
+                    },
+                  });
+                }}
+              />
+              <div class={'suffix group-focus-within:suffix-focus-within'}>
+                ms
+              </div>
+            </label>
           </div>,
         ]}
       >

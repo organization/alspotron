@@ -26,6 +26,8 @@
   "lyrics.auto-recognized": "automatisch suchen",
   "lyrics.manually-specified": "manuell auswählen",
   "lyrics.disconnected": "Server disconnected",
+  "lyrics.mode": "Lyrics mode",
+  "lyrics.delay": "Lyrics delay",
 
   "setting.title.position": "Position",
   "setting.title.theme": "Theme",

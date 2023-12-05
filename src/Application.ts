@@ -299,12 +299,15 @@ class Application {
 
     this.server.on('start', () => {
       this.broadcast('server-state', 'connected');
+      console.log('[Alspotron] server started');
     });
     this.server.on('shutdown', () => {
       this.broadcast('server-state', 'disconnected');
+      console.log('[Alspotron] server shutdown');
     });
     this.server.on('error', (err) => {
       this.broadcast('server-state', 'disconnected', err);
+      console.error('[Alspotron] server error', err);
     });
 
     this.server.on('update', (body: UpdateData) => {

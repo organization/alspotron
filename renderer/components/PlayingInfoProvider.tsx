@@ -17,6 +17,7 @@ import usePluginOverride from '../hooks/usePluginOverride';
 import { UpdateData } from '../../common/schema';
 import { useLyricProvider } from '../hooks/useLyricProvider';
 import { LyricData, LyricMetadata } from '../../common/provider';
+import { getLyricMapperId } from '../../common/utils';
 
 export type Status = 'idle' | 'playing' | 'stopped';
 export type LyricMode = 'auto' | 'manual' | 'player' | 'none';
@@ -68,7 +69,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const lyricMode = createMemo(() => {
     const mapper = lyricMapper();
 
-    const mode = mapper[`${title()}:${coverUrl() ?? 'unknown'}`]?.mode;
+    const mode = mapper[getLyricMapperId(title(), coverUrl())]?.mode;
 
     if (mode === undefined) return 'auto';
     if (mode.type === 'none') return 'none';
