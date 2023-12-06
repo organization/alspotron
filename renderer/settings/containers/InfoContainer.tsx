@@ -17,8 +17,8 @@ const InfoContainer = () => {
   } | null>(null);
 
   const refreshUpdateData = async () => {
-    const updateResult = await window.ipcRenderer.invoke('check-update') as UpdateCheckResult;
-    const currentVersion = await window.ipcRenderer.invoke('get-current-version') as string;
+    const updateResult = await window.ipcRenderer.invoke('check-update');
+    const currentVersion = await window.ipcRenderer.invoke('get-current-version');
     if (!updateResult) {
       setUpdateData({
         updateCheckResult: null,
@@ -27,9 +27,9 @@ const InfoContainer = () => {
       });
       return;
     }
-    const compareResult = await window.ipcRenderer.invoke('compare-with-current-version', updateResult.updateInfo.version) as 0 | 1 | -1;
+    const compareResult = await window.ipcRenderer.invoke('compare-with-current-version', updateResult.updateInfo.version);
     setUpdateData({
-      updateCheckResult: updateResult,
+      updateCheckResult: updateResult as UpdateCheckResult,
       compareResult,
       currentVersion,
     });
@@ -67,7 +67,7 @@ const InfoContainer = () => {
         onClick={() => refreshUpdateData()}
         onExpand={(expand) => {
           if (expand) {
-            refreshUpdateData()
+            refreshUpdateData();
           }
         }}
         subCards={[

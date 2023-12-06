@@ -231,6 +231,7 @@
   "updater.popup.downloading": "Downloading...",
   "updater.popup.download-aborted": "Download aborted.",
   "updater.popup.download-completed": "Download completed.",
+  "updater.popup.installing": "Installing...",
 
   "tray.lyrics.label": "Lyrics Selector",
   "tray.setting.label": "Setting",

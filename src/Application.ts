@@ -342,44 +342,43 @@ class Application {
     autoUpdater.on('update-available', async (it: UpdateInfo) => {
       const downloadLink = 'https://github.com/organization/alspotron/releases/latest';
 
+      const language = config.get().language;
       const { response } = await dialog.showMessageBox({
         type: 'info',
-        buttons: [getTranslation('updater.download-and-auto-install', config.get().language)],
-        title: `${getTranslation('updater.update-alert', config.get().language)} (${it.version})`,
-        message: getTranslation('updater.update-available', config.get().language).replace('{{version}}', it.version),
-        detail: getTranslation('updater.download-at', config.get().language).replace('{{link}}', downloadLink),
-        defaultId: 0,
+        buttons: [
+          getTranslation('common.cancel', language),
+          getTranslation('updater.download-and-auto-install', language),
+        ],
+        title: `${getTranslation('updater.update-alert', language)} (${it.version})`,
+        message: getTranslation('updater.update-available', language).replace('{{version}}', it.version),
+        detail: getTranslation('updater.download-at', language).replace('{{link}}', downloadLink),
+        defaultId: 1,
+        cancelId: 0,
       });
 
-      if (response === 0) {
-        const updateProgressBar = new ProgressBar({
-          indeterminate: false,
-          title: getTranslation('updater.popup.title', config.get().language),
-          text: getTranslation('updater.popup.text', config.get().language),
-          initialValue: 0,
-        });
-
-        // What The F @types/electron-progressbar
-        updateProgressBar
-          .on('progress', ((value: number) => {
-            updateProgressBar.detail = `${getTranslation('updater.popup.percent', config.get().language)} (${value.toFixed(2)}%)`;
-          }) as () => void)
-          .on('aborted', ((value: number) => {
-            updateProgressBar.detail = `${getTranslation('updater.popup.download-aborted', config.get().language)} ${value.toFixed(2)}%`;
-          }) as () => void)
-          .on('completed', () => {
-            updateProgressBar.detail = getTranslation('updater.popup.download-completed', config.get().language);
-            autoUpdater.quitAndInstall(true, true);
-          });
-
-        autoUpdater.on('download-progress', (it: ProgressInfo) => {
-          if (!updateProgressBar.isCompleted()) {
-            updateProgressBar.value = it.percent;
-            updateProgressBar.text = `${getTranslation('updater.popup.percent', config.get().language)} (${it.percent.toFixed(2)}%, ${it.transferred} / ${it.total})`;
-          }
+      if (response === 1) {
+        const downloadProgressBar = new ProgressBar({
+          indeterminate: true,
+          title: getTranslation('updater.popup.title', language),
+          text: getTranslation('updater.popup.text', language),
         });
 
         await autoUpdater.downloadUpdate();
+
+        downloadProgressBar.close();
+
+        new ProgressBar({
+          indeterminate: true,
+          title: getTranslation('updater.popup.title', language),
+          text: getTranslation('updater.popup.installing', config.get().language),
+        });
+
+        app.removeAllListeners('window-all-closed');
+        this.settingWindowProvider?.window.close();
+        this.lyricSearchWindowProvider?.window.close();
+        this.lyricWindowProvider.close();
+
+        autoUpdater.quitAndInstall(true, true);
       }
     });
 

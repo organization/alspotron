@@ -231,6 +231,7 @@
   "updater.popup.downloading": "다운로드 중...",
   "updater.popup.download-aborted": "다운로드가 중단되었습니다.",
   "updater.popup.download-completed": "다운로드가 완료되었습니다.",
+  "updater.popup.installing": "설치 중...",
 
   "tray.lyrics.label": "가사 선택",
   "tray.setting.label": "설정",

@@ -231,6 +231,7 @@
   "updater.popup.downloading": "Wird heruntergeladen...",
   "updater.popup.download-aborted": "Download wurde abgebrochen.",
   "updater.popup.download-completed": "Download ist abgeschlossen.",
+  "updater.popup.installing": "Installing...",
 
   "tray.lyrics.label": "Lyrics auswählen",
   "tray.setting.label": "Einstellungen",

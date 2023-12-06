@@ -231,6 +231,7 @@
   "updater.popup.downloading": "ダウンロード中…",
   "updater.popup.download-aborted": "ダウンロードが停止しました。",
   "updater.popup.download-completed": "ダウンロードが完了しました。",
+  "updater.popup.installing": "Installing...",
 
   "tray.lyrics.label": "歌詞選択",
   "tray.setting.label": "設定",
