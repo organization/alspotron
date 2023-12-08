@@ -83,7 +83,7 @@
     "@codemirror/lang-css": "6.2.1",
     "@codemirror/lang-sass": "6.0.2",
     "@codemirror/state": "6.3.3",
-    "@codemirror/view": "6.22.1",
+    "@codemirror/view": "6.22.2",
     "@floating-ui/dom": "1.5.3",
     "@hono/node-server": "1.3.1",
     "@jellybrick/solid-i18next": "1.2.2",
