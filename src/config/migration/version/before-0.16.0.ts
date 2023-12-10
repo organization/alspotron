@@ -8,27 +8,33 @@ import { Migrator } from '../types';
 export const LEGACY_migrator0_16_0: Migrator = {
   config: (data: unknown) => {
     const configData = data as LEGACY_Config0_16_0;
-    const name = getTranslation('setting.theme.legacy-theme', configData.language);
+    let name: string;
+
+    if (configData?.language) {
+      name = getTranslation('setting.theme.legacy-theme', configData.language);
+    } else {
+      name = getTranslation('setting.theme.preset.default', DEFAULT_CONFIG.language);
+    }
 
     return {
       version: 1,
       selectedTheme: name,
 
       windowPosition: {
-        anchor: configData.windowPosition.anchor,
-        display: configData.windowPosition.display,
-        top: configData.windowPosition.top ?? DEFAULT_CONFIG.windowPosition.top,
-        left: configData.windowPosition.left ?? DEFAULT_CONFIG.windowPosition.left,
-        bottom: configData.windowPosition.bottom ?? DEFAULT_CONFIG.windowPosition.bottom,
-        right: configData.windowPosition.right ?? DEFAULT_CONFIG.windowPosition.right,
+        anchor: configData?.windowPosition?.anchor ?? DEFAULT_CONFIG.windowPosition.anchor,
+        display: configData?.windowPosition?.display ?? DEFAULT_CONFIG.windowPosition.display,
+        top: configData?.windowPosition?.top ?? DEFAULT_CONFIG.windowPosition.top,
+        left: configData?.windowPosition?.left ?? DEFAULT_CONFIG.windowPosition.left,
+        bottom: configData?.windowPosition?.bottom ?? DEFAULT_CONFIG.windowPosition.bottom,
+        right: configData?.windowPosition?.right ?? DEFAULT_CONFIG.windowPosition.right,
       },
 
-      syncThrottle: configData.syncThrottle,
+      syncThrottle: configData?.syncThrottle ?? DEFAULT_CONFIG.syncThrottle,
 
-      language: configData.language,
-      developer: configData.developer,
+      language: configData?.language ?? DEFAULT_CONFIG.language,
+      developer: configData?.developer ?? DEFAULT_CONFIG.developer,
 
-      plugins: configData.plugins,
+      plugins: configData?.plugins ?? DEFAULT_CONFIG.plugins,
 
       hardwareAcceleration: DEFAULT_CONFIG.hardwareAcceleration,
       streamingMode: DEFAULT_CONFIG.streamingMode,
