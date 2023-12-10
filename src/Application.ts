@@ -365,20 +365,14 @@ class Application {
 
         await autoUpdater.downloadUpdate();
 
-        downloadProgressBar.close();
-
-        new ProgressBar({
-          indeterminate: true,
-          title: getTranslation('updater.popup.title', language),
-          text: getTranslation('updater.popup.installing', config.get().language),
-        });
-
         app.removeAllListeners('window-all-closed');
         this.settingWindowProvider?.window.close();
         this.lyricSearchWindowProvider?.window.close();
         this.lyricWindowProvider.close();
 
         autoUpdater.quitAndInstall(true, true);
+
+        downloadProgressBar.close();
       }
     });
 

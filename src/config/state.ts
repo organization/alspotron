@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises';
+import fsSync from 'node:fs';
 
 import { z, ZodTypeDef } from 'zod';
 import { deepmerge } from 'deepmerge-ts';
@@ -97,6 +98,9 @@ export class State<T> {
   /* utils */
   public async loadFromPath(): Promise<void> {
     if (!this.path) throw Error('Cannot load data without path');
+    if (!fsSync.existsSync(this.path)) {
+      await fs.writeFile(this.path, JSON.stringify(this.value, null, 2), 'utf-8');
+    }
 
     const str = await fs.readFile(this.path, 'utf-8');
     let config: T = this.value;
