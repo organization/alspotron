@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "concurrently \"npm run dev:main\" \"npm run dev:renderer\"",
     "dev:main": "npm run build:main && electron ./dist/index.js",
-    "dev:renderer": "vite -c vite.renderer.config.ts",
+    "dev:renderer": "vite -c vite.renderer.config.mts",
     "postinstall": "patch-package",
     "clean": "del-cli dist",
-    "build": "npm run build:main && vite build -c vite.renderer.config.ts",
+    "build": "npm run build:main && vite build -c vite.renderer.config.mts",
     "build:main": "rollup -c rollup.preload.config.ts --configPlugin @rollup/plugin-typescript --bundleConfigAsCjs && rollup -c rollup.main.config.ts --configPlugin @rollup/plugin-typescript --bundleConfigAsCjs",
     "dist": "npm run clean && npm run build && electron-builder -p never",
     "dist:all": "npm run clean && npm run build && electron-builder --win --mac --linux -p never",
