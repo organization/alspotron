@@ -2,7 +2,7 @@ import { For, JSX, Setter } from 'solid-js';
 import { Transition } from 'solid-transition-group';
 import { useTransContext } from '@jellybrick/solid-i18next';
 
-import { Navigate, Route, Routes, useLocation, useNavigate } from '@solidjs/router';
+import { HashRouter, Navigate, Route, useLocation, useNavigate, RouteSectionProps } from '@solidjs/router';
 
 import ListView, { ListItemData } from './components/ListView';
 
@@ -108,7 +108,7 @@ const TAB_LIST = (() => {
   return result;
 })();
 
-const App = () => {
+const BaseApp = (props: RouteSectionProps) => {
   usePluginsCSS();
 
   const [t] = useTransContext();
@@ -143,19 +143,23 @@ const App = () => {
           onSelectItem={(tab) => setTabId(tab.id)}
         />
         <Transition name={'tab'} mode={'outin'}>
-          <Routes>
-            <For each={TAB_LIST}>
-              {(tab) => <Route path={tab.id} component={tab.container} />}
-            </For>
-            <Route path={'/game-overlay/list'} component={GameListContainer} />
-            <Route path={'/plugin/:id'} component={PluginSettingsContainer} />
-            <Route path={'/theme/:name'} component={ThemeContainer} />
-            <Route path={'*'} element={<Navigate href={`/${TAB_LIST[0].id}`} />} />
-          </Routes>
+          {props.children}
         </Transition>
       </div>
     </Layout>
   );
 };
+
+const App = () => (
+  <HashRouter root={BaseApp}>
+    <For each={TAB_LIST}>
+      {(tab) => <Route path={tab.id} component={tab.container}/>}
+    </For>
+    <Route path={'/game-overlay/list'} component={GameListContainer}/>
+    <Route path={'/plugin/:id'} component={PluginSettingsContainer}/>
+    <Route path={'/theme/:name'} component={ThemeContainer}/>
+    <Route path={'*'} component={() => <Navigate href={`/${TAB_LIST[0].id}`}/>}/>
+  </HashRouter>
+);
 
 export default App;
