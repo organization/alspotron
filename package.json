@@ -117,7 +117,7 @@
   "optionalDependencies": {
     "@jellybrick/wql-process-monitor": "1.4.5",
     "extract-file-icon": "0.3.2",
-    "hmc-win32": "1.4.0",
+    "hmc-win32": "1.4.1",
     "mica-electron": "1.5.3",
     "node-window-manager": "2.2.4"
   },
