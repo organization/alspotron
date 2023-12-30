@@ -46,7 +46,7 @@
 
   -   Bitte folgen Sie dem obigen Link, um `Youtube Music Desktop` zu installieren.
 
-#### 2.  Starten Sie `Youtube Music Desktop`, wählen Sie im Menü `Plugins` aus und aktivieren Sie `tuna-obs`.
+#### 2.  Starten Sie `Youtube Music Desktop`, wählen Sie im Menü `Erweiterungen` aus und aktivieren Sie `Tuna OBS`.
 
 #### 3.  [Alspotron herunterladen](https://github.com/organization/alspotron/releases)
 
