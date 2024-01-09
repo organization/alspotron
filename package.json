@@ -43,7 +43,7 @@
     "@rollup/plugin-json": "6.1.0",
     "@rollup/plugin-node-resolve": "15.2.3",
     "@rollup/plugin-terser": "0.4.4",
-    "@rollup/plugin-typescript": "11.1.5",
+    "@rollup/plugin-typescript": "11.1.6",
     "@total-typescript/ts-reset": "0.5.1",
     "@types/color": "3.0.6",
     "@types/electron-progressbar": "1.2.6",
