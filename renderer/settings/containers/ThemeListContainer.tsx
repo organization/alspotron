@@ -24,6 +24,7 @@ const ThemeListContainer = () => {
   const [name, setName] = createSignal('');
   const [open, setOpen] = createSignal(false);
   const [error, setError] = createSignal<Error | null>(null);
+  const [addOpen, setAddOpen] = createSignal(false);
   
   const onSelectTheme = (name: string) => {
     setConfig({
@@ -50,7 +51,11 @@ const ThemeListContainer = () => {
       suffix += 1;
     }
 
-    setTheme(`${newName} ${suffix}`, DEFAULT_STYLE);
+    const style: StyleConfig = themeList()[target() ?? ''] ?? presetThemes[target() ?? ''] ?? DEFAULT_STYLE;
+
+    setTheme(`${newName} ${suffix}`, style);
+    setAddOpen(false);
+    setTarget(null);
   };
 
   const onRenameConfirm = () => {
@@ -60,7 +65,8 @@ const ThemeListContainer = () => {
     if (typeof oldName !== 'string') return;
     const original = themeList()[oldName];
 
-    if (themeList()[newName]) {
+    const presetNames = Object.keys(presetThemes).map((name) => t(`setting.theme.preset.${name}`));
+    if (themeList()[newName] || presetNames.includes(newName)) {
       setNameOpen(false);
       setNameConflictOpen(true);
       return;
@@ -101,6 +107,11 @@ const ThemeListContainer = () => {
       setError(err as Error);
       setOpen(true);
     }
+  };
+
+  const onShowAdd = () => {
+    setTarget('default');
+    setAddOpen(true);
   };
 
   return (
@@ -220,7 +231,7 @@ const ThemeListContainer = () => {
         <div class={'flex-1'} />
         <button
           class={'btn-primary'}
-          onClick={onAdd}
+          onClick={onShowAdd}
         >
           <Trans key={'setting.theme.add-theme'} />
         </button>
@@ -317,6 +328,79 @@ const ThemeListContainer = () => {
             {JSON.stringify(error(), null, 2)}
           </code>
         </pre>
+      </Modal>
+      <Modal
+        open={addOpen()}
+        onClose={() => setAddOpen(false)}
+        buttons={[
+          {
+            name: t('common.close'),
+            onClick: () => setAddOpen(false),
+          },
+          {
+            type: 'positive',
+            name: t('setting.theme.add-theme-from.selected'),
+            onClick: onAdd,
+          },
+        ]}
+      >
+        <div class={'text-xl mb-2'}>
+          {t('setting.theme.add-theme-from.title')}
+        </div>
+        <Trans key={'setting.theme.built-in-themes'}/>
+        <For each={Object.keys(presetThemes)}>
+          {(name) => (
+            <Card class={'flex flex-row justify-start items-center gap-4'} onClick={() => setTarget(name)}>
+              <Show
+                when={target() === name}
+                fallback={<div class={'w-6 h-6'}/>}
+              >
+                <svg
+                  class={'w-6 h-6 fill-none'}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4.53 12.97a.75.75 0 0 0-1.06 1.06l4.5 4.5a.75.75 0 0 0 1.06 0l11-11a.75.75 0 0 0-1.06-1.06L8.5 16.94l-3.97-3.97Z"
+                    class={'fill-green-500'}
+                  />
+                </svg>
+              </Show>
+              <div class={'text-md'}>
+                <Trans key={`setting.theme.preset.${name}`}/>
+              </div>
+              <div class={'flex-1'}/>
+            </Card>
+          )}
+        </For>
+        <div class={'text-md mt-4 mb-1'}>
+          <Trans key={'setting.theme.custom-themes'}/>
+        </div>
+        <For each={Object.keys(themeList())}>
+          {(name) => (
+            <Card class={'flex flex-row justify-start items-center gap-4'} onClick={() => setTarget(name)}>
+              <Show
+                when={target() === name}
+                fallback={<div class={'w-6 h-6'}/>}
+              >
+                <svg
+                  class={'w-6 h-6 fill-none'}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4.53 12.97a.75.75 0 0 0-1.06 1.06l4.5 4.5a.75.75 0 0 0 1.06 0l11-11a.75.75 0 0 0-1.06-1.06L8.5 16.94l-3.97-3.97Z"
+                    class={'fill-green-500'}
+                  />
+                </svg>
+              </Show>
+              <div class={'text-md'}>
+                {name}
+              </div>
+              <div class={'flex-1'}/>
+            </Card>
+          )}
+        </For>
       </Modal>
     </div>
   )

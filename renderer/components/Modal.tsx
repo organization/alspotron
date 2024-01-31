@@ -47,12 +47,12 @@ const Modal = (props: ModalProps) => {
               {...leftProps}
               ref={content}
               class={cx(`
-                w-fit h-fit flex flex-col rounded overflow-hidden
+                w-fit h-fit max-h-[80vh] flex flex-col rounded overflow-hidden
                 shadow-xl shadow-black/10 border-[1px]
                 bg-stone-100 border-black/10 dark:bg-stone-700 dark:border-white/10
               `, leftProps.class)}
             >
-              <div class={'text-black dark:text-white px-6 py-5'}>
+              <div class={'text-black dark:text-white px-6 py-5 fluent-scrollbar'}>
                 {props.children}
               </div>
               <div class={'flex justify-end items-center gap-2 bg-stone-200 dark:bg-stone-800 px-6 py-5'}>

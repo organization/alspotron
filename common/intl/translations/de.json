@@ -190,6 +190,9 @@
   "setting.theme.preset.album-cover": "Album Cover Theme",
   "setting.theme.preset.multiple-lyric": "Lyric Theme",
   "setting.theme.preset.dynamic-island": "Dynamic Island Theme",
+  "setting.theme.add-theme-from.title": "Add theme from",
+  "setting.theme.add-theme-from.selected": "Add theme from selected",
+  "setting.theme.custom-themes": "Custom themes",
 
   "setting.user-css-warning.bold": "Achtung!",
   "setting.user-css-warning.0": "Bei Verwendung von benutzerdefinierten Styles könnten diese nach einem Update visuelle fehler verursachen",
