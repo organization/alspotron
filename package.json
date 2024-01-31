@@ -91,7 +91,7 @@
     "color": "4.2.3",
     "deepmerge-ts": "5.1.0",
     "electron-differential-updater": "4.3.2",
-    "electron-progressbar": "2.1.0",
+    "electron-progressbar": "2.2.0",
     "electron-updater": "6.1.7",
     "emittery": "0.13.1",
     "font-list": "1.5.1",
