@@ -83,7 +83,7 @@
     "@hono/node-server": "1.7.0",
     "@jellybrick/solid-i18next": "1.2.2",
     "@solid-codemirror/codemirror": "1.0.4",
-    "@solidjs/router": "0.12.0",
+    "@solidjs/router": "0.12.2",
     "@suyongs/solid-utility": "0.3.0",
     "@uiw/codemirror-theme-github": "4.21.21",
     "alsong": "3.0.1",
