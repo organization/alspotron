@@ -8,6 +8,7 @@ delete colors.blueGray;
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: ['selector', '[data-color-scheme="dark"]'],
   content: [
     './renderer/index.html',
     './renderer/**/*.{js,ts,jsx,tsx}',

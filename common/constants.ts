@@ -44,6 +44,7 @@ export const DEFAULT_CONFIG = {
   version: 1 as const,
 
   selectedTheme: 'Default Theme',
+  appTheme: 'system' as const,
 
   windowPosition: {
     anchor: 'bottom-right' as const,

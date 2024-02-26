@@ -65,6 +65,22 @@ const LanguageContainer = () => {
           </div>
           <Switch value={config()?.streamingMode} onChange={(checked) => setConfig({ streamingMode: checked })}/>
         </Card>
+        <Card class={'flex flex-row justify-between items-center gap-1'}>
+          <div class={'text-md'}>
+            <Trans key={'setting.general.app-theme'}/>
+          </div>
+          <Selector
+            mode={'select'}
+            placeholder={t('setting.general.placeholder')}
+            class={'select min-w-[210px]'}
+            options={['system', 'dark', 'light']}
+            value={config()?.appTheme}
+            onChange={(value) => {
+              setConfig({ appTheme: value });
+            }}
+            format={(str) => t(`setting.general.app-theme.${str}`)}
+          />
+        </Card>
       </div>
       <div class={'text-md mt-4 mb-1 px-4'}>
         <Trans key={'setting.general.developer-menu'}/>

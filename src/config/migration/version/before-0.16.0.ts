@@ -19,6 +19,7 @@ export const LEGACY_migrator0_16_0: Migrator = {
     return {
       version: 1,
       selectedTheme: name,
+      appTheme: DEFAULT_CONFIG.appTheme,
 
       windowPosition: {
         anchor: configData?.windowPosition?.anchor ?? DEFAULT_CONFIG.windowPosition.anchor,

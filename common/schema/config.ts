@@ -52,6 +52,7 @@ export const InternalConfigSchema = z.object({
 export const ConfigSchema = z.object({
   version: z.literal(1),
   selectedTheme: z.string().catch(DEFAULT_CONFIG.selectedTheme),
+  appTheme: z.enum(['system', 'light', 'dark']).catch(DEFAULT_CONFIG.appTheme),
 
   windowPosition: z.object({
     anchor: z.union([
