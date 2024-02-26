@@ -110,7 +110,6 @@ const LyricsMapEditor = () => {
 
   const observer = new IntersectionObserver((entries) => {
     if (!loading() && entries[0].intersectionRatio > 0) {
-      console.log('load next page');
       onSearchNextPage();
     }
   });
