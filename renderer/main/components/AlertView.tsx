@@ -22,6 +22,7 @@ export const AlertView = () => {
   `);
   useClassStyle(userCSSSelectors['alert--disconnected'], () => `
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     
@@ -41,6 +42,13 @@ export const AlertView = () => {
     
     animation: background 10s linear infinite;
   `);
+  useClassStyle(userCSSSelectors['alert--description'], () => `
+    text-wrap: balance;
+    word-break: keep-all;
+    text-align: center;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.5);
+  `);
 
   return (
     <div
@@ -49,7 +57,10 @@ export const AlertView = () => {
         [userCSSSelectors['alert--disconnected']]: state() === 'disconnected',
       }}
     >
-      <Trans key={'lyrics.disconnected'} />
+      <Trans key={'lyrics.disconnected'}/>
+      <span class={userCSSSelectors['alert--description']}>
+        <Trans key={'lyrics.disconnected.description'}/>
+      </span>
     </div>
   );
 };

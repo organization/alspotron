@@ -26,6 +26,7 @@
   "lyrics.auto-recognized": "認識完了",
   "lyrics.manually-specified": "手動設定",
   "lyrics.disconnected": "Server disconnected",
+  "lyrics.disconnected.description": "サーバーに接続できません。ポート1608を使用している他のプログラムがある場合、Alspotronは使用できません。",
   "lyrics.mode": "Lyrics mode",
   "lyrics.delay": "Lyrics delay",
 

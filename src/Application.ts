@@ -274,7 +274,10 @@ class Application {
     'server-state': () => this.server.isOpen() ? 'connected' : 'disconnected',
     'restart-server': () => {
       if (!this.server) this.initServer();
-      else this.server.open();
+      else {
+        if (this.server.isOpen()) this.server.close();
+        this.server.open();
+      }
     },
     'restart-application': () => {
       app.relaunch();

@@ -5,6 +5,7 @@ export const userCSSSelectors = {
   'wrapper--playing': 'alspotron-usercss-wrapper--playing',
   'alert': 'alspotron-usercss-alert',
   'alert--disconnected': 'alspotron-usercss-alert--disconnected',
+  'alert--description': 'alspotron-usercss-alert--description',
   'lyrics-item': 'alspotron-usercss-lyrics-item',
   'lyrics': 'alspotron-usercss-lyrics',
   'lyrics-wrapper': 'alspotron-usercss-lyrics-wrapper',

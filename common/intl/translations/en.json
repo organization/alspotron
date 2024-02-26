@@ -26,6 +26,7 @@
   "lyrics.auto-recognized": "Automatic search",
   "lyrics.manually-specified": "Select manually",
   "lyrics.disconnected": "Server disconnected",
+  "lyrics.disconnected.description": "Cannot connect to the server. Alspotron cannot be used if another program is using port 1608",
   "lyrics.mode": "Lyrics mode",
   "lyrics.delay": "Lyrics delay",
 
