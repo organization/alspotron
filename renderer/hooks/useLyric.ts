@@ -17,7 +17,7 @@ const useLyric = () => {
 
   const lastIter = () => {
     const tempLyrics = lyrics();
-    if (tempLyrics === null) return null;
+    if (tempLyrics === null || tempLyrics.size() === 0) return null;
 
     const mapper = lyricMapper()[getLyricMapperId(title(), coverUrl())];
     const delay = mapper?.delay ?? 0;
@@ -38,8 +38,8 @@ const useLyric = () => {
     return last;
   };
 
-  const lyric = createMemo(() => lastIter()?.value ? lastIter()?.second : null);
-  const index = createMemo(() => lastIter()?.value ? lastIter()?.first : null);
+  const lyric = createMemo(() => lastIter()?.second);
+  const index = createMemo(() => lastIter()?.first);
 
   const nextLyricsIter = createMemo(() => {
     let nextLyricLength = style().lyric.nextLyric;
@@ -61,7 +61,7 @@ const useLyric = () => {
 
   const getPreviousLyricLength = createMemo(() => {
     let previousLyricLength = style().lyric.previousLyric;
-  
+
     const now = lastIter();
     const tempLyrics = lyrics();
 
@@ -94,11 +94,11 @@ const useLyric = () => {
   });
   const lyricRange = createMemo(() => {
     const now = lastIter();
-    if (!now || now.value === undefined) return null;
+    if (!now) return null;
 
     const prevIter = previousLyricsIter() ?? now;
     const nextIter = nextLyricsIter() ?? now;
-  
+
     if (prevIter.equals(nextIter)) return [now.second];
 
     const result: string[][] = [];
@@ -108,7 +108,7 @@ const useLyric = () => {
     if (nextIter.equals(now)) {
       result.push(now.second);
     }
-  
+
     return result;
   });
 
