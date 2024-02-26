@@ -16,7 +16,7 @@ export type LyricMetadata = {
 };
 
 export type LyricData = LyricMetadata & {
-  lyric: Record<number, string[]>;
+  lyric?: Record<number, string[]>;
   lyricRaw?: string;
   register?: LyricRegister;
 };

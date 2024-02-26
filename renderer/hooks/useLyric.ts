@@ -38,8 +38,8 @@ const useLyric = () => {
     return last;
   };
 
-  const lyric = createMemo(() => lastIter()?.second);
-  const index = createMemo(() => lastIter()?.first);
+  const lyric = createMemo(() => lastIter()?.value ? lastIter()?.second : null);
+  const index = createMemo(() => lastIter()?.value ? lastIter()?.first : null);
 
   const nextLyricsIter = createMemo(() => {
     let nextLyricLength = style().lyric.nextLyric;
@@ -94,7 +94,7 @@ const useLyric = () => {
   });
   const lyricRange = createMemo(() => {
     const now = lastIter();
-    if (!now) return null;
+    if (!now || now.value === undefined) return null;
 
     const prevIter = previousLyricsIter() ?? now;
     const nextIter = nextLyricsIter() ?? now;

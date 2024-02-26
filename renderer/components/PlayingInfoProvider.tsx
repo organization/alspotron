@@ -183,13 +183,11 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
       }
       case 'player': {
         const lyricsFromPlayer = playerLyrics();
-        if (lyricsFromPlayer) {
-          lyricData = {
-            id: 'player',
-            title: data.title ?? '',
-            lyric: lyricsFromPlayer,
-          } satisfies LyricData;
-        }
+        lyricData = {
+          id: 'player',
+          title: data.title ?? '',
+          lyric: lyricsFromPlayer ?? undefined,
+        } satisfies LyricData;
         break;
       }
       default: { // AUTO
@@ -212,7 +210,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
 
     setIsMapped(!!mapperData);
     setOriginalLyric(lyricData);
-    if (lyricData) {
+    if (lyricData?.lyric) {
       const treeMap = new FlatMap<number, string[]>();
 
       for (const key in lyricData.lyric) {
