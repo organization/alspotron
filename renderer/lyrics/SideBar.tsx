@@ -1,4 +1,4 @@
-import { Show, createMemo, For, createEffect, Match, Switch } from 'solid-js';
+import { createEffect, createMemo, For, Match, Show, Switch } from 'solid-js';
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 import { Marquee } from '@suyongs/solid-utility';
 import { Entry } from 'tstl';
@@ -59,17 +59,17 @@ const SideBar = () => {
       `}
     >
       <div class={'text-xl'}>
-        <Trans key={'lyrics.current-playing-track'} />
+        <Trans key={'lyrics.current-playing-track'}/>
       </div>
-      <LyricProgressBar class={'!w-[280px]'} />
+      <LyricProgressBar class={'!w-[280px]'}/>
       <div class={'text-xl mt-4'}>
-        <Trans key={'lyrics.current-applied-lyric'} />
+        <Trans key={'lyrics.current-applied-lyric'}/>
       </div>
       <Card
         class={'w-full flex flex-row justify-start items-center gap-1'}
         subCards={[
           <div class={'w-full h-full flex justify-between items-center'}>
-            <Trans key={'lyrics.mode'} />
+            <Trans key={'lyrics.mode'}/>
             <Selector
               mode={'select'}
               options={['auto', 'player', 'none'] as LyricMode[]}
@@ -79,13 +79,13 @@ const SideBar = () => {
             />
           </div>,
           <div class={'w-full h-full flex justify-between items-center'}>
-            <Trans key={'lyrics.delay'} />
+            <Trans key={'lyrics.delay'}/>
             <label class={'input-group group'}>
               <input
                 type={'number'}
                 class={'input'}
                 value={lyricMapperItem()?.delay ?? 0}
-                onInput={(e) => {
+                onChange={(e) => {
                   setLyricMapper({
                     [getLyricMapperId(title(), coverUrl())]: {
                       delay: ~~(e.currentTarget.valueAsNumber ?? 0),
@@ -104,13 +104,13 @@ const SideBar = () => {
           <Show when={originalLyric()}>
             <Marquee class={'w-full'} gap={32}>
               <div class={'text-xs text-black/50 dark:text-white/50'}>
-                <Trans key={'lyrics.lyric-id'} />: {originalLyric()?.id ?? 'N/A'}
-              {' · '}
-                <Trans key={'lyrics.lyric-author'} />: {originalLyric()?.register?.name ?? 'N/A'}
-              {' · '}
+                <Trans key={'lyrics.lyric-id'}/>: {originalLyric()?.id ?? 'N/A'}
+                {' · '}
+                <Trans key={'lyrics.lyric-author'}/>: {originalLyric()?.register?.name ?? 'N/A'}
+                {' · '}
                 <Switch fallback={t('lyrics.auto-recognized')}>
                   <Match when={isMapped()}>
-                    <Trans key={'lyrics.manually-specified'} />
+                    <Trans key={'lyrics.manually-specified'}/>
                   </Match>
                 </Switch>
               </div>
@@ -124,7 +124,8 @@ const SideBar = () => {
           </div>
         </div>
       </Card>
-      <div class={'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto will-change-scroll'}>
+      <div
+        class={'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto will-change-scroll'}>
         <For each={lyricItems()}>
           {({ first: time, second: lyrics }) => (
             <div
@@ -140,7 +141,7 @@ const SideBar = () => {
         </For>
       </div>
     </div>
-  )
+  );
 };
 
 export default SideBar;
