@@ -1,10 +1,6 @@
-import { LyricData, LyricMetadata, BaseLyricProvider, SearchParams } from './types';
+import { BaseLyricProvider, LyricData, LyricMetadata, SearchParams } from './types';
 
-import type {
-  Alsong,
-  LyricMetadata as AlsongLyricMetadata,
-  Lyric as AlsongLyric
-} from 'alsong';
+import type { Alsong, Lyric as AlsongLyric, LyricMetadata as AlsongLyricMetadata } from 'alsong';
 
 
 const convertLyricMetadata = (metadata: AlsongLyricMetadata): LyricMetadata => {
@@ -15,7 +11,7 @@ const convertLyricMetadata = (metadata: AlsongLyricMetadata): LyricMetadata => {
     artist: metadata.artist,
     playtime: metadata.playtime,
     registerDate: metadata.registerDate,
-  }
+  };
 };
 const convertLyric = (lyric: AlsongLyric): LyricData => {
   return {
@@ -26,8 +22,8 @@ const convertLyric = (lyric: AlsongLyric): LyricData => {
     lyric: lyric.lyric,
     lyricRaw: lyric.lyricRaw,
     register: lyric.register,
-  }
-}
+  };
+};
 
 export class AlsongLyricProvider extends BaseLyricProvider {
   public static readonly provider = 'alsong';
@@ -37,28 +33,6 @@ export class AlsongLyricProvider extends BaseLyricProvider {
   constructor(alsong: Alsong) {
     super();
     this.alsong = alsong;
-  }
-
-  async getLyric(params: SearchParams) {
-    const list = await this.searchLyrics(params);
-    if (typeof list[0]?.id !== 'string') return null;
-
-    return this.getLyricById(list[0].id);
-  }
-
-  async getLyricById(id: string) {
-    const result = await this.alsong.getLyricById(id);
-    if (!result) return null;
-
-    return convertLyric(result);
-  }
-
-  async searchLyrics(params: SearchParams) {
-    const artist = params.artist ?? '';
-    const title = params.title ?? '';
-
-    const result = await this.alsong(artist, title, { playtime: params.playtime }).catch(() => []);
-    return result.map(convertLyricMetadata);
   }
 
   static override onBeforeSendHeaders(details: Electron.OnBeforeSendHeadersListenerDetails) {
@@ -82,6 +56,7 @@ export class AlsongLyricProvider extends BaseLyricProvider {
 
     return {};
   }
+
   static override onHeadersReceived(details: Electron.OnHeadersReceivedListenerDetails) {
     const isEgg = details.url.startsWith('https://lyric.altools.com');
     if (isEgg) {
@@ -94,5 +69,28 @@ export class AlsongLyricProvider extends BaseLyricProvider {
     }
 
     return {};
+  }
+
+  async getLyric(params: SearchParams) {
+    const list = await this.searchLyrics(params);
+    if (typeof list[0]?.id !== 'string') return null;
+
+    return this.getLyricById(list[0].id);
+  }
+
+  async getLyricById(id: string) {
+    const result = await this.alsong.getLyricById(id);
+    if (!result) return null;
+
+    return convertLyric(result);
+  }
+
+  async searchLyrics(params: SearchParams) {
+    const artist = params.artist ?? '';
+    const title = params.title ?? '';
+    const page = params.page ?? 0;
+
+    const result = await this.alsong(artist, title, { playtime: params.playtime, page }).catch(() => []);
+    return result.map(convertLyricMetadata);
   }
 }

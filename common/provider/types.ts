@@ -27,6 +27,7 @@ export type SearchParams = {
   artist?: string;
   album?: string;
   playtime?: LyricTimestamp;
+  page?: number;
 };
 export abstract class BaseLyricProvider {
   static readonly provider: string;
