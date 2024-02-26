@@ -12,11 +12,9 @@ export interface ProviderProps {
 const Provider = (props: ProviderProps) => {
   const [config] = useConfig();
 
-  console.log('provider?');
   createRenderEffect(() => {
     const theme = config()?.appTheme;
 
-    console.log('theme', theme, window.matchMedia('(prefers-color-scheme: dark)').matches);
     if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.body.dataset.colorScheme = 'dark';
     } else {
