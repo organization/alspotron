@@ -2,7 +2,8 @@ import fs from 'node:fs/promises';
 import fsSync from 'node:fs';
 
 import { z, ZodTypeDef } from 'zod';
-import { deepmerge } from 'deepmerge-ts';
+
+import { deepmerge } from '../../utils/merge';
 
 import type { PartialDeep } from 'type-fest';
 

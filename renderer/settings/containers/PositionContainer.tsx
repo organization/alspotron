@@ -1,7 +1,5 @@
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
-import { Show } from 'solid-js';
-
 import icon from '../../../assets/icon_music.png';
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
@@ -11,6 +9,7 @@ import useConfig from '../../hooks/useConfig';
 import { cx } from '../../utils/classNames';
 
 import type { screen as electronScreen } from 'electron';
+import useStyle from '../../hooks/useStyle';
 
 type ElectronScreenDisplay = ReturnType<typeof electronScreen.getPrimaryDisplay>;
 
@@ -19,6 +18,7 @@ const getPrimaryDisplay = () => window.ipcRenderer.sendSync('get-primary-screen'
 
 const PositionContainer = () => {
   const [config, setConfig] = useConfig();
+  const style = useStyle();
   const [t] = useTransContext();
 
   const displays = getAllDisplays();
@@ -27,10 +27,10 @@ const PositionContainer = () => {
   return (
     <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1'}>
-        <Trans key={'setting.title.position'} />
+        <Trans key={'setting.title.position'}/>
       </div>
       <div class={'text-md mt-4 mb-1'}>
-        <Trans key={'setting.position.select-position-to-display-lyrics'} />
+        <Trans key={'setting.position.select-position-to-display-lyrics'}/>
       </div>
       <Card
         class={`
@@ -39,92 +39,101 @@ const PositionContainer = () => {
         `}
       >
         <Card
-          class={'flex justify-start items-start'}
-          classList={{
-            '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'top-left',
-          }}
-          onClick={() => setConfig({ windowPosition: { anchor: 'top-left' } })}
+          class={cx(
+            !style().position.availableAnchor.includes('top-left') && '!opacity-30 !bg-gray-100/60 dark:!bg-white/5',
+            'flex justify-start items-start',
+            config()?.windowPosition.anchor === 'top-left' && '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40',
+          )}
+          onClick={() => style().position.availableAnchor.includes('top-left') && setConfig({ windowPosition: { anchor: 'top-left' } })}
         >
-          <Trans key={'setting.position.left-top'} />
+          <Trans key={'setting.position.top-left'}/>
         </Card>
         <Card
-          class={'flex justify-center items-start'}
-          classList={{
-            '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'top',
-          }}
-          onClick={() => setConfig({ windowPosition: { anchor: 'top' } })}
+          class={cx(
+            !style().position.availableAnchor.includes('top') && '!opacity-30 !bg-gray-100/60 dark:!bg-white/5',
+            'flex justify-center items-start',
+            config()?.windowPosition.anchor === 'top' && '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40',
+          )}
+          onClick={() => style().position.availableAnchor.includes('top') && setConfig({ windowPosition: { anchor: 'top' } })}
         >
-          <Trans key={'setting.position.center-top'} />
+          <Trans key={'setting.position.top'}/>
         </Card>
         <Card
-          class={'flex justify-end items-start'}
-          classList={{
-            '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'top-right',
-          }}
-          onClick={() => setConfig({ windowPosition: { anchor: 'top-right' } })}
+          class={cx(
+            !style().position.availableAnchor.includes('top-right') && '!opacity-30 !bg-gray-100/60 dark:!bg-white/5',
+            'flex justify-end items-start',
+            config()?.windowPosition.anchor === 'top-right' && '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40',
+          )}
+          onClick={() => style().position.availableAnchor.includes('top-right') && setConfig({ windowPosition: { anchor: 'top-right' } })}
         >
-          <Trans key={'setting.position.right-top'} />
+          <Trans key={'setting.position.top-right'}/>
         </Card>
         <Card
-          class={'flex justify-start items-center'}
-          classList={{
-            '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'left',
-          }}
-          onClick={() => setConfig({ windowPosition: { anchor: 'left' } })}
+          class={cx(
+            !style().position.availableAnchor.includes('left') && '!opacity-30 !bg-gray-100/60 dark:!bg-white/5',
+            'flex justify-start items-center',
+            config()?.windowPosition.anchor === 'left' && '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40',
+          )}
+          onClick={() => style().position.availableAnchor.includes('left') && setConfig({ windowPosition: { anchor: 'left' } })}
         >
-          <Trans key='setting.position.left-center' />
+          <Trans key="setting.position.left"/>
         </Card>
         <Card
-          class={'flex justify-center items-center'}
-          classList={{
-            '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'center',
-          }}
-          onClick={() => setConfig({ windowPosition: { anchor: 'center' } })}
+          class={cx(
+            !style().position.availableAnchor.includes('center') && '!opacity-30 !bg-gray-100/60 dark:!bg-white/5',
+            'flex justify-center items-center',
+            config()?.windowPosition.anchor === 'center' && '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40',
+          )}
+          onClick={() => style().position.availableAnchor.includes('center') && setConfig({ windowPosition: { anchor: 'center' } })}
         >
-          <Trans key={'setting.position.center-center'} />
+          <Trans key={'setting.position.center'}/>
         </Card>
         <Card
-          class={'flex justify-end items-center'}
-          classList={{
-            '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'right',
-          }}
-          onClick={() => setConfig({ windowPosition: { anchor: 'right' } })}
+          class={cx(
+            !style().position.availableAnchor.includes('right') && '!opacity-30 !bg-gray-100/60 dark:!bg-white/5',
+            'flex justify-end items-center',
+            config()?.windowPosition.anchor === 'right' && '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40',
+          )}
+          onClick={() => style().position.availableAnchor.includes('right') && setConfig({ windowPosition: { anchor: 'right' } })}
         >
-          <Trans key={'setting.position.right-center'} />
+          <Trans key={'setting.position.right'}/>
         </Card>
         <Card
-          class={'flex justify-start items-end'}
-          classList={{
-            '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'bottom-left',
-          }}
-          onClick={() => setConfig({ windowPosition: { anchor: 'bottom-left' } })}
+          class={cx(
+            !style().position.availableAnchor.includes('bottom-left') && '!opacity-30 !bg-gray-100/60 dark:!bg-white/5',
+            'flex justify-start items-end',
+            config()?.windowPosition.anchor === 'bottom-left' && '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40',
+          )}
+          onClick={() => style().position.availableAnchor.includes('bottom-left') && setConfig({ windowPosition: { anchor: 'bottom-left' } })}
         >
-          <Trans key={'setting.position.left-bottom'} />
+          <Trans key={'setting.position.bottom-left'}/>
         </Card>
         <Card
-          class={'flex justify-center items-end'}
-          classList={{
-            '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'bottom',
-          }}
-          onClick={() => setConfig({ windowPosition: { anchor: 'bottom' } })}
+          class={cx(
+            !style().position.availableAnchor.includes('bottom') && '!opacity-30 !bg-gray-100/60 dark:!bg-white/5',
+            'flex justify-center items-end',
+            config()?.windowPosition.anchor === 'bottom' && '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40',
+          )}
+          onClick={() => style().position.availableAnchor.includes('bottom') && setConfig({ windowPosition: { anchor: 'bottom' } })}
         >
-          <Trans key={'setting.position.center-bottom'} />
+          <Trans key={'setting.position.bottom'}/>
         </Card>
         <Card
-          class={'flex justify-end items-end'}
-          classList={{
-            '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40': config()?.windowPosition.anchor === 'bottom-right',
-          }}
-          onClick={() => setConfig({ windowPosition: { anchor: 'bottom-right' } })}
+          class={cx(
+            !style().position.availableAnchor.includes('bottom-right') && '!opacity-30 !bg-gray-100/60 dark:!bg-white/5',
+            'flex justify-end items-end',
+            config()?.windowPosition.anchor === 'bottom-right' && '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40',
+          )}
+          onClick={() => style().position.availableAnchor.includes('bottom-right') && setConfig({ windowPosition: { anchor: 'bottom-right' } })}
         >
-          <Trans key={'setting.position.right-bottom'} />
+          <Trans key={'setting.position.bottom-right'}/>
         </Card>
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
         <div class={'font-md'}>
-          <Trans key={'setting.position.select-monitor-to-display-lyrics'} />
+          <Trans key={'setting.position.select-monitor-to-display-lyrics'}/>
         </div>
-        <div class={'flex-1'} />
+        <div class={'flex-1'}/>
         <Selector
           value={
             !config()?.windowPosition.display ?
@@ -158,7 +167,7 @@ const PositionContainer = () => {
         />
       </Card>
       <div class={'text-md mt-8 mb-1'}>
-        <Trans key={'setting.position.adjust-margin'} />
+        <Trans key={'setting.position.adjust-margin'}/>
       </div>
       <Card
         class={`
@@ -167,7 +176,7 @@ const PositionContainer = () => {
           p-4 rounded
         `}
       >
-        <div />
+        <div/>
         <label class={'input-group group'}>
           <input
             type={'number'}
@@ -180,7 +189,7 @@ const PositionContainer = () => {
             px
           </span>
         </label>
-        <div />
+        <div/>
         <label class={'input-group group'}>
           <input
             type={'number'}
@@ -206,7 +215,7 @@ const PositionContainer = () => {
             px
           </span>
         </label>
-        <div />
+        <div/>
         <label class={'input-group group'}>
           <input
             type={'number'}
@@ -221,7 +230,7 @@ const PositionContainer = () => {
         </label>
       </Card>
     </div>
-  )
+  );
 };
 
 export default PositionContainer;

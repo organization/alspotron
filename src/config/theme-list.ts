@@ -6,7 +6,6 @@ import { State } from './state';
 
 import { defaultConfigDirectory } from './config';
 
-import { DEFAULT_STYLE } from '../../common/constants';
 import { StyleConfig, ThemeList } from '../../common/schema';
 
 let throttleTimer: NodeJS.Timeout | null = null;

@@ -37,6 +37,25 @@ export const DEFAULT_STYLE = {
     previousLyricOpacity: 0.5,
   },
 
+  position: {
+    availableAnchor: [
+      'top-left' as const,
+      'top' as const,
+      'top-right' as const,
+      'left' as const,
+      'center' as const,
+      'right' as const,
+      'bottom-left' as const,
+      'bottom' as const,
+      'bottom-right' as const,
+    ],
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    index: 0,
+  },
+
   userCSS: null,
 };
 

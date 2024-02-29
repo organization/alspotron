@@ -3,6 +3,18 @@ import { z } from 'zod';
 import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../constants';
 import { LyricProviderList } from '../provider';
 
+const AnchorSchema = z.union([
+  z.literal('top-left'),
+  z.literal('top'),
+  z.literal('top-right'),
+  z.literal('left'),
+  z.literal('center'),
+  z.literal('right'),
+  z.literal('bottom-left'),
+  z.literal('bottom'),
+  z.literal('bottom-right'),
+]);
+
 export const StyleConfigSchema = z.object({
   font: z.string().catch(DEFAULT_STYLE.font),
   fontWeight: z.string().catch(DEFAULT_STYLE.fontWeight),
@@ -43,6 +55,15 @@ export const StyleConfigSchema = z.object({
     previousLyricOpacity: z.number().catch(DEFAULT_STYLE.lyric.previousLyricOpacity),
   }),
 
+  position: z.object({
+    availableAnchor: z.array(AnchorSchema).catch(DEFAULT_STYLE.position.availableAnchor),
+    top: z.number().catch(DEFAULT_STYLE.position.top),
+    left: z.number().catch(DEFAULT_STYLE.position.left),
+    bottom: z.number().catch(DEFAULT_STYLE.position.bottom),
+    right: z.number().catch(DEFAULT_STYLE.position.right),
+    index: z.number().catch(DEFAULT_STYLE.position.index),
+  }),
+
   userCSS: z.string().nullable(),
 });
 
@@ -55,17 +76,7 @@ export const ConfigSchema = z.object({
   appTheme: z.enum(['system', 'light', 'dark']).catch(DEFAULT_CONFIG.appTheme),
 
   windowPosition: z.object({
-    anchor: z.union([
-      z.literal('top-left'),
-      z.literal('top'),
-      z.literal('top-right'),
-      z.literal('left'),
-      z.literal('center'),
-      z.literal('right'),
-      z.literal('bottom-left'),
-      z.literal('bottom'),
-      z.literal('bottom-right'),
-    ]).catch(DEFAULT_CONFIG.windowPosition.anchor),
+    anchor: AnchorSchema.catch(DEFAULT_CONFIG.windowPosition.anchor),
     display: z.number().nullable().catch(DEFAULT_CONFIG.windowPosition.display),
     top: z.number().catch(DEFAULT_CONFIG.windowPosition.top),
     left: z.number().catch(DEFAULT_CONFIG.windowPosition.left),
@@ -91,7 +102,7 @@ export const ConfigSchema = z.object({
 
   streamingMode: z.boolean().catch(DEFAULT_CONFIG.streamingMode),
   hardwareAcceleration: z.boolean().catch(DEFAULT_CONFIG.hardwareAcceleration),
-  provider: z.literal(LyricProviderList[0]!.provider).catch(DEFAULT_CONFIG.provider),
+  provider: z.literal(LyricProviderList[0].provider).catch(DEFAULT_CONFIG.provider),
   /*
     z.union([
       z.literal(LyricProviderList[0]!.provider),

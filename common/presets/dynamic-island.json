@@ -32,5 +32,23 @@
     "nextLyricOpacity": 0.5,
     "previousLyricOpacity": 0.5
   },
+  "position": {
+    "availableAnchor": [
+      "top-left",
+      "top",
+      "top-right",
+      "left",
+      "center",
+      "right",
+      "bottom-left",
+      "bottom",
+      "bottom-right"
+    ],
+    "top": 0,
+    "left": 0,
+    "right": 0,
+    "bottom": 0,
+    "index": 0
+  },
   "userCSS": "/*!\n * Copyright 2023 Organic <https://github.com/organization>\n */\nalspotron-wrapper {\n   padding-bottom: 10px;\n   padding-right: 10px;\n }\n \n alspotron-lyrics-item {\n   background: transparent;\n   text-shadow: 2px 2px 10px black;\n   filter: none;\n }\n \n alspotron-transition-lyric-enter-active,\n alspotron-transition-lyric-exit-active {\n   transition: all 1s cubic-bezier(0.68, -0.6, 0.32, 1.6);\n   transform-origin: center;\n }\n \n alspotron-transition-lyric-move {\n   transition: all 1s cubic-bezier(0.68, -0.6, 0.32, 1.6);\n   transform-origin: center;\n }\n \n alspotron-transition-lyric-enter,\n alspotron-transition-lyric-exit-to {\n   opacity: 0;\n }\n \n alspotron-nowplaying {\n   background: rgba(0, 0, 0, .4);\n   border-radius: 30px;\n   display: flex;\n   flex-direction: column;\n   padding: 15px 20px;\n   padding-bottom: 10px;\n   box-shadow: 0 0 10px 0 rgba(0, 0, 0, .3);\n }\n \n alspotron-nowplaying-cover {\n   margin: 0 10px;\n   width: 40px;\n   height: 40px;\n }\nalspotron-nowplaying-playing-text {\n   display: flex;\n   flex-direction: column;\n   align-items: flex-start;\n }\n \n alspotron-nowplaying-title {\n   font-size: 1.2rem;\n }\n \n alspotron-nowplaying-artist {\n   opacity: 0.3;\n   order: 2;\n   margin-top: -7px;\n   font-size: 0.9rem;\n }\n \n alspotron-nowplaying-divider {\n   display: none;\n }\n \n alspotron-marquee:not(alspotron-marquee--disabled) {\n   &::after {\n     content: '';\n     position: absolute;\n     inset: 0;\n     background: linear-gradient(\n       to right,\n       black 0%, transparent 5%, transparent 95%, black 100%\n     );\n   }\n }\n \n alspotron-nowplaying-progress-bar {\n   position: relative;\n   display: flex;\n   align-items: center;\n   margin-top: 15px;\n   padding-left: 10px;\n   padding-right: 10px;\n   padding-bottom: 25px;\n   min-width: 200px;\n   order: 2;\n \n   &::before, &::after {\n     font-size: 0.8rem;\n     opacity: 0.3;\n   }\n   \n   &::before {\n     position: absolute;\n     right: 0;\n     bottom: 0;\n     content: var(--nowplaying-duration);\n     padding-right: 5px;\n   }\n \n   &::after {\n     position: absolute;\n     bottom: 0;\n     content: var(--nowplaying-progress);\n   }\n }\n \n alspotron-nowplaying-progress {\n   position: relative;\n   background: rgba(255, 255, 255, .3);\n   border-radius: 3px;\n   height: 4px;\n   \n   transform: none;\n   flex: 1;\n \n   &::before {\n     content: '';\n     position: absolute;\n     inset: 0;\n     width: 100%;\n     background: white;\n     transform: scaleX(var(--nowplaying-percent));\n     transform-origin: left;\n   }\n }\n"
 }

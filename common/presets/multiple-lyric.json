@@ -32,5 +32,23 @@
     "nextLyricOpacity": 0.5,
     "previousLyricOpacity": 0.5
   },
+  "position": {
+    "availableAnchor": [
+      "top-left",
+      "top",
+      "top-right",
+      "left",
+      "center",
+      "right",
+      "bottom-left",
+      "bottom",
+      "bottom-right"
+    ],
+    "top": 0,
+    "left": 0,
+    "right": 0,
+    "bottom": 0,
+    "index": 0
+  },
   "userCSS": ""
 }

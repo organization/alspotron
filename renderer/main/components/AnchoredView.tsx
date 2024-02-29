@@ -61,6 +61,7 @@ const AnchoredView = (props: AnchoredViewProps) => {
 
   return (
       <div
+        data-anchor={config()?.windowPosition.anchor}
         classList={{
           [userCSSSelectors['wrapper']]: true,
           [userCSSSelectors['wrapper--stopped']]: status() === 'stopped',

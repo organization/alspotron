@@ -283,6 +283,9 @@ class Application {
       app.relaunch();
       app.exit(0);
     },
+    'update-window': () => {
+      this.lyricWindowProvider.updateWindowConfig();
+    },
   } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown>;
 
   constructor(overlayManager: OverlayManager) {

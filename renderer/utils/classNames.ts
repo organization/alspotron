@@ -1,4 +1,6 @@
-export const cl = (obj: Record<string, unknown>): string => {
+export const cl = (obj?: Record<string, boolean | undefined>): string => {
+  if (!obj) return '';
+
   const result: string[] = [];
 
   Object.entries(obj).forEach(([className, value]) => {

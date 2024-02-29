@@ -4,13 +4,13 @@ import { EventEmitter } from 'events';
 
 import { app, BrowserWindow, Menu, screen } from 'electron';
 
-import { deepmerge } from 'deepmerge-ts';
-
 import { WindowProvider } from './types';
 
 import { config, themeList } from '../config';
-import { DEFAULT_STYLE } from '../../common/constants';
+import { deepmerge } from '../../utils/merge';
+import { DEFAULT_STYLE, PRESET_PREFIX } from '../../common/constants';
 import { getFile } from '../../utils/resource';
+import presetThemes from '../../common/presets';
 
 const iconPath = getFile('./assets/icon_square.png');
 const LYRIC_WINDOW_OPTIONS = {
@@ -86,7 +86,17 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
       selectedTheme,
       streamingMode
     } = config.get();
-    const style = themeList.get()[selectedTheme] ?? DEFAULT_STYLE;
+    const style = (() => {
+      const list = themeList.get();
+
+      let result = list[selectedTheme ?? ''] ?? DEFAULT_STYLE;
+      if (selectedTheme.startsWith(PRESET_PREFIX)) {
+        const name = selectedTheme.replace(PRESET_PREFIX, '');
+        result = presetThemes[name] ?? DEFAULT_STYLE;
+      }
+
+      return result;
+    })();
 
     if (streamingMode) {
       this.window.setSkipTaskbar(false);
@@ -102,13 +112,13 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
 
     const anchorX = (() => {
       if (windowPosition.anchor.includes('left')) {
-        return bounds.x + (windowPosition?.left ?? 0);
+        return bounds.x + (windowPosition?.left ?? 0) + style.position.left;
       }
 
       if (windowPosition.anchor.includes('right')) {
         return bounds.x
           + (bounds.width - windowWidth)
-          - (windowPosition?.right ?? 0);
+          - (windowPosition?.right ?? 0) - style.position.right;
       }
 
       return bounds.x
@@ -117,13 +127,13 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
 
     const anchorY = (() => {
       if (windowPosition.anchor.includes('top')) {
-        return bounds.y + (windowPosition?.top ?? 0);
+        return bounds.y + (windowPosition?.top ?? 0) + style.position.top;
       }
 
       if (windowPosition.anchor.includes('bottom')) {
         return bounds.y
           + bounds.height - windowHeight
-          - (windowPosition?.bottom ?? 0);
+          - (windowPosition?.bottom ?? 0) - style.position.bottom;
       }
 
       return bounds.y

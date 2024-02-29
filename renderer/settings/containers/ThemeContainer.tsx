@@ -1,4 +1,4 @@
-import { Show, createSignal, onCleanup, onMount, untrack } from 'solid-js';
+import { createSignal, For, onCleanup, onMount, Show, untrack } from 'solid-js';
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
 import { useNavigate, useParams } from '@solidjs/router';
@@ -18,8 +18,11 @@ import { userCSSTransitions } from '../../utils/userCSSSelectors';
 import { useLyricsStyle } from '../../main/components/Lyrics';
 import useConfig from '../../hooks/useConfig';
 
-import type { StyleConfig } from '../../../common/schema';
+import icon from '../../../assets/icon_music.png';
+
 import type { PartialDeep } from 'type-fest';
+
+import type { StyleConfig } from '../../../common/schema';
 
 const ANIMATION_LIST = [
   'none',
@@ -37,7 +40,7 @@ const ThemeContainer = () => {
   const navigate = useNavigate();
   const [themeList, setThemeList] = useThemeList();
   const [t] = useTransContext();
-  const [config] = useConfig();
+  const [config, setConfig] = useConfig();
 
   const PREVIEW_TEXT_A = [
     t('setting.theme.animation.preview-text-a.0'),
@@ -138,10 +141,12 @@ const ThemeContainer = () => {
   return <div ref={parentRef} class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
     <div class={'text-3xl mb-1 px-4 flex justify-start items-center gap-2 select-none'}>
       <span class={'text-3xl opacity-80 hover:opacity-100'} onClick={onThemeListPage}>
-        <Trans key={'setting.title.theme'} />
+        <Trans key={'setting.title.theme'}/>
       </span>
       <svg class={'w-4 h-4'} fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8.47 4.22a.75.75 0 0 0 0 1.06L15.19 12l-6.72 6.72a.75.75 0 1 0 1.06 1.06l7.25-7.25a.75.75 0 0 0 0-1.06L9.53 4.22a.75.75 0 0 0-1.06 0Z" class={'fill-black dark:fill-white'} />
+        <path
+          d="M8.47 4.22a.75.75 0 0 0 0 1.06L15.19 12l-6.72 6.72a.75.75 0 1 0 1.06 1.06l7.25-7.25a.75.75 0 0 0 0-1.06L9.53 4.22a.75.75 0 0 0-1.06 0Z"
+          class={'fill-black dark:fill-white'}/>
       </svg>
       <span class={'text-3xl'}>
         {themeName() ?? t('setting.theme.unknown')}
@@ -162,23 +167,23 @@ const ThemeContainer = () => {
     </Show>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card class={'flex flex-row justify-start items-center gap-4'}>
-        <Trans key={'setting.theme.export-theme'} />
-        <div class={'flex-1'} />
+        <Trans key={'setting.theme.export-theme'}/>
+        <div class={'flex-1'}/>
         <button
           class={'btn-primary'}
           onClick={onExport}
         >
-          <Trans key={'setting.theme.export-as-file'} />
+          <Trans key={'setting.theme.export-as-file'}/>
         </button>
       </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
-      <Trans key={'setting.theme.generic-theme-settings'} />
+      <Trans key={'setting.theme.generic-theme-settings'}/>
     </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.font'} />
+          <Trans key={'setting.theme.font'}/>
         </div>
         <Selector
           mode={'autocomplete'}
@@ -191,25 +196,25 @@ const ThemeContainer = () => {
           value={theme()?.font}
           onChange={(value) => setTheme({ font: value })}
           renderItem={(props, option, isSelected) => <li
-              {...props}
-              class={cx(
-                'w-full py-2 hover:bg-white/10 rounded-lg truncate flex items-center shrink-0',
-                isSelected && 'bg-white/10',
-              )}
-              style={{ 'font-family': option }}
-            >
-              <Show when={isSelected}>
-                <div class={'bg-primary-500 rounded w-1 h-4'} />
-              </Show>
-              <div class={'px-2'}>
-                {option}
-              </div>
-            </li>}
+            {...props}
+            class={cx(
+              'w-full py-2 hover:bg-white/10 rounded-lg truncate flex items-center shrink-0',
+              isSelected && 'bg-white/10',
+            )}
+            style={{ 'font-family': option }}
+          >
+            <Show when={isSelected}>
+              <div class={'bg-primary-500 rounded w-1 h-4'}/>
+            </Show>
+            <div class={'px-2'}>
+              {option}
+            </div>
+          </li>}
         />
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.font-weight'} />
+          <Trans key={'setting.theme.font-weight'}/>
         </div>
         <Selector
           placeholder={'1-100'}
@@ -232,20 +237,20 @@ const ThemeContainer = () => {
           value={theme()?.fontWeight ?? '400'}
           onChange={(value) => setTheme({ fontWeight: value })}
           renderItem={(props, option, isSelected) => <li
-              {...props}
-              class={cx(
-                'w-full py-2 hover:bg-white/10 rounded-lg truncate flex items-center',
-                isSelected && 'bg-white/10',
-              )}
-              style={{ 'font-family': theme()?.font, 'font-weight': option }}
-            >
-              <Show when={isSelected}>
-                <div class={'bg-primary-500 rounded w-1 h-4'} />
-              </Show>
-              <div class={'px-2'}>
-                <Trans key={'setting.theme.font-weight.option'} options={{ weight: option }} />
-              </div>
-            </li>}
+            {...props}
+            class={cx(
+              'w-full py-2 hover:bg-white/10 rounded-lg truncate flex items-center',
+              isSelected && 'bg-white/10',
+            )}
+            style={{ 'font-family': theme()?.font, 'font-weight': option }}
+          >
+            <Show when={isSelected}>
+              <div class={'bg-primary-500 rounded w-1 h-4'}/>
+            </Show>
+            <div class={'px-2'}>
+              <Trans key={'setting.theme.font-weight.option'} options={{ weight: option }}/>
+            </div>
+          </li>}
         />
       </Card>
       <Card
@@ -253,7 +258,7 @@ const ThemeContainer = () => {
         subCards={[
           <div class={'flex flex-col justify-start items-stretch gap-1'}>
             <div class={'text-md'}>
-              <Trans key={'setting.theme.preview'} />
+              <Trans key={'setting.theme.preview'}/>
             </div>
             <div class={'relative w-full max-h-32 flex flex-col justify-start items-start gap-4'}>
               <LyricsTransition
@@ -267,9 +272,9 @@ const ThemeContainer = () => {
           </div>,
           <div class={'w-full h-full flex justify-start items-center'}>
             <div class={'text-md'}>
-              <Trans key={'setting.theme.select-animation'} />
+              <Trans key={'setting.theme.select-animation'}/>
             </div>
-            <div class={'flex-1'} />
+            <div class={'flex-1'}/>
             <Selector
               format={getAnimationName}
               placeholder={t('setting.theme.animation.placeholder')}
@@ -281,9 +286,9 @@ const ThemeContainer = () => {
           </div>,
           <div class={'w-full h-full flex justify-start items-center'}>
             <div class={'text-md'}>
-              <Trans key={'setting.theme.animation.at-once'} />
+              <Trans key={'setting.theme.animation.at-once'}/>
             </div>
-            <div class={'flex-1'} />
+            <div class={'flex-1'}/>
             <Switch
               value={theme()?.animationAtOnce}
               onChange={(checked) => setTheme({ animationAtOnce: checked })}
@@ -292,16 +297,16 @@ const ThemeContainer = () => {
         ]}
       >
         <div class={'text-md'}>
-          <Trans key={'setting.theme.animation'} />
+          <Trans key={'setting.theme.animation'}/>
         </div>
-        <div class={'flex-1'} />
+        <div class={'flex-1'}/>
         <div class={'text-md text-black/50 dark:text-white/80 mr-2'}>
           {getAnimationName(theme()?.animation ?? 'pretty')}
         </div>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.proximity-opacity'} />
+          <Trans key={'setting.theme.proximity-opacity'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -317,7 +322,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.proximity-sensitivity'} />
+          <Trans key={'setting.theme.proximity-sensitivity'}/>
         </div>
         <input
           type={'number'}
@@ -328,7 +333,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.max-height'} />
+          <Trans key={'setting.theme.max-height'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -344,7 +349,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.margin-between-lyrics-and-progressbar'} />
+          <Trans key={'setting.theme.margin-between-lyrics-and-progressbar'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -360,9 +365,9 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
         <div class={'font-md'}>
-          <Trans key={'setting.position.select-to-show-now-playing-panel'} />
+          <Trans key={'setting.position.select-to-show-now-playing-panel'}/>
         </div>
-        <div class={'flex-1'} />
+        <div class={'flex-1'}/>
         <Selector
           format={(value) => value === 'true' ? t('setting.position.show-now-playing-panel') : t('setting.position.hide-now-playing-panel')}
           value={theme()?.nowPlaying?.visible?.toString() ?? 'true'}
@@ -371,14 +376,168 @@ const ThemeContainer = () => {
           class={'select'}
         />
       </Card>
+      <Card
+        class={'flex flex-row justify-start items-center gap-1'}
+        subCards={[
+          <div
+            class={`
+              w-full min-h-[unset] aspect-video
+              grid grid-rows-3 grid-cols-3 gap-4
+              rounded
+            `}
+          >
+            <div/>
+            <label class={'input-group group'}>
+              <input
+                type={'number'}
+                class={'input w-full h-full'}
+                placeholder={t('setting.position.top-margin')}
+                value={theme()?.position.top ?? undefined}
+                onChange={async (event) => {
+                  setTheme({ position: { top: Number(event.target.value) } });
+
+                  await window.ipcRenderer.invoke('update-window');
+                }}
+              />
+              <span class={'suffix group-focus-within:suffix-focus-within'}>
+                px
+              </span>
+            </label>
+            <div/>
+            <label class={'input-group group'}>
+              <input
+                type={'number'}
+                class={'input w-full h-full'}
+                placeholder={t('setting.position.left-margin')}
+                value={theme()?.position.left ?? undefined}
+                onChange={async (event) => {
+                  setTheme({ position: { left: Number(event.target.value) } });
+
+                  await window.ipcRenderer.invoke('update-window');
+                }}
+              />
+              <span class={'suffix group-focus-within:suffix-focus-within'}>
+                px
+              </span>
+            </label>
+            <img src={icon} class={'w-12 h-12 object-contain self-center justify-self-center'} alt={'Icon'}/>
+            <label class={'input-group group'}>
+              <input
+                type={'number'}
+                class={'input w-full h-full'}
+                placeholder={t('setting.position.right-margin')}
+                value={theme()?.position.right ?? undefined}
+                onChange={async (event) => {
+                  setTheme({ position: { right: Number(event.target.value) } });
+
+                  await window.ipcRenderer.invoke('update-window');
+                }}
+              />
+              <span class={'suffix group-focus-within:suffix-focus-within'}>
+                px
+              </span>
+            </label>
+            <div/>
+            <label class={'input-group group'}>
+              <input
+                type={'number'}
+                class={'input w-full h-full'}
+                placeholder={t('setting.position.bottom-margin')}
+                value={theme()?.position.bottom ?? undefined}
+                onChange={async (event) => {
+                  setTheme({ position: { bottom: Number(event.target.value) } });
+
+                  await window.ipcRenderer.invoke('update-window');
+                }}
+              />
+              <span class={'suffix group-focus-within:suffix-focus-within'}>
+                px
+              </span>
+            </label>
+          </div>
+        ]}
+      >
+        <div class={'font-md'}>
+          <Trans key={'setting.position.adjust-margin'}/>
+        </div>
+        <div class={'flex-1'}/>
+        <div class={'text-md text-black/50 dark:text-white/80 mr-2'}>
+          {theme()?.position.top}px / {theme()?.position.right}px / {theme()?.position.bottom}px
+          / {theme()?.position.left}px
+        </div>
+      </Card>
+      <Card
+        class={'flex flex-row justify-start items-center gap-1'}
+        subCards={[
+          <div
+            class={`
+          w-full min-h-[unset] aspect-video
+          grid grid-rows-3 grid-cols-3 gap-4
+        `}
+          >
+            <For each={[
+              'top-left' as const,
+              'top' as const,
+              'top-right' as const,
+              'left' as const,
+              'center' as const,
+              'right' as const,
+              'bottom-left' as const,
+              'bottom' as const,
+              'bottom-right' as const,
+            ]}>
+              {(anchor) => (
+                <Card
+                  class={cx(
+                    'flex',
+                    anchor.includes('top') && 'items-start',
+                    !anchor.includes('top') && !anchor.includes('bottom') && 'items-center',
+                    anchor.includes('bottom') && 'items-end',
+                    anchor.includes('left') && 'justify-start',
+                    !anchor.includes('left') && !anchor.includes('right') && 'justify-center',
+                    anchor.includes('right') && 'justify-end',
+                    theme()?.position.availableAnchor.includes(anchor) && '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40',
+                  )}
+                  onClick={() => {
+                    const list = theme()?.position.availableAnchor ?? [];
+
+                    if (list.includes(anchor)) {
+                      const newAnchorList = list.filter((item) => item !== anchor);
+                      const nowAnchor = config()?.windowPosition.anchor;
+
+                      if (newAnchorList.length === 0) {
+                        newAnchorList.push('center');
+                      }
+
+                      if (nowAnchor && !newAnchorList.includes(nowAnchor)) {
+                        setConfig({ windowPosition: { anchor: newAnchorList[0] } });
+                      }
+
+                      setTheme({ position: { availableAnchor: newAnchorList } });
+                    } else {
+                      setTheme({ position: { availableAnchor: [...list, anchor] } });
+                    }
+                  }}
+                >
+                  <Trans key={`setting.position.${anchor}`}/>
+                </Card>
+              )}
+            </For>
+          </div>
+        ]}
+      >
+        <div class={'font-md'}>
+          <Trans key={'setting.position.available-position'}/>
+        </div>
+      </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
-      <Trans key={'setting.theme.now-playing'} />
+      <Trans key={'setting.theme.now-playing'}/>
     </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.font-size'} />
+          <Trans key={'setting.theme.font-size'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -394,7 +553,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.font-color'} />
+          <Trans key={'setting.theme.font-color'}/>
         </div>
         <ColorPicker
           value={theme()?.nowPlaying.color}
@@ -403,7 +562,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.background-color'} />
+          <Trans key={'setting.theme.background-color'}/>
         </div>
         <ColorPicker
           value={theme()?.nowPlaying.background}
@@ -412,7 +571,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.progressbar-color'} />
+          <Trans key={'setting.theme.progressbar-color'}/>
         </div>
         <ColorPicker
           value={theme()?.nowPlaying.backgroundProgress}
@@ -421,7 +580,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.max-width'} />
+          <Trans key={'setting.theme.max-width'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -437,7 +596,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.stopped-opacity'} />
+          <Trans key={'setting.theme.stopped-opacity'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -453,12 +612,12 @@ const ThemeContainer = () => {
       </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
-      <Trans key={'setting.theme.lyric'} />
+      <Trans key={'setting.theme.lyric'}/>
     </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.font-size'} />
+          <Trans key={'setting.theme.font-size'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -474,7 +633,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.font-color'} />
+          <Trans key={'setting.theme.font-color'}/>
         </div>
         <ColorPicker
           value={theme()?.lyric.color}
@@ -483,7 +642,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.background-color'} />
+          <Trans key={'setting.theme.background-color'}/>
         </div>
         <ColorPicker
           value={theme()?.lyric.background}
@@ -492,7 +651,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.stopped-opacity'} />
+          <Trans key={'setting.theme.stopped-opacity'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -508,7 +667,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.margin-between-lyrics-containers'} />
+          <Trans key={'setting.theme.margin-between-lyrics-containers'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -524,7 +683,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.margin-between-multiple-lyrics-containers'} />
+          <Trans key={'setting.theme.margin-between-multiple-lyrics-containers'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -540,9 +699,9 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-1'}>
         <div class={'font-md'}>
-          <Trans key={'setting.position.select-orientation-to-display-lyrics'} />
+          <Trans key={'setting.position.select-orientation-to-display-lyrics'}/>
         </div>
-        <div class={'flex-1'} />
+        <div class={'flex-1'}/>
         <Selector
           format={(value) => value === 'column' ? t('setting.position.from-top-to-bottom') : t('setting.position.from-bottom-to-top')}
           value={theme()?.lyric?.direction ?? 'column'}
@@ -553,7 +712,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.general.next-lyric-count'} />
+          <Trans key={'setting.general.next-lyric-count'}/>
         </div>
         <input
           type={'number'}
@@ -566,7 +725,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.general.previous-lyric-count'} />
+          <Trans key={'setting.general.previous-lyric-count'}/>
         </div>
         <input
           type={'number'}
@@ -579,7 +738,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.next-lyrics-opacity'} />
+          <Trans key={'setting.theme.next-lyrics-opacity'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -595,7 +754,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.previous-lyrics-opacity'} />
+          <Trans key={'setting.theme.previous-lyrics-opacity'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -611,7 +770,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.next-lyrics-scale'} />
+          <Trans key={'setting.theme.next-lyrics-scale'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -627,7 +786,7 @@ const ThemeContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <div class={'text-md'}>
-          <Trans key={'setting.theme.previous-lyrics-scale'} />
+          <Trans key={'setting.theme.previous-lyrics-scale'}/>
         </div>
         <label class={'input-group group'}>
           <input
@@ -643,7 +802,7 @@ const ThemeContainer = () => {
       </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
-      <Trans key={'setting.theme.theme'} />
+      <Trans key={'setting.theme.theme'}/>
     </div>
     <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
       <Card
@@ -657,7 +816,7 @@ const ThemeContainer = () => {
       >
         <div class={'w-full h-full flex flex-col justify-center items-start gap-0'}>
           <div class={'text-md'}>
-            <Trans key={'setting.theme.user-css'} />
+            <Trans key={'setting.theme.user-css'}/>
           </div>
         </div>
       </Card>
