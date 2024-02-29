@@ -303,17 +303,17 @@ class Application {
     this.server.on('start', () => {
       this.broadcast('server-state', 'connected');
       console.log('[Alspotron] server started');
-      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_square.png')));
+      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_square.png')).resize({ width: 16, height: 16 }));
     });
     this.server.on('shutdown', () => {
       this.broadcast('server-state', 'disconnected');
       console.log('[Alspotron] server shutdown');
-      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')));
+      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({ width: 16, height: 16 }));
     });
     this.server.on('error', (err) => {
       this.broadcast('server-state', 'disconnected', err);
       console.error('[Alspotron] server error', err);
-      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')));
+      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({ width: 16, height: 16 }));
     });
 
     this.server.on('update', (body: UpdateData) => {
