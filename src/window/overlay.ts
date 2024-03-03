@@ -11,7 +11,7 @@ export class OverlayWindowProvider extends LyricWindowProvider {
   private pid = 0;
 
   constructor(nodeWindowManager: typeof import('node-window-manager')) {
-    super({
+    super(0, {
       webPreferences: {
         offscreen: true,
       },
@@ -21,7 +21,7 @@ export class OverlayWindowProvider extends LyricWindowProvider {
 
     this.window.webContents.session.webRequest.onBeforeSendHeaders(
       (details, callback) => {
-        const provider = getLyricProvider(config.get().provider);
+        const provider = getLyricProvider(config.get().lyricProvider);
 
         if (provider) {
           const result = provider.onBeforeSendHeaders(details);
@@ -34,7 +34,7 @@ export class OverlayWindowProvider extends LyricWindowProvider {
       },
     );
     this.window.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-      const provider = getLyricProvider(config.get().provider);
+      const provider = getLyricProvider(config.get().lyricProvider);
 
       if (provider) {
         const result = provider.onHeadersReceived(details);

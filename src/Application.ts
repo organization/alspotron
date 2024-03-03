@@ -14,25 +14,22 @@ import {
   screen,
   Tray
 } from 'electron';
-import { ProgressInfo } from 'electron-builder';
 import { PartialDeep } from 'type-fest';
 
 import PluginManager from './plugins/plugin-manager';
 import { Server } from './server';
 import { config, gameList, lyricMapper, themeList } from './config';
 
-import { LyricWindowProvider, SettingWindowProvider, LyricSearchWindowProvider } from './window';
+import { LyricSearchWindowProvider, LyricWindowProvider, SettingWindowProvider } from './window';
 
 import { OverlayManager } from './overlay';
 
 import { DEFAULT_CONFIG } from '../common/constants';
 import { getTranslation } from '../common/intl';
+import { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
+import { getLyricProvider } from '../common/provider';
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
-
-import { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
-
-import { getLyricProvider } from '../common/provider';
 
 import type { UpdateData } from '../common/schema';
 import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
@@ -51,18 +48,9 @@ app.commandLine.appendSwitch('enable-transparent-visuals');
 if (!config.get().hardwareAcceleration) app.disableHardwareAcceleration();
 
 class Application {
-  public lyricWindowProvider!: LyricWindowProvider;
+  public lyricWindowProviders: LyricWindowProvider[] = [];
   public settingWindowProvider: SettingWindowProvider | null = null;
   public lyricSearchWindowProvider: LyricSearchWindowProvider | null = null;
-
-  private overlayManager: OverlayManager;
-  private server: Server;
-
-  private tray!: Tray;
-  private pluginManager!: PluginManager;
-  private lastUpdate: UpdateData | null = null;
-  private contextMenu: Menu | null = null;
-
   public onMap = {
     'get-all-screens': (event) => {
       event.returnValue = screen.getAllDisplays();
@@ -74,7 +62,11 @@ class Application {
       event.returnValue = config.get();
     },
   } satisfies Record<string, (event: Electron.IpcMainEvent) => void>;
-
+  private overlayManager: OverlayManager;
+  private server: Server;
+  private tray!: Tray;
+  private pluginManager!: PluginManager;
+  private lastUpdate: UpdateData | null = null;
   public handleMap = {
     'get-registered-process-list': () => this.overlayManager.registeredProcessList,
     'get-icon': (_, path: string) => {
@@ -187,10 +179,10 @@ class Application {
       });
       this.broadcastPlugin('window-close');
     },
-    'open-devtool': (_, target: 'main' | 'lyrics' | 'settings') => {
+    'open-devtool': (_, target: 'main' | 'lyrics' | 'settings', index: number = 0) => {
       if (target === 'main') {
-        if (this.lyricWindowProvider && !this.lyricWindowProvider.window.isDestroyed()) {
-          this.lyricWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+        if (this.lyricWindowProviders && !this.lyricWindowProviders[index].window.isDestroyed()) {
+          this.lyricWindowProviders[index].window.webContents.openDevTools({ mode: 'detach' });
         }
       }
       if (target === 'lyrics') {
@@ -283,10 +275,11 @@ class Application {
       app.relaunch();
       app.exit(0);
     },
-    'update-window': () => {
-      this.lyricWindowProvider.updateWindowConfig();
+    'update-window': (_, index: number = 0) => {
+      this.lyricWindowProviders[index].updateWindowConfig();
     },
   } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown>;
+  private contextMenu: Menu | null = null;
 
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
@@ -306,17 +299,26 @@ class Application {
     this.server.on('start', () => {
       this.broadcast('server-state', 'connected');
       console.log('[Alspotron] server started');
-      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_square.png')).resize({ width: 16, height: 16 }));
+      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_square.png')).resize({
+        width: 16,
+        height: 16
+      }));
     });
     this.server.on('shutdown', () => {
       this.broadcast('server-state', 'disconnected');
       console.log('[Alspotron] server shutdown');
-      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({ width: 16, height: 16 }));
+      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
+        width: 16,
+        height: 16
+      }));
     });
     this.server.on('error', (err) => {
       this.broadcast('server-state', 'disconnected', err);
       console.error('[Alspotron] server error', err);
-      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({ width: 16, height: 16 }));
+      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
+        width: 16,
+        height: 16
+      }));
     });
 
     this.server.on('update', (body: UpdateData) => {
@@ -377,7 +379,7 @@ class Application {
         app.removeAllListeners('window-all-closed');
         this.settingWindowProvider?.window.close();
         this.lyricSearchWindowProvider?.window.close();
-        this.lyricWindowProvider.close();
+        this.lyricWindowProviders.forEach((provider) => provider.close());
 
         autoUpdater.quitAndInstall(true, true);
 
@@ -439,14 +441,14 @@ class Application {
           type: 'submenu',
           label: getTranslation('tray.devtools.label', config.get().language),
           submenu: [
-            {
-              label: getTranslation('tray.devtools.lyric-viewer.label', config.get().language),
+            ...this.lyricWindowProviders.map((provider, index) => ({
+              label: getTranslation('tray.devtools.lyric-viewer.label', config.get().language).replace('{{index}}', `${index}`),
               click: () => {
-                if (this.lyricWindowProvider && !this.lyricWindowProvider.window.isDestroyed()) {
-                  this.lyricWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+                if (!provider.window.isDestroyed()) {
+                  provider.window.webContents.openDevTools({ mode: 'detach' });
                 }
               },
-            },
+            })),
             {
               label: getTranslation('tray.devtools.lyrics.label', config.get().language),
               click: () => {
@@ -525,7 +527,7 @@ class Application {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
     this.broadcastPlugin(event as keyof PluginEventMap, ...args as any);
 
-    if (this.lyricWindowProvider) this.lyricWindowProvider.window.webContents.send(event, ...args);
+    this.lyricWindowProviders.forEach((it) => it.window.webContents.send(event, ...args));
     if (this.overlayManager.windowProvider && !this.overlayManager.windowProvider.window.isDestroyed()) this.overlayManager.windowProvider.window.webContents.send(event, ...args);
     if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) this.lyricSearchWindowProvider.window.webContents.send(event, ...args);
     if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) this.settingWindowProvider.window.webContents.send(event, ...args);
@@ -542,7 +544,7 @@ class Application {
       this.broadcast('config', config);
 
       if (lastConfig.streamingMode !== config.streamingMode) {
-        this.lyricWindowProvider.updateWindowConfig();
+        this.lyricWindowProviders.forEach((it) => it.updateWindowConfig());
       }
 
       lastConfig = config;
@@ -569,10 +571,34 @@ class Application {
   }
 
   initMainWindow() {
-    this.lyricWindowProvider = new LyricWindowProvider();
-    this.setCorsHandler(this.lyricWindowProvider.window.webContents);
+    const updateMainWindow = (config: Config) => {
+      let isChanged = false;
 
-    this.lyricWindowProvider.window.show();
+      if (config.views.length < this.lyricWindowProviders.length) {
+        isChanged = true;
+        this.lyricWindowProviders.forEach((it, index) => {
+          if (index >= config.views.length) it.close();
+        });
+      }
+
+      if (config.views.length > this.lyricWindowProviders.length) {
+        isChanged = true;
+        for (let i = this.lyricWindowProviders.length; i < config.views.length; i++) {
+          this.lyricWindowProviders[i] = new LyricWindowProvider(i);
+          this.setCorsHandler(this.lyricWindowProviders[i].window.webContents);
+
+          this.lyricWindowProviders[i].window.show();
+        }
+      }
+
+      if (isChanged) {
+        this.initMenu();
+        this.tray.setContextMenu(this.contextMenu);
+      }
+    };
+
+    updateMainWindow(config.get());
+    config.watch(updateMainWindow);
   }
 
   initSettingWindow() {
@@ -591,7 +617,7 @@ class Application {
   private setCorsHandler(webContents: Electron.WebContents) {
     webContents.session.webRequest.onBeforeSendHeaders(
       (details, callback) => {
-        const provider = getLyricProvider(config.get().provider);
+        const provider = getLyricProvider(config.get().lyricProvider);
 
         if (provider) {
           const result = provider.onBeforeSendHeaders(details);
@@ -604,7 +630,7 @@ class Application {
       },
     );
     webContents.session.webRequest.onHeadersReceived((details, callback) => {
-      const provider = getLyricProvider(config.get().provider);
+      const provider = getLyricProvider(config.get().lyricProvider);
 
       if (provider) {
         const result = provider.onHeadersReceived(details);

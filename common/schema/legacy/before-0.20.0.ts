@@ -37,3 +37,33 @@ export type LEGACY_StyleConfig0_20_0 = {
 
   userCSS: string | null;
 };
+
+export type LEGACY_Config0_20_0 = {
+  version: 1;
+  selectedTheme: string;
+  appTheme: 'system' | 'light' | 'dark';
+
+  windowPosition: {
+    anchor: 'top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right';
+    display: number | null;
+    top: number;
+    left: number;
+    bottom: number;
+    right: number;
+  },
+
+  syncThrottle: number;
+
+  language: 'ko' | 'en' | 'ja' | 'de';
+  developer: boolean;
+
+  plugins:{
+    list: Record<string, string | undefined>;
+    disabled: Record<string, boolean | undefined>;
+    config: Record<string, Record<string, unknown>>;
+  };
+
+  streamingMode: boolean;
+  hardwareAcceleration: boolean;
+  provider: 'alsong';
+};

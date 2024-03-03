@@ -31,6 +31,7 @@
   "lyrics.delay": "지연 시간",
 
   "setting.title.position": "위치",
+  "setting.title.view": "표시",
   "setting.title.theme": "테마",
   "setting.title.general": "일반",
   "setting.title.plugin": "플러그인",
@@ -124,6 +125,11 @@
   "setting.position.bottom-margin": "하단 여백",
   "setting.position.available-position": "표시 가능한 위치 설정",
 
+  "setting.view.list": "창 목록",
+  "setting.view.applied-theme": "적용된 테마",
+  "setting.view.edit-view": "창 수정",
+  "setting.view.add-view": "창 추가",
+
   "setting.theme.animation": "가사 전환 애니메이션",
   "setting.theme.animation.none": "없음",
   "setting.theme.animation.pretty": "예쁘게",
@@ -198,6 +204,7 @@
   "setting.theme.preset.dynamic-island": "다이나믹 아일랜드 테마",
   "setting.theme.add-theme-from.title": "기존 테마로부터 추가",
   "setting.theme.add-theme-from.selected": "선택된 테마로부터 추가",
+  "setting.theme.add-theme-from": "이 테마로부터 추가",
   "setting.theme.custom-themes": "사용자 테마",
 
   "setting.user-css-warning.bold": "주의!",
@@ -246,7 +253,7 @@
   "tray.setting.label": "설정",
   "tray.exit.label": "종료",
   "tray.devtools.label": "개발자 도구",
-  "tray.devtools.lyric-viewer.label": "가사 표시기 창",
+  "tray.devtools.lyric-viewer.label": "가사 표시기 창 ({{index}})",
   "tray.devtools.lyrics.label": "가사 선택 창",
   "tray.devtools.setting.label": "설정 창",
 

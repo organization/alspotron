@@ -1,5 +1,5 @@
 import { deepmerge } from '../../../../utils/merge';
-import { Config, StyleConfig, LEGACY_Config0_16_0 } from '../../../../common/schema';
+import { Config, StyleConfig, LEGACY_Config0_16_0, LEGACY_Config0_20_0 } from '../../../../common/schema';
 import { getTranslation } from '../../../../common/intl';
 import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../../../../common/constants';
 import { Migrator } from '../types';
@@ -21,15 +21,15 @@ export const LEGACY_migrator0_16_0: Migrator = {
       appTheme: DEFAULT_CONFIG.appTheme,
 
       windowPosition: {
-        anchor: configData?.windowPosition?.anchor ?? DEFAULT_CONFIG.windowPosition.anchor,
-        display: configData?.windowPosition?.display ?? DEFAULT_CONFIG.windowPosition.display,
-        top: configData?.windowPosition?.top ?? DEFAULT_CONFIG.windowPosition.top,
-        left: configData?.windowPosition?.left ?? DEFAULT_CONFIG.windowPosition.left,
-        bottom: configData?.windowPosition?.bottom ?? DEFAULT_CONFIG.windowPosition.bottom,
-        right: configData?.windowPosition?.right ?? DEFAULT_CONFIG.windowPosition.right,
+        anchor: configData?.windowPosition?.anchor ?? DEFAULT_CONFIG.views[0].position.anchor,
+        display: configData?.windowPosition?.display ?? DEFAULT_CONFIG.views[0].position.display,
+        top: configData?.windowPosition?.top ?? DEFAULT_CONFIG.views[0].position.top,
+        left: configData?.windowPosition?.left ?? DEFAULT_CONFIG.views[0].position.left,
+        bottom: configData?.windowPosition?.bottom ?? DEFAULT_CONFIG.views[0].position.bottom,
+        right: configData?.windowPosition?.right ?? DEFAULT_CONFIG.views[0].position.right,
       },
 
-      syncThrottle: configData?.syncThrottle ?? DEFAULT_CONFIG.syncThrottle,
+      syncThrottle: configData?.syncThrottle ?? 3000,
 
       language: configData?.language ?? DEFAULT_CONFIG.language,
       developer: configData?.developer ?? DEFAULT_CONFIG.developer,
@@ -38,8 +38,8 @@ export const LEGACY_migrator0_16_0: Migrator = {
 
       hardwareAcceleration: DEFAULT_CONFIG.hardwareAcceleration,
       streamingMode: DEFAULT_CONFIG.streamingMode,
-      provider: DEFAULT_CONFIG.provider,
-    } satisfies Config;
+      provider: DEFAULT_CONFIG.lyricProvider,
+    } satisfies LEGACY_Config0_20_0;
   },
   themeList: (_, context) => {
     const configData = context.getConfig() as LEGACY_Config0_16_0;

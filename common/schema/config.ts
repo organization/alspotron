@@ -71,21 +71,21 @@ export const InternalConfigSchema = z.object({
   version: z.string().optional(),
 });
 export const ConfigSchema = z.object({
-  version: z.literal(1),
-  selectedTheme: z.string().catch(DEFAULT_CONFIG.selectedTheme),
+  version: z.literal(2),
+  views: z.object({
+    enabled: z.boolean().catch(DEFAULT_CONFIG.views[0].enabled),
+    theme: z.string().catch(DEFAULT_CONFIG.views[0].theme),
+    position: z.object({
+      anchor: AnchorSchema.catch(DEFAULT_CONFIG.views[0].position.anchor),
+      display: z.number().nullable().catch(DEFAULT_CONFIG.views[0].position.display),
+      top: z.number().catch(DEFAULT_CONFIG.views[0].position.top),
+      left: z.number().catch(DEFAULT_CONFIG.views[0].position.left),
+      bottom: z.number().catch(DEFAULT_CONFIG.views[0].position.bottom),
+      right: z.number().catch(DEFAULT_CONFIG.views[0].position.right),
+    })
+  }).array(),
+
   appTheme: z.enum(['system', 'light', 'dark']).catch(DEFAULT_CONFIG.appTheme),
-
-  windowPosition: z.object({
-    anchor: AnchorSchema.catch(DEFAULT_CONFIG.windowPosition.anchor),
-    display: z.number().nullable().catch(DEFAULT_CONFIG.windowPosition.display),
-    top: z.number().catch(DEFAULT_CONFIG.windowPosition.top),
-    left: z.number().catch(DEFAULT_CONFIG.windowPosition.left),
-    bottom: z.number().catch(DEFAULT_CONFIG.windowPosition.bottom),
-    right: z.number().catch(DEFAULT_CONFIG.windowPosition.right),
-  }),
-
-  syncThrottle: z.number(),
-
   language: z.union([
     z.literal('ko'),
     z.literal('en'),
@@ -93,21 +93,17 @@ export const ConfigSchema = z.object({
     z.literal('de'),
   ]).catch(DEFAULT_CONFIG.language),
   developer: z.boolean().catch(DEFAULT_CONFIG.developer),
+  streamingMode: z.boolean().catch(DEFAULT_CONFIG.streamingMode),
+  hardwareAcceleration: z.boolean().catch(DEFAULT_CONFIG.hardwareAcceleration),
+
+  lyricProvider: z.literal(LyricProviderList[0].provider).catch(DEFAULT_CONFIG.lyricProvider),
+  playingProvider: z.enum(['tuna-obs']).catch(DEFAULT_CONFIG.playingProvider),
 
   plugins: z.object({
     list: z.record(z.string().optional()),
     disabled: z.record(z.boolean().optional()),
     config: z.record(z.record(z.unknown())),
   }),
-
-  streamingMode: z.boolean().catch(DEFAULT_CONFIG.streamingMode),
-  hardwareAcceleration: z.boolean().catch(DEFAULT_CONFIG.hardwareAcceleration),
-  provider: z.literal(LyricProviderList[0].provider).catch(DEFAULT_CONFIG.provider),
-  /*
-    z.union([
-      z.literal(LyricProviderList[0]!.provider),
-    ]).catch(DEFAULT_CONFIG.provider),
-  */
 
   __internal__: InternalConfigSchema.optional(),
 });

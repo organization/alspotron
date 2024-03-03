@@ -36,16 +36,19 @@ const LYRIC_WINDOW_OPTIONS = {
 
 export class LyricWindowProvider extends EventEmitter implements WindowProvider {
   protected onUpdateWindowConfig = () => this.updateWindowConfig();
+  protected index: number;
 
   public window: BrowserWindow;
 
-  constructor(options: Electron.BrowserWindowConstructorOptions = {}) {
+  constructor(index: number, options: Electron.BrowserWindowConstructorOptions = {}) {
     super();
 
+    this.index = index;
     this.window = new BrowserWindow(deepmerge(LYRIC_WINDOW_OPTIONS, options, {
       focusable: config.get().streamingMode,
       skipTaskbar: !config.get().streamingMode,
     }));
+    this.window.webContents.executeJavaScript(`window.index = ${index};`);
 
     Menu.setApplicationMenu(null);
 
@@ -81,11 +84,10 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
   }
 
   public updateWindowConfig() {
-    const {
-      windowPosition,
-      selectedTheme,
-      streamingMode
-    } = config.get();
+    const { views, streamingMode } = config.get();
+    const selectedTheme = views[this.index]?.theme;
+    const windowPosition = views[this.index]?.position;
+
     const style = (() => {
       const list = themeList.get();
 
@@ -150,7 +152,8 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
   }
 
   protected getDisplayBounds() {
-    const { windowPosition } = config.get();
+    const { views } = config.get();
+    const windowPosition = views[this.index]?.position;
     const display = screen.getAllDisplays().find((display) => display.id === windowPosition.display) ?? screen.getPrimaryDisplay();
 
     return display.bounds;

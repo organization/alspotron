@@ -60,24 +60,29 @@ export const DEFAULT_STYLE = {
 };
 
 export const DEFAULT_CONFIG = {
-  version: 1 as const,
+  version: 2 as const,
 
-  selectedTheme: 'Default Theme',
+  views: [
+    {
+      enabled: true,
+      theme: 'Default Theme',
+      position: {
+        anchor: 'bottom-right' as const,
+        display: null as number | null,
+        top: 32,
+        left: 32,
+        bottom: 32,
+        right: 32,
+      },
+    }
+  ],
   appTheme: 'system' as const,
-
-  windowPosition: {
-    anchor: 'bottom-right' as const,
-    display: null,
-    top: 32,
-    left: 32,
-    bottom: 32,
-    right: 32,
-  },
-
-  syncThrottle: 1000 * 3,
-
   language: 'ko' as 'ko' | 'en' | 'ja' | 'de',
   developer: false,
+  hardwareAcceleration: true,
+  streamingMode: false,
+  lyricProvider: LyricProviderList[0].provider as 'alsong',
+  playingProvider: 'tuna-obs' as const,
 
   plugins: {
     list: {},
@@ -85,9 +90,6 @@ export const DEFAULT_CONFIG = {
     config: {},
   },
 
-  hardwareAcceleration: true,
-  streamingMode: false,
-  provider: LyricProviderList[0].provider as 'alsong',
 };
 
 export const PRESET_PREFIX = '__preset__';

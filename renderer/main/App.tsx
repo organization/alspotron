@@ -1,4 +1,4 @@
-import { Show, createRenderEffect, createSignal, on } from 'solid-js';
+import { createEffect, createRenderEffect, createSignal, on, onMount, Show } from 'solid-js';
 
 import AnchoredView from './components/AnchoredView';
 import LyricProgressBar from './components/LyricProgressBar';
@@ -12,15 +12,17 @@ import useConfig from '../hooks/useConfig';
 import { userCSSSelectors } from '../utils/userCSSSelectors';
 import usePluginsCSS from '../hooks/usePluginsCSS';
 import useStyle from '../hooks/useStyle';
+import useCurrent from '../hooks/useCurrent';
 
 
 const useProximityStyle = () => {
   const [config] = useConfig();
   const style = useStyle();
+  const { view } = useCurrent();
   const [distance, setDistance] = createSignal(1);
 
   const targetAnchorX = () => {
-    const anchor = config()?.windowPosition.anchor ?? '';
+    const anchor = view()?.position.anchor ?? '';
     if (anchor.includes('left')) {
       return 0;
     }
@@ -33,7 +35,7 @@ const useProximityStyle = () => {
   };
 
   const targetAnchorY = () => {
-    const anchor = config()?.windowPosition.anchor ?? '';
+    const anchor = view()?.position.anchor ?? '';
     if (anchor.includes('top')) {
       return 0;
     }
@@ -90,23 +92,26 @@ const useProximityStyle = () => {
 const App = () => {
   usePluginsCSS();
 
+  const { view } = useCurrent();
   const style = useStyle();
   const proximityHandles = useProximityStyle();
 
   return (
-    <PlayingInfoProvider>
-      <AnchoredView
-        class={userCSSSelectors.wrapper}
-        {...proximityHandles}
-      >
-        <AlertView />
-        <Lyrics />
-        <Show when={style().nowPlaying?.visible ?? true}>
-          <LyricProgressBar />
-        </Show>
-      </AnchoredView>
-      <UserCSS />
-    </PlayingInfoProvider>
+    <Show when={view()?.enabled}>
+      <PlayingInfoProvider>
+        <AnchoredView
+          class={userCSSSelectors.wrapper}
+          {...proximityHandles}
+        >
+          <AlertView/>
+          <Lyrics/>
+          <Show when={style().nowPlaying?.visible ?? true}>
+            <LyricProgressBar/>
+          </Show>
+        </AnchoredView>
+        <UserCSS/>
+      </PlayingInfoProvider>
+    </Show>
   );
 };
 

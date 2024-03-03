@@ -503,16 +503,20 @@ const ThemeContainer = () => {
 
                     if (list.includes(anchor)) {
                       const newAnchorList = list.filter((item) => item !== anchor);
-                      const nowAnchor = config()?.windowPosition.anchor;
+                      if (newAnchorList.length === 0) newAnchorList.push('center');
 
-                      if (newAnchorList.length === 0) {
-                        newAnchorList.push('center');
-                      }
+                      const views = config()?.views?.map((view) => {
+                        const anchor = (view.position.anchor);
+                        return {
+                          ...view,
+                          position: {
+                            ...view.position,
+                            anchor: newAnchorList.includes(anchor) ? anchor : newAnchorList[0],
+                          },
+                        };
+                      }) ?? [];
 
-                      if (nowAnchor && !newAnchorList.includes(nowAnchor)) {
-                        setConfig({ windowPosition: { anchor: newAnchorList[0] } });
-                      }
-
+                      setConfig({ views });
                       setTheme({ position: { availableAnchor: newAnchorList } });
                     } else {
                       setTheme({ position: { availableAnchor: [...list, anchor] } });

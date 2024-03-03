@@ -17,6 +17,7 @@ import { useClassStyle } from '../../hooks/useClassStyle';
 
 import type { JSX } from 'solid-js/jsx-runtime';
 import type { Config, StyleConfig } from '../../../common/schema';
+import useCurrent from '../../hooks/useCurrent';
 
 type LyricsProps = {
   style?: string;
@@ -46,13 +47,15 @@ export const useLyricsStyle = (
   style: Accessor<StyleConfig | null>,
   config: Accessor<Config | null>,
 ) => {
+  const { view } = useCurrent();
+
   useClassStyle(userCSSSelectors['lyrics-container'], () => `
     width: 100%;
 
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
+    align-items: ${anchorTypeToItemsAlignType(view()?.position.anchor)};
     row-gap: ${style()?.lyric.multipleContainerRowGap}rem;
  
   `);
@@ -71,21 +74,21 @@ export const useLyricsStyle = (
   useClassStyle(userCSSSelectors['lyrics-wrapper--previous'], () => `
     scale: ${style()?.lyric.previousLyricScale};
     opacity: ${style()?.lyric.previousLyricOpacity};
-    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor, '100%')};
+    transform-origin: ${anchorTypeToOriginType(view()?.position.anchor, '100%')};
   `);
   useClassStyle(userCSSSelectors['lyrics-wrapper--next'], () => `
     scale: ${style()?.lyric.nextLyricScale};
     opacity: ${style()?.lyric.nextLyricOpacity};
-    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
+    transform-origin: ${anchorTypeToOriginType(view()?.position.anchor)};
   `);
 
   useClassStyle(userCSSSelectors['lyrics'], () => `
     display: flex;
     flex-direction: ${style()?.lyric.direction ?? 'column'};
-    align-items: ${anchorTypeToItemsAlignType(config()?.windowPosition.anchor)};
+    align-items: ${anchorTypeToItemsAlignType(view()?.position.anchor)};
     row-gap: ${style()?.lyric.containerRowGap}rem;
 
-    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
+    transform-origin: ${anchorTypeToOriginType(view()?.position.anchor)};
    `);
 
   useClassStyle(userCSSSelectors['lyrics-item'], () => `
@@ -99,7 +102,7 @@ export const useLyricsStyle = (
     
     transition: all 0.225s ease-out;
     transition-delay: var(--transition-delay, 0s);
-    transform-origin: ${anchorTypeToOriginType(config()?.windowPosition.anchor)};
+    transform-origin: ${anchorTypeToOriginType(view()?.position.anchor)};
     will-change: transform;
 
     font-family: ${style()?.font};

@@ -31,6 +31,7 @@
   "lyrics.delay": "Lyrics delay",
 
   "setting.title.position": "Position",
+  "setting.title.view": "View",
   "setting.title.theme": "Theme",
   "setting.title.general": "Allgemein",
   "setting.title.plugin": "Plugins",
@@ -123,6 +124,11 @@
   "setting.position.bottom-margin": "unterer Rand",
   "setting.position.available-position": "Available position",
 
+  "setting.view.list": "View list",
+  "setting.view.applied-theme": "Applied theme",
+  "setting.view.edit-view": "Edit view",
+  "setting.view.add-view": "Add view",
+
   "setting.theme.animation": "Übergangsanimation für Lyrics",
   "setting.theme.animation.none": "keine",
   "setting.theme.animation.pretty": "schön",
@@ -197,6 +203,7 @@
   "setting.theme.preset.dynamic-island": "Dynamic Island Theme",
   "setting.theme.add-theme-from.title": "Add theme from",
   "setting.theme.add-theme-from.selected": "Add theme from selected",
+  "setting.theme.add-theme-from": "Add theme from",
   "setting.theme.custom-themes": "Custom themes",
 
   "setting.user-css-warning.bold": "Achtung!",
@@ -245,7 +252,7 @@
   "tray.setting.label": "Einstellungen",
   "tray.exit.label": "beenden",
   "tray.devtools.label": "Entwicklertools",
-  "tray.devtools.lyric-viewer.label": "Lyricsanzeige-Fenster",
+  "tray.devtools.lyric-viewer.label": "Lyricsanzeige-Fenster ({{index}})",
   "tray.devtools.lyrics.label": "Auswahlfenster für Lyrics",
   "tray.devtools.setting.label": "Einstellungsfenster",
 

@@ -6,7 +6,7 @@ import LyricsItem from './LyricsItem';
 import useStyle from '../../hooks/useStyle';
 import { cx } from '../../utils/classNames';
 import { Status } from '../../components/PlayingInfoProvider';
-import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
+import { userCSSSelectors, userCSSVariables } from '../../utils/userCSSSelectors';
 
 import type { StyleConfig } from '../../../common/schema';
 

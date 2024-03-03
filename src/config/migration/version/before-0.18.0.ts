@@ -13,7 +13,7 @@ export const LEGACY_migrator0_18_0: Migrator = {
           mode: {
             type: 'provider' as const,
             id: value?.toString(),
-            provider: DEFAULT_CONFIG.provider,
+            provider: DEFAULT_CONFIG.lyricProvider,
           } satisfies LyricMapperMode,
         },
       }), {}) satisfies LyricMapper;

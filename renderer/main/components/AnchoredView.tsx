@@ -9,6 +9,7 @@ import type { JSX } from 'solid-js/jsx-runtime';
 import { userCSSSelectors } from '../../utils/userCSSSelectors';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import { useClassStyle } from '../../hooks/useClassStyle';
+import useCurrent from '../../hooks/useCurrent';
 
 interface AnchoredViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
   class?: string;
@@ -20,6 +21,7 @@ const AnchoredView = (props: AnchoredViewProps) => {
   const [config] = useConfig();
   const style = useStyle();
   const { status } = usePlayingInfo();
+  const { view } = useCurrent();
 
   const [, containerProps] = splitProps(
     props,
@@ -27,7 +29,7 @@ const AnchoredView = (props: AnchoredViewProps) => {
   );
 
   useClassStyle(userCSSSelectors.wrapper, () => {
-    const anchor = config()?.windowPosition.anchor ?? 'bottom-right';
+    const anchor = view()?.position.anchor ?? '';
 
     return `
       position: fixed;
@@ -61,7 +63,7 @@ const AnchoredView = (props: AnchoredViewProps) => {
 
   return (
       <div
-        data-anchor={config()?.windowPosition.anchor}
+        data-anchor={view()?.position.anchor}
         classList={{
           [userCSSSelectors['wrapper']]: true,
           [userCSSSelectors['wrapper--stopped']]: status() === 'stopped',

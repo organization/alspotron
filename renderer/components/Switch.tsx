@@ -79,6 +79,7 @@ const Switch = (props: SwitchProps) => {
         local.value ? 'bg-primary-500 border-primary-500 active:bg-primary-600' : 'border-black/30 dark:border-white',
       )}
       onPointerDown={onMoveStart}
+      onClick={(event) => event.stopPropagation()}
       style={`--offset: ${offset() * MAX_MOVE_OFFSET}px`}
     >
       <div

@@ -1,7 +1,7 @@
 import { Accessor, createMemo } from 'solid-js';
 
-import useConfig from './useConfig';
 import useThemeList from './useThemeList';
+import useCurrent from './useCurrent';
 
 import { DEFAULT_STYLE, PRESET_PREFIX } from '../../common/constants';
 
@@ -9,18 +9,18 @@ import presetThemes from '../../common/presets';
 
 import type { StyleConfig } from '../../common/schema';
 
-const useStyle = (): Accessor<StyleConfig> => {
-  const [config] = useConfig();
+const useStyle = (name?: Accessor<string>): Accessor<StyleConfig> => {
   const [themeList] = useThemeList();
+  const { themeName } = useCurrent();
 
   const style = createMemo(() => {
     const list = themeList();
-    const configData = config();
+    const targetName = name?.() ?? themeName();
 
-    let result = list[configData?.selectedTheme ?? ''] ?? DEFAULT_STYLE;
-    if (configData?.selectedTheme.startsWith(PRESET_PREFIX)) {
-      const name = configData?.selectedTheme.replace(PRESET_PREFIX, '');
-      result = presetThemes[name] ?? DEFAULT_STYLE;
+    let result = list[targetName] ?? DEFAULT_STYLE;
+    if (targetName.startsWith(PRESET_PREFIX)) {
+      const presetName = targetName.replace(PRESET_PREFIX, '');
+      result = presetThemes[presetName] ?? DEFAULT_STYLE;
     }
 
     return result;
