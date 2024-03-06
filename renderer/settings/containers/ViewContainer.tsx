@@ -265,11 +265,23 @@ export const ViewContainer = () => {
                   class={'select'}
                 />
               </div>,
+              <div class={'w-full h-full flex flex-row justify-end items-center'}>
+                <button class={'btn-error'} onClick={() => {
+                  const newViews = [...views()];
+                  newViews.splice(index(), 1);
+
+                  setConfig({
+                    views: newViews,
+                  });
+                }}>
+                  <Trans key={'common.delete'}/>
+                </button>
+              </div>
             ]}
           >
             <div class={'text-md'}>
               <div>
-                <Trans key={'setting.view.applied-theme'} />
+                <Trans key={'setting.view.applied-theme'}/>
               </div>
               <div class={'text-gray-400'}>
                 {view.theme.startsWith(PRESET_PREFIX) ? t(`setting.theme.preset.${view.theme.replace(PRESET_PREFIX, '')}`) : view.theme}
