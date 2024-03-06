@@ -69,7 +69,10 @@ export class State<T> {
     }
 
     this.value = newValue;
-    this.watchers.forEach((fn) => fn(newValue));
+    this.watchers.forEach((fn) => {
+      console.log('watcher', fn, newValue)
+      fn(newValue);
+    });
 
     if (typeof this.throttle === 'number') {
       if (this.throttleTimer) clearTimeout(this.throttleTimer);

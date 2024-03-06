@@ -8,7 +8,7 @@ import { WindowProvider } from './types';
 
 import { config, themeList } from '../config';
 import { deepmerge } from '../../utils/merge';
-import { DEFAULT_STYLE, PRESET_PREFIX } from '../../common/constants';
+import { DEFAULT_CONFIG, DEFAULT_STYLE, PRESET_PREFIX } from '../../common/constants';
 import { getFile } from '../../utils/resource';
 import presetThemes from '../../common/presets';
 
@@ -86,13 +86,13 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
   public updateWindowConfig() {
     const { views, streamingMode } = config.get();
     const selectedTheme = views[this.index]?.theme;
-    const windowPosition = views[this.index]?.position;
+    const windowPosition = views[this.index]?.position ?? DEFAULT_CONFIG.views[0].position;
 
     const style = (() => {
       const list = themeList.get();
 
       let result = list[selectedTheme ?? ''] ?? DEFAULT_STYLE;
-      if (selectedTheme.startsWith(PRESET_PREFIX)) {
+      if (selectedTheme?.startsWith(PRESET_PREFIX)) {
         const name = selectedTheme.replace(PRESET_PREFIX, '');
         result = presetThemes[name] ?? DEFAULT_STYLE;
       }
@@ -154,7 +154,7 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
   protected getDisplayBounds() {
     const { views } = config.get();
     const windowPosition = views[this.index]?.position;
-    const display = screen.getAllDisplays().find((display) => display.id === windowPosition.display) ?? screen.getPrimaryDisplay();
+    const display = screen.getAllDisplays().find((display) => display.id === windowPosition?.display) ?? screen.getPrimaryDisplay();
 
     return display.bounds;
   }
