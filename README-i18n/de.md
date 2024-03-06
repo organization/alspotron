@@ -1,13 +1,13 @@
 # Alspotron <a href="https://github.com/organization/alspotron/releases/latest"><img src="https://img.shields.io/github/downloads/organization/alspotron/total.svg"/></a>
 
-### Vollständig anpassbarer Lyrics-Viewer für *Spotify* und *YouTube Music* 
+### Vollständig anpassbarer Songtext-Viewer für *Spotify* und *YouTube Music* 
 
-> Alspotron zeigt Lyrics von Musik an, die auf Musik-Streaming-Plattformen wie `Spotify` oder `YouTube Music` abgespielt werden. \
-> Falls keine Lyrics in den Suchergebnissen vorhanden sind, wird Alpostron die built-in-Lyrics von Spotify anzeigen (nur bei der Wiedergabe mit `Spotify`)
+> Alspotron zeigt Texte von Songs an, die auf Musik-Streaming-Plattformen wie `Spotify` oder `YouTube Music` abgespielt werden.
+> Falls keine Songtexte gefunden werden können, zeigt Alpostron die integrierten Songtexte von Spotify an (nur bei der Wiedergabe mit `Spotify`)
 
 ### Screenshots
 
--   Hier sind einige Beispielscreenshots von Lyrics, die mit Alspotron angezeigt werden. Die Position der Lyrics sind nach Belieben anpassbar.
+-   Hier sind einige Beispielscreenshots von Songtexten, die mit Alspotron angezeigt werden. Die Position der Songtexte ist nach Belieben anpassbar.
 
 |                        Spotify                         |                                                        Youtube Music                                                        |                                         Spiel-Overlay (getestetes Spiel: Overwatch)                                         |
 |:------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------:|
@@ -33,7 +33,7 @@
       ```bash
       spicetify config extensions alspotron.js
       ```
-  -   Nach der Ausführung des folgenden Befehls wird Spotify neu gestartet und die Erweiterung alspotron.js wird angewendet.
+  -   Nach Ausführung des folgenden Befehls wird Spotify neu gestartet und die Erweiterung alspotron.js angewendet.
       ```bash
       spicetify apply
       ``` 
@@ -82,20 +82,20 @@
 
 1.  Präferenzen
 
-|                                        Position der Lyrics anpassen                                         |                                         Theme-Einstellung anpassen                                         |
+|                                        Position der Songtexte anpassen                                         |                                         Theme-Einstellung anpassen                                         |
 |:--------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------:|
 | ![image](https://github.com/organization/alspotron/assets/16558115/28b64547-70df-4c32-9ee4-df8528be9f72) | ![image](https://github.com/organization/alspotron/assets/16558115/2f8b3420-c235-4747-8a68-79ee46d85e45) |
 
-2.  Zum Auswählen anderer Lyrics für den aktuell abgespielten Song wählen Sie das Menü `Liedtext auswählen` auf dem Tray-Symbol.
+2.  Zum Auswählen anderer Songtexte für den aktuell abgespielten Song wählen Sie das Menü `Songtext auswählen` auf dem Tray-Symbol.
 
-|                         Suchen Sie andere Lyrics für den aktuell abgespielten Song.                         |
+|                         Suchen Sie andere Songtexte für den aktuell abgespielten Song.                         |
 |:--------------------------------------------------------------------------------------------------------:|
 | ![image](https://github.com/organization/alspotron/assets/16558115/1de5703a-1bde-4152-8c17-092463750246) |
 
 ## Plugin
-Refer this [Documentation](https://github.com/organization/alspotron/wiki/Plugin)
+Siehe diese [Documentation](https://github.com/organization/alspotron/wiki/Plugin)
 
-Refer this [Example](https://github.com/organization/alspotron/tree/master/example/alspotron-plugin)
+Siehe diese [Example](https://github.com/organization/alspotron/tree/master/example/alspotron-plugin)
 
 ## Migration von Alspotify
 
