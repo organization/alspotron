@@ -70,7 +70,7 @@
     "typescript": "5.4.2",
     "vite": "5.1.6",
     "type-fest": "4.12.0",
-    "vite-plugin-solid": "2.10.1",
+    "vite-plugin-solid": "2.10.2",
     "vite-plugin-static-copy": "1.0.1"
   },
   "dependencies": {
