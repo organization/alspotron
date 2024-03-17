@@ -84,7 +84,7 @@
     "@jellybrick/solid-i18next": "1.2.2",
     "@solid-codemirror/codemirror": "1.0.4",
     "@solidjs/router": "0.13.0",
-    "@suyongs/solid-utility": "0.4.1",
+    "@suyongs/solid-utility": "0.4.2",
     "@uiw/codemirror-theme-github": "4.21.24",
     "alsong": "3.0.1",
     "codemirror": "6.0.1",
