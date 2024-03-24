@@ -55,22 +55,24 @@ const Modal = (props: ModalProps) => {
               <div class={'text-black dark:text-white px-6 py-5 fluent-scrollbar'}>
                 {props.children}
               </div>
-              <div class={'flex justify-end items-center gap-2 bg-stone-200 dark:bg-stone-800 px-6 py-5'}>
-                <For each={local.buttons ?? []}>
-                  {(button) => (
-                    <button
-                      class={
-                        button.type === 'positive' ? 'btn-primary' :
-                        button.type === 'negative' ? 'btn-error' :
-                        'btn-text'
-                      }
-                      onClick={button.onClick}
-                    >
-                      {button.name}
-                    </button>
-                  )}
-                </For>
-              </div>
+              <Show when={local.buttons}>
+                <div class={'flex justify-end items-center gap-2 bg-stone-200 dark:bg-stone-800 px-6 py-5'}>
+                  <For each={local.buttons ?? []}>
+                    {(button) => (
+                      <button
+                        class={
+                          button.type === 'positive' ? 'btn-primary' :
+                          button.type === 'negative' ? 'btn-error' :
+                          'btn-text'
+                        }
+                        onClick={button.onClick}
+                      >
+                        {button.name}
+                      </button>
+                    )}
+                  </For>
+                </div>
+              </Show>
             </div>
           </div>
         </Show>

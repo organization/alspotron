@@ -48,6 +48,7 @@
   "setting.game.unregister-game": "登録取消",
   "setting.game.show-all-programs-running-in-the-background": "バックグラウンドで実行されているすべてのプログラムを表示する",
   "setting.game.show-only-programs-running-in-the-foreground": "フォアグラウンドで実行されているすべてのプログラムを表示する",
+  "setting.game.select-view-to-show-game-overlay": "Select view to show game overlay",
 
   "setting.game.registered-game-list.description": "一覧",
   "setting.game.registered-game-list.adding-manually": "手動追加",
@@ -128,6 +129,12 @@
   "setting.view.applied-theme": "Applied theme",
   "setting.view.edit-view": "Edit view",
   "setting.view.add-view": "Add view",
+  "setting.view.new-view": "New View",
+  "setting.view.rename-view": "Rename view",
+  "setting.view.rename-alert-title": "Rename view",
+  "setting.view.rename-alert": "Please write a name that change \"{{name}}\" view.",
+  "setting.view.rename-conflict-title": "Cannot rename view",
+  "setting.view.rename-conflict": "\"{{name}}\" is already exist.",
 
   "setting.theme.animation": "歌詞切り替えアニメーション",
   "setting.theme.animation.none": "なし",

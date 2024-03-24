@@ -31,7 +31,7 @@
   "lyrics.delay": "지연 시간",
 
   "setting.title.position": "위치",
-  "setting.title.view": "표시",
+  "setting.title.view": "창",
   "setting.title.theme": "테마",
   "setting.title.general": "일반",
   "setting.title.plugin": "플러그인",
@@ -48,6 +48,7 @@
   "setting.game.unregister-game": "등록 해제",
   "setting.game.show-all-programs-running-in-the-background": "백그라운드에서 실행 중인 모든 프로그램 표시",
   "setting.game.show-only-programs-running-in-the-foreground": "포그라운드에서 실행 중인 프로그램만 표시",
+  "setting.game.select-view-to-show-game-overlay": "게임 오버레이로 설정할 창 선택",
 
   "setting.game.registered-game-list.description": "목록",
   "setting.game.registered-game-list.adding-manually": "게임 수동 추가",
@@ -129,6 +130,12 @@
   "setting.view.applied-theme": "적용된 테마",
   "setting.view.edit-view": "창 수정",
   "setting.view.add-view": "창 추가",
+  "setting.view.new-view": "새 창",
+  "setting.view.rename-view": "창 이름 변경",
+  "setting.view.rename-alert-title": "창 이름 수정",
+  "setting.view.rename-alert": "\"{{name}}\" 창을 어떤 이름으로 바꿀것인지 입력해주세요.",
+  "setting.view.rename-conflict-title": "이름을 변경할 수 없습니다",
+  "setting.view.rename-conflict": "\"{{name}}\"는 이미 존재하는 이름입니다.",
 
   "setting.theme.animation": "가사 전환 애니메이션",
   "setting.theme.animation.none": "없음",

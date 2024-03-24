@@ -15,6 +15,7 @@ const application = new Application(overlayManager);
 
   application.initPluginLoader();
 
+  application.initOverlay();
   application.initAutoUpdater();
   application.initTray();
   application.initServer();
