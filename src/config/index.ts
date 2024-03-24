@@ -53,7 +53,7 @@ const tryMigration = () => {
     const internalConfig = config.get()['__internal__'];
     const prevVersion = typeof internalConfig?.version === 'string' ? internalConfig.version : '0.0.0';
     const nowVersion = packageJson.version;
-    console.log('[Alspotron] Migrating data...', prevVersion, '->', nowVersion);
+    console.log('[Alspotron] prepare for migration', prevVersion, '->', nowVersion);
 
     const migrator = createMigrator(migrateTable, prevVersion);
     const result = migrator({
@@ -71,7 +71,7 @@ const tryMigration = () => {
     let isFailed = false;
     const applyMigration = <I, O>(parsed: SafeParseReturnType<I, O>, state: State<O>) => {
       if (parsed.success) {
-        state.set(parsed.data as PartialDeep<O>);
+        state.set(parsed.data as PartialDeep<O>, false);
       } else {
         isFailed = true;
         console.warn('[Alspotron] Cannot migrate', parsed.error, parsed);

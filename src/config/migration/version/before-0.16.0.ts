@@ -1,5 +1,5 @@
 import { deepmerge } from '../../../../utils/merge';
-import { Config, StyleConfig, LEGACY_Config0_16_0, LEGACY_Config0_20_0 } from '../../../../common/schema';
+import { LEGACY_Config0_16_0, LEGACY_Config0_20_0, StyleConfig } from '../../../../common/schema';
 import { getTranslation } from '../../../../common/intl';
 import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../../../../common/constants';
 import { Migrator } from '../types';

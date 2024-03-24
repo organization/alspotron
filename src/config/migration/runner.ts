@@ -1,4 +1,4 @@
-import { satisfies, minVersion, lt, clean } from 'semver';
+import { clean, lt, minVersion, satisfies } from 'semver';
 
 import { MigrateTable, MigratorData } from './types';
 
@@ -31,7 +31,8 @@ export const createMigrator = (table: MigrateTable, prevVersion: string) => {
         return migrator;
       }
     })
-    .filter(Boolean);
+    .filter(Boolean)
+    .reverse();
 
   return (initData: MigratorData) => {
     const result = { ...initData };
@@ -43,12 +44,14 @@ export const createMigrator = (table: MigrateTable, prevVersion: string) => {
 
       for (const _key of Object.keys(result)) {
         const key = _key as keyof MigratorData;
-        const value = migrator[key]?.(result[key], context);
 
-        if (result) {
-          result[key] = value;
+        if (migrator[key]) {
+          console.log('[Alspotron]', 'migrate', key, ':', result[key]);
+
+          result[key] = migrator[key]?.(result[key], context);
         }
       }
+      console.log('[Alspotron]', 'preparing next version migration...');
     }
 
     return result;

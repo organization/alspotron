@@ -75,6 +75,7 @@ export const ConfigSchema = z.object({
   views: z.object({
     enabled: z.boolean().catch(DEFAULT_CONFIG.views[0].enabled),
     theme: z.string().catch(DEFAULT_CONFIG.views[0].theme),
+    name: z.string().catch(DEFAULT_CONFIG.views[0].name),
     position: z.object({
       anchor: AnchorSchema.catch(DEFAULT_CONFIG.views[0].position.anchor),
       display: z.number().nullable().catch(DEFAULT_CONFIG.views[0].position.display),
@@ -129,7 +130,10 @@ export const LyricMapperSchema = z.record(z.object({
 }).optional());
 
 export const ThemeListSchema = z.record(StyleConfigSchema.optional());
-export const GameListSchema = z.record(z.string().optional());
+export const GameListSchema = z.record(z.object({
+  name: z.string(),
+  path: z.string(),
+}).array());
 
 export type StyleConfig = z.infer<typeof StyleConfigSchema>;
 export type Config = z.infer<typeof ConfigSchema>;
