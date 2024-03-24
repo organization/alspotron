@@ -16,7 +16,7 @@ let nodeWindowManager: typeof import('node-window-manager') | undefined;
 export class OverlayManager extends EventEmitter {
   private overlay: IOverlay | null = null;
   private provider: OverlayWindowProvider | null = null;
-  private registeredPidList: number[] = [];
+  private registeredProcesses: { pid: number; path: string; }[] = [];
   private scaleFactor = 1.0;
   private markQuit = false;
 
@@ -40,7 +40,7 @@ export class OverlayManager extends EventEmitter {
   }
 
   public get registeredProcessList() {
-    return this.registeredPidList;
+    return this.registeredProcesses;
   }
 
   public injectOverlay() {
@@ -79,7 +79,7 @@ export class OverlayManager extends EventEmitter {
     this.overlay?.stop();
   }
 
-  public async createProcess(pid: number): Promise<boolean> {
+  public async createProcess(pid: number, path: string): Promise<boolean> {
     if (!wql || !nodeWindowManager) return Promise.resolve(false);
     const windowManager = nodeWindowManager.windowManager;
 
@@ -104,7 +104,7 @@ export class OverlayManager extends EventEmitter {
 
         console.log('[Alspotron] try to inject process:', pid);
         let isFirstRun = false;
-        if (this.registeredPidList.length === 0) {
+        if (this.registeredProcesses.length === 0) {
           const window = windowManager.getWindows().find((window) => window.processId === pid);
           if (window) this.scaleFactor = window.getMonitor().getScaleFactor();
 
@@ -114,12 +114,16 @@ export class OverlayManager extends EventEmitter {
         }
 
         for (const window of this.overlay.getTopWindows(true)) {
-          if (window.processId === pid && !this.registeredPidList.includes(pid)) {
+          if (window.processId === pid && !this.registeredProcesses.some((it) => it.pid === pid)) {
             this.overlay.injectProcess(window);
 
-            this.registeredPidList.push(pid);
+            this.registeredProcesses.push({
+              pid,
+              path,
+            });
             this.emit('register-process', pid);
-            this.provider?.setAttachedProcess(this.registeredPidList[0]);
+            this.provider?.setAttachedProcess(this.registeredProcesses[0].pid);
+            this.setGamePath(path);
           }
         }
 
@@ -141,13 +145,31 @@ export class OverlayManager extends EventEmitter {
   }
 
   public deleteProcess(pid: number) {
-    const index = this.registeredPidList.findIndex((it) => it === pid);
-    if (index >= 0) this.registeredPidList.splice(index, 1);
+    const index = this.registeredProcesses.findIndex((it) => it.pid === pid);
+    if (index >= 0) this.registeredProcesses.splice(index, 1);
 
     this.emit('unregister-process', pid, index >= 0);
 
-    if (this.registeredPidList.length <= 0) this.stopOverlay();
-    else this.provider?.setAttachedProcess(this.registeredPidList[0]);
+    if (this.registeredProcesses.length <= 0) this.stopOverlay();
+    else this.provider?.setAttachedProcess(this.registeredProcesses[0].pid);
+  }
+
+  public updateGameView() {
+    if (this.registeredProcesses.length <= 0) return;
+
+    this.setGamePath(this.registeredProcesses[0].path);
+  }
+
+  public setGamePath(path: string) {
+    const list = gameList.get();
+    const viewName = Object.keys(list).find((key) => list[key].some((it) => it.path === path));
+    if (!viewName) return;
+
+    const views = config.get().views;
+    const index = views.findIndex((it) => it.name === viewName);
+    console.log('[Alspotron] set game path:', path, index);
+
+    this.provider?.setIndex(index, true);
   }
 
   private init() {
@@ -182,10 +204,10 @@ export class OverlayManager extends EventEmitter {
   private onProcessCreation(pid: number, _?: string, filePath?: string) {
     if (!wql || !nodeWindowManager) return;
 
-    const gamePathList = Object.keys(gameList.get() ?? {});
+    const gamePathList = Object.values(gameList.get() ?? {}).flat();
 
-    if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
-      this.createProcess(pid);
+    if (typeof filePath === 'string' && gamePathList.some((it) => it.path === filePath)) {
+      this.createProcess(pid, filePath);
     }
   }
 
@@ -210,7 +232,7 @@ export class OverlayManager extends EventEmitter {
       transparent,
       resizable: true,
       maxWidth: window.getBounds().width,
-      maxHeight:  window.getBounds().height,
+      maxHeight: window.getBounds().height,
       minWidth: 100,
       minHeight: 100,
       nativeHandle: window.getNativeWindowHandle().readUInt32LE(0),
@@ -243,7 +265,7 @@ export class OverlayManager extends EventEmitter {
     let isFocused = false;
     let throttle: NodeJS.Timeout | null = null;
     const onUpdate = () => {
-      const targetWindow = windowManager.getWindows().find((window) => window.processId === this.registeredPidList[0]);
+      const targetWindow = windowManager.getWindows().find((window) => window.processId === this.registeredProcesses[0].pid);
       const newScaleFactor = targetWindow?.getMonitor().getScaleFactor();
 
       if (typeof newScaleFactor === 'number') this.scaleFactor = newScaleFactor;

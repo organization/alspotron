@@ -97,7 +97,7 @@ const App = () => {
   const proximityHandles = useProximityStyle();
 
   return (
-    <Show when={view()?.enabled}>
+    <Show when={window.enabled || view()?.enabled}>
       <PlayingInfoProvider>
         <AnchoredView
           class={userCSSSelectors.wrapper}
@@ -116,3 +116,9 @@ const App = () => {
 };
 
 export default App;
+
+declare global {
+  interface Window {
+    enabled?: boolean;
+  }
+}
