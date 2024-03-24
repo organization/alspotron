@@ -70,7 +70,6 @@ export class State<T> {
 
     this.value = newValue;
     this.watchers.forEach((fn) => {
-      console.log('watcher', fn, newValue)
       fn(newValue);
     });
 

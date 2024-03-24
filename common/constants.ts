@@ -66,6 +66,7 @@ export const DEFAULT_CONFIG = {
     {
       enabled: true,
       theme: 'Default Theme',
+      name: 'Default View',
       position: {
         anchor: 'bottom-right' as const,
         display: null as number | null,

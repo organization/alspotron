@@ -67,3 +67,5 @@ export type LEGACY_Config0_20_0 = {
   hardwareAcceleration: boolean;
   provider: 'alsong';
 };
+
+export type LEGACY_GameList0_20_0 = Record<string, string | undefined>;
