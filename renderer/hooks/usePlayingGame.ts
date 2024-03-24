@@ -4,9 +4,9 @@ const usePlayingGame = () => {
   const [gameList, setGameList] = createSignal<number[]>([]);
 
   (async () => {
-    const result = await window.ipcRenderer.invoke('get-registered-process-list') as number[];
+    const result = await window.ipcRenderer.invoke('get-registered-process-list');
 
-    setGameList(result || []);
+    setGameList(result.map((it) => it.pid) || []);
   })();
 
   window.ipcRenderer.on('registered-process-list', (_, data: number[]) => {

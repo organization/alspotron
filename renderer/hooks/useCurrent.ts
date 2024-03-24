@@ -16,6 +16,8 @@ const useCurrent = () => {
   const theme = () => themeList()[themeName()];
 
   onMount(() => {
+    window.setIndex = (index: number) => setIndex(index);
+
     const interval = setInterval(() => {
       if (typeof window.index === 'number') {
         setIndex(window.index);
@@ -36,5 +38,6 @@ export default useCurrent;
 declare global {
   interface Window {
     index?: number;
+    setIndex?: (index: number) => void;
   }
 }

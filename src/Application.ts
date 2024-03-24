@@ -26,6 +26,7 @@ import { OverlayManager } from './overlay';
 
 import { DEFAULT_CONFIG } from '../common/constants';
 import { getTranslation } from '../common/intl';
+
 import { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
 import { getLyricProvider } from '../common/provider';
 import { pure } from '../utils/pure';
@@ -104,7 +105,7 @@ class Application {
         const gamePathList = Object.keys(gameList.get() ?? {});
 
         if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
-          await this.overlayManager.createProcess(processId);
+          await this.overlayManager.createProcess(processId, filePath);
         }
       }, processId, name, filePath);
 
@@ -346,6 +347,10 @@ class Application {
     this.overlayManager.on('unregister-process', () => {
       this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
     });
+
+    gameList.watch(() => {
+      this.overlayManager.updateGameView();
+    });
   }
 
   initAutoUpdater() {
@@ -529,7 +534,11 @@ class Application {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
     this.broadcastPlugin(event as keyof PluginEventMap, ...args as any);
 
-    this.lyricWindowProviders.forEach((it) => it.window.webContents.send(event, ...args));
+    this.lyricWindowProviders.forEach((it) => {
+      if (it.window.isDestroyed()) return;
+
+      it.window.webContents.send(event, ...args);
+    });
     if (this.overlayManager.windowProvider && !this.overlayManager.windowProvider.window.isDestroyed()) this.overlayManager.windowProvider.window.webContents.send(event, ...args);
     if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) this.lyricSearchWindowProvider.window.webContents.send(event, ...args);
     if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) this.settingWindowProvider.window.webContents.send(event, ...args);
@@ -579,6 +588,7 @@ class Application {
       if (config.views.length < this.lyricWindowProviders.length) {
         isChanged = true;
         this.lyricWindowProviders.forEach((it, index) => {
+          if (it.window.isDestroyed()) return;
           if (index >= config.views.length) it.close();
         });
       }

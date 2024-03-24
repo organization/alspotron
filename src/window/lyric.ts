@@ -48,7 +48,7 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
       focusable: config.get().streamingMode,
       skipTaskbar: !config.get().streamingMode,
     }));
-    this.window.webContents.executeJavaScript(`window.index = ${index};`);
+    this.window.webContents.executeJavaScript(`window.index = ${index};window.setIndex?.(${index});`);
 
     Menu.setApplicationMenu(null);
 
@@ -71,6 +71,12 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
     this.updateWindowConfig();
 
     config.watch(this.onUpdateWindowConfig);
+  }
+
+  setIndex(index: number, force = false) {
+    this.index = index;
+    this.window.webContents.executeJavaScript(`window.index = ${index};window.setIndex?.(${index});${force ? 'window.enabled = true' : ''}`);
+    this.updateWindowConfig();
   }
 
   close() {

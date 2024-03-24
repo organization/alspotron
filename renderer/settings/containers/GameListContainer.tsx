@@ -118,6 +118,7 @@ const GameListContainer = () => {
 
     const value = list[key][index];
     list[key].splice(index, 1);
+    list[viewName] ??= [];
     list[viewName].push(value);
 
     setGameList(list, false);
