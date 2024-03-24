@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    font-family: "Pretendard JP Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  }
+}
+
 @layer components {
   .btn-icon {
     @apply !px-2;
@@ -11,8 +17,8 @@
     @apply min-w-[130px] px-3 py-2 rounded
     text-black bg-primary-500 hover:bg-primary-600 active:opacity-50
     dark:text-white dark:bg-primary-500 dark:hover:bg-primary-400
-      outline-none select-none cursor-pointer
-      focus:outline-none;
+    outline-none select-none cursor-pointer
+    focus:outline-none;
   }
 
   .btn-primary-disabled, .btn-primary[disabled]:not([disable="false"]) {
@@ -26,21 +32,21 @@
   .btn-error {
     @apply min-w-[130px] px-3 py-2 rounded text-black
     bg-red-500 hover:bg-red-600 active:opacity-50
-      outline-none select-none cursor-pointer
-      focus:outline-none;
+    outline-none select-none cursor-pointer
+    focus:outline-none;
   }
 
   .btn-text {
     @apply min-w-[130px] px-3 py-2 rounded
     text-black bg-white/60 hover:bg-white/40 active:bg-white/20
     dark:text-white dark:bg-white/5 dark:hover:bg-white/10 dark:active:bg-white/[2.5%]
-      shadow-sm outline-none select-none cursor-pointer
-      focus:outline-none;
+    shadow-sm outline-none select-none cursor-pointer
+    focus:outline-none;
   }
 
   .btn-disabled, .btn-text[disabled]:not([disable="false"]), .btn-error[disabled]:not([disable="false"]) {
     @apply px-3 py-2 bg-gray-400 text-gray-100 dark:bg-gray-600 dark:text-gray-900 font-semibold rounded-lg
-      outline-none select-none;
+    outline-none select-none;
   }
 
   .checkbox {
@@ -68,10 +74,12 @@
   .input.color {
     @apply px-0 py-0 w-8 aspect-square text-center;
   }
+
   .input.color::-webkit-color-swatch {
     @apply max-w-[16px] max-h-[16px] rounded-full border-none mx-auto;
     opacity: var(--opacity, 1);
   }
+
   .input::-webkit-outer-spin-button,
   .input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -81,6 +89,7 @@
   .suffix {
     @apply absolute top-0 right-2 h-full flex items-center text-black/50 dark:text-white/50;
   }
+
   .suffix-focus-within {
     @apply text-black/75 dark:text-white/75;
   }
@@ -92,9 +101,11 @@
     rounded-[4px] border-[1px] border-black/10 border-b-black/30
     dark:border-white/5 dark:border-b-gray-400/50;
   }
+
   .select-container[data-active="true"] {
     @apply border-b-primary-500 border-b-2;
   }
+
   .select {
     @apply outline-none bg-transparent w-fit min-w-[20ch];
   }
@@ -145,12 +156,15 @@ html, body, #app {
 .fluent-scrollbar {
   overflow: auto;
 }
+
 .fluent-scrollbar::-webkit-scrollbar {
   @apply w-[10px] h-[10px];
 }
+
 .fluent-scrollbar::-webkit-scrollbar-thumb {
   @apply w-[10px] h-[10px] bg-gray-400 rounded-full border-[4px] border-transparent border-solid bg-clip-padding;
 }
+
 .fluent-scrollbar::-webkit-scrollbar-corner {
   @apply hidden;
 }
@@ -158,9 +172,11 @@ html, body, #app {
 .remove-scrollbar::-webkit-scrollbar {
   @apply hidden;
 }
+
 .remove-scrollbar::-webkit-scrollbar-thumb {
   @apply hidden;
 }
+
 .remove-scrollbar::-webkit-scrollbar-corner {
   @apply hidden;
 }
@@ -182,6 +198,7 @@ html, body, #app {
 .tab-enter-active {
   transition: all 0.225s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .tab-exit-active {
   transition: all 0.225s cubic-bezier(0.5, 0, 0.75, 0);
 }
@@ -198,6 +215,7 @@ html, body, #app {
 .card-enter-active {
   transition: all 0.225s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .card-exit-active {
   transition: all 0.225s cubic-bezier(0.5, 0, 0.75, 0);
 }
@@ -215,6 +233,7 @@ html, body, #app {
   transform-origin: 0% var(--percent, 0%);
   transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .selector-exit-active {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -232,6 +251,7 @@ html, body, #app {
 .modal-enter-active {
   transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .modal-exit-active {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -240,6 +260,7 @@ html, body, #app {
   transform: scale(1.1);
   opacity: 0;
 }
+
 .modal-exit-to {
   transform: scale(0.9);
   opacity: 0;
