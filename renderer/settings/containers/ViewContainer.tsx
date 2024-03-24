@@ -14,6 +14,9 @@ import useThemeList from '../../hooks/useThemeList';
 import icon from '../../../assets/icon_music.png';
 
 import type { screen as electronScreen } from 'electron';
+import Modal from '../../components/Modal';
+import { t } from 'i18next';
+import useGameList from '../../hooks/useGameList';
 
 type ElectronScreenDisplay = ReturnType<typeof electronScreen.getPrimaryDisplay>;
 const getAllDisplays = () => window.ipcRenderer.sendSync('get-all-screens') as ElectronScreenDisplay[];
@@ -22,9 +25,13 @@ const getPrimaryDisplay = () => window.ipcRenderer.sendSync('get-primary-screen'
 export const ViewContainer = () => {
   const [config, setConfig] = useConfig();
   const [themeList] = useThemeList();
+  const [gameList, setGameList] = useGameList();
   const [t] = useTransContext();
 
   const [expand, setExpand] = createSignal(-1);
+  const [target, setTarget] = createSignal<string | null>(null);
+  const [name, setName] = createSignal('');
+  const [nameConflictOpen, setNameConflictOpen] = createSignal(false);
 
   const views = () => config()?.views ?? [];
 
@@ -32,12 +39,51 @@ export const ViewContainer = () => {
   const getCurrentDisplay = (display: number | null) => (displays().find((it) => it.id === display) ?? getPrimaryDisplay());
 
   const onAddView = () => {
+    const newName = t('setting.view.new-view');
+    let suffix = 1;
+
+    while (views().some((view) => view.name === `${newName} ${suffix}`)) {
+      suffix += 1;
+    }
+
     setConfig({
       views: [
         ...views(),
-        DEFAULT_CONFIG.views[0],
+        {
+          ...DEFAULT_CONFIG.views[0],
+          name: `${newName} ${suffix}`,
+        },
       ],
     });
+  };
+  const onRenameView = () => {
+    const targetName = target();
+    const newName = name();
+
+    if (!targetName || !newName) return;
+    const newViews = [...views()];
+    const targetIndex = newViews.findIndex((view) => view.name === targetName);
+    const newNameConflict = newViews.some((view) => view.name === newName);
+
+    if (targetIndex < 0) return;
+    if (newNameConflict) {
+      setNameConflictOpen(true);
+      return;
+    }
+    newViews[targetIndex].name = newName;
+
+    const newGameList = { ...gameList() };
+    if (newGameList[targetName]) {
+      newGameList[newName] = newGameList[targetName];
+      delete newGameList[targetName];
+
+      setGameList(newGameList, false);
+    }
+
+    setConfig({
+      views: newViews,
+    });
+    setTarget(null);
   };
 
   return (
@@ -265,7 +311,10 @@ export const ViewContainer = () => {
                   class={'select'}
                 />
               </div>,
-              <div class={'w-full h-full flex flex-row justify-end items-center'}>
+              <div class={'w-full h-full flex flex-row justify-between items-center'}>
+                <button class={'btn-text'} onClick={() => setTarget(view.name)}>
+                  <Trans key={'setting.view.rename-view'}/>
+                </button>
                 <button class={'btn-error'} onClick={() => {
                   const newViews = [...views()];
                   newViews.splice(index(), 1);
@@ -281,9 +330,11 @@ export const ViewContainer = () => {
           >
             <div class={'text-md'}>
               <div>
-                <Trans key={'setting.view.applied-theme'}/>
+                {view.name}
               </div>
               <div class={'text-gray-400'}>
+                <Trans key={'setting.view.applied-theme'}/>
+                {': '}
                 {view.theme.startsWith(PRESET_PREFIX) ? t(`setting.theme.preset.${view.theme.replace(PRESET_PREFIX, '')}`) : view.theme}
               </div>
             </div>
@@ -316,6 +367,47 @@ export const ViewContainer = () => {
           <Trans key={'setting.view.add-view'}/>
         </button>
       </Card>
+
+      <Modal
+        open={target() !== null}
+        onClose={() => setTarget(null)}
+        buttons={[
+          {
+            name: t('common.close'),
+            onClick: () => setTarget(null),
+          },
+          {
+            type: 'positive',
+            name: t('common.okay'),
+            onClick: onRenameView,
+          },
+        ]}
+      >
+        <div class={'text-xl mb-2'}>
+          {t('setting.view.rename-alert-title')}
+        </div>
+        <div class={'text-md mb-1'}>
+          {t('setting.view.rename-alert', { name: target() })}
+        </div>
+        <input class={'input w-full'} value={name()} onChange={(event) => setName(event.target.value)} />
+      </Modal>
+      <Modal
+        open={nameConflictOpen()}
+        onClose={() => setNameConflictOpen(false)}
+        buttons={[
+          {
+            name: t('common.okay'),
+            onClick: () => setNameConflictOpen(false),
+          },
+        ]}
+      >
+        <div class={'text-xl mb-2'}>
+          {t('setting.view.rename-conflict-title')}
+        </div>
+        <div class={'text-md mb-1'}>
+          {t('setting.view.rename-conflict', { name: name() })}
+        </div>
+      </Modal>
     </div>
   );
 };

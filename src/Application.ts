@@ -284,13 +284,6 @@ class Application {
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
     this.server = new Server();
-
-    this.overlayManager.on('register-process', () => {
-      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
-    });
-    this.overlayManager.on('unregister-process', () => {
-      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
-    });
   }
 
   initServer() {
@@ -343,6 +336,15 @@ class Application {
     });
     this.pluginManager.loadPluginsFromConfig().catch((e) => {
       console.error('[Alspotron] Cannot load plugins', e);
+    });
+  }
+
+  initOverlay() {
+    this.overlayManager.on('register-process', () => {
+      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
+    });
+    this.overlayManager.on('unregister-process', () => {
+      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
     });
   }
 
