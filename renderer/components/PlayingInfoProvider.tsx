@@ -1,4 +1,4 @@
-import { FlatMap } from 'tstl/experimental';
+import { FlatMap } from 'tstl/lib/experimental';
 import {
   Accessor, batch,
   createContext,
