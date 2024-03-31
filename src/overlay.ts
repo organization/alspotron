@@ -231,8 +231,8 @@ export class OverlayManager extends EventEmitter {
       name,
       transparent,
       resizable: true,
-      maxWidth: window.getBounds().width,
-      maxHeight: window.getBounds().height,
+      maxWidth: window.getBounds().width * this.scaleFactor,
+      maxHeight: window.getBounds().height * this.scaleFactor,
       minWidth: 100,
       minHeight: 100,
       nativeHandle: window.getNativeWindowHandle().readUInt32LE(0),
@@ -243,12 +243,12 @@ export class OverlayManager extends EventEmitter {
         height: Math.floor(window.getBounds().height * this.scaleFactor),
       },
       caption: {
-        left: dragborder,
-        right: dragborder,
-        top: dragborder,
-        height: captionHeight,
+        left: Math.floor(dragborder * this.scaleFactor),
+        right: Math.floor(dragborder* this.scaleFactor),
+        top: Math.floor(dragborder * this.scaleFactor),
+        height: Math.floor(captionHeight * this.scaleFactor),
       },
-      dragBorderWidth: dragborder,
+      dragBorderWidth: Math.floor(dragborder),
     });
 
     window.webContents.on('paint', (_, __, image: Electron.NativeImage) => {
@@ -268,30 +268,32 @@ export class OverlayManager extends EventEmitter {
       const targetWindow = windowManager.getWindows().find((window) => window.processId === this.registeredProcesses[0].pid);
       const newScaleFactor = targetWindow?.getMonitor().getScaleFactor();
 
+      const windowBounds = window.getBounds();
+      const bounds = {
+        x: ~~(windowBounds.x * this.scaleFactor),
+        y: ~~(windowBounds.y * this.scaleFactor),
+        width: ~~(windowBounds.width * this.scaleFactor),
+        height: ~~(windowBounds.height * this.scaleFactor),
+      };
+
       if (typeof newScaleFactor === 'number') this.scaleFactor = newScaleFactor;
       if (throttle !== null) clearTimeout(throttle);
 
-      this.overlay?.sendWindowBounds(window.id, {
-        rect: {
-          x: window.getBounds().x,
-          y: window.getBounds().y,
-          width: Math.floor(window.getBounds().width * this.scaleFactor),
-          height: Math.floor(window.getBounds().height * this.scaleFactor),
-        },
-      });
+      this.overlay?.sendWindowBounds(window.id, { rect: bounds });
       this.provider?.updateWindowConfig();
 
       throttle = setTimeout(() => {
         if (!isFocused) return;
 
-        this.overlay?.sendWindowBounds(window.id, {
-          rect: {
-            x: window.getBounds().x,
-            y: window.getBounds().y,
-            width: Math.floor(window.getBounds().width * this.scaleFactor),
-            height: Math.floor(window.getBounds().height * this.scaleFactor),
-          },
-        });
+        const windowBounds = window.getBounds();
+        const bounds = {
+          x: ~~(windowBounds.x * this.scaleFactor),
+          y: ~~(windowBounds.y * this.scaleFactor),
+          width: ~~(windowBounds.width * this.scaleFactor),
+          height: ~~(windowBounds.height * this.scaleFactor),
+        };
+
+        this.overlay?.sendWindowBounds(window.id, { rect: bounds });
         this.provider?.updateWindowConfig();
         throttle = null;
       }, 1000);
