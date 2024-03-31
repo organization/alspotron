@@ -268,6 +268,9 @@ export class OverlayManager extends EventEmitter {
       const targetWindow = windowManager.getWindows().find((window) => window.processId === this.registeredProcesses[0].pid);
       const newScaleFactor = targetWindow?.getMonitor().getScaleFactor();
 
+      if (typeof newScaleFactor === 'number') this.scaleFactor = newScaleFactor;
+      if (throttle !== null) clearTimeout(throttle);
+
       const windowBounds = window.getBounds();
       const bounds = {
         x: ~~(windowBounds.x * this.scaleFactor),
@@ -275,9 +278,6 @@ export class OverlayManager extends EventEmitter {
         width: ~~(windowBounds.width * this.scaleFactor),
         height: ~~(windowBounds.height * this.scaleFactor),
       };
-
-      if (typeof newScaleFactor === 'number') this.scaleFactor = newScaleFactor;
-      if (throttle !== null) clearTimeout(throttle);
 
       this.overlay?.sendWindowBounds(window.id, { rect: bounds });
       this.provider?.updateWindowConfig();
