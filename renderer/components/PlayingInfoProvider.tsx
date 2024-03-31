@@ -1,4 +1,4 @@
-import { FlatMap } from 'tstl/lib/experimental';
+import { experimental } from 'tstl';
 import {
   Accessor, batch,
   createContext,
@@ -28,7 +28,7 @@ export type PlayingInfo = {
   artist: Accessor<string>;
   status: Accessor<Status>;
   coverUrl: Accessor<string | null>;
-  lyrics: Accessor<FlatMap<number, string[]> | null>;
+  lyrics: Accessor<experimental.FlatMap<number, string[]> | null>;
   playerLyrics: Accessor<Record<number, string[]> | null>;
   originalData: Accessor<UpdateData | null>;
   originalLyric: Accessor<LyricData | null>;
@@ -57,7 +57,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [artist, setArtist] = createSignal('N/A');
   const [status, setStatus] = createSignal<Status>('idle');
   const [coverUrl, setCoverUrl] = createSignal<string | null>(null);
-  const [lyrics, setLyrics] = createSignal<FlatMap<number, string[]> | null>(null);
+  const [lyrics, setLyrics] = createSignal<experimental.FlatMap<number, string[]> | null>(null);
   const [playerLyrics, setPlayerLyrics] = createSignal<Record<number, string[]> | null>(null);
   const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
   const [originalLyric, setOriginalLyric] = createSignal<LyricData | null>(null);
@@ -210,8 +210,8 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
 
     setIsMapped(!!mapperData);
     setOriginalLyric(lyricData);
-    if (lyricData?.lyric) {
-      const treeMap = new FlatMap<number, string[]>();
+    if (lyricData && lyricData?.lyric) {
+      const treeMap = new experimental.FlatMap<number, string[]>();
 
       for (const key in lyricData.lyric) {
         treeMap.emplace(~~key, lyricData.lyric[key]);
