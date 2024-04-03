@@ -69,7 +69,7 @@
     "terser": "5.30.3",
     "typescript": "5.4.3",
     "vite": "5.2.8",
-    "type-fest": "4.14.0",
+    "type-fest": "4.15.0",
     "vite-plugin-solid": "2.10.2",
     "vite-plugin-static-copy": "1.0.2"
   },
