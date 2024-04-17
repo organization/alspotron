@@ -74,7 +74,7 @@
     "vite-plugin-static-copy": "1.0.2"
   },
   "dependencies": {
-    "@codemirror/commands": "6.3.3",
+    "@codemirror/commands": "6.4.0",
     "@codemirror/lang-css": "6.2.1",
     "@codemirror/lang-sass": "6.0.2",
     "@codemirror/state": "6.4.1",
