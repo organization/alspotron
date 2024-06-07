@@ -85,7 +85,7 @@
     "@solid-codemirror/codemirror": "1.0.4",
     "@solidjs/router": "0.13.5",
     "@suyongs/solid-utility": "0.4.3",
-    "@uiw/codemirror-theme-github": "4.22.1",
+    "@uiw/codemirror-theme-github": "4.22.2",
     "alsong": "3.0.1",
     "codemirror": "6.0.1",
     "color": "4.2.3",
