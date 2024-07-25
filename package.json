@@ -65,7 +65,7 @@
     "node-addon-api": "8.1.0",
     "patch-package": "8.0.0",
     "postcss": "8.4.40",
-    "tailwindcss": "3.4.6",
+    "tailwindcss": "3.4.7",
     "terser": "5.31.3",
     "typescript": "5.5.4",
     "vite": "5.3.5",
