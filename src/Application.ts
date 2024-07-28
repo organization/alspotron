@@ -181,7 +181,29 @@ class Application {
       });
       this.broadcastPlugin('window-close');
     },
-    'open-devtool': (_, target: 'main' | 'lyrics' | 'settings', index: number = 0) => {
+    'open-window': (_, target: 'lyrics' | 'settings' | 'tray') => {
+      if (target === 'lyrics') {
+        if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
+          if (this.lyricSearchWindowProvider.window.isMinimized()) this.lyricSearchWindowProvider.window.restore();
+          this.lyricSearchWindowProvider.window.show();
+        } else {
+          this.initLyricSearchWindow();
+        }
+      }
+      if (target === 'settings') {
+        if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
+          if (this.settingWindowProvider.window.isMinimized()) this.settingWindowProvider.window.restore();
+          this.settingWindowProvider.window.show();
+        } else {
+          this.initSettingWindow();
+        }
+      }
+      if (target === 'tray') {
+        if (!this.trayWindowProvider) this.initTrayWindow();
+        this.trayWindowProvider?.show(this.tray.getBounds());
+      }
+    },
+    'open-devtool': (_, target: 'main' | 'lyrics' | 'settings' | 'tray', index: number = 0) => {
       if (target === 'main') {
         if (this.lyricWindowProviders && !this.lyricWindowProviders[index].window.isDestroyed()) {
           this.lyricWindowProviders[index].window.webContents.openDevTools({ mode: 'detach' });
@@ -195,6 +217,11 @@ class Application {
       if (target === 'settings') {
         if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
           this.settingWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+        }
+      }
+      if (target === 'tray') {
+        if (this.trayWindowProvider && !this.trayWindowProvider.window.isDestroyed()) {
+          this.trayWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
         }
       }
     },
@@ -272,6 +299,9 @@ class Application {
         if (this.server.isOpen()) this.server.close();
         this.server.open();
       }
+    },
+    'quit-application': () => {
+      app.exit(0);
     },
     'restart-application': () => {
       app.relaunch();
@@ -472,6 +502,14 @@ class Application {
                   this.settingWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
                 }
               },
+            },
+            {
+              label: getTranslation('tray.devtools.tray.label', config.get().language),
+              click: () => {
+                if (this.trayWindowProvider && !this.trayWindowProvider.window.isDestroyed()) {
+                  this.trayWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+                }
+              },
             }
           ]
         },
@@ -488,7 +526,7 @@ class Application {
     this.initMenu();
 
     this.tray.setToolTip('Alspotron');
-    // this.tray.setContextMenu(this.contextMenu);
+    this.tray.setContextMenu(this.contextMenu);
     let ignore = false;
     this.tray.on('click', () => {
       if (ignore || this.trayWindowProvider?.window.isFocused()) {
@@ -562,6 +600,7 @@ class Application {
     if (this.overlayManager.windowProvider && !this.overlayManager.windowProvider.window.isDestroyed()) this.overlayManager.windowProvider.window.webContents.send(event, ...args);
     if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) this.lyricSearchWindowProvider.window.webContents.send(event, ...args);
     if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) this.settingWindowProvider.window.webContents.send(event, ...args);
+    if (this.trayWindowProvider && !this.trayWindowProvider.window.isDestroyed()) this.trayWindowProvider.window.webContents.send(event, ...args);
   }
 
   broadcastPlugin<T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) {
