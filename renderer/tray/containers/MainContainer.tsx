@@ -1,5 +1,8 @@
-import { useNavigate } from '@solidjs/router';
 import { Show } from 'solid-js';
+import { useNavigate } from '@solidjs/router';
+
+import { SearchContainer } from './SearchContainer';
+
 import useConfig from '../../hooks/useConfig';
 
 export const MainContainer = () => {
@@ -20,20 +23,10 @@ export const MainContainer = () => {
   };
 
   return (
-    <div class={'w-full h-full flex flex-col justify-start items-stretch gap-4'}>
-      <input
-        class={'input w-full'}
-      />
-      <div class={'w-full h-[1px] bg-white/20'}/>
-      <button class={'btn-text w-full'}>
-        Lyric Search
-      </button>
-      <button class={'btn-text w-full'}>
-        Settings
-      </button>
-      <div class={'flex-1'}/>
-      <div class={'w-full h-[1px] bg-white/20'}/>
-      <div class={'flex justify-start items-center gap-2'}>
+    <div class={'w-full h-full flex flex-col justify-start items-stretch'}>
+      <SearchContainer />
+      <div class={'h-[1px] bg-white/20 mx-4'}/>
+      <div class={'flex justify-start items-center gap-2 p-4'}>
         <button class={'btn-text btn-icon'} onClick={onSetting}>
           <svg class={'w-[18px] h-[18px] fill-none'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path
