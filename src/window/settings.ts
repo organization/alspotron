@@ -31,7 +31,7 @@ export class SettingWindowProvider implements WindowProvider {
     this.window = new PlatformBrowserWindow({
       ...glassOptions,
       ...micaOptions,
-      width: 800,
+      width: 1000,
       height: 800,
       webPreferences: {
         preload: path.join(__dirname, './preload.js'),
