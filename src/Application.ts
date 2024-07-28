@@ -20,7 +20,7 @@ import PluginManager from './plugins/plugin-manager';
 import { Server } from './server';
 import { config, gameList, lyricMapper, themeList } from './config';
 
-import { LyricSearchWindowProvider, LyricWindowProvider, SettingWindowProvider } from './window';
+import { LyricSearchWindowProvider, LyricWindowProvider, SettingWindowProvider, TrayWindowProvider } from './window';
 
 import { OverlayManager } from './overlay';
 
@@ -52,6 +52,7 @@ class Application {
   public lyricWindowProviders: LyricWindowProvider[] = [];
   public settingWindowProvider: SettingWindowProvider | null = null;
   public lyricSearchWindowProvider: LyricSearchWindowProvider | null = null;
+  public trayWindowProvider: TrayWindowProvider | null = null;
   public onMap = {
     'get-all-screens': (event) => {
       event.returnValue = screen.getAllDisplays();
@@ -487,9 +488,28 @@ class Application {
     this.initMenu();
 
     this.tray.setToolTip('Alspotron');
-    this.tray.setContextMenu(this.contextMenu);
+    // this.tray.setContextMenu(this.contextMenu);
+    let ignore = false;
     this.tray.on('click', () => {
-      if (this.contextMenu) this.tray.popUpContextMenu(this.contextMenu);
+      if (ignore || this.trayWindowProvider?.window.isFocused()) {
+        this.trayWindowProvider?.window?.blur();
+      } else {
+        if (!this.trayWindowProvider) this.initTrayWindow();
+
+        this.trayWindowProvider?.show(this.tray.getBounds());
+        if (this.trayWindowProvider?.window?.isFocused()) {
+          setTimeout(() => {
+            this.trayWindowProvider?.window.once('blur', () => {
+              this.trayWindowProvider?.window.hide();
+              ignore = true;
+              setTimeout(() => {
+                ignore = false;
+              }, 16 * 15); // 15 frames
+            });
+          }, 16 * 5); // 5 frames
+        }
+      }
+      // if (this.contextMenu) this.tray.popUpContextMenu(this.contextMenu);
     });
 
     let lastValue = config.get().developer;
@@ -611,6 +631,10 @@ class Application {
 
     updateMainWindow(config.get());
     config.watch(updateMainWindow);
+  }
+
+  initTrayWindow() {
+    this.trayWindowProvider = new TrayWindowProvider();
   }
 
   initSettingWindow() {
