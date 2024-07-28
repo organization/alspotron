@@ -10,7 +10,7 @@
 
 @layer components {
   .btn-icon {
-    @apply !px-2;
+    @apply !min-w-[unset] !px-2;
   }
 
   .btn-primary {
@@ -209,6 +209,42 @@ html, body, #app {
 }
 
 .tab-exit-to {
+  opacity: 0;
+}
+
+.page-right-enter-active {
+  transition: all 0.225s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-right-exit-active {
+  transition: all 0.225s cubic-bezier(0.5, 0, 0.75, 0);
+}
+
+.page-right-enter {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.page-right-exit-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.page-left-enter-active {
+  transition: all 0.225s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-left-exit-active {
+  transition: all 0.225s cubic-bezier(0.5, 0, 0.75, 0);
+}
+
+.page-left-enter {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.page-left-exit-to {
+  transform: translateX(100%);
   opacity: 0;
 }
 
