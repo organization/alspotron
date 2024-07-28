@@ -53,7 +53,7 @@ const SideBar = () => {
   return (
     <div
       class={`
-        w-[360px] h-full p-4
+        w-[312px] h-full p-4
         flex flex-col justify-start items-stretch gap-2
         text-black dark:text-white
       `}
