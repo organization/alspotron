@@ -25,7 +25,7 @@ export const MainContainer = () => {
   return (
     <div class={'w-full h-full flex flex-col justify-start items-stretch'}>
       <SearchContainer />
-      <div class={'h-[1px] bg-white/20 mx-4'}/>
+      <div class={'h-[1px] mx-4 bg-black/20 dark:bg-white/20'}/>
       <div class={'flex justify-start items-center gap-2 p-4'}>
         <button class={'btn-text btn-icon'} onClick={onSetting}>
           <svg class={'w-[18px] h-[18px] fill-none'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -44,7 +44,7 @@ export const MainContainer = () => {
           </svg>
         </button>
         <Show when={config()?.developer}>
-          <div class={'w-[1px] h-full bg-white/20'}/>
+          <div class={'w-[1px] h-full bg-black/20 dark:bg-white/20'}/>
           <button class={'btn-text btn-icon'} onClick={onDebug}>
             <svg class={'w-[18px] h-[18px] fill-none'} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
               <path
