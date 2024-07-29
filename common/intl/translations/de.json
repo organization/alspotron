@@ -262,6 +262,7 @@
   "tray.devtools.lyric-viewer.label": "Lyricsanzeige-Fenster ({{index}})",
   "tray.devtools.lyrics.label": "Auswahlfenster für Lyrics",
   "tray.devtools.setting.label": "Einstellungsfenster",
+  "tray.devtools.tray.label": "Tray",
 
   "title.lyrics": "Lyrics auswählen",
   "title.setting": "Alspotron-Einstellungen"

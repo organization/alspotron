@@ -262,6 +262,7 @@
   "tray.devtools.lyric-viewer.label": "歌詞インジケーター ({{index}})",
   "tray.devtools.lyrics.label": "歌詞選択ウィンドウ",
   "tray.devtools.setting.label": "終了ウィンドウ",
+  "tray.devtools.tray.label": "Tray",
 
   "title.lyrics": "歌詞選択",
   "title.setting": "Alspotron 設定"
