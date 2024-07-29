@@ -30,6 +30,7 @@ export default defineConfig({
         main: path.resolve(__dirname, 'renderer/index.html'),
         settings: path.resolve(__dirname, 'renderer/settings.html'),
         lyrics: path.resolve(__dirname, 'renderer/lyrics.html'),
+        tray: path.resolve(__dirname, 'renderer/tray.html'),
       },
     },
   },
