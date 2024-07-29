@@ -263,6 +263,7 @@
   "tray.devtools.lyric-viewer.label": "Lyrics Viewer ({{index}})",
   "tray.devtools.lyrics.label": "Lyrics Selector",
   "tray.devtools.setting.label": "Settings",
+  "tray.devtools.tray.label": "Tray",
 
   "title.lyrics": "Lyrics Selector",
   "title.setting": "Alspotron Settings"
