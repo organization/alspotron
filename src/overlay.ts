@@ -8,6 +8,7 @@ import { hmc } from 'hmc-win32';
 import { config, gameList } from './config';
 import { IOverlay } from './electron-overlay';
 import { OverlayWindowProvider } from './window';
+import { isWin32 } from '../utils/is';
 
 type IOverlay = typeof IOverlay;
 let wql: typeof import('@jellybrick/wql-process-monitor') | undefined;
@@ -23,7 +24,7 @@ export class OverlayManager extends EventEmitter {
   constructor() {
     super();
 
-    if (process.platform === 'win32') {
+    if (isWin32()) {
       console.log('load wql process monitor');
       /* eslint-disable @typescript-eslint/no-var-requires */
       // HACK: import statement is not work because Electron's threading model is different from Windows COM's

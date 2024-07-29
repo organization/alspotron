@@ -34,9 +34,10 @@ import { getFile } from '../utils/resource';
 
 import type { UpdateData } from '../common/schema';
 import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
+import { isWin32 } from '../utils/is';
 
 // Set application name for Windows 10+ notifications
-if (process.platform === 'win32') {
+if (isWin32()) {
   app.setAppUserModelId(app.getName());
 }
 
@@ -72,7 +73,7 @@ class Application {
   public handleMap = {
     'get-registered-process-list': () => this.overlayManager.registeredProcessList,
     'get-icon': (_, path: string) => {
-      if (process.platform === 'win32') {
+      if (isWin32()) {
         try {
           // HACK: dynamic import is not working
           // eslint-disable-next-line @typescript-eslint/no-var-requires

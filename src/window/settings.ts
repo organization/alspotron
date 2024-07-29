@@ -1,20 +1,21 @@
 import path from 'node:path';
 
-import { IS_WINDOWS_11, MicaBrowserWindow } from 'mica-electron';
+import { MicaBrowserWindow } from 'mica-electron';
 import { app, shell } from 'electron';
 
-import { BrowserWindow as GlassBrowserWindow, GlasstronOptions } from 'glasstron';
+import { GlasstronOptions } from 'glasstron';
 
 import { WindowProvider } from './types';
+import { PlatformBrowserWindow } from './platform-browser-window';
 
 import { config } from '../config';
 import { getTranslation } from '../../common/intl';
 import { getFile } from '../../utils/resource';
+import { isWin32, isXfce } from '../../utils/is';
 
-const PlatformBrowserWindow = process.platform === 'win32' && IS_WINDOWS_11 ? MicaBrowserWindow : GlassBrowserWindow;
 const glassOptions: Partial<GlasstronOptions> = {
   blur: true,
-  blurType: process.platform === 'win32' ? 'acrylic' : 'blurbehind',
+  blurType: isWin32() ? 'acrylic' : 'blurbehind',
   blurGnomeSigma: 100,
   blurCornerRadius: 20,
   backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -29,7 +30,7 @@ export class SettingWindowProvider implements WindowProvider {
 
   constructor() {
     this.window = new PlatformBrowserWindow({
-      ...glassOptions,
+      ...(isXfce() ? {} : glassOptions),
       ...micaOptions,
       width: 1000,
       height: 800,
@@ -40,7 +41,7 @@ export class SettingWindowProvider implements WindowProvider {
       title: getTranslation('title.setting', config.get().language),
       titleBarStyle: 'hiddenInset',
       frame: false,
-      transparent: true,
+      transparent: !isXfce(),
       vibrancy: 'fullscreen-ui',
       autoHideMenuBar: true,
       icon: iconPath,

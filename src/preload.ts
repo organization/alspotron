@@ -5,6 +5,8 @@ import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { getFonts } from 'font-list';
 import { hmc } from 'hmc-win32';
 
+import { isWin32 } from '../utils/is';
+
 contextBridge.exposeInMainWorld('fs', fs);
 contextBridge.exposeInMainWorld('getFont', getFonts);
 contextBridge.exposeInMainWorld('ipcRenderer', {
@@ -20,6 +22,6 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   sendToHost: (channel: string, ...args: any[]) => ipcRenderer.sendToHost(channel, ...args),
 });
-contextBridge.exposeInMainWorld('isWindows', process.platform === 'win32');
+contextBridge.exposeInMainWorld('isWindows', isWin32());
 contextBridge.exposeInMainWorld('systemRoot', process.env.SystemRoot);
 contextBridge.exposeInMainWorld('hmc', hmc);
