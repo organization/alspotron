@@ -18,6 +18,7 @@
     "dist:win": "npm run clean && npm run build && electron-builder --win -p never",
     "dist:win:x64": "npm run clean && npm run build && electron-builder --win nsis-web:x64 -p never",
     "dist:linux": "npm run clean && npm run build && electron-builder --linux -p never",
+    "dist:linux:deb:arm64": "npm run clean && npm run build && electron-builder --linux deb:arm64 -p never",
     "release:mac": "npm run clean && npm run build && electron-builder --mac -p always",
     "release:win": "npm run clean && npm run build && electron-builder --win -p always",
     "release:linux": "npm run clean && npm run build && electron-builder --linux -p always -c.snap.publish=github",
