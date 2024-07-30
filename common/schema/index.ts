@@ -1,3 +1,4 @@
 export * from './config';
-export * from './tunaObs';
+export * from './tuna-obs';
 export * from './legacy';
+export * from './source';

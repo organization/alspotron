@@ -10,25 +10,27 @@ import {
   Menu,
   MenuItem,
   MenuItemConstructorOptions,
-  nativeImage, Rectangle,
+  nativeImage,
+  Rectangle,
   screen,
   Tray
 } from 'electron';
 import { PartialDeep } from 'type-fest';
 
 import PluginManager from './plugins/plugin-manager';
-import { Server } from './server';
 import { config, gameList, lyricMapper, themeList } from './config';
 
 import { LyricSearchWindowProvider, LyricWindowProvider, SettingWindowProvider, TrayWindowProvider } from './window';
 
 import { OverlayManager } from './overlay';
 
+import { TunaObsProvider } from './provider';
+
 import { DEFAULT_CONFIG } from '../common/constants';
 import { getTranslation } from '../common/intl';
 
 import { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
-import { getLyricProvider } from '../common/provider';
+import { getLyricProvider, SourceProvider } from '../common/provider';
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
 import { isMacOS, isWin32 } from '../utils/is';
@@ -54,6 +56,15 @@ class Application {
   public settingWindowProvider: SettingWindowProvider | null = null;
   public lyricSearchWindowProvider: LyricSearchWindowProvider | null = null;
   public trayWindowProvider: TrayWindowProvider | null = null;
+
+  private overlayManager: OverlayManager;
+  private pluginManager!: PluginManager;
+  private sourceProvider: SourceProvider;
+
+  private contextMenu: Menu | null = null;
+  private tray!: Tray;
+  private lastUpdate: UpdateData | null = null;
+
   public onMap = {
     'get-all-screens': (event) => {
       event.returnValue = screen.getAllDisplays();
@@ -65,11 +76,6 @@ class Application {
       event.returnValue = config.get();
     },
   } satisfies Record<string, (event: Electron.IpcMainEvent) => void>;
-  private overlayManager: OverlayManager;
-  private server: Server;
-  private tray!: Tray;
-  private pluginManager!: PluginManager;
-  private lastUpdate: UpdateData | null = null;
   public handleMap = {
     'get-registered-process-list': () => this.overlayManager.registeredProcessList,
     'get-icon': (_, path: string) => {
@@ -293,14 +299,21 @@ class Application {
       });
     },
 
-    'server-state': () => this.server.isOpen() ? 'connected' : 'disconnected',
-    'restart-server': () => {
-      if (!this.server) this.initServer();
-      else {
-        if (this.server.isOpen()) this.server.close();
-        this.server.open();
-      }
+    'get-source-provider': () => this.sourceProvider.name,
+    'source-provider-state': () => this.sourceProvider.isRunning() ? 'start' : 'close',
+    'set-source-provider': async (_, provider: string) => {
+      if (provider === this.sourceProvider.name) return;
+
     },
+
+    // 'server-state': () => this.server.isOpen() ? 'connected' : 'disconnected',
+    // 'restart-server': () => {
+    //   if (!this.server) this.initServer();
+    //   else {
+    //     if (this.server.isOpen()) this.server.close();
+    //     this.server.open();
+    //   }
+    // },
     'quit-application': () => {
       app.exit(0);
     },
@@ -312,34 +325,33 @@ class Application {
       this.lyricWindowProviders[index].updateWindowConfig();
     },
   } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown>;
-  private contextMenu: Menu | null = null;
 
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
-    this.server = new Server();
+    this.sourceProvider = new TunaObsProvider();
   }
 
-  initServer() {
-    this.server.open();
+  initSourceProvider() {
+    this.sourceProvider.start();
 
-    this.server.on('start', () => {
-      this.broadcast('server-state', 'connected');
+    this.sourceProvider.on('start', () => {
+      this.broadcast('server-state', 'start');
       console.log('[Alspotron] server started');
       this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_square.png')).resize({
         width: 16,
         height: 16
       }));
     });
-    this.server.on('shutdown', () => {
-      this.broadcast('server-state', 'disconnected');
+    this.sourceProvider.on('close', () => {
+      this.broadcast('server-state', 'close');
       console.log('[Alspotron] server shutdown');
       this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
         width: 16,
         height: 16
       }));
     });
-    this.server.on('error', (err) => {
-      this.broadcast('server-state', 'disconnected', err);
+    this.sourceProvider.on('error', (err) => {
+      this.broadcast('server-state', 'error', err.toString());
       console.error('[Alspotron] server error', err);
       this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
         width: 16,
@@ -347,7 +359,7 @@ class Application {
       }));
     });
 
-    this.server.on('update', (body: UpdateData) => {
+    this.sourceProvider.on('update', (body) => {
       this.lastUpdate = body;
       this.overridePlugin(
         'update',
@@ -606,6 +618,23 @@ class Application {
 
   broadcastPlugin<T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) {
     this.pluginManager.broadcast(event, ...args);
+  }
+
+  setSourceProvider(provider: SourceProvider) {
+    this.sourceProvider.close();
+    this.sourceProvider = provider;
+
+    this.initSourceProvider();
+  }
+
+  getAllSourceProviders() {
+    const result: SourceProvider[] = [
+      new TunaObsProvider(),
+    ];
+
+    // this.pluginManager.
+
+    return result;
   }
 
   initHook() {
