@@ -10,7 +10,7 @@ import {
   Menu,
   MenuItem,
   MenuItemConstructorOptions,
-  nativeImage,
+  nativeImage, Rectangle,
   screen,
   Tray
 } from 'electron';
@@ -31,10 +31,10 @@ import { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
 import { getLyricProvider } from '../common/provider';
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
+import { isMacOS, isWin32 } from '../utils/is';
 
 import type { UpdateData } from '../common/schema';
 import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
-import { isWin32 } from '../utils/is';
 
 // Set application name for Windows 10+ notifications
 if (isWin32()) {
@@ -182,7 +182,7 @@ class Application {
       });
       this.broadcastPlugin('window-close');
     },
-    'open-window': (_, target: 'lyrics' | 'settings' | 'tray') => {
+    'open-window': (_, target: 'lyrics' | 'settings' | 'tray', bounds?: Rectangle) => {
       if (target === 'lyrics') {
         if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
           if (this.lyricSearchWindowProvider.window.isMinimized()) this.lyricSearchWindowProvider.window.restore();
@@ -201,7 +201,7 @@ class Application {
       }
       if (target === 'tray') {
         if (!this.trayWindowProvider) this.initTrayWindow();
-        this.trayWindowProvider?.show(this.tray.getBounds());
+        this.trayWindowProvider?.show(bounds ?? this.tray.getBounds());
       }
     },
     'open-devtool': (_, target: 'main' | 'lyrics' | 'settings' | 'tray', index: number = 0) => {
@@ -527,35 +527,32 @@ class Application {
     this.initMenu();
 
     this.tray.setToolTip('Alspotron');
-    this.tray.setContextMenu(this.contextMenu);
-    let ignore = false;
-    this.tray.on('click', () => {
-      if (ignore || this.trayWindowProvider?.window.isFocused()) {
+    if (!isMacOS()) this.tray.setContextMenu(this.contextMenu);
+
+    this.tray.on('click', (_, bounds) => {
+      this.tray.closeContextMenu();
+
+      if (this.trayWindowProvider?.window.isFocused()) {
         this.trayWindowProvider?.window?.blur();
       } else {
         if (!this.trayWindowProvider) this.initTrayWindow();
 
-        this.trayWindowProvider?.show(this.tray.getBounds());
-        if (this.trayWindowProvider?.window?.isFocused()) {
-          setTimeout(() => {
-            this.trayWindowProvider?.window.once('blur', () => {
-              this.trayWindowProvider?.window.hide();
-              ignore = true;
-              setTimeout(() => {
-                ignore = false;
-              }, 16 * 15); // 15 frames
-            });
-          }, 16 * 5); // 5 frames
-        }
+        this.trayWindowProvider?.show(bounds);
       }
-      // if (this.contextMenu) this.tray.popUpContextMenu(this.contextMenu);
     });
+    if (isMacOS()) {
+      this.tray.on('right-click', (_, bounds) => {
+        if (!this.contextMenu) return;
+
+        this.tray.popUpContextMenu(this.contextMenu, bounds);
+      });
+    }
 
     let lastValue = config.get().developer;
     config.watch((config) => {
       if (lastValue !== config.developer) {
         this.initMenu();
-        this.tray.setContextMenu(this.contextMenu);
+        if (!isMacOS()) this.tray.setContextMenu(this.contextMenu);
 
         lastValue = config.developer;
       }
@@ -665,7 +662,7 @@ class Application {
 
       if (isChanged) {
         this.initMenu();
-        this.tray.setContextMenu(this.contextMenu);
+        if (!isMacOS()) this.tray.setContextMenu(this.contextMenu);
       }
     };
 
@@ -675,6 +672,13 @@ class Application {
 
   initTrayWindow() {
     this.trayWindowProvider = new TrayWindowProvider();
+
+    this.trayWindowProvider.window.on('blur', () => {
+      this.trayWindowProvider?.window.destroy();
+      this.trayWindowProvider = null;
+
+      setTimeout(this.initTrayWindow.bind(this), 16 * 15); // 15 frames
+    });
   }
 
   initSettingWindow() {

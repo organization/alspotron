@@ -48,7 +48,6 @@ export class TrayWindowProvider implements WindowProvider {
       maximizable: false,
       alwaysOnTop: true,
       title: getTranslation('title.tray', config.get().language),
-      titleBarStyle: 'hiddenInset',
       frame: false,
       skipTaskbar: true,
       transparent: !isXfce(),
