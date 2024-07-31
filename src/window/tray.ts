@@ -45,7 +45,7 @@ export class TrayWindowProvider implements WindowProvider {
         nodeIntegration: true,
       },
       movable: false,
-      resizable: false,
+      resizable: true,
       minimizable: false,
       maximizable: false,
       alwaysOnTop: true,
@@ -57,6 +57,7 @@ export class TrayWindowProvider implements WindowProvider {
       autoHideMenuBar: true,
       icon: iconPath,
     });
+    this.window.setSize(this.WIDTH, this.HEIGHT);
 
     if (this.window instanceof MicaBrowserWindow) {
       this.window.setAutoTheme();
@@ -80,16 +81,16 @@ export class TrayWindowProvider implements WindowProvider {
     this._isShowing = true;
 
     const screenBounds = screen.getPrimaryDisplay().bounds;
-    const x = rectangle.x + this.WIDTH > screenBounds.width ? rectangle.x + rectangle.width - this.WIDTH : rectangle.x;
-    const y = rectangle.y + this.HEIGHT > screenBounds.height ? rectangle.y - this.HEIGHT : rectangle.y + rectangle.height;
+    const width = this.WIDTH * screen.getPrimaryDisplay().scaleFactor;
+    const height = this.HEIGHT * screen.getPrimaryDisplay().scaleFactor;
+    const x = rectangle.x + width > screenBounds.width ? rectangle.x + rectangle.width - width : rectangle.x;
+    const y = rectangle.y + height > screenBounds.height ? rectangle.y - height : rectangle.y + rectangle.height;
 
     this.window.show();
-    this.window.setResizable(true);
-    this.window.setSize(this.WIDTH, this.HEIGHT);
-    this.window.setResizable(false);
-    this.window.setPosition(x, y);
+    this.window.setBounds({ x, y, width, height }, false);
+
+    // WOW!!!! amazing Electron behavior!!!!
     setTimeout(() => {
-      this.window.setPosition(x, y);
       this._isShowing = false;
     }, 16 * 5);
   }

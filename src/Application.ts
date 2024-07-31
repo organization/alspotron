@@ -676,10 +676,7 @@ class Application {
     this.trayWindowProvider?.window.on('blur', () => {
       if (this.trayWindowProvider?.isShowing) return;
 
-      this.trayWindowProvider?.window.destroy();
-      this.trayWindowProvider = null;
-
-      setTimeout(this.initTrayWindow.bind(this), 16 * 15); // 15 frames
+      this.trayWindowProvider?.window.hide();
     });
   }
 
