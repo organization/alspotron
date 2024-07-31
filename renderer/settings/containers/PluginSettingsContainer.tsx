@@ -140,7 +140,7 @@ const PluginSettingsContainer = () => {
       <For each={plugin()?.js?.settings}>
         {(setting) => (
           <Card class={'flex flex-row justify-start items-center gap-1'}>
-            <div class={'w-full flex flex-col justify-center items-stretch flex-1'}>
+            <div class={'w-[0] flex flex-col justify-center items-stretch flex-1 basis-[100%]'}>
               <Marquee class={'w-full'}>
                 {setting.name}
               </Marquee>
