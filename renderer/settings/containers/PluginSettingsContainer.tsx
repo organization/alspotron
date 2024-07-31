@@ -20,7 +20,7 @@ const PluginSettingsContainer = () => {
   const navigate = useNavigate();
   const [config, setConfig] = useConfig();
   const [t] = useTransContext();
-  const { plugins, refresh } = usePlugins();
+  const { plugins, broadcast, refresh } = usePlugins();
 
   const [showLog, setShowLog] = createSignal(false);
 
@@ -49,7 +49,10 @@ const PluginSettingsContainer = () => {
     if (!id) return;
 
     await setConfig({ plugins: { config: { [id]: { [setting.key]: value } } } });
-  }
+  };
+  const onButtonClick = async (setting: ButtonOption) => {
+    broadcast('button-click', setting.key);
+  };
 
   return(
     <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
@@ -176,7 +179,7 @@ const PluginSettingsContainer = () => {
                     'btn-secondary': (setting as ButtonOption).variant === 'secondary',
                     'btn-error': (setting as ButtonOption).variant === 'error',
                   }}
-                  onClick={(setting as ButtonOption).onClick}
+                  onClick={() => onButtonClick(setting as ButtonOption)}
                 >
                   {(setting as ButtonOption).label}
                 </button>
