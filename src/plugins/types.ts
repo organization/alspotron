@@ -1,8 +1,9 @@
 import z from 'zod';
 
-import { Plugin } from '../../common/plugins/plugin';
+import { Plugin, PluginProvider } from '../../common/plugins';
 
-export const pluginManifestSchema = z.object({
+export type PluginManifest = z.infer<typeof PluginManifestSchema>;
+export const PluginManifestSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string().optional(),
@@ -15,13 +16,22 @@ export const pluginManifestSchema = z.object({
 export interface PluginRunnerOptions {
   message?: string;
   force?: boolean;
-}export interface VersionedPluginRunnerOptions {
+}
+export interface VersionedPluginRunnerOptions {
   state?: Plugin['state'];
+  path?: string;
 }
 export type PluginRunner = (plugin: Plugin, fn: (plugin: Plugin) => void, options?: PluginRunnerOptions) => Error | null;
-export type VersionedPluginLoader = (
+export type VersionedPluginPathLoader = (
   pluginPath: string,
-  manifest: z.infer<typeof pluginManifestSchema>,
+  manifest: PluginManifest,
   runner: PluginRunner,
   options?: VersionedPluginRunnerOptions,
 ) => Promise<Plugin>;
+export type VersionedPluginLoader = (
+  provider: PluginProvider | null,
+  cssList: string[],
+  manifest: PluginManifest,
+  runner: PluginRunner,
+  options?: VersionedPluginRunnerOptions,
+) => Plugin;

@@ -1,0 +1,11 @@
+{
+  "id": "76fb0247-f671-43ca-8ac7-1a993f06e639",
+  "name": "Spicetify Integration",
+  "description": "Auto spicetify extension installer plugin for Alspotron",
+  "author": "Su-Yong",
+  "version": "1.0.0",
+  "versionCode": 1,
+  "manifestVersion": 1,
+
+  "main": "script.js"
+}

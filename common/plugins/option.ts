@@ -23,8 +23,16 @@ export interface BooleanOption extends BaseSettingOption {
   type: 'boolean';
   default?: boolean;
 }
-// export interface ButtonOption extends BaseSettingOption {
-//   type: 'button';
-// }
+export interface ButtonOption extends BaseSettingOption {
+  type: 'button';
+  label?: string;
+  variant?: 'primary' | 'secondary' | 'error';
+  onClick?: () => void;
+  default?: never;
+}
+export interface LabelOption extends BaseSettingOption {
+  type: 'label';
+  default?: never;
+}
 
-export type SettingOption = SelectOption | StringOption | NumberOption | BooleanOption; // | ButtonOption;
+export type SettingOption = SelectOption | StringOption | NumberOption | BooleanOption | ButtonOption | LabelOption;

@@ -3,10 +3,10 @@ import fs from 'node:fs/promises';
 
 import zip from 'zip-lib';
 
-import v1loader from './v1/v1-loader';
-import { PluginRunner, VersionedPluginRunnerOptions, pluginManifestSchema } from './types';
+import { loadPlugin, loadFromPath } from './v1/v1-loader';
+import { PluginRunner, VersionedPluginRunnerOptions, PluginManifestSchema, PluginManifest } from './types';
 
-import { Plugin, PluginState } from '../../common/plugins';
+import { Plugin, PluginProvider, PluginState } from '../../common/plugins';
 import { errorSync } from '../../utils/error';
 
 export interface PluginLoaderOptions {
@@ -56,6 +56,17 @@ class PluginLoader {
     return await this.loadPlugin(extractPath, state).catch((err) => err as Error);
   }
 
+  loadFromProvider(provider: PluginProvider | null, cssList: string[], manifestJson: PluginManifest, state: PluginState = 'enable'): Plugin | null {
+    const versionedOption: VersionedPluginRunnerOptions = { state };
+
+    let newPlugin: Plugin | null = null;
+    if (manifestJson.manifestVersion === 1) newPlugin = loadPlugin(provider, cssList, manifestJson, this.runPlugin, versionedOption);
+
+    if (!newPlugin) throw Error(`Manifest version "${manifestJson.manifestVersion}" is not supported`);
+
+    return newPlugin;
+  }
+
   public unloadPlugin(plugin: Plugin): Error | null {
     return this.runPlugin(
       plugin,
@@ -94,7 +105,7 @@ class PluginLoader {
         throw error;
       });
     
-    const [manifestJson, err] = errorSync(() => pluginManifestSchema.parse(JSON.parse(manifest)));
+    const [manifestJson, err] = errorSync(() => PluginManifestSchema.parse(JSON.parse(manifest)));
     if (err || manifestJson === null) {
       const error = Error('Manifest is not valid');
       error.cause = err;
@@ -105,7 +116,7 @@ class PluginLoader {
     const versionedOption: VersionedPluginRunnerOptions = { state };
 
     let newPlugin: Plugin | null = null;
-    if (manifestJson.manifestVersion === 1) newPlugin = await v1loader(pluginPath, manifestJson, this.runPlugin, versionedOption);
+    if (manifestJson.manifestVersion === 1) newPlugin = await loadFromPath(pluginPath, manifestJson, this.runPlugin, versionedOption);
 
     if (!newPlugin) throw Error(`Manifest version "${manifestJson.manifestVersion}" is not supported`);
 

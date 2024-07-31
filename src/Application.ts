@@ -367,6 +367,9 @@ class Application {
       folder: path.resolve(app.getPath('userData'), 'plugins'),
       set: (newConfig) => config.set({ plugins: newConfig }),
     });
+    this.pluginManager.loadPredefinedPlugins().catch((e) => {
+      console.error('[Alspotron] Cannot load predefined plugins', e);
+    });
     this.pluginManager.loadPluginsFromConfig().catch((e) => {
       console.error('[Alspotron] Cannot load plugins', e);
     });
