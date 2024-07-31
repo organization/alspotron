@@ -3,18 +3,26 @@ import PluginLoader, { PluginLoaderOptions } from './plugin-loader';
 import { Plugin, PluginEventMap, PluginState } from '../../common/plugins';
 import { Config } from '../../common/schema';
 
+import { SpiceifyIntegrationPlugin } from '../../plugins';
+
 import type { PartialDeep } from 'type-fest';
+import type { PredefinedPlugin } from '../../plugins';
 
 export interface PluginManagerOptions extends PluginLoaderOptions {
   config: () => Config['plugins'];
   set: (config: PartialDeep<Config['plugins']>) => void;
 }
+
 class PluginManager {
   private loader: PluginLoader;
 
   private plugins: Plugin[] = [];
   private config: () => Config['plugins'];
   private setConfig: (config: PartialDeep<Config['plugins']>) => void;
+
+  private predefinedPlugins: PredefinedPlugin[] = [
+    SpiceifyIntegrationPlugin,
+  ];
 
   constructor(options: PluginManagerOptions) {
     this.config = options.config;
@@ -32,7 +40,7 @@ class PluginManager {
       const index = this.plugins.findIndex((target) => target.id === plugin.id);
       const loadedPlugin = await this.loader.loadFromFolder(plugin.path);
       if (loadedPlugin instanceof Error) return null;
-      
+
       loadedPlugin.state = state;
       this.plugins[index] = loadedPlugin;
       this.setConfig({ disabled: { [plugin.id]: false } });
@@ -49,7 +57,20 @@ class PluginManager {
 
     return null;
   }
-  
+
+  public async loadPredefinedPlugins(): Promise<void> {
+    const pluginList = await Promise.all(
+      this.predefinedPlugins.map((it) => this.loader.loadFromProvider(
+        it.provider ?? null,
+        it.cssList,
+        it.manifest,
+        'enable'
+      ))
+    );
+
+    this.plugins.push(...pluginList.filter(Boolean));
+  }
+
   public async loadPluginsFromConfig(): Promise<void> {
     const pluginPathList = Object.entries(this.config().list);
     const disablePluginMap = this.config().disabled;
@@ -88,7 +109,7 @@ class PluginManager {
     this.loader.unloadPlugin(plugin);
     const reloadedPlugin = await this.loader.loadFromFile(path);
     if (reloadedPlugin instanceof Error) return reloadedPlugin;
-    
+
     this.plugins[index] = reloadedPlugin;
     return reloadedPlugin;
   }
@@ -108,7 +129,7 @@ class PluginManager {
   public broadcast<Event extends keyof PluginEventMap>(event: Event, ...args: Parameters<PluginEventMap[Event]>): void {
     this.plugins.forEach((plugin) => this.emit(plugin, event, ...args));
   }
-  
+
   private getPluginPath(idOrPlugin: string | Plugin): string | undefined {
     if (typeof idOrPlugin === 'string') return this.config().list[idOrPlugin];
 

@@ -7,7 +7,7 @@ import { For, Switch as SwitchFlow, Match, Show, createSignal } from 'solid-js';
 
 import { Marquee } from '@suyongs/solid-utility';
 
-import { SelectOption, SettingOption } from '../../../common/plugins';
+import { ButtonOption, SelectOption, SettingOption } from '../../../common/plugins';
 import Card from '../../components/Card';
 import Switch from '../../components/Switch';
 import Selector from '../../components/Select';
@@ -168,6 +168,18 @@ const PluginSettingsContainer = () => {
                   value={config()?.plugins.config[plugin()?.id ?? '']?.[setting.key] as boolean}
                   onChange={(checked) => setOption(setting, checked)}
                 />
+              </Match>
+              <Match when={setting.type === 'button'}>
+                <button
+                  classList={{
+                    'btn-primary': ((setting as ButtonOption).variant ?? 'primary') === 'primary',
+                    'btn-secondary': (setting as ButtonOption).variant === 'secondary',
+                    'btn-error': (setting as ButtonOption).variant === 'error',
+                  }}
+                  onClick={(setting as ButtonOption).onClick}
+                >
+                  {(setting as ButtonOption).label}
+                </button>
               </Match>
             </SwitchFlow>
           </Card>

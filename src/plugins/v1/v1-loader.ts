@@ -7,7 +7,7 @@ import { createLogger } from './v1-logger';
 
 import { Plugin, PluginContext, PluginProvider } from '../../../common/plugins';
 import { Json } from '../../../utils/types';
-import { VersionedPluginLoader } from '../types';
+import { VersionedPluginLoader, VersionedPluginPathLoader } from '../types';
 import { config } from '../../config';
 
 const v1ManifestSchema = z.object({
@@ -23,29 +23,8 @@ const v1ManifestSchema = z.object({
   main: z.string().optional(),
 }).passthrough();
 
-const loader: VersionedPluginLoader = async (pluginPath, rawManifest, runner, options) => {
+export const loadFromPath: VersionedPluginPathLoader = async (pluginPath, rawManifest, runner, options) => {
   const manifest = v1ManifestSchema.parse(rawManifest);
-
-  const newPlugin: Plugin = {
-    rawManifest: JSON.stringify(manifest),
-    manifest: manifest as Json,
-    js: {
-      listeners: {},
-      settings: [],
-      overrides: {},
-    },
-
-    id: manifest.id,
-    name: manifest.name,
-    description: manifest.description,
-    author: manifest.author,
-    version: manifest.version ?? '0.0.0',
-    versionCode: manifest.versionCode,
-    manifestVersion: manifest.manifestVersion,
-    state: options?.state ?? 'enable',
-    path: pluginPath,
-    logs: [],
-  };
 
   const jsPath = `file://${path.join(pluginPath, manifest.main ?? '')}`;
   const pluginProvider = await import(jsPath)
@@ -57,7 +36,52 @@ const loader: VersionedPluginLoader = async (pluginPath, rawManifest, runner, op
     throw error;
   });
 
-  if (typeof pluginProvider === 'function') {
+  const cssList = await Promise.all(
+    manifest.css?.map(async (cssFilePath) => {
+      const cssPath = path.resolve(pluginPath, cssFilePath);
+      return fs.readFile(cssPath, 'utf-8');
+    }) ?? [],
+  );
+
+  return loadPlugin(
+    pluginProvider ?? null,
+    cssList,
+    manifest,
+    runner,
+    options,
+  );
+};
+
+export const loadPlugin: VersionedPluginLoader = (
+  pluginProvider,
+  cssList,
+  manifest,
+  runner,
+  options,
+) => {
+  const newPlugin: Plugin = {
+    rawManifest: JSON.stringify(manifest),
+    manifest: manifest as Json,
+    js: {
+      listeners: {},
+      settings: [],
+      overrides: {},
+    },
+    css: cssList,
+
+    id: manifest.id,
+    name: manifest.name,
+    description: manifest.description,
+    author: manifest.author,
+    version: manifest.version ?? '0.0.0',
+    versionCode: manifest.versionCode,
+    manifestVersion: manifest.manifestVersion,
+    state: options?.state ?? 'enable',
+    path: options?.path ?? 'Built-in',
+    logs: [],
+  };
+
+  if (pluginProvider !== null) {
     newPlugin.js.raw = pluginProvider;
 
     const context: PluginContext = {
@@ -65,11 +89,13 @@ const loader: VersionedPluginLoader = async (pluginPath, rawManifest, runner, op
         newPlugin.js.listeners[event] ??= [];
         newPlugin.js.listeners[event]?.push(listener);
       },
-      useConfig: () => [config.get.bind(null), config.set.bind(null)],
+      useConfig: () => [config.get.bind(config), config.set.bind(config)],
       useSetting: (options) => {
         newPlugin.js.settings.push(options);
 
-        return () => (config.get().plugins.config[newPlugin.id] as Record<string, unknown>)?.[options.key];
+        if (options.type === 'button') return;
+
+        return () => (config.get().plugins.config[newPlugin.id])?.[options.key];
       },
       useOverride(target, fn) {
         newPlugin.js.overrides[target] ??= [];
@@ -84,14 +110,5 @@ const loader: VersionedPluginLoader = async (pluginPath, rawManifest, runner, op
     }, { message: 'Failed to load plugin' });
   }
 
-  newPlugin.css = await Promise.all(
-    manifest.css?.map(async (cssFilePath) => {
-      const cssPath = path.resolve(pluginPath, cssFilePath);
-      return fs.readFile(cssPath, 'utf-8');
-    }) ?? [],
-  );
-
   return newPlugin;
 };
-
-export default loader;
