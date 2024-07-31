@@ -22,6 +22,7 @@ export interface PluginEventMap {
   'stop-overlay': () => void;
   'inject-overlay-to-process': (processId: number, name?: string, filePath?: string) => void;
   'remove-overlay-from-process': (processId: number) => void;
+  'button-click': (buttonId: string) => void;
 }
 export interface OverrideParameterMap {
   'update': [updateContext: UpdateData];

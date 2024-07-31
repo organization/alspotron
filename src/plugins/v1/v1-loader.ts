@@ -1,11 +1,12 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 
+import * as Electron from 'electron';
 import { z } from 'zod';
 
 import { createLogger } from './v1-logger';
 
-import { Plugin, PluginContext, PluginProvider } from '../../../common/plugins';
+import { Plugin, PluginContext, PluginProvider, SettingOption, UseSettingResult } from '../../../common/plugins';
 import { Json } from '../../../utils/types';
 import { VersionedPluginLoader, VersionedPluginPathLoader } from '../types';
 import { config } from '../../config';
@@ -90,18 +91,47 @@ export const loadPlugin: VersionedPluginLoader = (
         newPlugin.js.listeners[event]?.push(listener);
       },
       useConfig: () => [config.get.bind(config), config.set.bind(config)],
-      useSetting: (options) => {
+      useSetting: <Option extends SettingOption>(options: Option) => {
+        let lastOptions = options;
         newPlugin.js.settings.push(options);
 
-        if (options.type === 'button') return;
+        /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+        const getter = function () {
+          if (options.type === 'button') return;
+          if (options.type === 'label') return;
 
-        return () => (config.get().plugins.config[newPlugin.id])?.[options.key];
+          return (config.get().plugins.config[newPlugin.id])?.[options.key];
+        };
+        getter.prototype.delete = () => {
+          const index = newPlugin.js.settings.findIndex((it) => it.key === lastOptions.key);
+
+          if (index >= 0) {
+            newPlugin.js.settings.splice(index, 1);
+          }
+        };
+        getter.prototype.set = (value: Partial<SettingOption>) => {
+          const newValue = {
+            ...lastOptions,
+            ...value,
+          }
+          const index = newPlugin.js.settings.findIndex((it) => it.key === lastOptions.key);
+
+          if (index >= 0) {
+            newPlugin.js.settings.splice(index, 1, newValue);
+            lastOptions = newValue;
+          }
+        };
+
+        /* eslint-enable @typescript-eslint/no-unsafe-member-access */
+
+        return getter as UseSettingResult<typeof options>;
       },
       useOverride(target, fn) {
         newPlugin.js.overrides[target] ??= [];
         newPlugin.js.overrides[target]?.push(fn);
       },
       logger: createLogger(newPlugin),
+      Electron,
     };
 
     runner(newPlugin, () => {
