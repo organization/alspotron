@@ -29,13 +29,13 @@ export const loadFromPath: VersionedPluginPathLoader = async (pluginPath, rawMan
 
   const jsPath = `file://${path.join(pluginPath, manifest.main ?? '')}`;
   const pluginProvider = await import(jsPath)
-  .then((module) => (module as { default: PluginProvider | undefined }).default)
-  .catch((err) => {
-    const error = Error(`Failed to load plugin: Cannot load "${jsPath}"`);
-    error.cause = err;
+    .then((module) => (module as { default: PluginProvider | undefined }).default)
+    .catch((err) => {
+      const error = Error(`Failed to load plugin: Cannot load "${jsPath}"`);
+      error.cause = err;
 
-    throw error;
-  });
+      throw error;
+    });
 
   const cssList = await Promise.all(
     manifest.css?.map(async (cssFilePath) => {
@@ -95,25 +95,25 @@ export const loadPlugin: VersionedPluginLoader = (
         let lastOptions = options;
         newPlugin.js.settings.push(options);
 
-        /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+        /* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return */
         const getter = function () {
           if (options.type === 'button') return;
           if (options.type === 'label') return;
 
           return (config.get().plugins.config[newPlugin.id])?.[options.key];
         };
-        getter.prototype.delete = () => {
+        getter.delete = () => {
           const index = newPlugin.js.settings.findIndex((it) => it.key === lastOptions.key);
 
           if (index >= 0) {
             newPlugin.js.settings.splice(index, 1);
           }
         };
-        getter.prototype.set = (value: Partial<SettingOption>) => {
+        getter.set = (value: Partial<SettingOption>) => {
           const newValue = {
             ...lastOptions,
             ...value,
-          }
+          };
           const index = newPlugin.js.settings.findIndex((it) => it.key === lastOptions.key);
 
           if (index >= 0) {
