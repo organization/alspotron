@@ -81,18 +81,18 @@ export class TrayWindowProvider implements WindowProvider {
     this._isShowing = true;
 
     const screenBounds = screen.getPrimaryDisplay().bounds;
-    const width = this.WIDTH * screen.getPrimaryDisplay().scaleFactor;
-    const height = this.HEIGHT * screen.getPrimaryDisplay().scaleFactor;
+    const width = this.WIDTH;
+    const height = this.HEIGHT;
     const x = rectangle.x + width > screenBounds.width ? rectangle.x + rectangle.width - width : rectangle.x;
     const y = rectangle.y + height > screenBounds.height ? rectangle.y - height : rectangle.y + rectangle.height;
 
     this.window.show();
     this.window.setBounds({ x, y, width, height }, false);
 
-    // WOW!!!! amazing Electron behavior!!!!
     setTimeout(() => {
+      this.window.setBounds({ x, y, width, height }, false);
       this._isShowing = false;
-    }, 16 * 5);
+    }, 16 * 3);
   }
 
   public get isShowing() {
