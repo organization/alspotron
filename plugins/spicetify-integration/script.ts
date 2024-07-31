@@ -23,32 +23,38 @@ const en = {
       name: 'Spicetify Extension not installed',
       description: 'The extension is not installed. Click the install button to install the extension.',
     },
+    reinstall: {
+      name: 'Reinstall Spicetify Extension',
+      description: 'Reinstall the extension that allows Alspotron to detect Spicetify playlists. (Reinstall when music is not detected properly)',
+      label: 'Reinstall',
+    },
   },
 
   dialog: {
     cannotFindSpicetifyPath: {
-      title: 'Spicetify를 찾을 수 없습니다',
-      message: 'Spicetify를 감지하지 못하였습니다. extension 폴더가 아닌 Spiceify 자체가 설치된 경로를 선택해주세요',
+      title: 'Cannot find Spicetify',
+      message: 'Spicetify was not detected. Please select the path where Spiceify itself is installed, not the extension folder.',
     },
     selectSpicetifyFolder: {
-      title: 'Spicetify가 설치된 경로를 선택해주세요',
-      message: 'Spicetify가 설치된 경로를 감지하지 못하였습니다. 수동으로 경로를 선택해주세요',
+      title: 'Select the path where Spicetify is installed',
+      message: 'Spicetify was not detected. Please select',
     },
     installFailed: {
-      title: 'Spicetify의 Alsptron 확장 설치에 실패하였습니다',
-      message: 'Spicetify의 Alsptron 확장 설치에 실패하였습니다. 다시 시도해주세요. 오류 내역: {{error}}',
+      title: 'Failed to install Spicetify extension',
+      message: 'Failed to install the Spicetify extension. Please try again. Error: {{error}}',
     },
     installFailedNoSpicetify: {
-      title: 'Spicetify의 Alsptron 확장 설치에 실패하였습니다',
-      message: 'Spicetify 커맨드가 존재하지 않거나 실행중 오류가 발생하였습니다.',
+      title: 'Failed to install Spicetify extension',
+      message: 'The Spicetify command does not exist or an error occurred while running it.',
     },
     installSuccess: {
-      title: '확장 설치 성공',
-      message: '성공적으로 확장을 설치하였습니다.',
+      title: 'Installation successful',
+      message: 'Successfully installed the extension.',
     },
   },
 };
 const translation: Record<string, typeof en> = {
+  en,
   ko: {
     setting: {
       install: {
@@ -63,6 +69,11 @@ const translation: Record<string, typeof en> = {
       notInstalled: {
         name: 'Spicetify 확장 미설치됨',
         description: 'Spicetify 확장이 설치되어 있지 않습니다. 설치 버튼을 눌러 확장을 설치해주세요',
+      },
+      reinstall: {
+        name: 'Spicetify 확장 재설치',
+        description: 'Spicetify의 재생목록을 Alspotron에서 감지할 수 있는 확장을 재설치합니다. (정상적으로 음악이 인식되지 않을때 재설치 해주세요)',
+        label: '재설치',
       },
     },
     dialog: {
@@ -182,6 +193,23 @@ const runner: PluginProvider = ({ useConfig, useSetting, logger, on, Electron })
     updateLabel(true);
   };
 
+  const onReinstall = async () => {
+    const command = await runCommand('spicetify', ['config', 'extensions', '-alspotron.js']).catch((code: number) => code);
+    if (command !== 0) {
+      logger.error('Failed to reinstall Spicetify extension:', command);
+
+      await Electron.dialog.showMessageBox({
+        type: 'error',
+        title: t.dialog.installFailedNoSpicetify.title,
+        message: t.dialog.installFailedNoSpicetify.message,
+      });
+      return;
+    }
+
+    await onInstall();
+    logger.info('Spicetify extension Reinstalled');
+  };
+
   const detectInstalled = async () => {
     const spicetifyPath = await findSpicetifyPath(false);
     if (!spicetifyPath) return false;
@@ -217,10 +245,20 @@ const runner: PluginProvider = ({ useConfig, useSetting, logger, on, Electron })
     }
   };
 
+  useSetting({
+    type: 'button',
+    key: 'reinstall',
+    variant: 'error',
+    label: t.setting.reinstall.label,
+    name: t.setting.reinstall.name,
+    description: t.setting.reinstall.description,
+  });
+
   detectInstalled().then(updateLabel);
 
   on('button-click', (key) => {
     if (key === 'install') onInstall();
+    if (key === 'reinstall') onReinstall();
   });
 };
 

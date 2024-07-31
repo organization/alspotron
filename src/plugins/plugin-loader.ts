@@ -6,6 +6,8 @@ import zip from 'zip-lib';
 import { loadPlugin, loadFromPath } from './v1/v1-loader';
 import { PluginRunner, VersionedPluginRunnerOptions, PluginManifestSchema, PluginManifest } from './types';
 
+import { createLogger } from './v1/v1-logger';
+
 import { Plugin, PluginProvider, PluginState } from '../../common/plugins';
 import { errorSync } from '../../utils/error';
 
@@ -84,9 +86,13 @@ class PluginLoader {
     try {
       fn(plugin);
     } catch (err) {
+      const logger = createLogger(plugin);
       const error = Error(message ?? 'Failed to run plugin');
       error.cause = err;
 
+      if (err instanceof Error) logger.error(err.name, err.message, err.stack, err.cause, '\n', JSON.stringify(err, null, 2));
+      else logger.error('Error object is not `Error`:', err);
+      logger.error('Plugin will be disabled');
       return error;
     }
 
