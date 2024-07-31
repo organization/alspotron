@@ -32,6 +32,8 @@ export class TrayWindowProvider implements WindowProvider {
   private WIDTH = 250;
   private HEIGHT = 400;
 
+  private _isShowing = false;
+
   constructor() {
     this.window = new PlatformBrowserWindow({
       ...(isXfce() ? {} : glassOptions),
@@ -75,6 +77,8 @@ export class TrayWindowProvider implements WindowProvider {
   }
 
   public show(rectangle: Rectangle) {
+    this._isShowing = true;
+
     const screenBounds = screen.getPrimaryDisplay().bounds;
     const x = rectangle.x + this.WIDTH > screenBounds.width ? rectangle.x + rectangle.width - this.WIDTH : rectangle.x;
     const y = rectangle.y + this.HEIGHT > screenBounds.height ? rectangle.y - this.HEIGHT : rectangle.y + rectangle.height;
@@ -86,6 +90,11 @@ export class TrayWindowProvider implements WindowProvider {
     this.window.setPosition(x, y);
     setTimeout(() => {
       this.window.setPosition(x, y);
+      this._isShowing = false;
     }, 16 * 5);
+  }
+
+  public get isShowing() {
+    return this._isShowing;
   }
 }

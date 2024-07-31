@@ -673,7 +673,9 @@ class Application {
   initTrayWindow() {
     this.trayWindowProvider = new TrayWindowProvider();
 
-    this.trayWindowProvider.window.on('blur', () => {
+    this.trayWindowProvider?.window.on('blur', () => {
+      if (this.trayWindowProvider?.isShowing) return;
+
       this.trayWindowProvider?.window.destroy();
       this.trayWindowProvider = null;
 
