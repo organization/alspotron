@@ -256,15 +256,15 @@
   "updater.popup.download-completed": "Download ist abgeschlossen.",
   "updater.popup.installing": "Installing...",
 
-  "tray.lyrics.label": "Lyrics auswählen",
+  "tray.lyrics.label": "Advanced Search",
   "tray.setting.label": "Einstellungen",
   "tray.exit.label": "beenden",
   "tray.devtools.label": "Entwicklertools",
   "tray.devtools.lyric-viewer.label": "Lyricsanzeige-Fenster ({{index}})",
-  "tray.devtools.lyrics.label": "Auswahlfenster für Lyrics",
+  "tray.devtools.lyrics.label": "Advanced Search",
   "tray.devtools.setting.label": "Einstellungsfenster",
   "tray.devtools.tray.label": "Tray",
 
-  "title.lyrics": "Lyrics auswählen",
+  "title.lyrics": "Advanced Lyric Search",
   "title.setting": "Alspotron-Einstellungen"
 }

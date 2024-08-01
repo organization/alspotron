@@ -257,15 +257,15 @@
   "updater.popup.download-completed": "다운로드가 완료되었습니다.",
   "updater.popup.installing": "설치 중...",
 
-  "tray.lyrics.label": "가사 선택",
+  "tray.lyrics.label": "고급 검색",
   "tray.setting.label": "설정",
   "tray.exit.label": "종료",
   "tray.devtools.label": "개발자 도구",
   "tray.devtools.lyric-viewer.label": "가사 표시기 창 ({{index}})",
-  "tray.devtools.lyrics.label": "가사 선택 창",
+  "tray.devtools.lyrics.label": "고급 검색 창",
   "tray.devtools.setting.label": "설정 창",
   "tray.devtools.tray.label": "트레이 창",
 
-  "title.lyrics": "가사 선택",
+  "title.lyrics": "가사 고급 검색",
   "title.setting": "Alspotron 설정"
 }

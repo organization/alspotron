@@ -1,6 +1,7 @@
-import { createEffect, createSignal, For, on, Show, startTransition } from 'solid-js';
+import { createEffect, createSignal, For, JSX, on, Show, startTransition } from 'solid-js';
 
 import alsong from 'alsong';
+import { useTransContext } from '@jellybrick/solid-i18next';
 
 import { Marquee } from '@suyongs/solid-utility';
 
@@ -9,7 +10,7 @@ import useLyricMapper from '../../hooks/useLyricMapper';
 import usePluginOverride from '../../hooks/usePluginOverride';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import Spinner from '../../components/Spinner';
-import { useTransContext } from '@jellybrick/solid-i18next';
+import Modal from '../../components/Modal';
 
 type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>[number];
 
@@ -21,13 +22,10 @@ export const SearchContainer = () => {
   const [, setLyricMapper] = useLyricMapper();
   const [t] = useTransContext();
 
+  const [open, setOpen] = createSignal(false);
   const [title, setTitle] = createSignal(playingTitle());
-  const artist = () => {
-    const provided = playingTitle().trim();
+  const [artist, setArtist] = createSignal(playingArtist());
 
-    if (title() !== provided) return '';
-    return playingArtist();
-  };
   const [searchList, setSearchList] = createSignal<LyricMetadata[]>([]);
   const [loading, setLoading] = createSignal(false);
   const currentLyricID = () => Number(originalLyric()?.id);
@@ -35,6 +33,7 @@ export const SearchContainer = () => {
   createEffect(on([playingTitle, playingArtist, status], async () => {
     if (status() !== 'idle' && status() !== 'stopped') {
       setTitle(playingTitle().trim());
+      setArtist(playingArtist().trim());
       await startTransition(async () => await onSearch());
     }
   }));
@@ -74,12 +73,23 @@ export const SearchContainer = () => {
     await setLyricMapper(newMapper);
     setLoading(false);
   };
+  const onArtist: JSX.EventHandlerUnion<HTMLButtonElement, MouseEvent> = (event) => {
+    event.preventDefault();
+
+    setOpen(true);
+  };
+  const onArtistChange = () => {
+    setArtist(artist().trim());
+    setOpen(false);
+    onSearch();
+  }
 
   return (
     <div
-      class={'w-full flex-1 flex flex-col justify-start items-stretch overflow-hidden'}>
+      class={'w-full flex-1 flex flex-col justify-start items-stretch overflow-hidden'}
+    >
       <form
-        class={'w-full flex justify-start items-center gap-2 p-4'}
+        class={'w-full flex justify-start items-center gap-2 p-4 pt-2'}
         onSubmit={(event) => {
           event.preventDefault();
           onSearch();
@@ -99,8 +109,16 @@ export const SearchContainer = () => {
             />
           </svg>
         </button>
+        <button class={'btn-text btn-icon'} onClick={onArtist}>
+          <svg class={'w-[16px] h-[16px] fill-none'} viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M740-560h140v80h-80v220q0 42-29 71t-71 29q-42 0-71-29t-29-71q0-42 29-71t71-29q8 0 18 1.5t22 6.5v-208ZM120-160v-112q0-35 17.5-63t46.5-43q62-31 126-46.5T440-440q42 0 83.5 6.5T607-414q-20 12-36 29t-28 37q-26-6-51.5-9t-51.5-3q-57 0-112 14t-108 40q-9 5-14.5 14t-5.5 20v32h321q2 20 9.5 40t20.5 40H120Zm320-320q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T520-640q0-33-23.5-56.5T440-720q-33 0-56.5 23.5T360-640q0 33 23.5 56.5T440-560Zm0-80Zm0 400Z"
+              class={'fill-black dark:fill-white'}
+            />
+          </svg>
+        </button>
       </form>
-      <div class={'w-full flex flex-col justify-start items-stretch gap-2 flex-1 fluent-scrollbar p-4 pt-0'}>
+      <div class={'w-full flex flex-col justify-start items-stretch gap-2 flex-1 overflow-auto remove-scrollbar p-4 pt-0'}>
         <Show when={loading()}>
           <div class={'w-full h-full flex justify-center items-center p-4'}>
             <Spinner class={'w-8 h-8 stroke-primary-500'}/>
@@ -156,6 +174,26 @@ export const SearchContainer = () => {
           )}
         </For>
       </div>
+      <Modal
+        open={open()}
+        onClose={() => setOpen(false)}
+        buttons={[
+          {
+            type: 'positive',
+            name: t('common.okay'),
+            onClick: onArtistChange,
+          },
+        ]}
+      >
+        <div class={'text-black dark:text-white text-xl mb-2'}>
+          {t('lyrics.artist')}
+        </div>
+        <input
+          class={'input'}
+          value={artist()}
+          onInput={(event) => setArtist(event.target.value)}
+        />
+      </Modal>
     </div>
   );
 };

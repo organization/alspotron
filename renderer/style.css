@@ -29,6 +29,7 @@
     focus:outline-none;
   }
 
+
   .btn-error {
     @apply min-w-[130px] px-3 py-2 rounded text-black
     bg-red-500 hover:bg-red-600 active:opacity-50
@@ -41,6 +42,13 @@
     text-black bg-white/60 hover:bg-white/40 active:bg-white/20
     dark:text-white dark:bg-white/5 dark:hover:bg-white/10 dark:active:bg-white/[2.5%]
     shadow-sm outline-none select-none cursor-pointer
+    focus:outline-none;
+  }
+
+  .btn-borderless {
+    @apply p-2 text-black hover:bg-white/40 active:bg-white/60
+    dark:text-white dark:hover:bg-white/10 dark:active:bg-white/20
+    outline-none select-none cursor-pointer rounded-full
     focus:outline-none;
   }
 

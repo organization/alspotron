@@ -256,15 +256,15 @@
   "updater.popup.download-completed": "ダウンロードが完了しました。",
   "updater.popup.installing": "Installing...",
 
-  "tray.lyrics.label": "歌詞選択",
+  "tray.lyrics.label": "Advanced Search",
   "tray.setting.label": "設定",
   "tray.exit.label": "終了",
   "tray.devtools.label": "デベロッパツール",
   "tray.devtools.lyric-viewer.label": "歌詞インジケーター ({{index}})",
-  "tray.devtools.lyrics.label": "歌詞選択ウィンドウ",
+  "tray.devtools.lyrics.label": "Advanced Search",
   "tray.devtools.setting.label": "終了ウィンドウ",
   "tray.devtools.tray.label": "Tray",
 
-  "title.lyrics": "歌詞選択",
+  "title.lyrics": "Advanced Lyric Search",
   "title.setting": "Alspotron 設定"
 }

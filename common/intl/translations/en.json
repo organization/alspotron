@@ -257,15 +257,15 @@
   "updater.popup.download-completed": "Download completed.",
   "updater.popup.installing": "Installing...",
 
-  "tray.lyrics.label": "Lyrics Selector",
+  "tray.lyrics.label": "Advanced Search",
   "tray.setting.label": "Setting",
   "tray.exit.label": "Exit",
   "tray.devtools.label": "DevTools",
   "tray.devtools.lyric-viewer.label": "Lyrics Viewer ({{index}})",
-  "tray.devtools.lyrics.label": "Lyrics Selector",
+  "tray.devtools.lyrics.label": "Advanced Search",
   "tray.devtools.setting.label": "Settings",
   "tray.devtools.tray.label": "Tray",
 
-  "title.lyrics": "Lyrics Selector",
+  "title.lyrics": "Advanced Lyric Search",
   "title.setting": "Alspotron Settings"
 }
