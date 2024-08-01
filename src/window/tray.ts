@@ -92,7 +92,7 @@ export class TrayWindowProvider implements WindowProvider {
     setTimeout(() => {
       this.window.setBounds({ x, y, width, height }, false);
       this._isShowing = false;
-    }, 16 * 3);
+    }, 16 * 5);
   }
 
   public get isShowing() {
