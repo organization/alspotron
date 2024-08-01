@@ -1,0 +1,46 @@
+{
+  "font": "Pretendard JP Variable",
+  "fontWeight": "800",
+  "animation": "slide",
+  "animationAtOnce": false,
+  "maxHeight": 600,
+  "proximityOpacity": 1,
+  "proximitySensitivity": 2,
+  "rowGap": 1,
+  "nowPlaying": {
+    "color": "#FFFFFF",
+    "background": "rgba(0, 0, 0, 0.5)",
+    "backgroundProgress": "rgba(29, 29, 29, .80)",
+    "fontSize": 15,
+    "maxWidth": 3840,
+    "visible": true,
+    "stoppedOpacity": 0.5
+  },
+  "lyric": {
+    "color": "rgb(0, 0, 0)",
+    "background": "rgba(255, 255, 255, 0.8703703703703703)",
+    "fontSize": 13,
+    "maxWidth": 700,
+    "stoppedOpacity": 0.5,
+    "containerRowGap": 0.25,
+    "multipleContainerRowGap": 1,
+    "direction": "column",
+    "nextLyric": 1,
+    "previousLyric": 1,
+    "nextLyricScale": 0.8,
+    "previousLyricScale": 0.8,
+    "nextLyricOpacity": 0.5,
+    "previousLyricOpacity": 0.5
+  },
+  "position": {
+    "availableAnchor": [
+      "bottom"
+    ],
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "right": 0,
+    "index": 0
+  },
+  "userCSS": "alspotron-wrapper {\n  min-height: 100%;\n  align-items: end;\n}\n\nalspotron-lyrics-container {\n  width: fit-content;\n  padding: 7.890625vw 2.8125vw;\n  transform: skew(0, 3.8deg);\n  align-items: flex-end;\n}\n\nalspotron-lyrics-wrapper {\n  transform-origin: 100% 50%;\n}\nalspotron-lyrics {\n  align-items: flex-end;\n}\n\nalspotron-lyrics-item {\n  border-radius: 8px;\n  border-top-right-radius: 0;\n  border-bottom-right-radius: 0;\n  padding: 4px 8px;\n\n  box-shadow: -6px 0 0 -2px rgb(46, 216, 255, 0.5) inset, 0 0 4px rgba(0, 0, 0, 0.5);\n}\n\nalspotron-nowplaying {\n  position: absolute;\n  left: 50%;\n  right: 50%;\n  bottom: 4.140625vw;\n\n  width: 7.421875%;\n  aspect-ratio: 1;\n\n  border-radius: 50%;\n  flex-shrink: 0;\n\n  display: inline-flex;\n  flex-flow: column;\n  justify-content: flex-end;\n  align-items: flex-start;\n\n  opacity: 0.5;\n  padding: 0;\n\n  translate: -50% 0;\n  animation: rotate linear 10s infinite;\n\n  mask: radial-gradient(transparent 10%, black 50%);\n}\nalspotron-nowplaying-progress-bar {\n}\n\nalspotron-nowplaying-progress {\n  --color: #ff8a17;\n\n  width: 100%;\n  height: 100%;\n\n  border-radius: 100%;\n  transform: unset !important;\n  transform-origin: 50% 50%;\n  background: conic-gradient(\n    var(--color) 0%,\n    var(--color) var(--nowplaying-percent),\n    transparent var(--nowplaying-percent)\n  );\n  opacity: 1;\n  mix-blend-mode: multiply;\n\n  animation: rotate-reverse linear 10s infinite;\n}\nalspotron-nowplaying-cover {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  z-index: -1;\n\n  object-fit: cover;\n  border-radius: 100%;\n}\n\nalspotron-wrapper--stopped alspotron-nowplaying-cover {\n}\n\nalspotron-nowplaying-playing-text {\n  position: relative;\n  z-index: 50;\n  margin-top: auto;\n  padding: 12px 16px;\n  overflow: visible !important;\n\n  text-shadow: 0 0 2px black, 0 3px 6px black;\n  transform: translateZ(100px);\n}\n\nalspotron-marquee {\n  z-index: 50;\n}\n\nalspotron-nowplaying-marquee {\n  display: none;\n}\n\n@keyframes rotate {\n  0% {\n    rotate: 0deg;\n  }\n  100% {\n    rotate: 360deg;\n  }\n}\n\n@keyframes rotate-reverse {\n  0% {\n    rotate: 360deg;\n  }\n  100% {\n    rotate: 0deg;\n  }\n}\n"
+}
