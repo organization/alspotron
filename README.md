@@ -36,7 +36,18 @@
   -   Release 탭에서 최신버전의 Alspotron을 다운로드한 후 설치해주세요. (포터블 버전은 설정이 저장되지 않습니다)
   -   Windows 사용자께서는 `Alspotron-Web-Setup-[version].exe`을 다운로드 받으시면 됩니다.
 
-#### 3.  Alspotron Companion 설치  
+#### 3.  Alspotron Companion 설치
+| 1. 플러그인 설정 | 2. 확장 설치 버튼 누르기 |
+|:------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------:|
+| ![image](https://github.com/user-attachments/assets/a38b739b-d354-4ef0-a953-26dc426c0ecc) | ![image](https://github.com/user-attachments/assets/b07cf843-c891-4bea-8302-63200f44d3ac) |
+
+> [!NOTE]
+> 플러그인이 존재하지 않는다면 아래 **수동 설치 방법**을 확인해주세요
+
+<details>
+  <summary>
+    수동 설치 방법
+  </summary>
 
   -   [Spicetify 설치 위치의 Extensions](https://spicetify.app/docs/advanced-usage/extensions/) 폴더에 [`alspotron.js`를 다운로드 받아](https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js) 넣어주세요.
   -   아래 명령어를 사용하여 `alspotron.js` 확장을 `Spicetify`에 추가합니다. 
@@ -47,6 +58,8 @@
       ```bash
       spicetify apply
       ``` 
+
+</details>
 
 ---
 
