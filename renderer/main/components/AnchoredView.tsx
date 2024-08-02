@@ -17,14 +17,13 @@ interface AnchoredViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
 }
 
 const AnchoredView = (props: AnchoredViewProps) => {
-  const [config] = useConfig();
   const style = useStyle();
   const { status } = usePlayingInfo();
   const { view } = useCurrent();
 
-  const [, containerProps] = splitProps(
+  const [filteredProps, containerProps] = splitProps(
     props,
-    ['class', 'style', 'children'],
+    ['class', 'classList', 'children'],
   );
 
   useClassStyle(userCSSSelectors.wrapper, () => {
@@ -64,6 +63,7 @@ const AnchoredView = (props: AnchoredViewProps) => {
       <div
         data-anchor={view()?.position.anchor}
         classList={{
+          ...filteredProps.classList,
           [userCSSSelectors['wrapper']]: true,
           [userCSSSelectors['wrapper--stopped']]: status() === 'paused',
           [userCSSSelectors['wrapper--idle']]: status() === 'idle',

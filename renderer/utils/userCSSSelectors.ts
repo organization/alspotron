@@ -3,6 +3,7 @@ export const userCSSSelectors = {
   'wrapper--stopped': 'alspotron-usercss-wrapper--stopped',
   'wrapper--idle': 'alspotron-usercss-wrapper--idle',
   'wrapper--playing': 'alspotron-usercss-wrapper--playing',
+  'wrapper--hover': 'alspotron-usercss-wrapper--hover',
   'alert': 'alspotron-usercss-alert',
   'alert--disconnected': 'alspotron-usercss-alert--disconnected',
   'alert--description': 'alspotron-usercss-alert--description',
@@ -34,6 +35,7 @@ export const userCSSTransitions = {
 };
 
 export const userCSSVariables = {
+  'var-proximity-opacity': '--proximity',
   'var-cover-url': '--cover-url',
   'var-nowplaying-percent': '--nowplaying-percent',
   'var-nowplaying-duration': '--nowplaying-duration',
