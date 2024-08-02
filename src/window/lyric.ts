@@ -52,7 +52,7 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
 
     Menu.setApplicationMenu(null);
 
-    this.window.setAlwaysOnTop(true, 'screen-saver', 1);
+    this.window.setAlwaysOnTop(true, 'main-menu', 1);
     this.window.setVisibleOnAllWorkspaces(true, {
       visibleOnFullScreen: true,
     });

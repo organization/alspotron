@@ -9,14 +9,14 @@ import { AlertView } from './components/AlertView';
 import PlayingInfoProvider from '../components/PlayingInfoProvider';
 import UserCSS from '../components/UserCSS';
 import useConfig from '../hooks/useConfig';
-import { userCSSSelectors } from '../utils/userCSSSelectors';
+import { userCSSSelectors, userCSSVariables } from '../utils/userCSSSelectors';
 import usePluginsCSS from '../hooks/usePluginsCSS';
 import useStyle from '../hooks/useStyle';
 import useCurrent from '../hooks/useCurrent';
+import { useClassStyle } from '../hooks/useClassStyle';
 
 
 const useProximityStyle = () => {
-  const [config] = useConfig();
   const style = useStyle();
   const { view } = useCurrent();
   const [distance, setDistance] = createSignal(1);
@@ -67,25 +67,33 @@ const useProximityStyle = () => {
     setDistance(1);
   };
 
-  const proximityOpacity = () => {
+  const blendRate = () => {
     if (distance() > 0.5) {
-      return 1;
+      return 0;
     }
 
     const sensitivity = style().proximitySensitivity ?? 1;
-    const blendRate = Math.max(0, Math.min((1 - (distance() * 2)) * sensitivity, 1));
-    return (fullDimmedOpacity() * blendRate) + (1 - blendRate);
+    return Math.max(0, Math.min((1 - (distance() * 2)) * sensitivity, 1));
+  };
+  const proximityOpacity = () => {
+    if (distance() > 0.5) return 1;
+    const rate = blendRate();
+    console.log(rate);
+    return (fullDimmedOpacity() * rate) + (1 - rate);
   };
 
-  const [element, elementRef] = createSignal<HTMLDivElement | null>(null);
-  createRenderEffect(on(proximityOpacity, () => {
-    element()?.animate([{ opacity: proximityOpacity() }], { duration: 500, fill: 'forwards' });
-  }));
+  // const [element, elementRef] = createSignal<HTMLDivElement | null>(null);
+  // createRenderEffect(on(proximityOpacity, () => {
+  //   element()?.animate([{ opacity: proximityOpacity() }], { duration: 500, fill: 'forwards' });
+  // }));
 
   return {
-    ref: elementRef,
-    onMouseMove,
-    onMouseLeave,
+    rate: blendRate,
+    opacity: proximityOpacity,
+    handles: {
+      onMouseMove,
+      onMouseLeave,
+    },
   };
 };
 
@@ -94,13 +102,24 @@ const App = () => {
 
   const { view } = useCurrent();
   const style = useStyle();
-  const proximityHandles = useProximityStyle();
+  const {
+    rate,
+    opacity,
+    handles: proximityHandles,
+  } = useProximityStyle();
+
+  useClassStyle(userCSSSelectors.wrapper, () => `
+    opacity: var(${userCSSVariables['var-proximity-opacity']}, 1);
+  `);
 
   return (
     <Show when={window.enabled || view()?.enabled}>
       <PlayingInfoProvider>
         <AnchoredView
-          class={userCSSSelectors.wrapper}
+          style={`${userCSSVariables['var-proximity-opacity']}: ${opacity()}`}
+          classList={{
+            [userCSSSelectors['wrapper--hover']]: rate() >= 1,
+          }}
           {...proximityHandles}
         >
           <AlertView/>

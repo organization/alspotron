@@ -1,0 +1,46 @@
+{
+  "font": "Pretendard JP Variable",
+  "fontWeight": "400",
+  "animation": "custom",
+  "animationAtOnce": false,
+  "maxHeight": 400,
+  "proximityOpacity": 0,
+  "proximitySensitivity": 1.5,
+  "rowGap": 0.5,
+  "nowPlaying": {
+    "color": "#FFFFFF",
+    "background": "rgba(29, 29, 29, .50)",
+    "backgroundProgress": "rgba(0, 255, 145, 0.8)",
+    "fontSize": 13,
+    "maxWidth": 300,
+    "visible": true,
+    "stoppedOpacity": 0.5
+  },
+  "lyric": {
+    "color": "#FFFFFF",
+    "background": "rgba(29, 29, 29, .70)",
+    "fontSize": 13,
+    "maxWidth": 700,
+    "stoppedOpacity": 0.5,
+    "containerRowGap": 0.2,
+    "multipleContainerRowGap": 1,
+    "direction": "column-reverse",
+    "nextLyric": 0,
+    "previousLyric": 0,
+    "nextLyricScale": 0.9,
+    "previousLyricScale": 0.9,
+    "nextLyricOpacity": 0.5,
+    "previousLyricOpacity": 0.5
+  },
+  "position": {
+    "availableAnchor": [
+      "top"
+    ],
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "right": 0,
+    "index": 0
+  },
+  "userCSS": "alspotron-wrapper {\n  opacity: 1 !important;\n}\n\nalspotron-nowplaying {\n  width: calc(184px + 36px + 36px);\n  padding: 6px;\n\n  border-radius: 8px;\n  border-top-left-radius: 0;\n  border-top-right-radius: 0;\n  background: black;\n  opacity: 1 !important;\n  \n  transition:\n    padding-top 0.6s cubic-bezier(0.16, 1, 0.3, 1),\n    width 0.6s cubic-bezier(0.16, 1, 0.3, 1),\n    box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);\n}\n\nalspotron-nowplaying-progress-bar {\n  width: 100%;\n  height: 2px;\n\n  inset: unset;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(0, 0, 0, 0.5);\n\n  overflow: hidden;\n  z-index: -1;\n\n  transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);\n}\nalspotron-wrapper--stopped alspotron-nowplaying-progress-bar {\n  height: 0 !important;\n}\nalspotron-nowplaying-progress {\n}\n\nalspotron-nowplaying-cover {\n  width: 24px;\n  height: 24px;\n\n  margin-right: calc(188px);\n  height: 100%;\n\n  background: blue;\n  \n  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);\n}\n\nalspotron-wrapper--stopped alspotron-nowplaying-cover {\n  scale: 0.8;\n  opacity: 0.5;\n}\n\nalspotron-nowplaying-marquee {\n  width: 24px;\n  height: 24px;\n\n  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);\n}\n\nalspotron-lyrics {\n  flex-direction: column !important;\n  opacity: var(--proximity);\n  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1);\n}\n\nalspotron-lyrics-item {\n  border-radius: 4px;\n  --reverse-lyric-order: calc(2 - (var(--lyric-order) - var(--lyric-order-offset, 0)) + var(--lyric-order-offset, 0));\n  --transition-delay: calc(var(--reverse-lyric-order) * 75ms) !important;\n}\n\nalspotron-nowplaying-artist {\n  transition: font-size 0.6s cubic-bezier(0.16, 1, 0.3, 1);\n}\nalspotron-nowplaying-divider {\n  transition: font-size 0.6s cubic-bezier(0.16, 1, 0.3, 1);\n}\nalspotron-nowplaying-title {\n  transition: font-size 0.6s cubic-bezier(0.16, 1, 0.3, 1);\n}\n\n/* hover */\n\nalspotron-wrapper--hover alspotron-nowplaying {\n  width: calc(184px);\n  padding-top: calc(34px + 8px);\n  \n  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);\n}\nalspotron-wrapper--hover alspotron-nowplaying-cover {\n  width: 64px;\n  height: 64px;\n  margin-right: 4px;\n  border-radius: 4px;\n  \n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);\n}\nalspotron-wrapper--hover alspotron-nowplaying-marquee {\n  width: 100%;\n}\nalspotron-wrapper--hover alspotron-nowplaying-progress-bar {\n  height: 100%;\n}\n\nalspotron-wrapper--hover alspotron-nowplaying-artist {\n  font-size: 20px !important;\n}\nalspotron-wrapper--hover alspotron-nowplaying-divider {\n  font-size: 20px !important;\n}\nalspotron-wrapper--hover alspotron-nowplaying-title {\n  font-size: 20px !important;\n}\n\n/* custom-animation */\n\nalspotron-transition-lyric-enter {\n  transform: translateY(-100%);\n  opacity: 0;\n}\n\nalspotron-transition-lyric-exit-to {\n  transform: scale(120%);\n  opacity: 0;\n  filter: blur(4px);\n}\n\nalspotron-transition-lyric-move {\n  transition: all 0.625s ease-in-out;\n  transition-delay: var(--transition-delay, 0s);\n  transform-origin: center;\n}\n\nalspotron-transition-lyric-enter-active {\n  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);\n  transition-delay: var(--transition-delay, 0s);\n  transform-origin: center;\n  \n}\nalspotron-transition-lyric-exit-active {\n  position: absolute;\n  transition: all 0.3s cubic-bezier(0.5, 0, 0.75, 0);\n  transition-delay: var(--transition-delay, 0s);\n  transform-origin: center;\n}\n"
+}
