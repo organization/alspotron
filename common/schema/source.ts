@@ -8,12 +8,13 @@ export const IdleDataSchema = z.object({
   type: z.literal('idle'),
 });
 
+export type BaseUpdateData = z.infer<typeof BaseDataSchema>;
 const BaseDataSchema = z.object({
   id: z.string(),
   title: z.string(),
   artists: z.string().array(),
-  progress: z.number(),
-  duration: z.number(),
+  progress: z.number(), // ms
+  duration: z.number(), // ms
   coverUrl: z.string(),
   playerLyrics: PlayerLyricFormatSchema.optional().nullable(),
 
