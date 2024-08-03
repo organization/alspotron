@@ -1,22 +1,21 @@
 import { Hono } from 'hono';
-
 import { cors } from 'hono/cors';
 import { validator } from 'hono/validator';
-
 import { serve } from '@hono/node-server';
 
+import { BaseSourceProvider } from './base-provider';
+
 import { TunaObsBody, TunaObsBodySchema, UpdateData } from '../../common/schema';
-import { SourceProvider } from '../../common/provider';
 
 import type { Http2SecureServer, Http2Server } from 'node:http2';
-import type { Server as NodeServer } from 'http';
+import type { Server as NodeServer } from 'node:http';
 
 type ServerType = NodeServer | Http2Server | Http2SecureServer;
-export class TunaObsProvider extends SourceProvider {
+
+export class TunaObsProvider extends BaseSourceProvider {
+  public override name = 'tuna-obs';
   private app: Hono;
   private server: ServerType | null = null;
-
-  public override name = 'tuna-obs';
 
   constructor() {
     super();
@@ -90,6 +89,7 @@ export class TunaObsProvider extends SourceProvider {
     if (data.data.status === 'playing') {
       result.data = {
         type: 'playing',
+        id: `${data.data.title}:${data.data.cover_url}`,
         title: data.data.title ?? '',
         artists: data.data.artists ?? [],
         progress: data.data.progress ?? 0,
@@ -103,6 +103,7 @@ export class TunaObsProvider extends SourceProvider {
     if (data.data.status === 'paused') {
       result.data = {
         type: 'paused',
+        id: `${data.data.title}:${data.data.cover_url}`,
         title: data.data.title ?? '',
         artists: data.data.artists ?? [],
         progress: data.data.progress ?? 0,

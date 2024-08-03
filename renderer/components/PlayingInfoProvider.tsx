@@ -1,66 +1,78 @@
 import { experimental } from 'tstl';
 import {
-  Accessor, batch,
+  Accessor,
   createContext,
   createEffect,
-  createMemo,
+  createMemo, createRenderEffect,
   createSignal,
   JSX,
   on,
   onCleanup,
-  onMount,
   useContext,
 } from 'solid-js';
 
 import useLyricMapper from '../hooks/useLyricMapper';
 import usePluginOverride from '../hooks/usePluginOverride';
-import { UpdateData } from '../../common/schema';
+import { PausedData, PlayingData, UpdateData } from '../../common/schema';
 import { useLyricProvider } from '../hooks/useLyricProvider';
 import { LyricData, LyricMetadata } from '../../common/provider';
-import { getLyricMapperId } from '../../common/utils';
 
-export type Status = 'idle' | 'playing' | 'stopped';
+export type Status = UpdateData['data']['type'];
 export type LyricMode = 'auto' | 'manual' | 'player' | 'none';
 export type PlayingInfo = {
-  progress: Accessor<number>;
-  duration: Accessor<number>;
+  status: Accessor<Status>;
+
+  id: Accessor<string>;
   title: Accessor<string>;
   artist: Accessor<string>;
-  status: Accessor<Status>;
+  progress: Accessor<number>;
+  duration: Accessor<number>;
   coverUrl: Accessor<string | null>;
-  lyrics: Accessor<experimental.FlatMap<number, string[]> | null>;
   playerLyrics: Accessor<Record<number, string[]> | null>;
-  originalData: Accessor<UpdateData | null>;
-  originalLyric: Accessor<LyricData | null>;
+
+  lyricData: Accessor<LyricData | null>;
+  lyrics: Accessor<experimental.FlatMap<number, string[]> | null>;
+  updateData: Accessor<UpdateData | null>;
   lyricMode: Accessor<LyricMode>;
   isMapped: Accessor<boolean>;
 };
 
 const PlayingInfoContext = createContext<PlayingInfo>({
-  progress: () => 0,
-  duration: () => 0,
+  status: () => 'idle' as const,
+
+  id: () => '',
   title: () => 'Not Playing' as const,
   artist: () => 'N/A' as const,
-  status: () => 'idle' as const,
+  progress: () => 0,
+  duration: () => 0,
   coverUrl: () => null,
-  lyrics: () => null,
   playerLyrics: () => null,
-  originalData: () => null,
-  originalLyric: () => null,
+
+  lyricData: () => null,
+  lyrics: () => null,
+  updateData: () => null,
   lyricMode: () => 'auto' as const,
   isMapped: () => false,
 });
 const PlayingInfoProvider = (props: { children: JSX.Element }) => {
-  const [progress, setProgress] = createSignal(0);
-  const [duration, setDuration] = createSignal(0);
-  const [title, setTitle] = createSignal('Not Playing');
-  const [artist, setArtist] = createSignal('N/A');
-  const [status, setStatus] = createSignal<Status>('idle');
-  const [coverUrl, setCoverUrl] = createSignal<string | null>(null);
+  const [updateData, setUpdateData] = createSignal<UpdateData | null>(null);
+
+  const get = <Type, >(getter: (data: PlayingData | PausedData) => Type, defaultValue: Type) => on([updateData], ([data]) => {
+    if (!data) return defaultValue;
+    if (data.data.type === 'idle') return defaultValue;
+    return getter(data.data);
+  });
+  const id = createMemo(get((data) => data.id, ''));
+  const title = createMemo(get((data) => data.title, 'Not Playing'));
+  const artist = createMemo(get((data) => data.artists.join(', '), 'N/A'));
+  const progress = createMemo(get((data) => data.progress, 0));
+  const duration = createMemo(get((data) => data.duration, 0));
+  const status = createMemo(() => updateData()?.data.type ?? 'idle');
+  const coverUrl = createMemo(get((data) => data.coverUrl, null));
+  const playerLyrics = createMemo(get((data) => data.playerLyrics ?? null, null));
+
+  const [lyricData, setLyricData] = createSignal<LyricData | null>(null);
   const [lyrics, setLyrics] = createSignal<experimental.FlatMap<number, string[]> | null>(null);
-  const [playerLyrics, setPlayerLyrics] = createSignal<Record<number, string[]> | null>(null);
-  const [originalData, setOriginalData] = createSignal<UpdateData | null>(null);
-  const [originalLyric, setOriginalLyric] = createSignal<LyricData | null>(null);
   const [isMapped, setIsMapped] = createSignal(false);
 
   const provider = useLyricProvider();
@@ -69,7 +81,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const lyricMode = createMemo(() => {
     const mapper = lyricMapper();
 
-    const mode = mapper[getLyricMapperId(title(), coverUrl())]?.mode;
+    const mode = mapper[id()]?.mode;
 
     if (mode === undefined) return 'auto';
     if (mode.type === 'none') return 'none';
@@ -78,138 +90,98 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     return 'manual';
   });
 
-  const onUpdate = (_event: unknown, data: UpdateData) => {
-    setOriginalData(data);
-
-    batch(() => {
-      if (typeof data.title === 'string') {
-        setTitle(data.title);
-      }
-
-      if (['idle', 'playing', 'stopped'].includes(data.status)) {
-        setStatus(data.status as Status);
-      }
-
-      if (Array.isArray(data.artists)) {
-        setArtist(data.artists.join(', '));
-      }
-
-      if (typeof data.progress === 'number') {
-        setProgress(data.progress);
-      }
-
-      if (typeof data.duration === 'number') {
-        setDuration(data.duration);
-      }
-
-      if (typeof data.cover_url === 'string' && /^(?:file|https?):\/\//.exec(data.cover_url)) {
-        setCoverUrl(data.cover_url);
-      } else {
-        setCoverUrl(null);
-      }
-
-      if (typeof data.lyrics === 'object') {
-        setPlayerLyrics(data.lyrics);
-      }
-    });
-  };
-
   const getLyric = async (data: UpdateData): Promise<LyricData | null> => {
     const lyricProvider = provider();
 
     if (!lyricProvider) return null;
-    if (!Array.isArray(data.artists) || !data.title) return null;
+    if (data.data.type === 'idle') return null;
 
-    const artist = data?.artists?.join(', ') ?? '';
-    const title = data?.title ?? '';
+    const artist = data.data.artists.join(', ');
+    const title = data.data.title;
 
     let metadata: LyricMetadata[] = [];
-    await usePluginOverride('search-lyrics', async (artist, title, options) => {
-      metadata = await lyricProvider.searchLyrics({
-        artist,
-        title,
-        playtime: options?.playtime,
-      }).catch(() => []);
-    }, artist, title, { playtime: data?.duration });
+    await usePluginOverride(
+      'search-lyrics',
+      async (artist, title, options) => {
+        metadata = await lyricProvider.searchLyrics({
+          artist,
+          title,
+          playtime: options?.playtime,
+        }).catch(() => []);
+      },
+      artist,
+      title,
+      { playtime: data.data.duration },
+    );
 
     if (metadata.length <= 0) return null;
 
     const result = await provider()?.getLyricById(metadata[0].id);
     if (result) return result;
-    if (data.lyrics) {
+    if (data.data.playerLyrics) {
       return {
         id: 'auto',
-        title: data.title ?? '',
-        lyric: data.lyrics,
+        title: data.data.title,
+        lyric: data.data.playerLyrics,
       } satisfies LyricData;
     }
 
     return null;
   };
 
-  window.ipcRenderer.on('update', onUpdate);
+  window.ipcRenderer.on('update', (_, newUpdateData: UpdateData) => {
+    setUpdateData(newUpdateData);
+  });
   window.ipcRenderer.invoke('get-last-update').then((update) => {
-    if (update) {
-      onUpdate(null, update);
-    }
+    console.log('get-last-update', update);
+    if (update) setUpdateData(update);
   });
 
-  onMount(() => {
-    setInterval(() => {
-      if (status() === 'playing') {
-        setProgress(progress() + 100);
-      }
-    }, 100);
-  });
-
-
-  onCleanup(() => window.ipcRenderer.removeListener('update', originalData));
+  // onMount(() => {
+  //   setInterval(() => {
+  //     if (status() === 'playing') {
+  //       setProgress(progress() + 100);
+  //     }
+  //   }, 100);
+  // });
 
   const onLyricChange = async () => {
-    const data = originalData();
+    const data = updateData();
     const mapper = lyricMapper();
     const lyricProvider = provider();
 
     if (!data || !lyricProvider) return;
 
-    const coverDataURL = data.cover_url ?? 'unknown';
-    const mapperData = mapper[`${data.title}:${coverDataURL}`];
+    const mapperData = mapper[id()];
 
     let lyricData: LyricData | null = null;
-    switch (mapperData?.mode?.type) {
-      case 'none': {
-        setLyrics(null);
-        break;
-      }
-      case 'player': {
-        const lyricsFromPlayer = playerLyrics();
-        lyricData = {
-          id: 'player',
-          title: data.title ?? '',
-          lyric: lyricsFromPlayer ?? undefined,
-        } satisfies LyricData;
-        break;
-      }
-      default: { // AUTO
-        const id = mapperData?.mode?.id;
-        const providerLyric = id
-          ? await provider()?.getLyricById(id).catch(() => null)
-          : await getLyric(data) ?? null;
+    if (mapperData?.mode?.type === 'none') {
+      setLyrics(null);
+    } else if (mapperData?.mode?.type === 'player') {
+      const lyricsFromPlayer = playerLyrics();
+      lyricData = {
+        id: 'player',
+        title: title() ?? '',
+        lyric: lyricsFromPlayer ?? undefined,
+      } satisfies LyricData;
+    } else {
+      const id = mapperData?.mode?.id;
+      const providerLyric = id
+        ? await provider()?.getLyricById(id).catch(() => null)
+        : await getLyric(data) ?? null;
 
-        if (providerLyric) {
-          lyricData = providerLyric;
-        } else if (data.lyrics) {
-          lyricData = {
-            id: 'auto',
-            title: data.title ?? '',
-            lyric: data.lyrics,
-          } satisfies LyricData;
-        }
+      if (providerLyric) lyricData = providerLyric;
+      else if (data.data.type !== 'idle' && data.data.playerLyrics) {
+        lyricData = {
+          id: 'auto',
+          title: data.data.title ?? '',
+          lyric: data.data.playerLyrics,
+        } satisfies LyricData;
       }
     }
 
     setIsMapped(!!mapperData);
-    setOriginalLyric(lyricData);
+    setLyricData(lyricData);
     if (lyricData && lyricData?.lyric) {
       const treeMap = new experimental.FlatMap<number, string[]>();
 
@@ -223,18 +195,22 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     }
   };
   createEffect(on([title, lyricMapper], onLyricChange));
+  onCleanup(() => window.ipcRenderer.removeListener('update', setUpdateData));
 
   const playingInfo = {
+    status,
+
+    id,
     title,
     artist,
     progress,
     duration,
-    status,
     coverUrl,
-    lyrics,
     playerLyrics,
-    originalData,
-    originalLyric,
+
+    lyricData,
+    lyrics,
+    updateData,
     lyricMode,
     isMapped,
   } satisfies PlayingInfo;

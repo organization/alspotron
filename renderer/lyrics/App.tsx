@@ -24,7 +24,7 @@ type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>
 const LyricsMapEditor = () => {
   usePluginsCSS();
 
-  const { title: playingTitle, artist: playingArtist, originalData, status } = usePlayingInfo();
+  const { title: playingTitle, artist: playingArtist, duration, status, id } = usePlayingInfo();
 
   const [title, setTitle] = createSignal(playingTitle());
   const [artist, setArtist] = createSignal(playingArtist());
@@ -37,7 +37,7 @@ const LyricsMapEditor = () => {
   const [t] = useTransContext();
 
   createEffect(on([playingTitle, playingArtist, status], async () => {
-    if (status() !== 'idle' && status() !== 'stopped') {
+    if (status() !== 'idle' && status() !== 'paused') {
       setTitle(playingTitle().trim());
       setArtist(playingArtist().trim());
       await startTransition(async () => await onSearch());
@@ -60,7 +60,7 @@ const LyricsMapEditor = () => {
       setSearchList(result);
       setPage(0);
       setHasNext(true);
-    }, artist(), title(), { playtime: originalData()?.duration });
+    }, artist(), title(), { playtime: duration() });
 
     setLoading(false);
   };
@@ -81,22 +81,14 @@ const LyricsMapEditor = () => {
 
       setSearchList([...searchList(), ...result]);
       setPage(page() + 1);
-    }, artist(), title(), { playtime: originalData()?.duration, page: page() });
+    }, artist(), title(), { playtime: duration(), page: page() });
 
     setLoading(false);
   };
 
   const onSelect = async (metadata: LyricMetadata) => {
-    const data = originalData();
-    if (!data?.title) return;
-
-    setLoading(true);
-
-    let coverUrl = data.cover_url;
-    if (!coverUrl) coverUrl = 'unknown';
-
     const newMapper = {
-      [`${data.title}:${coverUrl}`]: {
+      [id()]: {
         mode: {
           type: 'provider' as const,
           id: metadata.lyricId.toString(),
@@ -208,7 +200,7 @@ const LyricsMapEditor = () => {
               <Spinner
                 class={'w-8 h-8 stroke-primary-500'}
                 ref={(element) => {
-                  observer.observe(element!);
+                  observer.observe(element);
                 }}
               />
             </Show>

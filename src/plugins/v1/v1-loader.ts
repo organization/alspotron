@@ -11,6 +11,8 @@ import { Json } from '../../../utils/types';
 import { VersionedPluginLoader, VersionedPluginPathLoader } from '../types';
 import { config } from '../../config';
 
+import type { SourceProvider } from '../../../common/provider';
+
 const v1ManifestSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -67,6 +69,9 @@ export const loadPlugin: VersionedPluginLoader = (
       listeners: {},
       settings: [],
       overrides: {},
+      providers: {
+        source: [],
+      },
     },
     css: cssList,
 
@@ -132,6 +137,16 @@ export const loadPlugin: VersionedPluginLoader = (
       },
       logger: createLogger(newPlugin),
       Electron,
+      registerSourceProvider(provider: SourceProvider) {
+        newPlugin.js.providers.source.push(provider);
+
+        return () => {
+          const index = newPlugin.js.providers.source.findIndex((it) => it === provider);
+          if (index >= 0) {
+            newPlugin.js.providers.source.splice(index, 1);
+          }
+        };
+      }
     };
 
     runner(newPlugin, () => {

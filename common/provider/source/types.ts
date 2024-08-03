@@ -1,6 +1,6 @@
-import { EventEmitter } from 'node:events';
+import type { EventEmitter } from 'events';
 
-import { UpdateData } from '../../schema';
+import type { UpdateData } from '../../schema';
 
 export interface SourceProviderEventMap {
   start: [];
@@ -9,16 +9,9 @@ export interface SourceProviderEventMap {
   close: [];
 }
 
-export abstract class SourceProvider extends EventEmitter<SourceProviderEventMap> {
-  public abstract name: string;
-
-  public start() {
-    this.emit('start');
-  }
-
-  public close() {
-    this.emit('close');
-  }
-
-  public abstract isRunning(): boolean;
+export interface SourceProvider extends EventEmitter<SourceProviderEventMap> {
+  name: string;
+  start(): void;
+  close(): void;
+  isRunning(): boolean;
 }

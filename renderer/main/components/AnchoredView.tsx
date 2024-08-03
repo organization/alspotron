@@ -1,15 +1,14 @@
 import { splitProps } from 'solid-js';
 
-import { cx } from '../../utils/classNames';
-
 import useConfig from '../../hooks/useConfig';
 import useStyle from '../../hooks/useStyle';
 
-import type { JSX } from 'solid-js/jsx-runtime';
 import { userCSSSelectors } from '../../utils/userCSSSelectors';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import { useClassStyle } from '../../hooks/useClassStyle';
 import useCurrent from '../../hooks/useCurrent';
+
+import type { JSX } from 'solid-js/jsx-runtime';
 
 interface AnchoredViewProps extends JSX.HTMLAttributes<HTMLDivElement> {
   class?: string;
@@ -66,7 +65,7 @@ const AnchoredView = (props: AnchoredViewProps) => {
         data-anchor={view()?.position.anchor}
         classList={{
           [userCSSSelectors['wrapper']]: true,
-          [userCSSSelectors['wrapper--stopped']]: status() === 'stopped',
+          [userCSSSelectors['wrapper--stopped']]: status() === 'paused',
           [userCSSSelectors['wrapper--idle']]: status() === 'idle',
           [userCSSSelectors['wrapper--playing']]: status() === 'playing',
         }}

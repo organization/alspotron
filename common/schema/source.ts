@@ -9,6 +9,7 @@ export const IdleDataSchema = z.object({
 });
 
 const BaseDataSchema = z.object({
+  id: z.string(),
   title: z.string(),
   artists: z.string().array(),
   progress: z.number(),
