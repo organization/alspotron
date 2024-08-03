@@ -13,7 +13,7 @@ import { LyricMapperMode } from '../../common/schema';
 import { getLyricMapperId } from '../../common/utils';
 
 const SideBar = () => {
-  const { coverUrl, title, lyrics, playerLyrics, originalLyric, lyricMode, isMapped } = usePlayingInfo();
+  const { coverUrl, title, lyrics, playerLyrics, lyricData, lyricMode, isMapped } = usePlayingInfo();
   const [, lyricTime] = useLyric();
   const [lyricMapper, setLyricMapper] = useLyricMapper();
   const [t] = useTransContext();
@@ -101,12 +101,12 @@ const SideBar = () => {
         ]}
       >
         <div class={'w-[calc(100%-24px)] flex flex-col justify-center items-start'}>
-          <Show when={originalLyric()}>
+          <Show when={lyricData()}>
             <Marquee class={'w-full'} gap={32}>
               <div class={'text-xs text-black/50 dark:text-white/50'}>
-                <Trans key={'lyrics.lyric-id'}/>: {originalLyric()?.id ?? 'N/A'}
+                <Trans key={'lyrics.lyric-id'}/>: {lyricData()?.id ?? 'N/A'}
                 {' · '}
-                <Trans key={'lyrics.lyric-author'}/>: {originalLyric()?.register?.name ?? 'N/A'}
+                <Trans key={'lyrics.lyric-author'}/>: {lyricData()?.register?.name ?? 'N/A'}
                 {' · '}
                 <Switch fallback={t('lyrics.auto-recognized')}>
                   <Match when={isMapped()}>
@@ -117,10 +117,10 @@ const SideBar = () => {
             </Marquee>
           </Show>
           <Marquee class={'w-full'} gap={32}>
-            {originalLyric()?.title ?? 'N/A'}
+            {lyricData()?.title ?? 'N/A'}
           </Marquee>
           <div class={'text-sm'}>
-            {originalLyric()?.artist ?? 'N/A'}
+            {lyricData()?.artist ?? 'N/A'}
           </div>
         </div>
       </Card>

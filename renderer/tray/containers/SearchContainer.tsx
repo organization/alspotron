@@ -16,8 +16,12 @@ type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>
 
 export const SearchContainer = () => {
   const {
-    originalLyric
-    , title: playingTitle, artist: playingArtist, originalData, status
+    lyricData,
+    title: playingTitle,
+    artist: playingArtist,
+    duration,
+    status,
+    id,
   } = usePlayingInfo();
   const [, setLyricMapper] = useLyricMapper();
   const [t] = useTransContext();
@@ -28,10 +32,10 @@ export const SearchContainer = () => {
 
   const [searchList, setSearchList] = createSignal<LyricMetadata[]>([]);
   const [loading, setLoading] = createSignal(false);
-  const currentLyricID = () => Number(originalLyric()?.id);
+  const currentLyricID = () => Number(lyricData()?.id);
 
   createEffect(on([playingTitle, playingArtist, status], async () => {
-    if (status() !== 'idle' && status() !== 'stopped') {
+    if (status() !== 'idle' && status() !== 'paused') {
       setTitle(playingTitle().trim());
       setArtist(playingArtist().trim());
       await startTransition(async () => await onSearch());
@@ -48,21 +52,13 @@ export const SearchContainer = () => {
       });
 
       setSearchList(result);
-    }, artist(), title(), { playtime: originalData()?.duration });
+    }, artist(), title(), { playtime: duration() });
 
     setLoading(false);
   };
   const onSelect = async (metadata: LyricMetadata) => {
-    const data = originalData();
-    if (!data?.title) return;
-
-    setLoading(true);
-
-    let coverUrl = data.cover_url;
-    if (!coverUrl) coverUrl = 'unknown';
-
     const newMapper = {
-      [`${data.title}:${coverUrl}`]: {
+      [id()]: {
         mode: {
           type: 'provider' as const,
           id: metadata.lyricId.toString(),
@@ -82,7 +78,7 @@ export const SearchContainer = () => {
     setArtist(artist().trim());
     setOpen(false);
     onSearch();
-  }
+  };
 
   return (
     <div
@@ -118,7 +114,8 @@ export const SearchContainer = () => {
           </svg>
         </button>
       </form>
-      <div class={'w-full flex flex-col justify-start items-stretch gap-2 flex-1 overflow-auto remove-scrollbar p-4 pt-0'}>
+      <div
+        class={'w-full flex flex-col justify-start items-stretch gap-2 flex-1 overflow-auto remove-scrollbar p-4 pt-0'}>
         <Show when={loading()}>
           <div class={'w-full h-full flex justify-center items-center p-4'}>
             <Spinner class={'w-8 h-8 stroke-primary-500'}/>

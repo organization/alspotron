@@ -3,7 +3,8 @@ import { PluginEventMap, OverrideMap } from './event';
 import { PluginLog } from './logger';
 import { SettingOption } from './option';
 
-import { Json } from '../../utils/types';
+import type { Json } from '../../utils/types';
+import type { SourceProvider } from '../provider';
 
 export interface Plugin {
   css?: string[];
@@ -17,6 +18,9 @@ export interface Plugin {
     overrides: {
       [Target in keyof OverrideMap]?: OverrideMap[Target][];
     };
+    providers: {
+      source: SourceProvider[];
+    }
   }
   rawManifest: string;
   manifest: Json;

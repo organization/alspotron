@@ -305,15 +305,14 @@ class Application {
       if (provider === this.sourceProvider.name) return;
 
     },
+    'restart-source-provider': () => {
+      if (!this.sourceProvider) this.initSourceProvider();
+      else {
+        if (this.sourceProvider.isRunning()) this.sourceProvider.close();
+        this.sourceProvider.start();
+      }
+    },
 
-    // 'server-state': () => this.server.isOpen() ? 'connected' : 'disconnected',
-    // 'restart-server': () => {
-    //   if (!this.server) this.initServer();
-    //   else {
-    //     if (this.server.isOpen()) this.server.close();
-    //     this.server.open();
-    //   }
-    // },
     'quit-application': () => {
       app.exit(0);
     },
@@ -335,7 +334,7 @@ class Application {
     this.sourceProvider.start();
 
     this.sourceProvider.on('start', () => {
-      this.broadcast('server-state', 'start');
+      this.broadcast('source-provider-state', 'start');
       console.log('[Alspotron] server started');
       this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_square.png')).resize({
         width: 16,
@@ -343,7 +342,7 @@ class Application {
       }));
     });
     this.sourceProvider.on('close', () => {
-      this.broadcast('server-state', 'close');
+      this.broadcast('source-provider-state', 'close');
       console.log('[Alspotron] server shutdown');
       this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
         width: 16,
@@ -351,7 +350,7 @@ class Application {
       }));
     });
     this.sourceProvider.on('error', (err) => {
-      this.broadcast('server-state', 'error', err.toString());
+      this.broadcast('source-provider-state', 'error', err.toString());
       console.error('[Alspotron] server error', err);
       this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
         width: 16,

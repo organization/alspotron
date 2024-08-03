@@ -18,7 +18,7 @@ const application = new Application(overlayManager);
   application.initOverlay();
   application.initAutoUpdater();
   application.initTray();
-  application.initServer();
+  application.initSourceProvider();
   application.initHook();
 
   application.initMainWindow();

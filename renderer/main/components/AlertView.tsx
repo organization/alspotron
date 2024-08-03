@@ -54,7 +54,7 @@ export const AlertView = () => {
     <div
       classList={{
         [userCSSSelectors.alert]: true,
-        [userCSSSelectors['alert--disconnected']]: state() === 'disconnected',
+        [userCSSSelectors['alert--disconnected']]: state() === 'close',
       }}
     >
       <Trans key={'lyrics.disconnected'}/>
