@@ -24,7 +24,7 @@ import { LyricSearchWindowProvider, LyricWindowProvider, SettingWindowProvider, 
 
 import { OverlayManager } from './overlay';
 
-import { TunaObsProvider } from './provider';
+import { TunaObsProvider, WebNowPlayingProvider } from './provider';
 
 import { DEFAULT_CONFIG } from '../common/constants';
 import { getTranslation } from '../common/intl';
@@ -327,7 +327,7 @@ class Application {
 
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
-    this.sourceProvider = new TunaObsProvider();
+    this.sourceProvider = new WebNowPlayingProvider();// new TunaObsProvider();
   }
 
   initSourceProvider() {

@@ -76,7 +76,7 @@ export class TunaObsProvider extends BaseSourceProvider {
     super.close();
   }
 
-  public isRunning() {
+  public override isRunning() {
     return this.server !== null;
   }
 
