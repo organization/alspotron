@@ -13,11 +13,11 @@ export interface SourceProviderEventMap {
 export interface SourceProvider extends EventEmitter<SourceProviderEventMap> {
   name: string;
 
-  start(): void;
+  start(options: Record<string, unknown>): void;
   close(): void;
   isRunning(): boolean;
 
   getOptions(language: string): Exclude<SettingOption, ButtonOption>[];
   getOptionValue(key: string): unknown;
-  setOption(key: string, value: unknown): void;
+  onOptionChange(options: Record<string, unknown>): void;
 }

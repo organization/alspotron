@@ -269,5 +269,8 @@
   "tray.devtools.tray.label": "Tray",
 
   "title.lyrics": "Advanced Lyric Search",
-  "title.setting": "Alspotron-Einstellungen"
+  "title.setting": "Alspotron-Einstellungen",
+
+  "provider.source.tuna-obs.port.name": "Port",
+  "provider.source.tuna-obs.port.description": "Port number to connect to Tuna OBS Plugin, default is 1608"
 }

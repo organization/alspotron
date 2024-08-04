@@ -6,6 +6,7 @@ import { serve } from '@hono/node-server';
 import { BaseSourceProvider } from './base-provider';
 
 import { TunaObsBody, TunaObsBodySchema, UpdateData } from '../../common/schema';
+import { getTranslation } from '../../common/intl';
 
 import type { Http2SecureServer, Http2Server } from 'node:http2';
 import type { Server as NodeServer } from 'node:http';
@@ -51,7 +52,10 @@ export class TunaObsProvider extends BaseSourceProvider {
     });
   }
 
-  public override start() {
+  public override start(options: Record<string, unknown>) {
+    this.port = Number(options.port);
+    if (!Number.isFinite(this.port)) this.port = 1608;
+
     this.server = serve({
       fetch: this.app.fetch,
       port: this.port,
@@ -69,7 +73,7 @@ export class TunaObsProvider extends BaseSourceProvider {
       this.server = null;
     });
 
-    super.start();
+    super.start(options);
   }
 
   public override close(): void {
@@ -87,28 +91,23 @@ export class TunaObsProvider extends BaseSourceProvider {
       {
         type: 'string',
         key: 'port',
-        name: 'Port',
-        description: 'The port to run the server on.',
+        name: getTranslation('provider.source.tuna-obs.port.name', language),
+        description: getTranslation('provider.source.tuna-obs.port.description', language),
         default: '1608',
       }
     ];
   }
 
-  public override getOptionValue(key: string): unknown {
-    if (key === 'port') return this.port;
-
-    return super.getOptionValue(key);
-  }
-
-  public override setOption(key: string, value: unknown) {
-    console.log('[Alspotron] [TunaObsProvider] setOption', key, value);
-    if (key === 'port') {
+  public override onOptionChange(options: Record<string, unknown>) {
+    if (options.port) {
       this.server?.close();
-      this.port = Number(value);
+      this.port = Number(options.port);
       if (!Number.isFinite(this.port)) this.port = 1608;
 
-      this.start();
+      this.start(options);
     }
+
+    super.onOptionChange(options);
   }
 
   private convertData(data: TunaObsBody): UpdateData {

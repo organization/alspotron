@@ -113,7 +113,15 @@ const Selector = <T extends string>(props: SelectProps<T>) => {
     setOpen(true);
   };
 
-  const onClick = () => local.mode === 'autocomplete' ? input()?.focus() : onOpen();
+  const onClick = (event: MouseEvent) => {
+    event.stopPropagation();
+    if (local.mode === 'autocomplete') input()?.focus();
+    else onOpen();
+  }
+  const onKeydown = () => {
+    if (local.mode === 'autocomplete') input()?.focus();
+    else onOpen();
+  }
 
   return (
     <>
@@ -121,7 +129,7 @@ const Selector = <T extends string>(props: SelectProps<T>) => {
         ref={setAnchor}
         class={'select-container'}
         onClick={onClick}
-        onKeyDown={onClick}
+        onKeyDown={onKeydown}
         data-active={open()}
       >
         <Show

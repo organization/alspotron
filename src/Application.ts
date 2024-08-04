@@ -299,12 +299,6 @@ class Application {
       });
     },
 
-    'set-source-provider-option': (_, key: string, value: unknown) => {
-      this.sourceProvider.setOption(key, value);
-    },
-    'get-source-provider-option': (_, key: string) => {
-      return this.sourceProvider.getOptionValue(key);
-    },
     'get-all-source-providers': () => this.getAllSourceProviders().map((it) => ({
       name: it.name,
       options: it.getOptions(config.get().language),
@@ -314,7 +308,7 @@ class Application {
       if (!this.sourceProvider) this.initSourceProvider();
       else {
         if (this.sourceProvider.isRunning()) this.sourceProvider.close();
-        this.sourceProvider.start();
+        this.sourceProvider.start(config.get().providers.source.config[this.sourceProvider.name]);
       }
     },
 
@@ -340,7 +334,7 @@ class Application {
 
   initSourceProvider() {
     console.log(`[Alspotron] init source provider "${this.sourceProvider.name}"`);
-    this.sourceProvider.start();
+    this.sourceProvider.start(config.get().providers.source.config[this.sourceProvider.name]);
 
     this.sourceProvider.on('start', () => {
       this.broadcast('current-source-provider-state', 'start');
@@ -626,7 +620,7 @@ class Application {
   }
 
   get sourceProvider() {
-    const providerName = config.get().playingProvider;
+    const providerName = config.get().sourceProvider;
     return this.getAllSourceProviders().find((it) => it.name === providerName) ?? this.sourceProviders[0];
   }
 
@@ -647,17 +641,21 @@ class Application {
         this.lyricWindowProviders.forEach((it) => it.updateWindowConfig());
       }
 
-      if (lastConfig.playingProvider !== config.playingProvider) {
-        const notExist = !this.getAllSourceProviders().some((it) => it.name === config.playingProvider);
+      if (lastConfig.sourceProvider !== config.sourceProvider) {
+        const notExist = !this.getAllSourceProviders().some((it) => it.name === config.sourceProvider);
         if (notExist) {
-          console.log(`[Alspotron] Source provider "${config.playingProvider}" is not exist`);
+          console.log(`[Alspotron] Source provider "${config.sourceProvider}" is not exist`);
           return;
         }
 
-        const oldProvider = this.getAllSourceProviders().find((it) => it.name === lastConfig.playingProvider);
+        const oldProvider = this.getAllSourceProviders().find((it) => it.name === lastConfig.sourceProvider);
         oldProvider?.close();
 
         this.initSourceProvider();
+      }
+
+      if (lastConfig.providers.source.config !== config.providers.source.config) {
+        this.sourceProvider.onOptionChange(config.providers.source.config[this.sourceProvider.name]);
       }
 
       lastConfig = config;

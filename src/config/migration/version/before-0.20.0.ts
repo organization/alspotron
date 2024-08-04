@@ -2,7 +2,7 @@ import { Migrator } from '../types';
 import {
   Config,
   GameList,
-  LEGACY_Config0_20_0,
+  LEGACY_Config0_20_0, LEGACY_Config0_22_0,
   LEGACY_GameList0_20_0,
   LEGACY_StyleConfig0_20_0,
   StyleConfig,
@@ -36,10 +36,10 @@ export const LEGACY_migrator0_20_0: Migrator = {
       hardwareAcceleration: configData.hardwareAcceleration,
       streamingMode: configData.streamingMode,
       lyricProvider: configData.provider,
-      playingProvider: DEFAULT_CONFIG.playingProvider,
+      playingProvider: DEFAULT_CONFIG.sourceProvider,
 
       plugins: configData.plugins,
-    } satisfies Config;
+    } satisfies LEGACY_Config0_22_0;
   },
   gameList: (data: unknown) => {
     const gameData = data as LEGACY_GameList0_20_0;
