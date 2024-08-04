@@ -98,6 +98,9 @@
   "setting.general.restart-alert": "Alspotron will be restarted when you press the button.",
   "setting.general.require-alert": "This setting requires an app restart to show changes in effect.",
   "setting.general.hardware-acceleration": "Hardware acceleration",
+  "setting.general.source-provider": "Now Playing Source Provider",
+  "setting.general.source-provider.tuna-obs": "Tuna OBS",
+  "setting.general.source-provider.web-now-playing": "WebNowPlaying",
 
   "setting.position.select-position-to-display-lyrics": "Lyrics Position",
   "setting.position.top-left": "Top left",

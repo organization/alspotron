@@ -59,7 +59,7 @@ class Application {
 
   private overlayManager: OverlayManager;
   private pluginManager!: PluginManager;
-  private sourceProvider: SourceProvider;
+  private sourceProviders: SourceProvider[] = [];
 
   private contextMenu: Menu | null = null;
   private tray!: Tray;
@@ -299,12 +299,17 @@ class Application {
       });
     },
 
-    'get-source-provider': () => this.sourceProvider.name,
-    'source-provider-state': () => this.sourceProvider.isRunning() ? 'start' : 'close',
-    'set-source-provider': async (_, provider: string) => {
-      if (provider === this.sourceProvider.name) return;
-
+    'set-source-provider-option': (_, key: string, value: unknown) => {
+      this.sourceProvider.setOption(key, value);
     },
+    'get-source-provider-option': (_, key: string) => {
+      return this.sourceProvider.getOptionValue(key);
+    },
+    'get-all-source-providers': () => this.getAllSourceProviders().map((it) => ({
+      name: it.name,
+      options: it.getOptions(config.get().language),
+    })),
+    'get-current-source-provider-state': () => this.sourceProvider.isRunning() ? 'start' : 'close',
     'restart-source-provider': () => {
       if (!this.sourceProvider) this.initSourceProvider();
       else {
@@ -327,31 +332,32 @@ class Application {
 
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
-    this.sourceProvider = new WebNowPlayingProvider();// new TunaObsProvider();
+    this.sourceProviders = [
+      new TunaObsProvider(),
+      new WebNowPlayingProvider(),
+    ];
   }
 
   initSourceProvider() {
+    console.log(`[Alspotron] init source provider "${this.sourceProvider.name}"`);
     this.sourceProvider.start();
 
     this.sourceProvider.on('start', () => {
-      this.broadcast('source-provider-state', 'start');
-      console.log('[Alspotron] server started');
+      this.broadcast('current-source-provider-state', 'start');
       this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_square.png')).resize({
         width: 16,
         height: 16
       }));
     });
     this.sourceProvider.on('close', () => {
-      this.broadcast('source-provider-state', 'close');
-      console.log('[Alspotron] server shutdown');
+      this.broadcast('current-source-provider-state', 'close');
       this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
         width: 16,
         height: 16
       }));
     });
     this.sourceProvider.on('error', (err) => {
-      this.broadcast('source-provider-state', 'error', err.toString());
-      console.error('[Alspotron] server error', err);
+      this.broadcast('current-source-provider-state', 'error', err.toString());
       this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
         width: 16,
         height: 16
@@ -619,21 +625,16 @@ class Application {
     this.pluginManager.broadcast(event, ...args);
   }
 
-  setSourceProvider(provider: SourceProvider) {
-    this.sourceProvider.close();
-    this.sourceProvider = provider;
-
-    this.initSourceProvider();
+  get sourceProvider() {
+    const providerName = config.get().playingProvider;
+    return this.getAllSourceProviders().find((it) => it.name === providerName) ?? this.sourceProviders[0];
   }
 
   getAllSourceProviders() {
-    const result: SourceProvider[] = [
-      new TunaObsProvider(),
+    return [
+      ...this.sourceProviders,
+      ...this.pluginManager.getPlugins().flatMap((it) => it.js.providers.source),
     ];
-
-    // this.pluginManager.
-
-    return result;
   }
 
   initHook() {
@@ -644,6 +645,19 @@ class Application {
 
       if (lastConfig.streamingMode !== config.streamingMode) {
         this.lyricWindowProviders.forEach((it) => it.updateWindowConfig());
+      }
+
+      if (lastConfig.playingProvider !== config.playingProvider) {
+        const notExist = !this.getAllSourceProviders().some((it) => it.name === config.playingProvider);
+        if (notExist) {
+          console.log(`[Alspotron] Source provider "${config.playingProvider}" is not exist`);
+          return;
+        }
+
+        const oldProvider = this.getAllSourceProviders().find((it) => it.name === lastConfig.playingProvider);
+        oldProvider?.close();
+
+        this.initSourceProvider();
       }
 
       lastConfig = config;
