@@ -4,10 +4,11 @@ const useServer = () => {
   const [state, setState] = createSignal<'start' | 'close'>('start');
 
   (async () => {
-    setState(await window.ipcRenderer.invoke('source-provider-state'));
+    setState(await window.ipcRenderer.invoke('get-current-source-provider-state'));
   })();
 
-  window.ipcRenderer.on('source-provider-state', (_, state: 'start' | 'close' | 'error') => {
+  window.ipcRenderer.on('current-source-provider-state', (_, state: 'start' | 'close' | 'error') => {
+    console.log('current-source-provider-state', state);
     if (state === 'start') {
       setState('start');
     } else {

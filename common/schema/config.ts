@@ -98,7 +98,7 @@ export const ConfigSchema = z.object({
   hardwareAcceleration: z.boolean().catch(DEFAULT_CONFIG.hardwareAcceleration),
 
   lyricProvider: z.literal(LyricProviderList[0].provider).catch(DEFAULT_CONFIG.lyricProvider),
-  playingProvider: z.enum(['tuna-obs']).catch(DEFAULT_CONFIG.playingProvider),
+  playingProvider: z.string().catch(DEFAULT_CONFIG.playingProvider),
 
   plugins: z.object({
     list: z.record(z.string().optional()),

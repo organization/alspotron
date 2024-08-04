@@ -1,6 +1,7 @@
 import type { EventEmitter } from 'events';
 
 import type { UpdateData } from '../../schema';
+import type { ButtonOption, SettingOption } from '../../plugins';
 
 export interface SourceProviderEventMap {
   start: [];
@@ -11,7 +12,12 @@ export interface SourceProviderEventMap {
 
 export interface SourceProvider extends EventEmitter<SourceProviderEventMap> {
   name: string;
+
   start(): void;
   close(): void;
   isRunning(): boolean;
+
+  getOptions(language: string): Exclude<SettingOption, ButtonOption>[];
+  getOptionValue(key: string): unknown;
+  setOption(key: string, value: unknown): void;
 }

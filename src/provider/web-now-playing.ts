@@ -49,7 +49,7 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
             idleTimeout = setTimeout(() => {
               this.type = 'idle';
               this.updateData();
-            }, 100);
+            }, 500);
           }
           if (data === '1') this.type = 'playing';
           if (data === '2') this.type = 'paused';

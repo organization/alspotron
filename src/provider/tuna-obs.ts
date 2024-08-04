@@ -9,12 +9,14 @@ import { TunaObsBody, TunaObsBodySchema, UpdateData } from '../../common/schema'
 
 import type { Http2SecureServer, Http2Server } from 'node:http2';
 import type { Server as NodeServer } from 'node:http';
+import type { ButtonOption, SettingOption } from '../../common/plugins';
 
 type ServerType = NodeServer | Http2Server | Http2SecureServer;
 
 export class TunaObsProvider extends BaseSourceProvider {
   public override name = 'tuna-obs';
   private app: Hono;
+  private port = 1608;
   private server: ServerType | null = null;
 
   constructor() {
@@ -52,7 +54,7 @@ export class TunaObsProvider extends BaseSourceProvider {
   public override start() {
     this.server = serve({
       fetch: this.app.fetch,
-      port: 1608,
+      port: this.port,
       hostname: '127.0.0.1',
     }, () => {
       this.emit('start');
@@ -78,6 +80,35 @@ export class TunaObsProvider extends BaseSourceProvider {
 
   public override isRunning() {
     return this.server !== null;
+  }
+
+  public override getOptions(language: string): Exclude<SettingOption, ButtonOption>[] {
+    return [
+      {
+        type: 'string',
+        key: 'port',
+        name: 'Port',
+        description: 'The port to run the server on.',
+        default: '1608',
+      }
+    ];
+  }
+
+  public override getOptionValue(key: string): unknown {
+    if (key === 'port') return this.port;
+
+    return super.getOptionValue(key);
+  }
+
+  public override setOption(key: string, value: unknown) {
+    console.log('[Alspotron] [TunaObsProvider] setOption', key, value);
+    if (key === 'port') {
+      this.server?.close();
+      this.port = Number(value);
+      if (!Number.isFinite(this.port)) this.port = 1608;
+
+      this.start();
+    }
   }
 
   private convertData(data: TunaObsBody): UpdateData {

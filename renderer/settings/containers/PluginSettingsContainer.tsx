@@ -14,6 +14,7 @@ import Selector from '../../components/Select';
 import useConfig from '../../hooks/useConfig';
 import usePlugins from '../../hooks/usePlugins';
 import PluginLog from '../components/PluginLog';
+import { SettingOptionRenderer } from '../components/SettingOptionRenderer';
 
 const PluginSettingsContainer = () => {
   const params = useParams();
@@ -50,7 +51,7 @@ const PluginSettingsContainer = () => {
 
     await setConfig({ plugins: { config: { [id]: { [setting.key]: value } } } });
   };
-  const onButtonClick = async (setting: ButtonOption) => {
+  const onButtonClick = (setting: ButtonOption) => {
     broadcast('button-click', setting.key);
   };
 
@@ -138,53 +139,14 @@ const PluginSettingsContainer = () => {
         <Trans key={'setting.plugin.setting'} />
       </div>
       <For each={plugin()?.js?.settings}>
-        {(setting) => (
+        {(option) => (
           <Card class={'flex flex-row justify-start items-center gap-1'}>
-            <div class={'w-[0] flex flex-col justify-center items-stretch flex-1 basis-[100%]'}>
-              <Marquee class={'w-full'}>
-                {setting.name}
-              </Marquee>
-              <Marquee class={'text-gray-400'} gap={18}>
-                {setting.description}
-              </Marquee>
-            </div>
-            <div class={'flex-1'} />
-            <SwitchFlow>
-              <Match when={setting.type === 'select'}>
-                <Selector
-                  options={(setting as SelectOption).options.map(({ value }) => value)}
-                  value={config()?.plugins.config[plugin()?.id ?? '']?.[setting.key] as string}
-                  onChange={(value) => {setOption(setting, value)}}
-                  format={(option) => (setting as SelectOption).options.find((it) => it.value === option)?.label ?? option}
-                />
-              </Match>
-              <Match when={setting.type === 'string' || setting.type === 'number'}>
-                <input
-                  type={setting.type === 'string' ? 'text' : 'number'}
-                  class={'input'}
-                  value={config()?.plugins.config[plugin()?.id ?? '']?.[setting.key] as string}
-                  onChange={(event) => setOption(setting, event.target.value)}
-                />
-              </Match>
-              <Match when={setting.type === 'boolean'}>
-                <Switch
-                  value={config()?.plugins.config[plugin()?.id ?? '']?.[setting.key] as boolean}
-                  onChange={(checked) => setOption(setting, checked)}
-                />
-              </Match>
-              <Match when={setting.type === 'button'}>
-                <button
-                  classList={{
-                    'btn-primary': ((setting as ButtonOption).variant ?? 'primary') === 'primary',
-                    'btn-secondary': (setting as ButtonOption).variant === 'secondary',
-                    'btn-error': (setting as ButtonOption).variant === 'error',
-                  }}
-                  onClick={() => onButtonClick(setting as ButtonOption)}
-                >
-                  {(setting as ButtonOption).label}
-                </button>
-              </Match>
-            </SwitchFlow>
+            <SettingOptionRenderer
+              option={option}
+              value={config()?.plugins.config[plugin()?.id ?? '']?.[option.key]}
+              onChange={(value) => setOption(option, value)}
+              onClick={() => onButtonClick(option as ButtonOption)}
+            />
           </Card>
         )}
       </For>

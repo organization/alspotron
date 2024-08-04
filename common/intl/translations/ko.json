@@ -98,6 +98,9 @@
   "setting.general.restart-alert": "재시작 버튼을 누르면 어플리케이션이 재시작 됩니다.",
   "setting.general.require-alert": "이 설정을 적용하기 위해서는 재시작이 필요합니다.",
   "setting.general.hardware-acceleration": "하드웨어 가속 사용",
+  "setting.general.source-provider": "NowPlaying 제공자",
+  "setting.general.source-provider.tuna-obs": "Tuna OBS",
+  "setting.general.source-provider.web-now-playing": "WebNowPlaying",
 
   "setting.position.select-position-to-display-lyrics": "가사를 표시할 위치",
   "setting.position.top-left": "왼쪽 상단",
