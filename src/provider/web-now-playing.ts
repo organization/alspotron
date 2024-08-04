@@ -18,10 +18,11 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
     this.wss = new WebSocketServer({ port: this.port });
     this.wss.on('connection', (ws) => {
       this.isReady = true;
+      let idleTimeout: NodeJS.Timeout | null = null;
+
       ws.onopen = () => ws.send('RECIPIENT');
       ws.onclose = () => this.close();
       ws.onerror = (err) => {
-        console.log('error', err, err.error, err.type, err.message, err.target);
         const error = new Error('WebNowPlaying: Server error occurred.');
         error.cause = err;
 
@@ -39,7 +40,17 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
         if (key === 'DURATION') this.lastUpdateData.duration = this.convertTime(data);
         if (key === 'COVER') this.lastUpdateData.coverUrl = data;
         if (key === 'STATE') {
-          if (data === '0') this.type = 'playing'; // buffering
+          if (idleTimeout !== null) {
+            clearTimeout(idleTimeout);
+            idleTimeout = null;
+          }
+
+          if (data === '0') {
+            idleTimeout = setTimeout(() => {
+              this.type = 'idle';
+              this.updateData();
+            }, 100);
+          }
           if (data === '1') this.type = 'playing';
           if (data === '2') this.type = 'paused';
         }
@@ -48,7 +59,7 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
         }
 
         this.updateData();
-        console.log('[Alspotron] [WebNowPlayingProvider] Received message:', e.data);
+        // console.log('[Alspotron] [WebNowPlayingProvider] Received message:', e.data);
       };
     });
     this.wss.on('close', this.close.bind(this));
@@ -83,31 +94,29 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
   }
 
   private updateData() {
-    if (!this.lastUpdateData.id) return;
-    if (!this.lastUpdateData.title) return;
-    if (!this.lastUpdateData.artists) return;
-    if (!this.lastUpdateData.progress) return;
-    if (!this.lastUpdateData.duration) return;
-    if (!this.lastUpdateData.coverUrl) return;
-
-    const fullData = this.lastUpdateData as BaseUpdateData;
-
     const updateData: UpdateData = {
       data: { type: 'idle' },
       provider: this.name,
     };
 
-    if (this.type === 'playing') {
-      updateData.data = {
-        type: 'playing',
-        ...fullData,
-      };
-    }
-    if (this.type === 'paused') {
-      updateData.data = {
-        type: 'paused',
-        ...fullData,
-      };
+    if (this.type === 'playing' || this.type === 'paused') {
+      let isDataValid = true;
+      if (!this.lastUpdateData.id) isDataValid = false;
+      if (!this.lastUpdateData.title) isDataValid = false;
+      if (!this.lastUpdateData.artists) isDataValid = false;
+      if (!this.lastUpdateData.progress) isDataValid = false;
+      if (this.lastUpdateData.duration === undefined) isDataValid = false;
+      if (this.lastUpdateData.coverUrl === undefined) isDataValid = false;
+
+      if (!isDataValid) {
+        updateData.data.type = 'idle';
+      } else {
+        const fullData = this.lastUpdateData as BaseUpdateData;
+        updateData.data = {
+          type: this.type,
+          ...fullData,
+        };
+      }
     }
 
     this.emit('update', updateData);
