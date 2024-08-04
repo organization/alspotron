@@ -93,13 +93,13 @@
 | ![image](https://github.com/organization/alspotron/assets/16558115/1de5703a-1bde-4152-8c17-092463750246) |
 
 ## Plugin
-Siehe diese [Documentation](https://github.com/organization/alspotron/wiki/Plugin)
+Siehe [diese Dokumentation](https://github.com/organization/alspotron/wiki/Plugin)
 
-Siehe diese [Example](https://github.com/organization/alspotron/tree/master/example/alspotron-plugin)
+Siehe [dieses Beispiel](https://github.com/organization/alspotron/tree/master/example/alspotron-plugin)
 
 ## Migration von Alspotify
 
-Siehe diese [Dokumentation](https://github.com/organization/alspotron/blob/master/MIGRATION_FROM_ALSPOTIFY.md)
+Siehe [diese Dokumentation](https://github.com/organization/alspotron/blob/master/MIGRATION_FROM_ALSPOTIFY.md)
 
 ## LICENSE
 
