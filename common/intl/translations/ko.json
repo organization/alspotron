@@ -270,5 +270,8 @@
   "tray.devtools.tray.label": "트레이 창",
 
   "title.lyrics": "가사 고급 검색",
-  "title.setting": "Alspotron 설정"
+  "title.setting": "Alspotron 설정",
+
+  "provider.source.tuna-obs.port.name": "포트",
+  "provider.source.tuna-obs.port.description": "Tuna OBS 플러그인과 연결할 포트입니다. 기본값은 1608 입니다."
 }

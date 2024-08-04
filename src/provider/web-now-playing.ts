@@ -14,7 +14,7 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
   private type: UpdateData['data']['type'] = 'idle';
   private lastUpdateData: Partial<BaseUpdateData> = {};
 
-  public override start() {
+  public override start(config: Record<string, unknown>) {
     this.wss = new WebSocketServer({ port: this.port });
     this.wss.on('connection', (ws) => {
       this.isReady = true;
@@ -65,7 +65,7 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
     this.wss.on('close', this.close.bind(this));
     this.wss.on('error', this.onError.bind(this));
 
-    super.start();
+    super.start(config);
   }
 
   public override close() {

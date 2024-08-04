@@ -71,7 +71,7 @@ export const InternalConfigSchema = z.object({
   version: z.string().optional(),
 });
 export const ConfigSchema = z.object({
-  version: z.literal(2),
+  version: z.literal(3),
   views: z.object({
     enabled: z.boolean().catch(DEFAULT_CONFIG.views[0].enabled),
     theme: z.string().catch(DEFAULT_CONFIG.views[0].theme),
@@ -98,7 +98,13 @@ export const ConfigSchema = z.object({
   hardwareAcceleration: z.boolean().catch(DEFAULT_CONFIG.hardwareAcceleration),
 
   lyricProvider: z.literal(LyricProviderList[0].provider).catch(DEFAULT_CONFIG.lyricProvider),
-  playingProvider: z.string().catch(DEFAULT_CONFIG.playingProvider),
+  sourceProvider: z.string().catch(DEFAULT_CONFIG.sourceProvider),
+
+  providers: z.object({
+    source: z.object({
+      config: z.record(z.record(z.unknown())),
+    }),
+  }),
 
   plugins: z.object({
     list: z.record(z.string().optional()),

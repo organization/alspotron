@@ -57,7 +57,7 @@ export type LEGACY_Config0_20_0 = {
   language: 'ko' | 'en' | 'ja' | 'de';
   developer: boolean;
 
-  plugins:{
+  plugins: {
     list: Record<string, string | undefined>;
     disabled: Record<string, boolean | undefined>;
     config: Record<string, Record<string, unknown>>;

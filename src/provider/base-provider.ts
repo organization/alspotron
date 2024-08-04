@@ -6,7 +6,7 @@ import { ButtonOption, SettingOption } from '../../common/plugins';
 export abstract class BaseSourceProvider extends EventEmitter<SourceProviderEventMap> implements SourceProvider {
   public abstract name: string;
 
-  public start() {
+  public start(options: Record<string, unknown>) {
     this.emit('start');
   }
 
@@ -20,7 +20,7 @@ export abstract class BaseSourceProvider extends EventEmitter<SourceProviderEven
   public getOptionValue(key: string): unknown {
     return null;
   }
-  public setOption(key: string, value: unknown) {}
+  public onOptionChange(options: Record<string, unknown>) {}
 
   public abstract isRunning(): boolean;
 }

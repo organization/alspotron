@@ -60,7 +60,7 @@ export const DEFAULT_STYLE = {
 };
 
 export const DEFAULT_CONFIG = {
-  version: 2 as const,
+  version: 3 as const,
 
   views: [
     {
@@ -83,7 +83,17 @@ export const DEFAULT_CONFIG = {
   hardwareAcceleration: true,
   streamingMode: false,
   lyricProvider: LyricProviderList[0].provider as 'alsong',
-  playingProvider: 'tuna-obs' as const,
+  sourceProvider: 'tuna-obs' as const,
+
+  providers: {
+    source: {
+      config: {
+        'tuna-obs': {
+          port: 1608,
+        },
+      },
+    },
+  },
 
   plugins: {
     list: {},

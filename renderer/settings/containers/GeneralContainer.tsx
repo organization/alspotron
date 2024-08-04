@@ -1,6 +1,6 @@
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
-import { createEffect, createSignal } from 'solid-js';
+import { createSignal } from 'solid-js';
 
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
@@ -22,15 +22,13 @@ const GeneralContainer = () => {
     name: string;
     options: SettingOption[];
   }[]>([]);
-  const [optionValue, setOptionValue] = createSignal<Record<string, unknown>>({});
   const [open, setOpen] = createSignal(false);
   const [resetOpen, setResetOpen] = createSignal(false);
   const [resetLastOpen, setResetLastOpen] = createSignal(false);
   const [restartOpen, setRestartOpen] = createSignal(false);
   const [requireOpen, setRequireOpen] = createSignal(false);
 
-  const sourceProvider = () => sourceProviders()
-    .find((it) => it.name === config()?.playingProvider);
+  const sourceProvider = () => sourceProviders().find((it) => it.name === config()?.sourceProvider);
   const sourceProviderOptions = () => sourceProvider()?.options ?? [];
 
   const onResetConfig = async () => {
@@ -44,19 +42,6 @@ const GeneralContainer = () => {
   };
 
   window.ipcRenderer.invoke('get-all-source-providers').then(setSourceProviders);
-  createEffect(async () => {
-    const options = sourceProvider()?.options ?? [];
-    const values  = await Promise.all(
-      options.map((option) => window.ipcRenderer.invoke('get-source-provider-option', option.key))
-    );
-
-    const value = options.reduce((acc, option, index) => {
-      acc[option.key] = values[index];
-      return acc;
-    }, {} as Record<string, unknown>);
-
-    setOptionValue(value);
-  });
 
   return <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
     <div class={'text-3xl mb-1 px-4'}>
@@ -112,9 +97,23 @@ const GeneralContainer = () => {
           <div class={'flex flex-row justify-start items-center gap-1'}>
             <SettingOptionRenderer
               option={option}
-              value={optionValue()[option.key]}
+              value={config()?.providers?.source?.config[sourceProvider()?.name ?? ''][option.key]}
               onChange={(value) => {
-                window.ipcRenderer.invoke('set-source-provider-option', option.key, value);
+                setConfig({
+                  providers: {
+                    ...config()?.providers,
+                    source: {
+                      ...config()?.providers?.source,
+                      config: {
+                        ...config()?.providers?.source?.config,
+                        [sourceProvider()?.name ?? '']: {
+                          ...config()?.providers?.source?.config[sourceProvider()?.name ?? ''],
+                          [option.key]: value,
+                        },
+                      },
+                    },
+                  },
+                });
               }}
             />
           </div>
@@ -129,9 +128,9 @@ const GeneralContainer = () => {
           placeholder={t('setting.general.placeholder')}
           class={'select min-w-[210px]'}
           options={sourceProviders().map((it) => it.name)}
-          value={config()?.playingProvider}
+          value={config()?.sourceProvider}
           onChange={(value) => {
-            setConfig({ playingProvider: value });
+            setConfig({ sourceProvider: value });
           }}
           format={(str) => t(`setting.general.source-provider.${str}`, {
             defaultValue: str,
