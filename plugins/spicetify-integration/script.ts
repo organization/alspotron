@@ -7,7 +7,7 @@ import { spawn } from 'node:child_process';
 import { PluginProvider } from '../../common/plugins';
 
 const root = process.env.APPDATA ?? process.env.HOME ?? '';
-const URL = 'https://powernukkit.github.io/DownGit/#/home?directFile=1&url=https://github.com/organization/alspotron/blob/master/extensions/alspotron.js';
+const URL = 'https://raw.githubusercontent.com/organization/alspotron/master/extensions/alspotron.js';
 const en = {
   setting: {
     install: {
@@ -135,6 +135,14 @@ const runner: PluginProvider = ({ useConfig, useSetting, logger, on, Electron })
     return spicetifyPath;
   };
 
+  const findSpicetifyCommandPath = () => {
+    let commandPath: string | null = path.resolve(root, 'spicetify\\spicetify.exe');
+    if (!fsSync.existsSync(commandPath)) commandPath = path.resolve(root, '.spicetify/spicetify');
+    else commandPath = 'spicetify';
+
+    return commandPath;
+  }
+
   const onInstall = async () => {
     logger.debug('Install button clicked');
 
@@ -168,8 +176,10 @@ const runner: PluginProvider = ({ useConfig, useSetting, logger, on, Electron })
       });
     }
 
-    const command1 = await runCommand('spicetify', ['config', 'extensions', 'alspotron.js']).catch((code: number) => code);
-    const command2 = await runCommand('spicetify', ['apply']).catch((code: number) => code);
+    const command = findSpicetifyCommandPath();
+    logger.debug('Spicetify command path:', command)
+    const command1 = await runCommand(command, ['config', 'extensions', 'alspotron.js']).catch((code: number) => code);
+    const command2 = await runCommand(command, ['apply']).catch((code: number) => code);
 
     if (command1 !== 0 || command2 !== 0) {
       logger.error('Failed to install Spicetify extension:', command1, command2);
