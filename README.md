@@ -21,6 +21,8 @@
 | ![Spotify Screenshot](https://i.imgur.com/0JJMhaU.png) | ![YouTube Music Screenshot](https://github.com/organization/alspotron/assets/16558115/fc22323e-d0b2-4abc-882e-2281c13f4cf4) |
 |                                         Game Overlay (tested game: Overwatch)                                         | [Custom CSS](https://github.com/organization/alspotron/blob/master/example/custom-css.css) & Show previous / next lyric mode |
 | ![Overlay Screenshot](https://github.com/organization/alspotron/assets/16558115/7bb95071-b8f7-45e1-af59-02e1586d5dcc) | <video src="https://github.com/organization/alspotron/assets/16558115/187c7265-4823-4c53-863b-25db69d58ef1" /> |
+| Bountiful Themes 1 | Bountiful Themes 2 |
+| <video src="https://github.com/user-attachments/assets/c266029f-6624-42e8-8ac1-b747294a7d94" /> | <video src="https://github.com/user-attachments/assets/fdc82cc5-8329-4284-b3ca-71b19e8c2a57" /> |
 
 ## Installation
 
