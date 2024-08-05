@@ -1,4 +1,4 @@
-import { createEffect, createRenderEffect, createSignal, on, onMount, Show } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 
 import AnchoredView from './components/AnchoredView';
 import LyricProgressBar from './components/LyricProgressBar';
@@ -8,13 +8,11 @@ import { AlertView } from './components/AlertView';
 
 import PlayingInfoProvider from '../components/PlayingInfoProvider';
 import UserCSS from '../components/UserCSS';
-import useConfig from '../hooks/useConfig';
 import { userCSSSelectors, userCSSVariables } from '../utils/userCSSSelectors';
 import usePluginsCSS from '../hooks/usePluginsCSS';
 import useStyle from '../hooks/useStyle';
 import useCurrent from '../hooks/useCurrent';
 import { useClassStyle } from '../hooks/useClassStyle';
-
 
 const useProximityStyle = () => {
   const style = useStyle();
@@ -78,14 +76,9 @@ const useProximityStyle = () => {
   const proximityOpacity = () => {
     if (distance() > 0.5) return 1;
     const rate = blendRate();
-    console.log(rate);
+
     return (fullDimmedOpacity() * rate) + (1 - rate);
   };
-
-  // const [element, elementRef] = createSignal<HTMLDivElement | null>(null);
-  // createRenderEffect(on(proximityOpacity, () => {
-  //   element()?.animate([{ opacity: proximityOpacity() }], { duration: 500, fill: 'forwards' });
-  // }));
 
   return {
     rate: blendRate,
@@ -110,6 +103,7 @@ const App = () => {
 
   useClassStyle(userCSSSelectors.wrapper, () => `
     opacity: var(${userCSSVariables['var-proximity-opacity']}, 1);
+    transition: opacity 0.225s linear;
   `);
 
   return (
