@@ -18,12 +18,13 @@ import usePluginsCSS from '../hooks/usePluginsCSS';
 import { formatTime } from '../utils/formatTime';
 
 import { LangResource } from '../../common/intl';
-
-type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>[number];
+import { useLyricProvider } from '../hooks/useLyricProvider';
+import { LyricMetadata } from '../../common/provider';
 
 const LyricsMapEditor = () => {
   usePluginsCSS();
 
+  const lyricProvider = useLyricProvider();
   const { title: playingTitle, artist: playingArtist, duration, status, id } = usePlayingInfo();
 
   const [title, setTitle] = createSignal(playingTitle());
@@ -52,7 +53,12 @@ const LyricsMapEditor = () => {
     setLoading(true);
 
     await usePluginOverride('search-lyrics', async (artist, title, options) => {
-      const result = await alsong(artist, title, options).catch((e) => {
+      const result = await lyricProvider().searchLyrics({
+        artist,
+        title,
+        playtime: options?.playtime,
+        page: options?.page,
+      }).catch((e) => {
         console.error(e);
         return [];
       });
@@ -60,7 +66,7 @@ const LyricsMapEditor = () => {
       setSearchList(result);
       setPage(0);
       setHasNext(true);
-    }, artist(), title(), { playtime: duration() });
+    }, artist(), title(), { playtime: duration(), page: 0 });
 
     setLoading(false);
   };
@@ -69,7 +75,12 @@ const LyricsMapEditor = () => {
     setLoading(true);
 
     await usePluginOverride('search-lyrics', async (artist, title, options) => {
-      const result = await alsong(artist, title, options).catch((e) => {
+      const result = await lyricProvider().searchLyrics({
+        artist,
+        title,
+        playtime: options?.playtime,
+        page: options?.page,
+      }).catch((e) => {
         console.error(e);
         return [];
       });
@@ -91,7 +102,7 @@ const LyricsMapEditor = () => {
       [id()]: {
         mode: {
           type: 'provider' as const,
-          id: metadata.lyricId.toString(),
+          id: metadata.id,
         },
       },
     };
@@ -161,7 +172,7 @@ const LyricsMapEditor = () => {
                 <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onSelect(item)}>
                   <div class={'w-full flex flex-col justify-center items-start overflow-hidden'}>
                     <div class={'h-fit text-xs text-black/50 dark:text-white/50'}>
-                      ID: {item.lyricId}
+                      ID: {item.id}
                     </div>
                     <Marquee class={'w-full'} gap={16}>
                       {item.title}
@@ -178,11 +189,11 @@ const LyricsMapEditor = () => {
                         hour12: false,
                         dateStyle: 'medium',
                         timeStyle: 'medium',
-                      }) : 'Invalid Date'}
+                      }) : 'No Date'}
                     </div>
-                    <Show when={item.playtime >= 0}>
+                    <Show when={(item.playtime ?? 0) > 0}>
                       <div class={'h-fit text-sm text-right text-black/50 dark:text-white/50'}>
-                        <Trans key={'lyrics.playtime'}/>: {formatTime(item.playtime)}
+                        <Trans key={'lyrics.playtime'}/>: {formatTime(item.playtime ?? 0)}
                       </div>
                     </Show>
                   </div>

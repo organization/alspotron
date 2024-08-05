@@ -82,7 +82,7 @@ export const DEFAULT_CONFIG = {
   developer: false,
   hardwareAcceleration: true,
   streamingMode: false,
-  lyricProvider: LyricProviderList[0].provider as 'alsong',
+  lyricProvider: LyricProviderList[0].provider as 'alsong' | 'lrclib',
   sourceProvider: 'tuna-obs' as const,
 
   providers: {

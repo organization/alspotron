@@ -1,7 +1,9 @@
 import { AlsongLyricProvider } from './alsong';
+import { LrclibLyricProvider } from './lrclib';
 
 export const LyricProviderList = [
   AlsongLyricProvider,
+  LrclibLyricProvider,
 ] as const;
 
 export type LyricProviderKind = typeof LyricProviderList[number]['provider'];

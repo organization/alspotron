@@ -12,6 +12,7 @@ import Switch from '../../components/Switch';
 import useServer from '../../hooks/useServer';
 import { SettingOption } from '../../../common/plugins';
 import { SettingOptionRenderer } from '../components/SettingOptionRenderer';
+import { LyricProviderList } from '../../../common/provider';
 
 const GeneralContainer = () => {
   const [t, { changeLanguage }] = useTransContext();
@@ -133,6 +134,27 @@ const GeneralContainer = () => {
             setConfig({ sourceProvider: value });
           }}
           format={(str) => t(`setting.general.source-provider.${str}`, {
+            defaultValue: str,
+          })}
+        />
+      </Card>
+      <Card
+        class={'flex flex-row justify-between items-center gap-1'}
+      >
+        <div class={'text-md'}>
+          <Trans key={'setting.general.lyric-provider'}/>
+        </div>
+        <div class={'flex-1'} />
+        <Selector
+          mode={'select'}
+          placeholder={t('setting.general.placeholder')}
+          class={'select min-w-[210px]'}
+          options={LyricProviderList.map((it) => it.provider)}
+          value={config()?.lyricProvider}
+          onChange={(value) => {
+            setConfig({ lyricProvider: value });
+          }}
+          format={(str) => t(`setting.general.lyric-provider.${str}`, {
             defaultValue: str,
           })}
         />
