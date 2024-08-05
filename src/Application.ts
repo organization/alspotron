@@ -741,27 +741,27 @@ class Application {
       (details, callback) => {
         const provider = getLyricProvider(config.get().lyricProvider);
 
-        if (provider) {
+        if (provider && provider.onBeforeSendHeaders) {
           const result = provider.onBeforeSendHeaders(details);
 
           callback(result);
           return;
         }
 
-        callback({});
+        callback(details);
       },
     );
     webContents.session.webRequest.onHeadersReceived((details, callback) => {
       const provider = getLyricProvider(config.get().lyricProvider);
 
-      if (provider) {
+      if (provider && provider.onHeadersReceived) {
         const result = provider.onHeadersReceived(details);
 
         callback(result);
         return;
       }
 
-      callback({});
+      callback(details);
     });
   }
 }
