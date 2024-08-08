@@ -12,12 +12,13 @@ import Switch from '../../components/Switch';
 import useServer from '../../hooks/useServer';
 import { SettingOption } from '../../../common/plugins';
 import { SettingOptionRenderer } from '../components/SettingOptionRenderer';
-import { LyricProviderList } from '../../../common/provider';
+import { useLyricProvider } from '../../hooks/useLyricProvider';
 
 const GeneralContainer = () => {
   const [t, { changeLanguage }] = useTransContext();
   const [config, setConfig] = useConfig();
   const [, restartServer] = useServer();
+  const lyricProvider = useLyricProvider();
 
   const [sourceProviders, setSourceProviders] = createSignal<{
     name: string;
@@ -28,6 +29,9 @@ const GeneralContainer = () => {
   const [resetLastOpen, setResetLastOpen] = createSignal(false);
   const [restartOpen, setRestartOpen] = createSignal(false);
   const [requireOpen, setRequireOpen] = createSignal(false);
+  const [lyricProviderList, setLyricProviderList] = createSignal<string[]>([]);
+
+  lyricProvider.list().then(setLyricProviderList);
 
   const sourceProvider = () => sourceProviders().find((it) => it.name === config()?.sourceProvider);
   const sourceProviderOptions = () => sourceProvider()?.options ?? [];
@@ -149,7 +153,7 @@ const GeneralContainer = () => {
           mode={'select'}
           placeholder={t('setting.general.placeholder')}
           class={'select min-w-[210px]'}
-          options={LyricProviderList.map((it) => it.provider)}
+          options={lyricProviderList()}
           value={config()?.lyricProvider}
           onChange={(value) => {
             setConfig({ lyricProvider: value });

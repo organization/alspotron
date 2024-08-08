@@ -6,7 +6,7 @@ import { PluginEventMap, OverrideMap } from './event';
 
 import type { PartialDeep } from 'type-fest';
 import type { Config } from '../schema';
-import type { SourceProvider } from '../provider';
+import type { LyricProvider, SourceProvider } from '../provider';
 
 export type PluginState = 'enable' | 'disable';
 export type PluginUnload = () => void;
@@ -36,6 +36,7 @@ export interface PluginContext {
   useOverride<Target extends keyof OverrideMap>(target: Target, fn: OverrideMap[Target]): void;
 
   registerSourceProvider(provider: SourceProvider): () => void;
+  registerLyricProvider(provider: LyricProvider): () => void;
 
   logger: PluginLogger;
 

@@ -20,6 +20,7 @@ export class OverlayManager extends EventEmitter {
   private registeredProcesses: { pid: number; path: string; }[] = [];
   private scaleFactor = 1.0;
   private markQuit = false;
+  private applyCorsHeader: ((webContents: Electron.WebContents) => void) | null = null;
 
   constructor() {
     super();
@@ -34,6 +35,10 @@ export class OverlayManager extends EventEmitter {
     }
 
     this.init();
+  }
+
+  public setCorsHeader(callback: (webContents: Electron.WebContents) => void) {
+    this.applyCorsHeader = callback;
   }
 
   public get windowProvider() {
@@ -59,6 +64,7 @@ export class OverlayManager extends EventEmitter {
     if (!nodeWindowManager) return false;
 
     this.provider = new OverlayWindowProvider(nodeWindowManager);
+    this.applyCorsHeader?.(this.provider.window.webContents);
     this.addOverlayWindow(
       'StatusBar',
       this.provider.window,
@@ -110,6 +116,7 @@ export class OverlayManager extends EventEmitter {
           if (window) this.scaleFactor = window.getMonitor().getScaleFactor();
 
           this.provider = new OverlayWindowProvider(nodeWindowManager);
+          this.applyCorsHeader?.(this.provider.window.webContents);
           this.overlay.start();
           isFirstRun = true;
         }

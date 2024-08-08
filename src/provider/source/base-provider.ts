@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 
-import { SourceProvider, SourceProviderEventMap } from '../../common/provider';
-import { ButtonOption, SettingOption } from '../../common/plugins';
+import { SourceProvider, SourceProviderEventMap } from '../../../common/provider';
+import { ButtonOption, SettingOption } from '../../../common/plugins';
 
 export abstract class BaseSourceProvider extends EventEmitter<SourceProviderEventMap> implements SourceProvider {
   public abstract name: string;

@@ -2,9 +2,6 @@ import { screen } from 'electron';
 
 import { LyricWindowProvider } from './lyric';
 
-import { getLyricProvider } from '../../common/provider';
-import { config } from '../config';
-
 export class OverlayWindowProvider extends LyricWindowProvider {
   private readonly nodeWindowManager: typeof import('node-window-manager');
 
@@ -18,33 +15,6 @@ export class OverlayWindowProvider extends LyricWindowProvider {
     });
 
     this.nodeWindowManager = nodeWindowManager;
-
-    this.window.webContents.session.webRequest.onBeforeSendHeaders(
-      (details, callback) => {
-        const provider = getLyricProvider(config.get().lyricProvider);
-
-        if (provider) {
-          const result = provider.onBeforeSendHeaders(details);
-
-          callback(result);
-          return;
-        }
-
-        callback({});
-      },
-    );
-    this.window.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-      const provider = getLyricProvider(config.get().lyricProvider);
-
-      if (provider) {
-        const result = provider.onHeadersReceived(details);
-
-        callback(result);
-        return;
-      }
-
-      callback({});
-    });
 
     this.updateWindowConfig();
   }

@@ -11,7 +11,7 @@ import { Json } from '../../../utils/types';
 import { VersionedPluginLoader, VersionedPluginPathLoader } from '../types';
 import { config } from '../../config';
 
-import type { SourceProvider } from '../../../common/provider';
+import type { LyricProvider, SourceProvider } from '../../../common/provider';
 
 const v1ManifestSchema = z.object({
   id: z.string(),
@@ -71,6 +71,7 @@ export const loadPlugin: VersionedPluginLoader = (
       overrides: {},
       providers: {
         source: [],
+        lyric: [],
       },
     },
     css: cssList,
@@ -146,7 +147,17 @@ export const loadPlugin: VersionedPluginLoader = (
             newPlugin.js.providers.source.splice(index, 1);
           }
         };
-      }
+      },
+      registerLyricProvider(provider: LyricProvider) {
+        newPlugin.js.providers.lyric.push(provider);
+
+        return () => {
+          const index = newPlugin.js.providers.lyric.findIndex((it) => it === provider);
+          if (index >= 0) {
+            newPlugin.js.providers.lyric.splice(index, 1);
+          }
+        };
+      },
     };
 
     runner(newPlugin, () => {
