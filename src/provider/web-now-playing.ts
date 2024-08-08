@@ -10,17 +10,23 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
   private wss: WebSocketServer | null = null;
   private port = 1609;
   private isReady = false;
+  private startCalled = false;
+  private config: Record<string, unknown> = {};
 
   private type: UpdateData['data']['type'] = 'idle';
   private lastUpdateData: Partial<BaseUpdateData> = {};
 
   public override start(config: Record<string, unknown>) {
+    this.config = config;
     this.wss = new WebSocketServer({ port: this.port });
     this.wss.on('connection', (ws) => {
-      this.isReady = true;
       let idleTimeout: NodeJS.Timeout | null = null;
 
-      ws.onopen = () => ws.send('RECIPIENT');
+      ws.onopen = () => {
+        this.isReady = true;
+        ws.send('RECIPIENT');
+        this.broadcastStart();
+      };
       ws.onclose = () => this.close();
       ws.onerror = (err) => {
         const error = new Error('WebNowPlaying: Server error occurred.');
@@ -30,6 +36,8 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
         this.close();
       };
       ws.onmessage = (e) => {
+        this.broadcastStart();
+
         if (typeof e.data !== 'string') return;
         const [key, ...rest] = e.data.split(':');
         const data = rest.join(':');
@@ -64,20 +72,30 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
     });
     this.wss.on('close', this.close.bind(this));
     this.wss.on('error', this.onError.bind(this));
-
-    super.start(config);
   }
 
   public override close() {
     this.wss?.close();
     this.wss = null;
     this.isReady = false;
+    this.startCalled = false;
 
     super.close();
   }
 
   public override isRunning() {
     return this.wss !== null && this.isReady;
+  }
+
+  public override onOptionChange(options: Record<string, unknown>) {
+    this.config = options;
+  }
+
+  private broadcastStart() {
+    if (this.startCalled) return;
+
+    this.startCalled = true;
+    super.start(this.config);
   }
 
   private onError(err: Error) {

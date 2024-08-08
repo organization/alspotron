@@ -45,8 +45,26 @@ const useProximityStyle = () => {
     return 0.5;
   });
 
+  let windowThrottle: number | null = null;
   const fullDimmedOpacity = () => style().proximityOpacity ?? 0;
   const onMouseMove = (event: MouseEvent) => {
+    if (windowThrottle !== null) clearTimeout(windowThrottle);
+
+    windowThrottle = window.setTimeout(() => {
+      const rightBias = Math.abs(event.clientX - window.innerWidth);
+      const bottomBias = Math.abs(event.clientY - window.innerHeight);
+      const leftBias = Math.abs(event.clientX);
+      const topBias = Math.abs(event.clientY);
+
+      if (rightBias < 10 || bottomBias < 10 || leftBias < 10 || topBias < 10) {
+        if (fullDimmedOpacity() === 1) {
+          return;
+        }
+
+        setDistance(1);
+      }
+    }, 16);
+
     if (fullDimmedOpacity() === 1) {
       return;
     }
