@@ -1,6 +1,6 @@
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
-import { createSignal } from 'solid-js';
+import { createResource, createSignal } from 'solid-js';
 
 import Card from '../../components/Card';
 import Selector from '../../components/Select';
@@ -13,6 +13,7 @@ import useServer from '../../hooks/useServer';
 import { SettingOption } from '../../../common/plugins';
 import { SettingOptionRenderer } from '../components/SettingOptionRenderer';
 import { useLyricProvider } from '../../hooks/useLyricProvider';
+import { DEFAULT_CONFIG } from '../../../common/constants';
 
 const GeneralContainer = () => {
   const [t, { changeLanguage }] = useTransContext();
@@ -33,6 +34,7 @@ const GeneralContainer = () => {
 
   lyricProvider.list().then(setLyricProviderList);
 
+  const [lyricProviderOptions] = createResource(lyricProvider, () => lyricProvider().getOptions(config()?.language ?? DEFAULT_CONFIG.language));
   const sourceProvider = () => sourceProviders().find((it) => it.name === config()?.sourceProvider);
   const sourceProviderOptions = () => sourceProvider()?.options ?? [];
 
@@ -144,6 +146,31 @@ const GeneralContainer = () => {
       </Card>
       <Card
         class={'flex flex-row justify-between items-center gap-1'}
+        subCards={lyricProviderOptions()?.map((option) =>
+          <div class={'flex flex-row justify-start items-center gap-1'}>
+            <SettingOptionRenderer
+              option={option}
+              value={config()?.providers?.lyric?.config[lyricProvider()?.name ?? ''][option.key]}
+              onChange={(value) => {
+                setConfig({
+                  providers: {
+                    ...config()?.providers,
+                    lyric: {
+                      ...config()?.providers?.lyric,
+                      config: {
+                        ...config()?.providers?.lyric?.config,
+                        [lyricProvider()?.name ?? '']: {
+                          ...config()?.providers?.lyric?.config[lyricProvider()?.name ?? ''],
+                          [option.key]: value,
+                        },
+                      },
+                    },
+                  },
+                });
+              }}
+            />
+          </div>
+        )}
       >
         <div class={'text-md'}>
           <Trans key={'setting.general.lyric-provider'}/>

@@ -3,7 +3,7 @@ import { cors } from 'hono/cors';
 import { validator } from 'hono/validator';
 import { serve } from '@hono/node-server';
 
-import { BaseSourceProvider } from './base-provider';
+import { BaseSourceProvider } from './base-source-provider';
 
 import { TunaObsBody, TunaObsBodySchema, UpdateData } from '../../../common/schema';
 import { getTranslation } from '../../../common/intl';

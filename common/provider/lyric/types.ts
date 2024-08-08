@@ -1,4 +1,6 @@
 // ---
+import type { ButtonOption, SettingOption } from '../../plugins';
+
 export type LyricTimestamp = number;
 export type LyricRegister = {
   id?: string;
@@ -35,6 +37,10 @@ export interface LyricProvider {
   getLyricById(id: string): Promise<LyricData | null>;
   getLyric(params: SearchParams): Promise<LyricData | null>;
   searchLyrics(params: SearchParams): Promise<LyricMetadata[]>;
+
+  getOptions(language: string): Exclude<SettingOption, ButtonOption>[];
+  onOptionChange(options: Record<string, unknown>): void;
+
   onBeforeSendHeaders?(_details: Electron.OnBeforeSendHeadersListenerDetails): Electron.BeforeSendResponse;
   onHeadersReceived?(_details: Electron.OnHeadersReceivedListenerDetails): Electron.HeadersReceivedResponse;
 }

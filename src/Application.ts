@@ -326,6 +326,8 @@ class Application {
     'lyric-provider:get-lyric': async (_, ...params: Parameters<LyricProvider['getLyric']>) => this.lyricProvider.getLyric(...params),
     'lyric-provider:get-lyric-by-id': async (_, ...params: Parameters<LyricProvider['getLyricById']>) => this.lyricProvider.getLyricById(...params),
     'lyric-provider:search-lyrics': async (_, ...params: Parameters<LyricProvider['searchLyrics']>) => this.lyricProvider.searchLyrics(...params),
+    'lyric-provider:get-options': (_, ...params: Parameters<LyricProvider['getOptions']>) => this.lyricProvider.getOptions(...params),
+    'lyric-provider:on-option-change': (_, ...params: Parameters<LyricProvider['onOptionChange']>) => this.lyricProvider.onOptionChange(...params),
   } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown>;
 
   constructor(overlayManager: OverlayManager) {

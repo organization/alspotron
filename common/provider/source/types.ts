@@ -18,6 +18,5 @@ export interface SourceProvider extends EventEmitter<SourceProviderEventMap> {
   isRunning(): boolean;
 
   getOptions(language: string): Exclude<SettingOption, ButtonOption>[];
-  getOptionValue(key: string): unknown;
   onOptionChange(options: Record<string, unknown>): void;
 }

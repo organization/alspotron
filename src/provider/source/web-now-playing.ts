@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 
-import { BaseSourceProvider } from './base-provider';
+import { BaseSourceProvider } from './base-source-provider';
 
 import { BaseUpdateData, UpdateData } from '../../../common/schema';
 
