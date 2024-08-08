@@ -16,6 +16,7 @@ import {
   Tray
 } from 'electron';
 import { PartialDeep } from 'type-fest';
+import alsong from 'alsong';
 
 import PluginManager from './plugins/plugin-manager';
 import { config, gameList, lyricMapper, themeList } from './config';
@@ -30,7 +31,12 @@ import { DEFAULT_CONFIG } from '../common/constants';
 import { getTranslation } from '../common/intl';
 
 import { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
-import { getLyricProvider, SourceProvider } from '../common/provider';
+import {
+  AlsongLyricProvider,
+  LyricProvider,
+  LrclibLyricProvider,
+  SourceProvider,
+} from '../common/provider';
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
 import { isMacOS, isWin32 } from '../utils/is';
@@ -60,6 +66,7 @@ class Application {
   private overlayManager: OverlayManager;
   private pluginManager!: PluginManager;
   private sourceProviders: SourceProvider[] = [];
+  private lyricProviders: LyricProvider[] = [];
 
   private contextMenu: Menu | null = null;
   private tray!: Tray;
@@ -322,6 +329,10 @@ class Application {
     'update-window': (_, index: number = 0) => {
       this.lyricWindowProviders[index].updateWindowConfig();
     },
+
+    'lyric-provider:get-lyric': async (_, ...params: Parameters<LyricProvider['getLyric']>) => this.lyricProvider.getLyric(...params),
+    'lyric-provider:get-lyric-by-id': async (_, ...params: Parameters<LyricProvider['getLyricById']>) => this.lyricProvider.getLyricById(...params),
+    'lyric-provider:search-lyrics': async (_, ...params: Parameters<LyricProvider['searchLyrics']>) => this.lyricProvider.searchLyrics(...params),
   } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown>;
 
   constructor(overlayManager: OverlayManager) {
@@ -330,6 +341,10 @@ class Application {
       new TunaObsProvider(),
       new WebNowPlayingProvider(),
     ];
+    this.lyricProviders = [
+      new AlsongLyricProvider(alsong),
+      new LrclibLyricProvider(),
+    ]
   }
 
   initSourceProvider() {
@@ -624,10 +639,22 @@ class Application {
     return this.getAllSourceProviders().find((it) => it.name === providerName) ?? this.sourceProviders[0];
   }
 
+  get lyricProvider() {
+    const providerName = config.get().lyricProvider;
+    return this.getAllLyricProviders().find((it) => it.name === providerName) ?? this.lyricProviders[0];
+  }
+
   getAllSourceProviders() {
     return [
       ...this.sourceProviders,
       ...this.pluginManager.getPlugins().flatMap((it) => it.js.providers.source),
+    ];
+  }
+
+  getAllLyricProviders() {
+    return [
+      ...this.lyricProviders,
+      ...this.pluginManager.getPlugins().flatMap((it) => it.js.providers.lyric),
     ];
   }
 
@@ -739,7 +766,7 @@ class Application {
   private setCorsHandler(webContents: Electron.WebContents) {
     webContents.session.webRequest.onBeforeSendHeaders(
       (details, callback) => {
-        const provider = getLyricProvider(config.get().lyricProvider);
+        const provider = this.lyricProvider;
 
         if (provider && provider.onBeforeSendHeaders) {
           const result = provider.onBeforeSendHeaders(details);
@@ -752,7 +779,7 @@ class Application {
       },
     );
     webContents.session.webRequest.onHeadersReceived((details, callback) => {
-      const provider = getLyricProvider(config.get().lyricProvider);
+      const provider = this.lyricProvider;
 
       if (provider && provider.onHeadersReceived) {
         const result = provider.onHeadersReceived(details);

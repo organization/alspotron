@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { BaseLyricProvider, LyricData, LyricMetadata, SearchParams } from './types';
+import { LyricProvider, LyricData, LyricMetadata, SearchParams } from './types';
 
 const LyricResponseSchema = z.object({
   id: z.number(),
@@ -14,10 +14,10 @@ const LyricResponseSchema = z.object({
   syncedLyrics: z.string().nullable(), // [mm:ss.xx] lyrics\n ...
 });
 
-export class LrclibLyricProvider extends BaseLyricProvider {
-  public static readonly provider = 'lrclib';
+export class LrclibLyricProvider implements LyricProvider {
+  public name = 'lrclib';
 
-  override async getLyricById(id: string): Promise<LyricData | null> {
+  async getLyricById(id: string): Promise<LyricData | null> {
     const response = await fetch(`https://lrclib.net/api/get/${id}`);
     const json = await response.json();
     const parsed = await LyricResponseSchema.spa(json);
@@ -36,7 +36,7 @@ export class LrclibLyricProvider extends BaseLyricProvider {
     };
   }
 
-  override async getLyric(params: SearchParams): Promise<LyricData | null> {
+  async getLyric(params: SearchParams): Promise<LyricData | null> {
     if (params.page && params.page > 1) return null;
 
     const query = new URLSearchParams();
@@ -66,7 +66,7 @@ export class LrclibLyricProvider extends BaseLyricProvider {
     };
   }
 
-  override async searchLyrics(params: SearchParams): Promise<LyricMetadata[]> {
+  async searchLyrics(params: SearchParams): Promise<LyricMetadata[]> {
     if (params.page && params.page > 1) return [];
 
     const query = new URLSearchParams();

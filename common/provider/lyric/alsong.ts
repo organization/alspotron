@@ -1,4 +1,4 @@
-import { BaseLyricProvider, LyricData, LyricMetadata, SearchParams } from './types';
+import { LyricProvider, LyricData, LyricMetadata, SearchParams } from './types';
 
 import type { Alsong, Lyric as AlsongLyric, LyricMetadata as AlsongLyricMetadata } from 'alsong';
 
@@ -25,17 +25,16 @@ const convertLyric = (lyric: AlsongLyric): LyricData => {
   };
 };
 
-export class AlsongLyricProvider extends BaseLyricProvider {
-  public static readonly provider = 'alsong';
+export class AlsongLyricProvider implements LyricProvider {
+  public name = 'alsong';
 
   private alsong: Alsong;
 
   constructor(alsong: Alsong) {
-    super();
     this.alsong = alsong;
   }
 
-  static override onBeforeSendHeaders(details: Electron.OnBeforeSendHeadersListenerDetails) {
+  onBeforeSendHeaders(details: Electron.OnBeforeSendHeadersListenerDetails) {
     const isEgg = details.url.startsWith('https://lyric.altools.com');
     if (isEgg) {
       delete details.requestHeaders['Referer'];
@@ -57,7 +56,7 @@ export class AlsongLyricProvider extends BaseLyricProvider {
     return {};
   }
 
-  static override onHeadersReceived(details: Electron.OnHeadersReceivedListenerDetails) {
+  onHeadersReceived(details: Electron.OnHeadersReceivedListenerDetails) {
     const isEgg = details.url.startsWith('https://lyric.altools.com');
     if (isEgg) {
       return {

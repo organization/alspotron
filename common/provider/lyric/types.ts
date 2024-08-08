@@ -29,18 +29,12 @@ export type SearchParams = {
   playtime?: LyricTimestamp;
   page?: number;
 };
-export abstract class BaseLyricProvider {
-  static readonly provider: string;
+export interface LyricProvider {
+  name: string;
 
-  abstract getLyricById(id: string): Promise<LyricData | null>;
-  abstract getLyric(params: SearchParams): Promise<LyricData | null>;
-
-  abstract searchLyrics(params: SearchParams): Promise<LyricMetadata[]>;
-
-  static onBeforeSendHeaders(_details: Electron.OnBeforeSendHeadersListenerDetails): Electron.BeforeSendResponse {
-    return {};
-  }
-  static onHeadersReceived(_details: Electron.OnHeadersReceivedListenerDetails): Electron.HeadersReceivedResponse {
-    return {};
-  }
+  getLyricById(id: string): Promise<LyricData | null>;
+  getLyric(params: SearchParams): Promise<LyricData | null>;
+  searchLyrics(params: SearchParams): Promise<LyricMetadata[]>;
+  onBeforeSendHeaders?(_details: Electron.OnBeforeSendHeadersListenerDetails): Electron.BeforeSendResponse;
+  onHeadersReceived?(_details: Electron.OnHeadersReceivedListenerDetails): Electron.HeadersReceivedResponse;
 }
