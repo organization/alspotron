@@ -1,29 +1,28 @@
-import { createMemo, on } from 'solid-js';
-
-import alsong from 'alsong';
+import { Accessor, createMemo, on } from 'solid-js';
 
 import useConfig from './useConfig';
 
 import { DEFAULT_CONFIG } from '../../common/constants';
-import {
-  AlsongLyricProvider,
-  BaseLyricProvider,
-  getLyricProvider,
-  LrclibLyricProvider,
-  LyricProviderKind
-} from '../../common/provider';
+import { LyricData, LyricMetadata, LyricProvider, SearchParams } from '../../common/provider';
 
-const instances: Record<LyricProviderKind, BaseLyricProvider> = {
-  alsong: new AlsongLyricProvider(alsong),
-  lrclib: new LrclibLyricProvider(),
-}
-
-export const useLyricProvider = () => {
+export const useLyricProvider = (): Accessor<LyricProvider> => {
   const [config] = useConfig();
+  const providerName = () => config()?.lyricProvider ?? DEFAULT_CONFIG.lyricProvider;
 
-  return createMemo(() => {
-    const name = config()?.lyricProvider ?? DEFAULT_CONFIG.lyricProvider;
+  return createMemo(on(providerName, (name) => {
+    const provider: LyricProvider = {
+      name,
+      async getLyric(params: SearchParams): Promise<LyricData | null> {
+        return window.ipcRenderer.invoke('lyric-provider:get-lyric', params)
+      },
+      async getLyricById(id: string): Promise<LyricData | null> {
+        return window.ipcRenderer.invoke('lyric-provider:get-lyric-by-id', id);
+      },
+      async searchLyrics(params: SearchParams): Promise<LyricMetadata[]> {
+        return window.ipcRenderer.invoke('lyric-provider:search-lyrics', params);
+      }
+    };
 
-    return instances[name];
-  });
+    return provider;
+  }));
 };

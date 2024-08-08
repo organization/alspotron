@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../constants';
-import { LyricProviderList } from '../provider';
 
 const AnchorSchema = z.union([
   z.literal('top-left'),
@@ -97,14 +96,14 @@ export const ConfigSchema = z.object({
   streamingMode: z.boolean().catch(DEFAULT_CONFIG.streamingMode),
   hardwareAcceleration: z.boolean().catch(DEFAULT_CONFIG.hardwareAcceleration),
 
-  lyricProvider: z.union([
-    z.literal(LyricProviderList[0].provider),
-    z.literal(LyricProviderList[1].provider),
-  ]).catch(DEFAULT_CONFIG.lyricProvider),
+  lyricProvider: z.string().catch(DEFAULT_CONFIG.lyricProvider),
   sourceProvider: z.string().catch(DEFAULT_CONFIG.sourceProvider),
 
   providers: z.object({
     source: z.object({
+      config: z.record(z.record(z.unknown())),
+    }),
+    lyric: z.object({
       config: z.record(z.record(z.unknown())),
     }),
   }),

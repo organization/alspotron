@@ -4,7 +4,7 @@ import { PluginLog } from './logger';
 import { SettingOption } from './option';
 
 import type { Json } from '../../utils/types';
-import type { SourceProvider } from '../provider';
+import type { LyricProvider, SourceProvider } from '../provider';
 
 export interface Plugin {
   css?: string[];
@@ -20,6 +20,7 @@ export interface Plugin {
     };
     providers: {
       source: SourceProvider[];
+      lyric: LyricProvider[];
     }
   }
   rawManifest: string;

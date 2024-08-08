@@ -1,5 +1,3 @@
-import { LyricProviderList } from './provider';
-
 export const DEFAULT_STYLE = {
   font: 'Pretendard JP Variable',
   fontWeight: '400',
@@ -82,7 +80,7 @@ export const DEFAULT_CONFIG = {
   developer: false,
   hardwareAcceleration: true,
   streamingMode: false,
-  lyricProvider: LyricProviderList[0].provider as 'alsong' | 'lrclib',
+  lyricProvider: 'alsong' as const,
   sourceProvider: 'tuna-obs' as const,
 
   providers: {
@@ -92,6 +90,9 @@ export const DEFAULT_CONFIG = {
           port: 1608,
         },
       },
+    },
+    lyric: {
+      config: {},
     },
   },
 
