@@ -5,12 +5,12 @@ import { serve } from '@hono/node-server';
 
 import { BaseSourceProvider } from './base-provider';
 
-import { TunaObsBody, TunaObsBodySchema, UpdateData } from '../../common/schema';
-import { getTranslation } from '../../common/intl';
+import { TunaObsBody, TunaObsBodySchema, UpdateData } from '../../../common/schema';
+import { getTranslation } from '../../../common/intl';
 
 import type { Http2SecureServer, Http2Server } from 'node:http2';
 import type { Server as NodeServer } from 'node:http';
-import type { ButtonOption, SettingOption } from '../../common/plugins';
+import type { ButtonOption, SettingOption } from '../../../common/plugins';
 
 type ServerType = NodeServer | Http2Server | Http2SecureServer;
 

@@ -25,18 +25,13 @@ import { LyricSearchWindowProvider, LyricWindowProvider, SettingWindowProvider, 
 
 import { OverlayManager } from './overlay';
 
-import { TunaObsProvider, WebNowPlayingProvider } from './provider';
+import { AlsongLyricProvider, LrclibLyricProvider, TunaObsProvider, WebNowPlayingProvider, } from './provider';
 
 import { DEFAULT_CONFIG } from '../common/constants';
 import { getTranslation } from '../common/intl';
 
 import { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
-import {
-  AlsongLyricProvider,
-  LyricProvider,
-  LrclibLyricProvider,
-  SourceProvider,
-} from '../common/provider';
+import { LyricProvider, SourceProvider, } from '../common/provider';
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
 import { isMacOS, isWin32 } from '../utils/is';
@@ -62,16 +57,6 @@ class Application {
   public settingWindowProvider: SettingWindowProvider | null = null;
   public lyricSearchWindowProvider: LyricSearchWindowProvider | null = null;
   public trayWindowProvider: TrayWindowProvider | null = null;
-
-  private overlayManager: OverlayManager;
-  private pluginManager!: PluginManager;
-  private sourceProviders: SourceProvider[] = [];
-  private lyricProviders: LyricProvider[] = [];
-
-  private contextMenu: Menu | null = null;
-  private tray!: Tray;
-  private lastUpdate: UpdateData | null = null;
-
   public onMap = {
     'get-all-screens': (event) => {
       event.returnValue = screen.getAllDisplays();
@@ -83,6 +68,13 @@ class Application {
       event.returnValue = config.get();
     },
   } satisfies Record<string, (event: Electron.IpcMainEvent) => void>;
+  private overlayManager: OverlayManager;
+  private pluginManager!: PluginManager;
+  private sourceProviders: SourceProvider[] = [];
+  private lyricProviders: LyricProvider[] = [];
+  private contextMenu: Menu | null = null;
+  private tray!: Tray;
+  private lastUpdate: UpdateData | null = null;
   public handleMap = {
     'get-registered-process-list': () => this.overlayManager.registeredProcessList,
     'get-icon': (_, path: string) => {
@@ -330,6 +322,7 @@ class Application {
       this.lyricWindowProviders[index].updateWindowConfig();
     },
 
+    'lyric-provider:get-all-lyric-providers': () => this.getAllLyricProviders().map((it) => it.name),
     'lyric-provider:get-lyric': async (_, ...params: Parameters<LyricProvider['getLyric']>) => this.lyricProvider.getLyric(...params),
     'lyric-provider:get-lyric-by-id': async (_, ...params: Parameters<LyricProvider['getLyricById']>) => this.lyricProvider.getLyricById(...params),
     'lyric-provider:search-lyrics': async (_, ...params: Parameters<LyricProvider['searchLyrics']>) => this.lyricProvider.searchLyrics(...params),
@@ -337,6 +330,7 @@ class Application {
 
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
+    this.overlayManager.setCorsHeader(this.setCorsHandler.bind(this));
     this.sourceProviders = [
       new TunaObsProvider(),
       new WebNowPlayingProvider(),
@@ -344,7 +338,17 @@ class Application {
     this.lyricProviders = [
       new AlsongLyricProvider(alsong),
       new LrclibLyricProvider(),
-    ]
+    ];
+  }
+
+  get sourceProvider() {
+    const providerName = config.get().sourceProvider;
+    return this.getAllSourceProviders().find((it) => it.name === providerName) ?? this.sourceProviders[0];
+  }
+
+  get lyricProvider() {
+    const providerName = config.get().lyricProvider;
+    return this.getAllLyricProviders().find((it) => it.name === providerName) ?? this.lyricProviders[0];
   }
 
   initSourceProvider() {
@@ -632,16 +636,6 @@ class Application {
 
   broadcastPlugin<T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) {
     this.pluginManager.broadcast(event, ...args);
-  }
-
-  get sourceProvider() {
-    const providerName = config.get().sourceProvider;
-    return this.getAllSourceProviders().find((it) => it.name === providerName) ?? this.sourceProviders[0];
-  }
-
-  get lyricProvider() {
-    const providerName = config.get().lyricProvider;
-    return this.getAllLyricProviders().find((it) => it.name === providerName) ?? this.lyricProviders[0];
   }
 
   getAllSourceProviders() {

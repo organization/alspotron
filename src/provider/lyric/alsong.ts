@@ -1,7 +1,6 @@
-import { LyricProvider, LyricData, LyricMetadata, SearchParams } from './types';
+import { LyricProvider, LyricData, LyricMetadata, SearchParams } from '../../../common/provider';
 
 import type { Alsong, Lyric as AlsongLyric, LyricMetadata as AlsongLyricMetadata } from 'alsong';
-
 
 const convertLyricMetadata = (metadata: AlsongLyricMetadata): LyricMetadata => {
   return {

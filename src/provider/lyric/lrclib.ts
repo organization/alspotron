@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { LyricProvider, LyricData, LyricMetadata, SearchParams } from './types';
+import { LyricProvider, LyricData, LyricMetadata, SearchParams } from '../../../common/provider';
 
 const LyricResponseSchema = z.object({
   id: z.number(),
