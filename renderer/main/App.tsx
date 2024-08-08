@@ -1,4 +1,4 @@
-import { createSignal, Show } from 'solid-js';
+import { createMemo, createSignal, Show } from 'solid-js';
 
 import AnchoredView from './components/AnchoredView';
 import LyricProgressBar from './components/LyricProgressBar';
@@ -12,14 +12,14 @@ import { userCSSSelectors, userCSSVariables } from '../utils/userCSSSelectors';
 import usePluginsCSS from '../hooks/usePluginsCSS';
 import useStyle from '../hooks/useStyle';
 import useCurrent from '../hooks/useCurrent';
-import { useClassStyle } from '../hooks/useClassStyle';
 
+const isWindows = /Windows/.test(navigator.userAgent);
 const useProximityStyle = () => {
   const style = useStyle();
   const { view } = useCurrent();
   const [distance, setDistance] = createSignal(1);
 
-  const targetAnchorX = () => {
+  const targetAnchorX = createMemo(() => {
     const anchor = view()?.position.anchor ?? '';
     if (anchor.includes('left')) {
       return 0;
@@ -30,9 +30,9 @@ const useProximityStyle = () => {
     }
 
     return 0.5;
-  };
+  });
 
-  const targetAnchorY = () => {
+  const targetAnchorY = createMemo(() => {
     const anchor = view()?.position.anchor ?? '';
     if (anchor.includes('top')) {
       return 0;
@@ -43,7 +43,7 @@ const useProximityStyle = () => {
     }
 
     return 0.5;
-  };
+  });
 
   const fullDimmedOpacity = () => style().proximityOpacity ?? 0;
   const onMouseMove = (event: MouseEvent) => {
@@ -58,6 +58,8 @@ const useProximityStyle = () => {
   };
 
   const onMouseLeave = () => {
+    if (isWindows) return;
+
     if (fullDimmedOpacity() === 1) {
       return;
     }
@@ -65,20 +67,20 @@ const useProximityStyle = () => {
     setDistance(1);
   };
 
-  const blendRate = () => {
+  const blendRate = createMemo(() => {
     if (distance() > 0.5) {
       return 0;
     }
 
     const sensitivity = style().proximitySensitivity ?? 1;
     return Math.max(0, Math.min((1 - (distance() * 2)) * sensitivity, 1));
-  };
-  const proximityOpacity = () => {
+  });
+  const proximityOpacity = createMemo(() => {
     if (distance() > 0.5) return 1;
     const rate = blendRate();
 
     return (fullDimmedOpacity() * rate) + (1 - rate);
-  };
+  });
 
   return {
     rate: blendRate,
@@ -101,16 +103,11 @@ const App = () => {
     handles: proximityHandles,
   } = useProximityStyle();
 
-  useClassStyle(userCSSSelectors.wrapper, () => `
-    opacity: var(${userCSSVariables['var-proximity-opacity']}, 1);
-    transition: opacity 0.225s linear;
-  `);
-
   return (
     <Show when={window.enabled || view()?.enabled}>
       <PlayingInfoProvider>
         <AnchoredView
-          style={`${userCSSVariables['var-proximity-opacity']}: ${opacity()}`}
+          style={`${userCSSVariables['var-proximity-opacity']}: ${opacity()};`}
           classList={{
             [userCSSSelectors['wrapper--hover']]: rate() >= 1,
           }}

@@ -1,9 +1,8 @@
 import { splitProps } from 'solid-js';
 
-import useConfig from '../../hooks/useConfig';
 import useStyle from '../../hooks/useStyle';
 
-import { userCSSSelectors } from '../../utils/userCSSSelectors';
+import { userCSSSelectors, userCSSVariables } from '../../utils/userCSSSelectors';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import { useClassStyle } from '../../hooks/useClassStyle';
 import useCurrent from '../../hooks/useCurrent';
@@ -56,6 +55,9 @@ const AnchoredView = (props: AnchoredViewProps) => {
       ${anchor.includes('right') ? 'align-items: flex-end;' : ''}
 
       row-gap: ${style()?.rowGap ?? '2'}rem;
+      
+      opacity: var(${userCSSVariables['var-proximity-opacity']}, 1);
+      transition: opacity 0.225s linear;
     `;
   });
 
