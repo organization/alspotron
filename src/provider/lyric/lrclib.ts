@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 import { LyricProvider, LyricData, LyricMetadata, SearchParams } from '../../../common/provider';
 
+import type { ButtonOption, SettingOption } from '../../../common/plugins';
+
 const LyricResponseSchema = z.object({
   id: z.number(),
   name: z.string(),
@@ -85,6 +87,12 @@ export class LrclibLyricProvider implements LyricProvider {
 
     return parsed.data.map(this.responseToMetadata.bind(this));
   }
+
+  public getOptions(language: string): Exclude<SettingOption, ButtonOption>[] {
+    return [];
+  }
+
+  public onOptionChange(options: Record<string, unknown>) {}
 
   private encode(str: string): string {
     return encodeURIComponent(str).replace(/%20/g, '+');

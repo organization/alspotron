@@ -26,7 +26,7 @@
   "lyrics.auto-recognized": "認識完了",
   "lyrics.manually-specified": "手動設定",
   "lyrics.disconnected": "Server disconnected",
-  "lyrics.disconnected.description": "サーバーに接続できません。ポート1608を使用している他のプログラムがある場合、Alspotronは使用できません。",
+  "lyrics.disconnected.description": "サーバーに接続できません。",
   "lyrics.mode": "Lyrics mode",
   "lyrics.delay": "Lyrics delay",
 
@@ -100,6 +100,9 @@
   "setting.general.source-provider": "Now Playing Source Provider",
   "setting.general.source-provider.tuna-obs": "Tuna OBS",
   "setting.general.source-provider.web-now-playing": "WebNowPlaying",
+  "setting.general.lyric-provider": "Lyric Provider",
+  "setting.general.lyric-provider.alsong": "Alsong",
+  "setting.general.lyric-provider.lrclib": "LrcLib",
 
   "setting.position.select-position-to-display-lyrics": "歌詞を表示する位置",
   "setting.position.top-left": "左上",

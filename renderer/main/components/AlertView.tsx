@@ -7,7 +7,6 @@ import { userCSSSelectors } from '../../utils/userCSSSelectors';
 export const AlertView = () => {
   const [state] = useServer();
 
-
   useClassStyle(userCSSSelectors.alert, () => `
     display: none;
     
@@ -59,7 +58,7 @@ export const AlertView = () => {
     >
       <Trans key={'lyrics.disconnected'}/>
       <span class={userCSSSelectors['alert--description']}>
-        <Trans key={'lyrics.disconnected.description'}/>
+        <Trans key={'lyrics.disconnected.description'} />
       </span>
     </div>
   );

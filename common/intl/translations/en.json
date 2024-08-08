@@ -26,7 +26,7 @@
   "lyrics.auto-recognized": "Automatic search",
   "lyrics.manually-specified": "Select manually",
   "lyrics.disconnected": "Server disconnected",
-  "lyrics.disconnected.description": "Cannot connect to the server. Alspotron cannot be used if another program is using port 1608",
+  "lyrics.disconnected.description": "Cannot connect to the server.",
   "lyrics.mode": "Lyrics mode",
   "lyrics.delay": "Lyrics delay",
 
@@ -101,6 +101,9 @@
   "setting.general.source-provider": "Now Playing Source Provider",
   "setting.general.source-provider.tuna-obs": "Tuna OBS",
   "setting.general.source-provider.web-now-playing": "WebNowPlaying",
+  "setting.general.lyric-provider": "Lyric Provider",
+  "setting.general.lyric-provider.alsong": "Alsong",
+  "setting.general.lyric-provider.lrclib": "LrcLib",
 
   "setting.position.select-position-to-display-lyrics": "Lyrics Position",
   "setting.position.top-left": "Top left",

@@ -5,10 +5,13 @@ import useConfig from './useConfig';
 import { DEFAULT_CONFIG } from '../../common/constants';
 import { LyricData, LyricMetadata, LyricProvider, SearchParams } from '../../common/provider';
 
+type RendererLyricProvider = Omit<LyricProvider, 'getOptions' | 'onOptionChange'> & {
+  [K in 'getOptions' | 'onOptionChange']: (...params: Parameters<LyricProvider[K]>) => Promise<ReturnType<LyricProvider[K]>>;
+};
 type LyricProviderThis = {
   list: () => Promise<string[]>;
 };
-export type LyricProviderAccessor = Accessor<LyricProvider> & LyricProviderThis;
+export type LyricProviderAccessor = Accessor<RendererLyricProvider> & LyricProviderThis;
 
 export const useLyricProvider = (): LyricProviderAccessor => {
   const [config] = useConfig();
@@ -24,8 +27,14 @@ export const useLyricProvider = (): LyricProviderAccessor => {
     },
     async searchLyrics(params: SearchParams): Promise<LyricMetadata[]> {
       return window.ipcRenderer.invoke('lyric-provider:search-lyrics', params);
-    }
-  } satisfies LyricProvider)));
+    },
+    async getOptions(language: string) {
+      return window.ipcRenderer.invoke('lyric-provider:get-options', language);
+    },
+    async onOptionChange(options: Record<string, unknown>) {
+      return window.ipcRenderer.invoke('lyric-provider:on-option-change', options);
+    },
+  } satisfies RendererLyricProvider)));
 
   const result = function (this: LyricProviderThis) {
     return getter();

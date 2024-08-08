@@ -17,9 +17,6 @@ export abstract class BaseSourceProvider extends EventEmitter<SourceProviderEven
   public getOptions(language: string): Exclude<SettingOption, ButtonOption>[] {
     return [];
   }
-  public getOptionValue(key: string): unknown {
-    return null;
-  }
   public onOptionChange(options: Record<string, unknown>) {}
 
   public abstract isRunning(): boolean;

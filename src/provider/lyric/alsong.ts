@@ -1,6 +1,7 @@
-import { LyricProvider, LyricData, LyricMetadata, SearchParams } from '../../../common/provider';
+import { LyricData, LyricMetadata, LyricProvider, SearchParams } from '../../../common/provider';
 
 import type { Alsong, Lyric as AlsongLyric, LyricMetadata as AlsongLyricMetadata } from 'alsong';
+import type { ButtonOption, SettingOption } from '../../../common/plugins';
 
 const convertLyricMetadata = (metadata: AlsongLyricMetadata): LyricMetadata => {
   return {
@@ -90,5 +91,12 @@ export class AlsongLyricProvider implements LyricProvider {
 
     const result = await this.alsong(artist, title, { playtime: params.playtime, page }).catch(() => []);
     return result.map(convertLyricMetadata);
+  }
+
+  public getOptions(language: string): Exclude<SettingOption, ButtonOption>[] {
+    return [];
+  }
+
+  public onOptionChange(options: Record<string, unknown>) {
   }
 }
