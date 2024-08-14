@@ -29,6 +29,9 @@
   "lyrics.disconnected.description": "Cannot connect to the server.",
   "lyrics.mode": "Lyrics mode",
   "lyrics.delay": "Lyrics delay",
+  "lyrics.delay.slowly": "Slowly",
+  "lyrics.delay.default": "Default",
+  "lyrics.delay.fastly": "Fastly",
 
   "setting.title.position": "position",
   "setting.title.view": "View",

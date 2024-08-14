@@ -29,6 +29,9 @@
   "lyrics.disconnected.description": "サーバーに接続できません。",
   "lyrics.mode": "Lyrics mode",
   "lyrics.delay": "Lyrics delay",
+  "lyrics.delay.slowly": "Slowly",
+  "lyrics.delay.default": "Default",
+  "lyrics.delay.fastly": "Fastly",
 
   "setting.title.position": "位置",
   "setting.title.view": "View",

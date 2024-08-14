@@ -11,6 +11,7 @@ import LyricProgressBar from '../main/components/LyricProgressBar';
 import Selector from '../components/Select';
 import { LyricMapperMode } from '../../common/schema';
 import { getLyricMapperId } from '../../common/utils';
+import { Slider } from '../components/Slider';
 
 const SideBar = () => {
   const { coverUrl, title, lyrics, playerLyrics, lyricData, lyricMode, isMapped } = usePlayingInfo();
@@ -78,25 +79,46 @@ const SideBar = () => {
               onChange={onChangeLyricMode}
             />
           </div>,
-          <div class={'w-full h-full flex justify-between items-center'}>
-            <Trans key={'lyrics.delay'}/>
-            <label class={'input-group group'}>
-              <input
-                type={'number'}
-                class={'input'}
-                value={lyricMapperItem()?.delay ?? 0}
-                onChange={(e) => {
-                  setLyricMapper({
-                    [getLyricMapperId(title(), coverUrl())]: {
-                      delay: ~~(e.currentTarget.valueAsNumber ?? 0),
-                    },
-                  });
-                }}
-              />
-              <div class={'suffix group-focus-within:suffix-focus-within'}>
-                ms
-              </div>
-            </label>
+          <div class={'w-full h-full flex flex-col justify-between items-center'}>
+            <div class={'w-full h-full flex justify-between items-center'}>
+              <Trans key={'lyrics.delay'}/>
+              <label class={'input-group group'}>
+                <input
+                  type={'number'}
+                  class={'input w-[20ch]'}
+                  value={lyricMapperItem()?.delay ?? 0}
+                  onChange={(e) => {
+                    setLyricMapper({
+                      [getLyricMapperId(title(), coverUrl())]: {
+                        delay: ~~(e.currentTarget.valueAsNumber ?? 0),
+                      },
+                    });
+                  }}
+                />
+                <div class={'suffix group-focus-within:suffix-focus-within'}>
+                  ms
+                </div>
+              </label>
+            </div>
+            <Slider
+              min={-3000}
+              max={3000}
+              step={100}
+              class={'w-full mt-2'}
+              label={[
+                { value: -3000, label: t('lyrics.delay.slowly') },
+                { value: 0, label: t('lyrics.delay.default') },
+                { value: 3000, label: t('lyrics.delay.fastly') },
+              ]}
+              value={lyricMapperItem()?.delay ?? 0}
+              onChange={(value) => {
+                setLyricMapper({
+                  [getLyricMapperId(title(), coverUrl())]: {
+                    delay: value,
+                  },
+                });
+              }}
+            />
           </div>,
         ]}
       >

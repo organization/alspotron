@@ -115,7 +115,7 @@
   }
 
   .select {
-    @apply outline-none bg-transparent w-fit min-w-[20ch];
+    @apply outline-none bg-transparent w-fit min-w-[15ch];
   }
 
   .spinner-shape {
