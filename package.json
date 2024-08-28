@@ -116,7 +116,7 @@
     "@jellybrick/wql-process-monitor": "1.4.8",
     "extract-file-icon": "0.3.2",
     "hmc-win32": "1.4.92",
-    "mica-electron": "1.5.15",
+    "mica-electron": "1.5.16",
     "node-window-manager": "2.2.4"
   },
   "overrides": {
