@@ -68,7 +68,7 @@
     "patch-package": "8.0.0",
     "postcss": "8.4.45",
     "tailwindcss": "3.4.10",
-    "terser": "5.31.6",
+    "terser": "5.32.0",
     "type-fest": "4.26.1",
     "typescript": "5.5.4",
     "vite": "5.4.3",
