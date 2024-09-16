@@ -59,7 +59,7 @@
     "del-cli": "5.1.0",
     "electron": "32.1.0",
     "electron-builder": "24.13.3",
-    "eslint": "8.57.0",
+    "eslint": "8.57.1",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "2.30.0",
     "eslint-plugin-prettier": "5.2.1",
