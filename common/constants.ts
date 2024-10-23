@@ -58,7 +58,7 @@ export const DEFAULT_STYLE = {
 };
 
 export const DEFAULT_CONFIG = {
-  version: 3 as const,
+  version: 4 as const,
 
   views: [
     {
@@ -80,8 +80,11 @@ export const DEFAULT_CONFIG = {
   developer: false,
   hardwareAcceleration: true,
   streamingMode: false,
+
   lyricProvider: 'alsong' as const,
   sourceProvider: 'tuna-obs' as const,
+
+  experimental: {},
 
   providers: {
     source: {

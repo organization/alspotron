@@ -35,6 +35,8 @@ const LYRIC_WINDOW_OPTIONS = {
 };
 
 export class LyricWindowProvider extends EventEmitter implements WindowProvider {
+  private alwaysOnTopFix: NodeJS.Timeout | null = null;
+
   protected onUpdateWindowConfig = () => this.updateWindowConfig();
   protected index: number;
 
@@ -86,11 +88,16 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
 
     config.unwatch(this.onUpdateWindowConfig);
 
+    if (this.alwaysOnTopFix !== null) {
+      clearInterval(this.alwaysOnTopFix);
+      this.alwaysOnTopFix = null;
+    }
+
     this.window.close();
   }
 
   public updateWindowConfig() {
-    const { views, streamingMode } = config.get();
+    const { views, streamingMode, experimental } = config.get();
     const selectedTheme = views[this.index]?.theme;
     const windowPosition = views[this.index]?.position ?? DEFAULT_CONFIG.views[0].position;
 
@@ -112,6 +119,13 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
     } else {
       this.window.setSkipTaskbar(true);
       this.window.setFocusable(false);
+    }
+
+    if (experimental.alwaysOnTopFix) {
+      if (this.alwaysOnTopFix !== null) clearInterval(this.alwaysOnTopFix);
+      this.alwaysOnTopFix = setInterval(() => {
+        this.window.setAlwaysOnTop(true);
+      }, 10000);
     }
 
     const bounds = this.getDisplayBounds();

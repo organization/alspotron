@@ -107,6 +107,9 @@
   "setting.general.lyric-provider": "Lyric Provider",
   "setting.general.lyric-provider.alsong": "Alsong",
   "setting.general.lyric-provider.lrclib": "LrcLib",
+  "setting.general.experimental": "Experimental Features (beta)",
+  "setting.general.fix-always-on-top.title": "Fix always on top bug",
+  "setting.general.fix-always-on-top.description": "It fixes the bug that Lyric Window is not always on top in Windows",
 
   "setting.position.select-position-to-display-lyrics": "歌詞を表示する位置",
   "setting.position.top-left": "左上",

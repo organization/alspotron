@@ -129,7 +129,7 @@ const GeneralContainer = () => {
         <div class={'text-md'}>
           <Trans key={'setting.general.source-provider'}/>
         </div>
-        <div class={'flex-1'} />
+        <div class={'flex-1'}/>
         <Selector
           mode={'select'}
           placeholder={t('setting.general.placeholder')}
@@ -175,7 +175,7 @@ const GeneralContainer = () => {
         <div class={'text-md'}>
           <Trans key={'setting.general.lyric-provider'}/>
         </div>
-        <div class={'flex-1'} />
+        <div class={'flex-1'}/>
         <Selector
           mode={'select'}
           placeholder={t('setting.general.placeholder')}
@@ -188,6 +188,34 @@ const GeneralContainer = () => {
           format={(str) => t(`setting.general.lyric-provider.${str}`, {
             defaultValue: str,
           })}
+        />
+      </Card>
+    </div>
+    <div class={'text-md mt-4 mb-1 px-4'}>
+      <Trans key={'setting.general.experimental'}/>
+    </div>
+    <div class={'flex flex-col justify-start items-stretch gap-1 px-4'}>
+      <Card class={'flex flex-row justify-between items-center gap-1'}>
+        <div class={'flex flex-col justify-center items-start'}>
+          <div class={'text-md flex gap-1 items-center'}>
+            <Trans key={'setting.general.fix-always-on-top.title'}/>
+            <svg
+              class={'w-4 h-4 fill-current opacity-50'}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 -960 960 960"
+            >
+              <path
+                d="M200-120q-51 0-72.5-45.5T138-250l222-270v-240h-40q-17 0-28.5-11.5T280-800q0-17 11.5-28.5T320-840h320q17 0 28.5 11.5T680-800q0 17-11.5 28.5T640-760h-40v240l222 270q32 39 10.5 84.5T760-120H200Zm80-120h400L544-400H416L280-240Zm-80 40h560L520-492v-268h-80v268L200-200Zm280-280Z"
+              />
+            </svg>
+          </div>
+          <div class={'text-xs text-black/50 dark:text-white/75'}>
+            <Trans key={'setting.general.fix-always-on-top.description'}/>
+          </div>
+        </div>
+        <Switch
+          value={!!config()?.experimental.alwaysOnTopFix}
+          onChange={(checked) => setConfig({ experimental: { alwaysOnTopFix: checked } })}
         />
       </Card>
     </div>
@@ -388,7 +416,8 @@ const GeneralContainer = () => {
         {t('setting.general.language.alert')}
       </div>
     </Modal>
-  </div>;
+  </div>
+    ;
 };
 
 export default GeneralContainer;
