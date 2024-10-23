@@ -16,9 +16,14 @@ type ServerType = NodeServer | Http2Server | Http2SecureServer;
 
 export class TunaObsProvider extends BaseSourceProvider {
   public override name = 'tuna-obs';
+
   private app: Hono;
   private port = 1608;
   private server: ServerType | null = null;
+
+  private interpolationTime = 100;
+  private lastUpdateData: UpdateData | null = null;
+  private interpolation: NodeJS.Timeout | null = null;
 
   constructor() {
     super();
@@ -39,7 +44,8 @@ export class TunaObsProvider extends BaseSourceProvider {
       (ctx) => {
         const body = ctx.req.valid('json');
 
-        this.emit('update', this.convertData(body));
+        this.lastUpdateData = this.convertData(body);
+        this.emit('update', this.lastUpdateData);
 
         return ctx.text('success', 200);
       },
@@ -54,7 +60,10 @@ export class TunaObsProvider extends BaseSourceProvider {
 
   public override start(options: Record<string, unknown>) {
     this.port = Number(options.port);
+    this.interpolationTime = Number(options.interpolationTime);
+
     if (!Number.isFinite(this.port)) this.port = 1608;
+    if (!Number.isFinite(this.interpolationTime)) this.interpolationTime = 100;
 
     this.server = serve({
       fetch: this.app.fetch,
@@ -63,6 +72,7 @@ export class TunaObsProvider extends BaseSourceProvider {
     }, () => {
       this.emit('start');
     });
+    this.setupInterpolation();
 
     this.server.on('error', (err) => {
       const error = new Error('TunaOBS: Server error occurred.');
@@ -79,6 +89,11 @@ export class TunaObsProvider extends BaseSourceProvider {
   public override close(): void {
     this.server?.close();
 
+    if (this.interpolation !== null) {
+      clearInterval(this.interpolation);
+      this.interpolation = null;
+    }
+
     super.close();
   }
 
@@ -94,6 +109,15 @@ export class TunaObsProvider extends BaseSourceProvider {
         name: getTranslation('provider.source.tuna-obs.port.name', language),
         description: getTranslation('provider.source.tuna-obs.port.description', language),
         default: '1608',
+      },
+      {
+        type: 'number',
+        key: 'interpolationTime',
+        min: 1,
+        max: 3000,
+        name: getTranslation('provider.source.tuna-obs.interpolation-time.name', language),
+        description: getTranslation('provider.source.tuna-obs.interpolation-time.description', language),
+        default: 100,
       }
     ];
   }
@@ -107,7 +131,30 @@ export class TunaObsProvider extends BaseSourceProvider {
       this.start(options);
     }
 
+    if (options.interpolationTime) {
+      this.interpolationTime = Number(options.interpolationTime);
+      if (!Number.isFinite(this.interpolationTime)) this.interpolationTime = 100;
+
+      this.setupInterpolation();
+    }
+
     super.onOptionChange(options);
+  }
+
+  private setupInterpolation() {
+    if (this.interpolation !== null) clearInterval(this.interpolation);
+    this.interpolation = setInterval(() => {
+      if (!this.lastUpdateData) return;
+      if (this.lastUpdateData.data.type !== 'playing') return;
+
+      if (this.lastUpdateData.data.duration - this.lastUpdateData.data.progress < this.interpolationTime) {
+        this.lastUpdateData.data.progress = this.lastUpdateData.data.duration;
+      } else {
+        this.lastUpdateData.data.progress += this.interpolationTime;
+      }
+
+      this.emit('update', this.lastUpdateData);
+    }, this.interpolationTime);
   }
 
   private convertData(data: TunaObsBody): UpdateData {

@@ -3,7 +3,7 @@ import {
   Accessor,
   createContext,
   createEffect,
-  createMemo, createRenderEffect,
+  createMemo,
   createSignal,
   JSX,
   on,
@@ -136,14 +136,6 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     console.log('get-last-update', update);
     if (update) setUpdateData(update);
   });
-
-  // onMount(() => {
-  //   setInterval(() => {
-  //     if (status() === 'playing') {
-  //       setProgress(progress() + 100);
-  //     }
-  //   }, 100);
-  // });
 
   const onLyricChange = async () => {
     const data = updateData();

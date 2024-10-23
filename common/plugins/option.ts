@@ -18,6 +18,9 @@ export interface StringOption extends BaseSettingOption {
 export interface NumberOption extends BaseSettingOption {
   type: 'number';
   default?: number;
+  min?: number;
+  max?: number;
+  step?: number;
 }
 export interface BooleanOption extends BaseSettingOption {
   type: 'boolean';

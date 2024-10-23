@@ -279,5 +279,7 @@
   "title.setting": "Alspotron-Einstellungen",
 
   "provider.source.tuna-obs.port.name": "Port",
-  "provider.source.tuna-obs.port.description": "Port number to connect to Tuna OBS Plugin, default is 1608"
+  "provider.source.tuna-obs.port.description": "Port number to connect to Tuna OBS Plugin, default is 1608",
+  "provider.source.tuna-obs.interpolation-time.name": "Interpolation time",
+  "provider.source.tuna-obs.interpolation-time.description": "It determine how naturally interpolate when the interval of the information provided by Tuna OBS is long; default is 100. The unit is ms"
 }

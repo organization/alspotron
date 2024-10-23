@@ -1,11 +1,10 @@
 import { Match, Switch as SwitchFlow } from 'solid-js';
 import { Marquee } from '@suyongs/solid-utility';
 
-import Card from '../../components/Card';
 import Selector from '../../components/Select';
 import Switch from '../../components/Switch';
 
-import type { ButtonOption, SelectOption, SettingOption } from '../../../common/plugins';
+import type { ButtonOption, NumberOption, SelectOption, SettingOption } from '../../../common/plugins';
 
 export interface SettingOptionRendererProps<Type> {
   option: SettingOption;
@@ -35,10 +34,21 @@ export const SettingOptionRenderer = <Type,>(props: SettingOptionRendererProps<T
             format={(option) => (props.option as SelectOption).options.find((it) => it.value === option)?.label ?? option}
           />
         </Match>
-        <Match when={props.option.type === 'string' || props.option.type === 'number'}>
+        <Match when={props.option.type === 'string'}>
           <input
-            type={props.option.type === 'string' ? 'text' : 'number'}
+            type={'text'}
             class={'input'}
+            value={props.value as string}
+            onChange={(event) => props.onChange?.(event.target.value as Type)}
+          />
+        </Match>
+        <Match when={props.option.type === 'number'}>
+          <input
+            type={'number'}
+            class={'input'}
+            min={(props.option as NumberOption).min}
+            max={(props.option as NumberOption).max}
+            step={(props.option as NumberOption).step}
             value={props.value as string}
             onChange={(event) => props.onChange?.(event.target.value as Type)}
           />

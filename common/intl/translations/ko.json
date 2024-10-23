@@ -280,5 +280,7 @@
   "title.setting": "Alspotron 설정",
 
   "provider.source.tuna-obs.port.name": "포트",
-  "provider.source.tuna-obs.port.description": "Tuna OBS 플러그인과 연결할 포트입니다. 기본값은 1608 입니다."
+  "provider.source.tuna-obs.port.description": "Tuna OBS 플러그인과 연결할 포트입니다. 기본값은 1608 입니다.",
+  "provider.source.tuna-obs.interpolation-time.name": "보간 시간",
+  "provider.source.tuna-obs.interpolation-time.description": "Tuna OBS가 정보를 제공하는 간격이 길때 얼마나 자연스럽게 보간을 할지 결정합니다. 기본값은 100이며, 단위는 ms 입니다."
 }
