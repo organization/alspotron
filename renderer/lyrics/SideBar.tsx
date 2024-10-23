@@ -38,7 +38,7 @@ const SideBar = () => {
   });
 
   const onChangeLyricMode = (mode: LyricMode) => {
-    let newMode: LyricMapperMode | undefined = undefined;
+    let newMode: LyricMapperMode | null = null;
     if (mode === 'player') newMode = { type: 'player' };
     if (mode === 'none') newMode = { type: 'none' };
 

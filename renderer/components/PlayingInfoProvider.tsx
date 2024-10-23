@@ -83,7 +83,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
 
     const mode = mapper[id()]?.mode;
 
-    if (mode === undefined) return 'auto';
+    if (!mode) return 'auto';
     if (mode.type === 'none') return 'none';
     if (mode.type === 'player') return 'player';
 

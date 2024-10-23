@@ -133,7 +133,7 @@ export const LyricMapperModeSchema = z.union([
   LyricMapperModeProviderSchema,
 ]);
 export const LyricMapperSchema = z.record(z.object({
-  mode: LyricMapperModeSchema.optional(),
+  mode: LyricMapperModeSchema.optional().nullable(),
   delay: z.number().optional(),
 }).optional());
 
