@@ -1,13 +1,14 @@
 import { createSignal, Switch, Match } from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
 
-import MainIcon from '../../../assets/icon_music.png';
-import packageJson from '../../../package.json';
 import Card from '../../components/Card';
 import Spinner from '../../components/Spinner';
 
-import type { UpdateCheckResult } from 'electron-updater';
+import MainIcon from '../../../assets/icon_music.png';
+import ErrorIcon from '../../../assets/icon_error.png';
+import packageJson from '../../../package.json';
 
+import type { UpdateCheckResult } from 'electron-updater';
 
 const InfoContainer = () => {
   const [updateData, setUpdateData] = createSignal<{
@@ -55,6 +56,21 @@ const InfoContainer = () => {
           </div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
             https://github.com/organization/alspotron
+          </div>
+        </div>
+        <div class={'flex-1'} />
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.25 4.75a1.5 1.5 0 0 0-1.5 1.5v11.5a1.5 1.5 0 0 0 1.5 1.5h11.5a1.5 1.5 0 0 0 1.5-1.5v-4a1 1 0 1 1 2 0v4a3.5 3.5 0 0 1-3.5 3.5H6.25a3.5 3.5 0 0 1-3.5-3.5V6.25a3.5 3.5 0 0 1 3.5-3.5h4a1 1 0 1 1 0 2h-4Zm6.5-1a1 1 0 0 1 1-1h6.5a1 1 0 0 1 1 1v6.5a1 1 0 1 1-2 0V6.164l-4.793 4.793a1 1 0 1 1-1.414-1.414l4.793-4.793H13.75a1 1 0 0 1-1-1Z" class={'fill-black dark:fill-white'} />
+        </svg>
+      </Card>
+      <Card class={'flex flex-row justify-start items-center gap-1'} onClick={() => onLink('https://github.com/organization/alspotron/issues/new')}>
+        <img src={ErrorIcon} class={'w-6 h-6 mr-4 object-contain'} alt={'Main Icon'}/>
+        <div class={'flex flex-col justify-center items-start'}>
+          <div class={'text-md'}>
+            <Trans key={'setting.about.bug-report'} />
+          </div>
+          <div class={'text-xs text-black/50 dark:text-white/75'}>
+            https://github.com/organization/alspotron/issues/new
           </div>
         </div>
         <div class={'flex-1'} />

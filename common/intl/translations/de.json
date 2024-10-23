@@ -58,6 +58,7 @@
 
   "setting.about.version": "Alspotron-Version",
   "setting.about.support": "Support",
+  "setting.about.bug-report": "Report bug",
   "setting.about.checking-for-updates": "Suche nach Updates",
   "setting.about.update-available": "Update verfügbar",
   "setting.about.latest-version": "neueste Version: {{version}}",

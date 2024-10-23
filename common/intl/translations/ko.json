@@ -58,6 +58,7 @@
 
   "setting.about.version": "Alspotron 버전",
   "setting.about.support": "지원",
+  "setting.about.bug-report": "버그 제보 및 문의",
   "setting.about.checking-for-updates": "업데이트를 확인하는 중입니다...",
   "setting.about.update-available": "새로운 업데이트가 있습니다.",
   "setting.about.latest-version": "최신 버전: {{version}}",

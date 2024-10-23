@@ -58,6 +58,7 @@
 
   "setting.about.version": "Alspotronのバージョン",
   "setting.about.support": "サポート",
+  "setting.about.bug-report": "Report bug",
   "setting.about.checking-for-updates": "アップデートを確認中...",
   "setting.about.update-available": "アップデートがあります。",
   "setting.about.latest-version": "最新バージョン: {{version}}",
