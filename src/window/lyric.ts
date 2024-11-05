@@ -36,6 +36,8 @@ const LYRIC_WINDOW_OPTIONS = {
 
 export class LyricWindowProvider extends EventEmitter implements WindowProvider {
   private alwaysOnTopFix: NodeJS.Timeout | null = null;
+  private invisibleFix: NodeJS.Timeout | null = null;
+  private invisibleCount = 5;
 
   protected onUpdateWindowConfig = () => this.updateWindowConfig();
   protected index: number;
@@ -54,6 +56,8 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
 
     Menu.setApplicationMenu(null);
 
+    this.window.setTitle(`Alspotron: ${config.get().views[index].name}`);
+    this.window.setThumbnailClip(this.getWindowRect());
     this.window.setAlwaysOnTop(true, 'main-menu', 1);
     this.window.setVisibleOnAllWorkspaces(true, {
       visibleOnFullScreen: true,
@@ -70,7 +74,27 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
     screen.addListener('display-added', this.onUpdateWindowConfig);
     screen.addListener('display-removed', this.onUpdateWindowConfig);
 
-    this.updateWindowConfig();
+    // 특정 게임에서 크로미움 렌더러를 강제로 휴지시키는것으로 보임.
+    // isAlwaysOnTop으로 감지하여 최대 5번까지 복구 시도
+    // setAlwaysOnTop을 main-menu 위로 올리거나, interval안에서 설정할시 창에 포커스되니 주의
+    this.invisibleFix = setInterval(() => {
+      if (!this.window.isAlwaysOnTop()) {
+        if (this.invisibleCount > 0) {
+          this.window.show();
+          this.invisibleCount -= 1;
+        }
+      } else {
+        this.invisibleCount = 5;
+      }
+    }, 1000);
+
+    // 바로 설정하면 몇가지 옵션이 설정되지 않음
+    let count = 2;
+    const initTimer = setInterval(() => {
+      count -= 1;
+      if (count > 0) this.updateWindowConfig();
+      else clearInterval(initTimer);
+    }, 500);
 
     config.watch(this.onUpdateWindowConfig);
   }
@@ -92,26 +116,20 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
       clearInterval(this.alwaysOnTopFix);
       this.alwaysOnTopFix = null;
     }
+    if (this.invisibleFix !== null) {
+      clearInterval(this.invisibleFix);
+      this.invisibleFix = null;
+      this.invisibleCount = 5;
+    }
 
     this.window.close();
   }
 
   public updateWindowConfig() {
     const { views, streamingMode, experimental } = config.get();
-    const selectedTheme = views[this.index]?.theme;
-    const windowPosition = views[this.index]?.position ?? DEFAULT_CONFIG.views[0].position;
+    const view = views[this.index];
 
-    const style = (() => {
-      const list = themeList.get();
-
-      let result = list[selectedTheme ?? ''] ?? DEFAULT_STYLE;
-      if (selectedTheme?.startsWith(PRESET_PREFIX)) {
-        const name = selectedTheme.replace(PRESET_PREFIX, '');
-        result = presetThemes[name] ?? DEFAULT_STYLE;
-      }
-
-      return result;
-    })();
+    this.window.setTitle(`Alspotron: ${view.name}`);
 
     if (streamingMode) {
       this.window.setSkipTaskbar(false);
@@ -128,7 +146,39 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
       }, 10000);
     }
 
+    const windowRect = this.getWindowRect();
+
+    // electron issue: https://github.com/electron/electron/issues/16711#issuecomment-1311824063
+    const resizable = this.window.isResizable();
+    this.window.unmaximize();
+    this.window.setResizable(true);
+    this.window.setSize(windowRect.width, windowRect.height);
+    this.window.setResizable(resizable);
+    this.window.setPosition(windowRect.x, windowRect.y);
+    this.window.setThumbnailClip(windowRect);
+  }
+
+  private getStyle() {
+    const { views } = config.get();
+    const selectedTheme = views[this.index]?.theme;
+    const list = themeList.get();
+
+    let result = list[selectedTheme ?? ''] ?? DEFAULT_STYLE;
+    if (selectedTheme?.startsWith(PRESET_PREFIX)) {
+      const name = selectedTheme.replace(PRESET_PREFIX, '');
+      result = presetThemes[name] ?? DEFAULT_STYLE;
+    }
+
+    return result;
+  }
+
+  private getWindowRect() {
+    const { views } = config.get();
+
+    const style = this.getStyle();
     const bounds = this.getDisplayBounds();
+    const windowPosition = views[this.index]?.position ?? DEFAULT_CONFIG.views[0].position;
+
     const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), bounds.width);
     const windowHeight = style.maxHeight;
 
@@ -162,13 +212,12 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
         + ((bounds.height - windowHeight) / 2);
     })();
 
-    // electron issue: https://github.com/electron/electron/issues/16711#issuecomment-1311824063
-    const resizable = this.window.isResizable();
-    this.window.unmaximize();
-    this.window.setResizable(true);
-    this.window.setSize(windowWidth, windowHeight);
-    this.window.setResizable(resizable);
-    this.window.setPosition(Math.round(anchorX), Math.round(anchorY));
+    return {
+      x: Math.round(anchorX),
+      y: Math.round(anchorY),
+      width: windowWidth,
+      height: windowHeight,
+    };
   }
 
   protected getDisplayBounds() {
