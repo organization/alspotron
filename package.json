@@ -70,7 +70,7 @@
     "tailwindcss": "3.4.15",
     "terser": "5.36.0",
     "type-fest": "4.27.0",
-    "typescript": "5.6.3",
+    "typescript": "5.7.2",
     "vite": "5.4.11",
     "vite-plugin-solid": "2.10.2",
     "vite-plugin-static-copy": "2.1.0"
