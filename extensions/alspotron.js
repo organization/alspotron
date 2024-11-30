@@ -46,7 +46,7 @@
     };
 
     if (!Spicetify.Player.isPlaying()) {
-      info.status = 'stopped';
+      info.status = 'paused';
       return info;
     }
 
