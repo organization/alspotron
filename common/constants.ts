@@ -1,3 +1,6 @@
+import packageJson from '../package.json';
+
+export const VERSION = packageJson.version;
 export const DEFAULT_STYLE = {
   font: 'Pretendard JP Variable',
   fontWeight: '400',
@@ -105,6 +108,9 @@ export const DEFAULT_CONFIG = {
     config: {},
   },
 
+  __internal__: {
+    version: VERSION,
+  },
 };
 
 export const PRESET_PREFIX = '__preset__';

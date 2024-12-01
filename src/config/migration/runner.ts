@@ -19,7 +19,7 @@ export const createMigrator = (table: MigrateTable, prevVersion: string) => {
       const bMin = minVersion(b);
 
       if (!aMin || !bMin) return 0;
-      return lt(aMin, bMin) ? 1 : -1;
+      return lt(aMin, bMin) ? -1 : 1;
     })
     .map(([matcher, migrator]) => {
       if (clean(matcher) !== null) {
@@ -31,8 +31,7 @@ export const createMigrator = (table: MigrateTable, prevVersion: string) => {
         return migrator;
       }
     })
-    .filter(Boolean)
-    .reverse();
+    .filter(Boolean);
 
   return (initData: MigratorData) => {
     const result = { ...initData };

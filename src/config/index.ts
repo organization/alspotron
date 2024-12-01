@@ -9,9 +9,8 @@ import { createMigrator, migrateTable } from './migration';
 
 import { State } from './state';
 
+import { VERSION } from '../../common/constants';
 import { ConfigSchema, GameListSchema, LyricMapperSchema, ThemeListSchema } from '../../common/schema';
-
-import packageJson from '../../package.json';
 
 let resolver: () => void = () => null;
 const init = {
@@ -52,7 +51,7 @@ const tryMigration = () => {
   if (isLoaded) {
     const internalConfig = config.get()['__internal__'];
     const prevVersion = typeof internalConfig?.version === 'string' ? internalConfig.version : '0.0.0';
-    const nowVersion = packageJson.version;
+    const nowVersion = VERSION;
     console.log('[Alspotron] prepare for migration', prevVersion, '->', nowVersion);
 
     const migrator = createMigrator(migrateTable, prevVersion);
