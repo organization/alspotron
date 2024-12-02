@@ -6,8 +6,12 @@
   const LyricResolvers = {
     v2(uri) {
       return Spicetify.CosmosAsync
-        .get(`wg://lyrics/v1/track/${uri.id}`)
-        .then(payload => payload.lines)
+        .get(`https://spclient.wg.spotify.com/color-lyrics/v2/track/${uri.id}?format=json&vocalRemoval=false&market=from_token`)
+        .then(payload =>
+          payload.lyrics.syncType === 'LINE_SYNCED'
+            ? payload.lyrics.lines
+            : Promise.reject('No synced lyrics')
+        )
         .catch(() => {
           return [];
         });
@@ -21,10 +25,11 @@
   const getLyric = async () => {
     const uri = Spicetify.URI.from(Spicetify.Player.data.item.uri);
     const lines = await LyricResolvers.current(uri);
-    return lines.reduce((lyric, line) => {
-      lyric[line.time] = line.words.map(v => v.string).filter(v => v);
-      return lyric;
-    }, {});
+    return lines
+      .reduce((lyric, line) => {
+        lyric[line.startTimeMs] = [line.words];
+        return lyric;
+      }, {});
   };
 
   let previousInfo = {};

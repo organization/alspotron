@@ -163,30 +163,20 @@ export class TunaObsProvider extends BaseSourceProvider {
       provider: 'tuna-obs',
     };
 
-    if (data.data.status === 'playing') {
-      result.data = {
-        type: 'playing',
-        id: `${data.data.title}:${data.data.cover_url}`,
-        title: data.data.title ?? '',
-        artists: data.data.artists ?? [],
-        progress: data.data.progress ?? 0,
-        duration: data.data.duration ?? 0,
-        coverUrl: data.data.cover_url ?? '',
-        playerLyrics: data.data.lyrics,
-        metadata: data,
-      };
-    }
+    if (data.data.status === 'playing' || data.data.status === 'paused') {
+      const lastLyric = this.lastUpdateData?.data.type !== 'idle'
+        ? this.lastUpdateData?.data.playerLyrics
+        : undefined;
 
-    if (data.data.status === 'paused') {
       result.data = {
-        type: 'paused',
+        type: data.data.status,
         id: `${data.data.title}:${data.data.cover_url}`,
         title: data.data.title ?? '',
         artists: data.data.artists ?? [],
         progress: data.data.progress ?? 0,
         duration: data.data.duration ?? 0,
         coverUrl: data.data.cover_url ?? '',
-        playerLyrics: data.data.lyrics,
+        playerLyrics: data.data.lyrics ?? lastLyric,
         metadata: data,
       };
     }
