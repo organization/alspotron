@@ -194,6 +194,8 @@
   "setting.theme.previous-lyrics-opacity": "이전 가사 투명도",
   "setting.theme.next-lyrics-scale": "다음 가사 크기",
   "setting.theme.previous-lyrics-scale": "이전 가사 크기",
+  "setting.theme.prevnext-lyric-threshold": "이전/다음 가사를 보여주기 위한 최대 평균 줄 수",
+  "setting.theme.prevnext-lyric-threshold-description": "자막의 평균 줄 수가 이 값을 넘어갈 경우 이전 / 다음 자막을 표시하지 않습니다.\n-1일 경우 항상 표시합니다.",
   "setting.theme.theme": "테마 설정",
   "setting.theme.user-css": "사용자 정의 CSS",
   "setting.theme.reset": "초기화",

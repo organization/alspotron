@@ -194,6 +194,8 @@
   "setting.theme.previous-lyrics-opacity": "Opacity of previous lyrics",
   "setting.theme.next-lyrics-scale": "Scale of next lyrics",
   "setting.theme.previous-lyrics-scale": "Scale of previous lyrics",
+  "setting.theme.prevnext-lyric-threshold": "Number of concurrent lyrics to show prev/next lyrics",
+  "setting.theme.prevnext-lyric-threshold-description": "If the average number of lyric lines exceeds this value, do not show previous/next lyrics.\nIf -1, always show.",
   "setting.theme.theme": "Theme preference",
   "setting.theme.user-css": "Custom CSS",
   "setting.theme.reset": "Reset",
