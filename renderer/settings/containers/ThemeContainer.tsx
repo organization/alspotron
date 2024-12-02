@@ -804,6 +804,24 @@ const ThemeContainer = () => {
           </span>
         </label>
       </Card>
+      <Card class={'flex flex-row justify-between items-center gap-4'}>
+        <div class={'flex flex-col gap-2'}>
+          <div class={'text-md'}>
+            <Trans key={'setting.theme.prevnext-lyric-threshold'}/>
+          </div>
+          <div class={'text-sm opacity-50 whitespace-pre-line'}>
+            <Trans key={'setting.theme.prevnext-lyric-threshold-description'}/>
+          </div>
+        </div>
+        <label class={'input-group group'}>
+          <input
+            type={'number'}
+            class={'input w-48'}
+            value={theme()?.lyric.prevNextLyricThreshold ?? -1}
+            onChange={(event) => setTheme({ lyric: { prevNextLyricThreshold: event.target.valueAsNumber } })}
+          />
+        </label>
+      </Card>
     </div>
     <div class={'text-md mt-4 mb-1 px-4'}>
       <Trans key={'setting.theme.theme'}/>

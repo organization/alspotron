@@ -52,6 +52,7 @@ export const StyleConfigSchema = z.object({
     previousLyricScale: z.number().catch(DEFAULT_STYLE.lyric.previousLyricScale),
     nextLyricOpacity: z.number().catch(DEFAULT_STYLE.lyric.nextLyricOpacity),
     previousLyricOpacity: z.number().catch(DEFAULT_STYLE.lyric.previousLyricOpacity),
+    prevNextLyricThreshold: z.number().catch(DEFAULT_STYLE.lyric.prevNextLyricThreshold),
   }),
 
   position: z.object({

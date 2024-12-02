@@ -36,6 +36,7 @@ export const DEFAULT_STYLE = {
     previousLyricScale: 0.9,
     nextLyricOpacity: 0.5,
     previousLyricOpacity: 0.5,
+    prevNextLyricThreshold: -1,
   },
 
   position: {

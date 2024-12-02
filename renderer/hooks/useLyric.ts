@@ -15,6 +15,15 @@ const useLyric = () => {
   const [lyricMapper] = useLyricMapper();
   const { title, coverUrl, lyrics, progress } = usePlayingInfo();
 
+  const averageLyricLines = createMemo(() => {
+    const lyricsArray = Array.from(lyrics() ?? []);
+    return lyricsArray.reduce((count, row) => count + row.second.length, 0) / lyricsArray.length;
+  });
+
+  const isPrevNextLyricsEnabled = () =>
+    style().lyric.prevNextLyricThreshold < 0 ||
+    averageLyricLines() < style().lyric.prevNextLyricThreshold;
+
   const lastIter = () => {
     const tempLyrics = lyrics();
     if (tempLyrics === null || tempLyrics.size() === 0) return null;
@@ -42,7 +51,7 @@ const useLyric = () => {
   const index = createMemo(() => lastIter()?.first);
 
   const nextLyricsIter = createMemo(() => {
-    let nextLyricLength = style().lyric.nextLyric;
+    let nextLyricLength = isPrevNextLyricsEnabled() ? style().lyric.nextLyric : 0;
 
     const now = lastIter();
     const tempLyrics = lyrics();
@@ -60,7 +69,7 @@ const useLyric = () => {
   });
 
   const getPreviousLyricLength = createMemo(() => {
-    let previousLyricLength = style().lyric.previousLyric;
+    let previousLyricLength = isPrevNextLyricsEnabled() ? style().lyric.previousLyric : 0;
 
     const now = lastIter();
     const tempLyrics = lyrics();
