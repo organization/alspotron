@@ -164,8 +164,9 @@ export class TunaObsProvider extends BaseSourceProvider {
     };
 
     if (data.data.status === 'playing' || data.data.status === 'paused') {
-      const lastLyric = this.lastUpdateData?.data.type !== 'idle'
-        ? this.lastUpdateData?.data.playerLyrics
+      const id = `${data.data.title}:${data.data.cover_url}`;
+      const lastLyric = this.lastUpdateData?.data.type !== 'idle' && this.lastUpdateData?.data.id === id
+        ? this.lastUpdateData.data.playerLyrics
         : undefined;
 
       result.data = {
