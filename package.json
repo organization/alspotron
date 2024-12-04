@@ -121,7 +121,7 @@
   },
   "overrides": {
     "xml2js": "0.6.2",
-    "axios": "1.7.8",
+    "axios": "1.7.9",
     "simple-update-notifier": "2.0.0",
     "@electron/get": "3.1.0",
     "electron": "33.2.1",
