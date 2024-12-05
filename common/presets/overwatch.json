@@ -30,7 +30,8 @@
     "nextLyricScale": 0.8,
     "previousLyricScale": 0.8,
     "nextLyricOpacity": 0.5,
-    "previousLyricOpacity": 0.5
+    "previousLyricOpacity": 0.5,
+    "prevNextLyricThreshold": -1
   },
   "position": {
     "availableAnchor": [
