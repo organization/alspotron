@@ -54,7 +54,7 @@
     "@types/ws": "8.5.13",
     "@typescript-eslint/eslint-plugin": "8.17.0",
     "autoprefixer": "10.4.20",
-    "builtin-modules": "3.3.0",
+    "builtin-modules": "4.0.0",
     "concurrently": "9.1.0",
     "del-cli": "6.0.0",
     "electron": "33.2.1",
