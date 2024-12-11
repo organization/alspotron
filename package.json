@@ -63,7 +63,7 @@
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-prettier": "5.2.1",
-    "eslint-plugin-solid": "0.14.4",
+    "eslint-plugin-solid": "0.14.5",
     "node-addon-api": "8.3.0",
     "patch-package": "8.0.0",
     "postcss": "8.4.49",
