@@ -49,7 +49,7 @@
     "@typescript-eslint/eslint-plugin": "8.18.1",
     "autoprefixer": "10.4.20",
     "bufferutil": "4.0.8",
-    "builtin-modules": "3.3.0",
+    "builtin-modules": "4.0.0",
     "electron": "33.2.1",
     "electron-builder": "24.13.3",
     "eslint": "8.57.1",
