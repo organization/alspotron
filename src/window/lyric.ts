@@ -65,9 +65,9 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
     this.window.setIgnoreMouseEvents(true, { forward: true });
 
     if (app.isPackaged && !process.env.FARM_DEV_SERVER_URL) {
-      this.window.loadFile(path.join(process.env.DIST, 'index.html'));
+      this.window.loadFile(path.join(process.env.DIST, 'main.html'));
     } else {
-      this.window.loadURL(process.env.FARM_DEV_SERVER_URL);
+      this.window.loadURL(`${process.env.FARM_DEV_SERVER_URL}/main.html`);
     }
 
     screen.addListener('display-metrics-changed', this.onUpdateWindowConfig);
