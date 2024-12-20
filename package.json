@@ -49,7 +49,6 @@
     "@typescript-eslint/eslint-plugin": "8.18.1",
     "autoprefixer": "10.4.20",
     "bufferutil": "4.0.8",
-    "builtin-modules": "3.3.0",
     "electron": "33.2.1",
     "electron-builder": "24.13.3",
     "eslint": "8.57.1",
@@ -118,8 +117,7 @@
     "simple-update-notifier": "2.0.0",
     "@electron/get": "3.1.0",
     "electron": "33.2.1",
-    "http-errors": "2.0.0",
-    "vite": "6.0.4"
+    "http-errors": "2.0.0"
   },
   "build": {
     "productName": "Alspotron",
