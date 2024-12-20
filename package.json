@@ -119,7 +119,7 @@
     "@electron/get": "3.1.0",
     "electron": "33.2.1",
     "http-errors": "2.0.0",
-    "vite": "6.0.4"
+    "vite": "6.0.5"
   },
   "build": {
     "productName": "Alspotron",
