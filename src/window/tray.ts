@@ -70,10 +70,10 @@ export class TrayWindowProvider implements WindowProvider {
       return { action: 'deny' };
     });
 
-    if (app.isPackaged) {
-      this.window.loadFile(path.join(__dirname, './tray.html'));
+    if (app.isPackaged && !process.env.FARM_DEV_SERVER_URL) {
+      this.window.loadFile(path.join(__dirname, 'tray.html'));
     } else {
-      this.window.loadURL('http://localhost:5173/tray.html');
+      this.window.loadURL(`${process.env.FARM_DEV_SERVER_URL}/tray.html`);
     }
   }
 

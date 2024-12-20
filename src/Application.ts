@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import ProgressBar from 'electron-progressbar';
-import { autoUpdater, UpdateInfo } from 'electron-differential-updater';
+import { autoUpdater, UpdateInfo } from 'electron-updater';
 import {
   app,
   BrowserWindow,
@@ -81,7 +81,7 @@ class Application {
       if (isWin32()) {
         try {
           // HACK: dynamic import is not working
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
           const extractIcon = (require('extract-file-icon') as typeof import('extract-file-icon'));
           const result = extractIcon(path, 32);
 
