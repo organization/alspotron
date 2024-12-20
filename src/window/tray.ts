@@ -71,7 +71,7 @@ export class TrayWindowProvider implements WindowProvider {
     });
 
     if (app.isPackaged && !process.env.FARM_DEV_SERVER_URL) {
-      this.window.loadFile(path.join(process.env.DIST, 'tray.html'));
+      this.window.loadFile(path.join(__dirname, 'tray.html'));
     } else {
       this.window.loadURL(`${process.env.FARM_DEV_SERVER_URL}/tray.html`);
     }

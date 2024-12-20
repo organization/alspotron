@@ -53,7 +53,7 @@ export class LyricSearchWindowProvider implements WindowProvider {
     }
 
     if (app.isPackaged && !process.env.FARM_DEV_SERVER_URL) {
-      this.window.loadFile(path.join(process.env.DIST, 'lyrics.html'));
+      this.window.loadFile(path.join(__dirname, 'lyrics.html'));
     } else {
       this.window.loadURL(`${process.env.FARM_DEV_SERVER_URL}/lyrics.html`);
     }
