@@ -52,7 +52,7 @@
     "autoprefixer": "10.4.20",
     "bufferutil": "4.0.8",
     "electron": "33.2.1",
-    "electron-builder": "24.13.3",
+    "electron-builder": "25.1.8",
     "eslint": "9.17.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-import-resolver-exports": "1.0.0-beta.5",
