@@ -1,4 +1,5 @@
 import path from 'node:path';
+
 import { defineConfig } from '@farmfe/core';
 import electron from '@farmfe/js-plugin-electron';
 import farmPluginPostcss from '@farmfe/js-plugin-postcss';
@@ -15,16 +16,6 @@ export default defineConfig({
     output: {
       path: 'dist',
     },
-    external: [
-      'electron',
-      '@alexssmusica/ffi-napi',
-      '@alexssmusica/ref-napi',
-      '@jellybrick/wql-process-monitor',
-      'mica-electron',
-      'glasstron',
-      'hmc-win32',
-      'extract-file-icon',
-    ],
   },
   vitePlugins: [
     () => ({
