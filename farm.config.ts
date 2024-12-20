@@ -38,6 +38,7 @@ export default defineConfig({
               'glasstron',
               'hmc-win32',
               'extract-file-icon',
+              'node-window-manager',
             ],
             output: {
               targetEnv: 'node-next',

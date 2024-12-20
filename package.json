@@ -64,7 +64,8 @@
     "terser": "5.37.0",
     "type-fest": "4.30.2",
     "typescript": "5.7.2",
-    "utf-8-validate": "6.0.5"
+    "utf-8-validate": "6.0.5",
+    "vite-plugin-solid": "2.11.0"
   },
   "dependencies": {
     "@codemirror/commands": "6.7.1",
