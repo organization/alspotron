@@ -13,7 +13,7 @@ export interface Plugin {
     off?: () => void;
     listeners: {
       [Key in keyof PluginEventMap]?: PluginEventMap[Key][];
-    }
+    };
     settings: SettingOption[];
     overrides: {
       [Target in keyof OverrideMap]?: OverrideMap[Target][];
@@ -21,8 +21,8 @@ export interface Plugin {
     providers: {
       source: SourceProvider[];
       lyric: LyricProvider[];
-    }
-  }
+    };
+  };
   rawManifest: string;
   manifest: Json;
 

@@ -1,5 +1,4 @@
 export declare namespace IOverlay {
-
   interface IHotkey {
     name: string;
     keyCode: number;
@@ -9,7 +8,7 @@ export declare namespace IOverlay {
       shift?: boolean;
       meta?: boolean;
     };
-    passthrough?: boolean
+    passthrough?: boolean;
   }
 
   interface IRectangle {
@@ -35,7 +34,7 @@ export declare namespace IOverlay {
       right: number;
       top: number;
       height: number;
-    }
+    };
   }
 
   enum FpsPosition {
@@ -46,7 +45,7 @@ export declare namespace IOverlay {
   }
 
   export interface IProcessThread {
-    processId: number,
+    processId: number;
     threadId?: number;
   }
 
@@ -76,21 +75,47 @@ export declare namespace IOverlay {
 
   export function stop(): void;
 
-  export function setEventCallback<T extends unknown[]>(cb: (event: string, ...args: T) => void): void;
+  export function setEventCallback<T extends unknown[]>(
+    cb: (event: string, ...args: T) => void,
+  ): void;
 
   export function setHotkeys(hotkeys: IHotkey[]): void;
 
-  export function sendCommand(arg: { command: 'cursor', cursor: string }): void;
-  export function sendCommand(arg: { command: 'fps', showfps: boolean, position: FpsPosition }): void;
-  export function sendCommand(arg: { command: 'input.intercept', intercept: boolean }): void;
+  export function sendCommand(arg: { command: 'cursor'; cursor: string }): void;
+  export function sendCommand(arg: {
+    command: 'fps';
+    showfps: boolean;
+    position: FpsPosition;
+  }): void;
+  export function sendCommand(arg: {
+    command: 'input.intercept';
+    intercept: boolean;
+  }): void;
 
-  export function addWindow(windowId: number, details: IOverlayWindowDetails): void;
+  export function addWindow(
+    windowId: number,
+    details: IOverlayWindowDetails,
+  ): void;
 
   export function closeWindow(windowId: number): void;
 
-  export function sendWindowBounds(windowId: number, details: { rect: IRectangle }): void;
+  export function sendWindowBounds(
+    windowId: number,
+    details: { rect: IRectangle },
+  ): void;
 
-  export function sendFrameBuffer(windowId: number, buffer: Buffer, width: number, height: number): void;
+  export function sendFrameBuffer(
+    windowId: number,
+    buffer: Buffer,
+    width: number,
+    height: number,
+  ): void;
 
-  export function translateInputEvent(event: InputEventPayload): Electron.MouseInputEvent | Electron.MouseWheelInputEvent | Electron.KeyboardInputEvent | undefined;
+  export function translateInputEvent(
+    event: InputEventPayload,
+  ):
+    | Electron.MouseInputEvent
+    | Electron.MouseWheelInputEvent
+    | Electron.KeyboardInputEvent
+    | undefined;
 }

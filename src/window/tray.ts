@@ -83,8 +83,14 @@ export class TrayWindowProvider implements WindowProvider {
     const screenBounds = screen.getPrimaryDisplay().bounds;
     const width = this.WIDTH;
     const height = this.HEIGHT;
-    const x = rectangle.x + width > screenBounds.width ? rectangle.x + rectangle.width - width : rectangle.x;
-    const y = rectangle.y + height > screenBounds.height ? rectangle.y - height : rectangle.y + rectangle.height;
+    const x =
+      rectangle.x + width > screenBounds.width
+        ? rectangle.x + rectangle.width - width
+        : rectangle.x;
+    const y =
+      rectangle.y + height > screenBounds.height
+        ? rectangle.y - height
+        : rectangle.y + rectangle.height;
 
     this.window.show();
     this.window.setBounds({ x, y, width, height }, false);

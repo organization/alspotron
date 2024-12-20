@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 import { useNavigate, useParams } from '@solidjs/router';
 
@@ -7,7 +5,11 @@ import { For, Switch as SwitchFlow, Match, Show, createSignal } from 'solid-js';
 
 import { Marquee } from '@suyongs/solid-utility';
 
-import { ButtonOption, SelectOption, SettingOption } from '../../../common/plugins';
+import {
+  ButtonOption,
+  SelectOption,
+  SettingOption,
+} from '../../../common/plugins';
 import Card from '../../components/Card';
 import Switch from '../../components/Switch';
 import Selector from '../../components/Select';
@@ -32,7 +34,7 @@ const PluginSettingsContainer = () => {
     await window.ipcRenderer.invoke('set-plugin-state', params.id, newState);
 
     refresh();
-  }
+  };
   const deletePlugin = async () => {
     await window.ipcRenderer.invoke('remove-plugin', params.id);
     refresh();
@@ -49,20 +51,41 @@ const PluginSettingsContainer = () => {
     const id = plugin()?.id;
     if (!id) return;
 
-    await setConfig({ plugins: { config: { [id]: { [setting.key]: value } } } });
+    await setConfig({
+      plugins: { config: { [id]: { [setting.key]: value } } },
+    });
   };
   const onButtonClick = (setting: ButtonOption) => {
     broadcast('button-click', setting.key);
   };
 
-  return(
-    <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
-      <div class={'text-3xl mb-1 flex justify-start items-center gap-2 select-none'}>
-        <span class={'text-3xl opacity-80 hover:opacity-100'} onClick={onPluginPage}>
+  return (
+    <div
+      class={
+        'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'
+      }
+    >
+      <div
+        class={
+          'text-3xl mb-1 flex justify-start items-center gap-2 select-none'
+        }
+      >
+        <span
+          class={'text-3xl opacity-80 hover:opacity-100'}
+          onClick={onPluginPage}
+        >
           <Trans key={'setting.title.plugin'} />
         </span>
-        <svg class={'w-4 h-4'} fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8.47 4.22a.75.75 0 0 0 0 1.06L15.19 12l-6.72 6.72a.75.75 0 1 0 1.06 1.06l7.25-7.25a.75.75 0 0 0 0-1.06L9.53 4.22a.75.75 0 0 0-1.06 0Z" class={'fill-black dark:fill-white'} />
+        <svg
+          class={'w-4 h-4'}
+          fill="none"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M8.47 4.22a.75.75 0 0 0 0 1.06L15.19 12l-6.72 6.72a.75.75 0 1 0 1.06 1.06l7.25-7.25a.75.75 0 0 0 0-1.06L9.53 4.22a.75.75 0 0 0-1.06 0Z"
+            class={'fill-black dark:fill-white'}
+          />
         </svg>
         <span class={'text-3xl'}>
           {plugin()?.name ?? t('setting.plugin.unknown')}
@@ -73,23 +96,54 @@ const PluginSettingsContainer = () => {
         subCards={[
           <div class={'flex justify-start items-start flex-col ml-[40px]'}>
             <For
-              each={[
-                [t('setting.plugin.id'), plugin()?.id ?? t('setting.plugin.unknown')],
-                [t('setting.plugin.name'), plugin()?.name ?? t('setting.plugin.unknown')],
-                [t('setting.plugin.description'), plugin()?.description ?? t('setting.plugin.unknown')],
-                [t('setting.plugin.author'), plugin()?.author ?? t('setting.plugin.unknown')],
-                [t('setting.plugin.version'), plugin()?.version ?? t('setting.plugin.unknown')],
-                [t('setting.plugin.version-code'), plugin()?.versionCode ?? t('setting.plugin.unknown')],
-                [t('setting.plugin.manifest-version'), plugin()?.manifestVersion ?? t('setting.plugin.unknown')],
-                [t('setting.plugin.style-count'), t('setting.plugin.count', { count: plugin()?.css?.length ?? 0 })],
-                [t('setting.plugin.include-script'), plugin()?.js ? t('setting.plugin.include') : t('setting.plugin.not-include')],
-              ] as [string, string][]}
+              each={
+                [
+                  [
+                    t('setting.plugin.id'),
+                    plugin()?.id ?? t('setting.plugin.unknown'),
+                  ],
+                  [
+                    t('setting.plugin.name'),
+                    plugin()?.name ?? t('setting.plugin.unknown'),
+                  ],
+                  [
+                    t('setting.plugin.description'),
+                    plugin()?.description ?? t('setting.plugin.unknown'),
+                  ],
+                  [
+                    t('setting.plugin.author'),
+                    plugin()?.author ?? t('setting.plugin.unknown'),
+                  ],
+                  [
+                    t('setting.plugin.version'),
+                    plugin()?.version ?? t('setting.plugin.unknown'),
+                  ],
+                  [
+                    t('setting.plugin.version-code'),
+                    plugin()?.versionCode ?? t('setting.plugin.unknown'),
+                  ],
+                  [
+                    t('setting.plugin.manifest-version'),
+                    plugin()?.manifestVersion ?? t('setting.plugin.unknown'),
+                  ],
+                  [
+                    t('setting.plugin.style-count'),
+                    t('setting.plugin.count', {
+                      count: plugin()?.css?.length ?? 0,
+                    }),
+                  ],
+                  [
+                    t('setting.plugin.include-script'),
+                    plugin()?.js
+                      ? t('setting.plugin.include')
+                      : t('setting.plugin.not-include'),
+                  ],
+                ] as [string, string][]
+              }
             >
               {([key, value]) => (
                 <div class={'w-full flex justify-start items-center'}>
-                  <div class={'min-w-[128px] text-md'}>
-                    {key}
-                  </div>
+                  <div class={'min-w-[128px] text-md'}>{key}</div>
                   <Marquee class={'w-full text-md text-gray-400'} gap={32}>
                     {value}
                   </Marquee>
@@ -99,11 +153,21 @@ const PluginSettingsContainer = () => {
           </div>,
         ]}
       >
-        <svg class={'w-6 h-6 mr-4 fill-black dark:fill-white'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 1.999c5.524 0 10.002 4.478 10.002 10.002 0 5.523-4.478 10.001-10.002 10.001-5.524 0-10.002-4.478-10.002-10.001C1.998 6.477 6.476 1.999 12 1.999Zm0 1.5a8.502 8.502 0 1 0 0 17.003A8.502 8.502 0 0 0 12 3.5Zm-.004 7a.75.75 0 0 1 .744.648l.007.102.003 5.502a.75.75 0 0 1-1.493.102l-.007-.101-.003-5.502a.75.75 0 0 1 .75-.75ZM12 7.003a.999.999 0 1 1 0 1.997.999.999 0 0 1 0-1.997Z" class={'fill-black dark:fill-white'} />
+        <svg
+          class={'w-6 h-6 mr-4 fill-black dark:fill-white'}
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M12 1.999c5.524 0 10.002 4.478 10.002 10.002 0 5.523-4.478 10.001-10.002 10.001-5.524 0-10.002-4.478-10.002-10.001C1.998 6.477 6.476 1.999 12 1.999Zm0 1.5a8.502 8.502 0 1 0 0 17.003A8.502 8.502 0 0 0 12 3.5Zm-.004 7a.75.75 0 0 1 .744.648l.007.102.003 5.502a.75.75 0 0 1-1.493.102l-.007-.101-.003-5.502a.75.75 0 0 1 .75-.75ZM12 7.003a.999.999 0 1 1 0 1.997.999.999 0 0 1 0-1.997Z"
+            class={'fill-black dark:fill-white'}
+          />
         </svg>
         <div class={'text-lg'}>
-          <Trans key={'setting.plugin.plugin-info'} options={{ name: plugin()?.name }} />
+          <Trans
+            key={'setting.plugin.plugin-info'}
+            options={{ name: plugin()?.name }}
+          />
         </div>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -129,7 +193,7 @@ const PluginSettingsContainer = () => {
               <For each={plugin()?.logs}>
                 {(log) => <PluginLog log={log} />}
               </For>
-            </div>
+            </div>,
           ]}
         >
           <Trans key={'setting.plugin.show-log'} />
@@ -160,13 +224,13 @@ const PluginSettingsContainer = () => {
             <button class={'btn-error'} onClick={deletePlugin}>
               <Trans key={'setting.plugin.delete-plugin'} />
             </button>
-          </div>
+          </div>,
         ]}
       >
         <Trans key={'setting.plugin.delete-plugin'} />
       </Card>
     </div>
-  )
+  );
 };
 
 export default PluginSettingsContainer;

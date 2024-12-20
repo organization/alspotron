@@ -11,7 +11,7 @@ import {
   type JsPlugin,
   type Server,
   type UserConfig,
-  build as farmBuild
+  build as farmBuild,
 } from '@farmfe/core';
 
 import type { AddressInfo } from 'node:net';
@@ -32,11 +32,11 @@ export interface ElectronPluginOptions {
 type ElectronOptionsKey = keyof ElectronPluginOptions;
 
 export default function farmElectronPlugin(
-  options: ElectronPluginOptions
+  options: ElectronPluginOptions,
 ): JsPlugin {
   const builds = {
     main: options.main,
-    preload: options.preload
+    preload: options.preload,
   };
   let isDev: boolean;
 
@@ -75,11 +75,11 @@ export default function farmElectronPlugin(
                   // Hot restart main process
                   Starter.start();
                 }
-              }
-            }
+              },
+            },
           });
           /* await */ farmBuild(
-            resolveFarmConfig(name as ElectronOptionsKey, opts, server)
+            resolveFarmConfig(name as ElectronOptionsKey, opts, server),
           );
         }
       });
@@ -95,15 +95,15 @@ export default function farmElectronPlugin(
           }
           farmBuild(resolveFarmConfig(name as ElectronOptionsKey, opts));
         }
-      }
-    }
+      },
+    },
   };
 }
 
 function resolveFarmConfig(
   name: ElectronOptionsKey,
   opts: BuildOptions,
-  server?: Server
+  server?: Server,
 ) {
   const input =
     typeof opts.input === 'string'
@@ -129,7 +129,7 @@ function resolveFarmConfig(
     opts.farm.compilation.output.format =
       name === 'preload'
         ? // In most cases, preload scripts use `cjs` format
-        'cjs'
+          'cjs'
         : isEsm
           ? 'esm'
           : 'cjs';
@@ -139,7 +139,7 @@ function resolveFarmConfig(
     opts.farm.compilation.output.entryFilename =
       name === 'preload'
         ? // https://www.electronjs.org/docs/latest/tutorial/esm#esm-preload-scripts-must-have-the-mjs-extension
-        isEsm
+          isEsm
           ? '[entryName].mjs'
           : '[entryName].js'
         : '[entryName].js';
@@ -148,7 +148,7 @@ function resolveFarmConfig(
   if (name === 'preload') {
     opts.farm.compilation.partialBundling.enforceResources.push({
       test: ['.+'],
-      name: 'preload'
+      name: 'preload',
     });
 
     if (isEsm) {
@@ -157,17 +157,17 @@ function resolveFarmConfig(
         renderResourcePot: {
           filters: {
             resourcePotTypes: ['js'],
-            moduleIds: []
+            moduleIds: [],
           },
           executor(param) {
             return {
               ...param,
               // Fix runtime code error `__filename is not defined`
               // TODO: `import.meta.url` of `__filename` will be converted to filename(absolute path) when targetEnv=node`.
-              content: `var electron_preload_scripts_filename='';globalThis['__' + 'filename']=electron_preload_scripts_filename;${param.content}`
+              content: `var electron_preload_scripts_filename='';globalThis['__' + 'filename']=electron_preload_scripts_filename;${param.content}`,
             };
-          }
-        }
+          },
+        },
       });
     }
   }
@@ -178,7 +178,8 @@ function resolveFarmConfig(
 
 function resolveServerUrl(server: Server) {
   const addressInfo = server.server?.address();
-  const isAddressInfo = (x?: unknown): x is AddressInfo => Object.hasOwn(x ?? {}, 'address');
+  const isAddressInfo = (x?: unknown): x is AddressInfo =>
+    Object.hasOwn(x ?? {}, 'address');
 
   if (isAddressInfo(addressInfo)) {
     const { port } = addressInfo;
@@ -203,14 +204,18 @@ class Starter {
   static start = async () => {
     const { spawn } = await import('node:child_process');
     const electron = await import('electron');
-    const electronPath = (electron.default ?? electron);
+    const electronPath = electron.default ?? electron;
 
     this.exit();
 
     // Start Electron.app
-    this.electronApp = spawn(electronPath as unknown as string, ['.', '--no-sandbox'], {
-      stdio: 'inherit'
-    });
+    this.electronApp = spawn(
+      electronPath as unknown as string,
+      ['.', '--no-sandbox'],
+      {
+        stdio: 'inherit',
+      },
+    );
 
     // Exit command after Electron.app exits
     this.electronApp.once('exit', () => process.exit());

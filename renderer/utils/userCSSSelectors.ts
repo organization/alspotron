@@ -31,7 +31,7 @@ export const userCSSSelectors = {
 };
 
 export const userCSSTransitions = {
-  'transition-lyric': 'lyric-custom'
+  'transition-lyric': 'lyric-custom',
 };
 
 export const userCSSVariables = {

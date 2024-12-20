@@ -6,7 +6,10 @@ import LyricsItem from './LyricsItem';
 import useStyle from '../../hooks/useStyle';
 import { cx } from '../../utils/classNames';
 import { Status } from '../../components/PlayingInfoProvider';
-import { userCSSSelectors, userCSSVariables } from '../../utils/userCSSSelectors';
+import {
+  userCSSSelectors,
+  userCSSVariables,
+} from '../../utils/userCSSSelectors';
 
 import type { StyleConfig } from '../../../common/schema';
 
@@ -76,7 +79,11 @@ type LyricTransitionProps = JSX.HTMLAttributes<HTMLDivElement> & {
 };
 
 const LyricsTransition = (props: LyricTransitionProps) => {
-  const [, lyricsProps, passedProps] = splitProps(props, ['class'], ['lyrics', 'status', 'animation']);
+  const [, lyricsProps, passedProps] = splitProps(
+    props,
+    ['class'],
+    ['lyrics', 'status', 'animation'],
+  );
 
   const theme = useStyle();
   const style = () => props.theme ?? theme();
@@ -87,7 +94,9 @@ const LyricsTransition = (props: LyricTransitionProps) => {
     </div>
   );
 
-  const LyricsTransitionGroup = (transitionProps: LyricsTransitionGroupProps) => (
+  const LyricsTransitionGroup = (
+    transitionProps: LyricsTransitionGroupProps,
+  ) => (
     <Switch>
       <Match when={style().animationAtOnce}>
         <LyricsTransitionGroupAllAtOnce {...transitionProps} />

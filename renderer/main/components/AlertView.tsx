@@ -7,7 +7,9 @@ import { userCSSSelectors } from '../../utils/userCSSSelectors';
 export const AlertView = () => {
   const [state] = useServer();
 
-  useClassStyle(userCSSSelectors.alert, () => `
+  useClassStyle(
+    userCSSSelectors.alert,
+    () => `
     display: none;
     
     position: absolute;
@@ -18,8 +20,11 @@ export const AlertView = () => {
     border-radius: 24px;
     
     z-index: 100;
-  `);
-  useClassStyle(userCSSSelectors['alert--disconnected'], () => `
+  `,
+  );
+  useClassStyle(
+    userCSSSelectors['alert--disconnected'],
+    () => `
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -40,14 +45,18 @@ export const AlertView = () => {
     box-shadow: 0 0 0 4px rgba(255, 34, 34, 0.1) inset;
     
     animation: background 10s linear infinite;
-  `);
-  useClassStyle(userCSSSelectors['alert--description'], () => `
+  `,
+  );
+  useClassStyle(
+    userCSSSelectors['alert--description'],
+    () => `
     text-wrap: balance;
     word-break: keep-all;
     text-align: center;
     font-size: 1rem;
     color: rgba(255, 255, 255, 0.5);
-  `);
+  `,
+  );
 
   return (
     <div
@@ -56,7 +65,7 @@ export const AlertView = () => {
         [userCSSSelectors['alert--disconnected']]: state() === 'close',
       }}
     >
-      <Trans key={'lyrics.disconnected'}/>
+      <Trans key={'lyrics.disconnected'} />
       <span class={userCSSSelectors['alert--description']}>
         <Trans key={'lyrics.disconnected.description'} />
       </span>

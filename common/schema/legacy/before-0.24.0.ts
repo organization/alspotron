@@ -36,13 +36,23 @@ export type LEGACY_StyleConfig0_24_0 = {
   };
 
   position: {
-    availableAnchor: ('top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right')[];
+    availableAnchor: (
+      | 'top-left'
+      | 'top'
+      | 'top-right'
+      | 'left'
+      | 'center'
+      | 'right'
+      | 'bottom-left'
+      | 'bottom'
+      | 'bottom-right'
+    )[];
     top: number;
     left: number;
     bottom: number;
     right: number;
     index: number;
-  }
+  };
 
   userCSS: string | null;
 };

@@ -1,4 +1,12 @@
-import { createEffect, createSignal, For, JSX, on, Show, startTransition } from 'solid-js';
+import {
+  createEffect,
+  createSignal,
+  For,
+  JSX,
+  on,
+  Show,
+  startTransition,
+} from 'solid-js';
 
 import alsong from 'alsong';
 import { useTransContext } from '@jellybrick/solid-i18next';
@@ -12,7 +20,9 @@ import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import Spinner from '../../components/Spinner';
 import Modal from '../../components/Modal';
 
-type LyricMetadata = Awaited<ReturnType<typeof alsong.getLyricListByArtistName>>[number];
+type LyricMetadata = Awaited<
+  ReturnType<typeof alsong.getLyricListByArtistName>
+>[number];
 
 export const SearchContainer = () => {
   const {
@@ -34,25 +44,33 @@ export const SearchContainer = () => {
   const [loading, setLoading] = createSignal(false);
   const currentLyricID = () => Number(lyricData()?.id);
 
-  createEffect(on([playingTitle, playingArtist, status], async () => {
-    if (status() !== 'idle' && status() !== 'paused') {
-      setTitle(playingTitle().trim());
-      setArtist(playingArtist().trim());
-      await startTransition(async () => await onSearch());
-    }
-  }));
+  createEffect(
+    on([playingTitle, playingArtist, status], async () => {
+      if (status() !== 'idle' && status() !== 'paused') {
+        setTitle(playingTitle().trim());
+        setArtist(playingArtist().trim());
+        await startTransition(async () => await onSearch());
+      }
+    }),
+  );
 
   const onSearch = async () => {
     setLoading(true);
 
-    await usePluginOverride('search-lyrics', async (artist, title, options) => {
-      const result = await alsong(artist, title, options).catch((e) => {
-        console.error(e);
-        return [];
-      });
+    await usePluginOverride(
+      'search-lyrics',
+      async (artist, title, options) => {
+        const result = await alsong(artist, title, options).catch((e) => {
+          console.error(e);
+          return [];
+        });
 
-      setSearchList(result);
-    }, artist(), title(), { playtime: duration() });
+        setSearchList(result);
+      },
+      artist(),
+      title(),
+      { playtime: duration() },
+    );
 
     setLoading(false);
   };
@@ -69,7 +87,9 @@ export const SearchContainer = () => {
     await setLyricMapper(newMapper);
     setLoading(false);
   };
-  const onArtist: JSX.EventHandlerUnion<HTMLButtonElement, MouseEvent> = (event) => {
+  const onArtist: JSX.EventHandlerUnion<HTMLButtonElement, MouseEvent> = (
+    event,
+  ) => {
     event.preventDefault();
 
     setOpen(true);
@@ -82,7 +102,9 @@ export const SearchContainer = () => {
 
   return (
     <div
-      class={'w-full flex-1 flex flex-col justify-start items-stretch overflow-hidden'}
+      class={
+        'w-full flex-1 flex flex-col justify-start items-stretch overflow-hidden'
+      }
     >
       <form
         class={'w-full flex justify-start items-center gap-2 p-4 pt-2'}
@@ -98,7 +120,11 @@ export const SearchContainer = () => {
           onInput={(event) => setTitle(event.target.value)}
         />
         <button type={'submit'} class={'btn-text btn-icon'}>
-          <svg class={'w-[16px] h-[16px] fill-none'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            class={'w-[16px] h-[16px] fill-none'}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
               d="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z"
               class={'fill-black dark:fill-white'}
@@ -106,7 +132,11 @@ export const SearchContainer = () => {
           </svg>
         </button>
         <button class={'btn-text btn-icon'} onClick={onArtist}>
-          <svg class={'w-[16px] h-[16px] fill-none'} viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            class={'w-[16px] h-[16px] fill-none'}
+            viewBox="0 -960 960 960"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
               d="M740-560h140v80h-80v220q0 42-29 71t-71 29q-42 0-71-29t-29-71q0-42 29-71t71-29q8 0 18 1.5t22 6.5v-208ZM120-160v-112q0-35 17.5-63t46.5-43q62-31 126-46.5T440-440q42 0 83.5 6.5T607-414q-20 12-36 29t-28 37q-26-6-51.5-9t-51.5-3q-57 0-112 14t-108 40q-9 5-14.5 14t-5.5 20v32h321q2 20 9.5 40t20.5 40H120Zm320-320q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T520-640q0-33-23.5-56.5T440-720q-33 0-56.5 23.5T360-640q0 33 23.5 56.5T440-560Zm0-80Zm0 400Z"
               class={'fill-black dark:fill-white'}
@@ -115,10 +145,13 @@ export const SearchContainer = () => {
         </button>
       </form>
       <div
-        class={'w-full flex flex-col justify-start items-stretch gap-2 flex-1 overflow-auto remove-scrollbar p-4 pt-0'}>
+        class={
+          'w-full flex flex-col justify-start items-stretch gap-2 flex-1 overflow-auto remove-scrollbar p-4 pt-0'
+        }
+      >
         <Show when={loading()}>
           <div class={'w-full h-full flex justify-center items-center p-4'}>
-            <Spinner class={'w-8 h-8 stroke-primary-500'}/>
+            <Spinner class={'w-8 h-8 stroke-primary-500'} />
           </div>
         </Show>
         <For each={searchList()}>
@@ -130,22 +163,26 @@ export const SearchContainer = () => {
             `}
               onClick={() => onSelect(item)}
             >
-              <div class={'w-full flex flex-col justify-center items-start overflow-hidden'}>
+              <div
+                class={
+                  'w-full flex flex-col justify-center items-start overflow-hidden'
+                }
+              >
                 <div class={'h-fit text-xs text-black/50 dark:text-white/50'}>
                   ID: {item.lyricId}
                 </div>
                 <Marquee class={'w-full'} gap={16}>
                   {item.title}
                 </Marquee>
-                <div class={'text-sm'}>
-                  {item.artist}
-                </div>
+                <div class={'text-sm'}>{item.artist}</div>
               </div>
               <Show
                 when={currentLyricID() !== item.lyricId}
                 fallback={
                   <svg
-                    class={'w-[24px] h-[24px] fill-none self-center flex-shrink-0'}
+                    class={
+                      'w-[24px] h-[24px] fill-none self-center flex-shrink-0'
+                    }
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 -960 960 960"
                   >
@@ -157,7 +194,9 @@ export const SearchContainer = () => {
                 }
               >
                 <svg
-                  class={'w-[16px] h-[16px] fill-none self-center flex-shrink-0'}
+                  class={
+                    'w-[16px] h-[16px] fill-none self-center flex-shrink-0'
+                  }
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >

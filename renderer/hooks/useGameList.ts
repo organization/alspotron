@@ -6,7 +6,7 @@ const useGameList = () => {
   const [gameList, setGameList] = createSignal<GameList>({});
 
   (async () => {
-    const result = await window.ipcRenderer.invoke('get-game-list') as GameList;
+    const result = await window.ipcRenderer.invoke('get-game-list');
 
     setGameList(result || {});
   })();

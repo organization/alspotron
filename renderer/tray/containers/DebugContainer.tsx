@@ -17,23 +17,33 @@ export const DebugContainer = () => {
   };
 
   return (
-    <div class={'w-full h-full flex flex-col justify-start items-stretch gap-2 p-4 fluent-scrollbar !overflow-x-hidden'}>
-      <Header title={t('tray.devtools.label')}/>
+    <div
+      class={
+        'w-full h-full flex flex-col justify-start items-stretch gap-2 p-4 fluent-scrollbar !overflow-x-hidden'
+      }
+    >
+      <Header title={t('tray.devtools.label')} />
       <For each={config()?.views}>
         {(_, index) => (
-          <button class={'w-full btn-text'} onClick={() => onMainDebug(index())}>
-            <Trans key={'tray.devtools.lyric-viewer.label'} options={{ index: index() }}/>
+          <button
+            class={'w-full btn-text'}
+            onClick={() => onMainDebug(index())}
+          >
+            <Trans
+              key={'tray.devtools.lyric-viewer.label'}
+              options={{ index: index() }}
+            />
           </button>
         )}
       </For>
       <button class={'w-full btn-text'} onClick={() => onDebug('lyrics')}>
-        <Trans key={'tray.devtools.lyrics.label'}/>
+        <Trans key={'tray.devtools.lyrics.label'} />
       </button>
       <button class={'w-full btn-text'} onClick={() => onDebug('settings')}>
-        <Trans key={'tray.devtools.setting.label'}/>
+        <Trans key={'tray.devtools.setting.label'} />
       </button>
       <button class={'w-full btn-text'} onClick={() => onDebug('tray')}>
-        <Trans key={'tray.devtools.tray.label'}/>
+        <Trans key={'tray.devtools.tray.label'} />
       </button>
     </div>
   );

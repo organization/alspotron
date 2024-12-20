@@ -10,4 +10,4 @@ export interface PluginLog {
 }
 export type PluginLogger = {
   [Key in PluginLogType]: (...args: unknown[]) => void;
-}
+};

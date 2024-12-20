@@ -20,9 +20,7 @@ class PluginManager {
   private config: () => Config['plugins'];
   private setConfig: (config: PartialDeep<Config['plugins']>) => void;
 
-  private predefinedPlugins: PredefinedPlugin[] = [
-    SpiceifyIntegrationPlugin,
-  ];
+  private predefinedPlugins: PredefinedPlugin[] = [SpiceifyIntegrationPlugin];
 
   constructor(options: PluginManagerOptions) {
     this.config = options.config;
@@ -32,8 +30,14 @@ class PluginManager {
     this.setConfig = options.set;
   }
 
-  public async setPluginState(idOrPlugin: string | Plugin, state: 'enable' | 'disable'): Promise<Plugin | null> {
-    const plugin = typeof idOrPlugin === 'string' ? this.plugins.find((plugin) => plugin.id === idOrPlugin) : idOrPlugin;
+  public async setPluginState(
+    idOrPlugin: string | Plugin,
+    state: 'enable' | 'disable',
+  ): Promise<Plugin | null> {
+    const plugin =
+      typeof idOrPlugin === 'string'
+        ? this.plugins.find((plugin) => plugin.id === idOrPlugin)
+        : idOrPlugin;
     if (!plugin) return null;
 
     if (state === 'enable') {
@@ -60,12 +64,14 @@ class PluginManager {
 
   public async loadPredefinedPlugins(): Promise<void> {
     const pluginList = await Promise.all(
-      this.predefinedPlugins.map((it) => this.loader.loadFromProvider(
-        it.provider ?? null,
-        it.cssList,
-        it.manifest,
-        'enable'
-      ))
+      this.predefinedPlugins.map((it) =>
+        this.loader.loadFromProvider(
+          it.provider ?? null,
+          it.cssList,
+          it.manifest,
+          'enable',
+        ),
+      ),
     );
 
     this.plugins.push(...pluginList.filter(Boolean));
@@ -75,15 +81,20 @@ class PluginManager {
     const pluginPathList = Object.entries(this.config().list);
     const disablePluginMap = this.config().disabled;
 
-    await Promise.all(pluginPathList.map(async ([id, path]) => {
-      const isDisabled = disablePluginMap[id];
+    await Promise.all(
+      pluginPathList.map(async ([id, path]) => {
+        const isDisabled = disablePluginMap[id];
 
-      if (typeof path !== 'string') return null;
-      return this.addPlugin(path, isDisabled ? 'disable' : 'enable');
-    }));
+        if (typeof path !== 'string') return null;
+        return this.addPlugin(path, isDisabled ? 'disable' : 'enable');
+      }),
+    );
   }
 
-  public async addPlugin(path: string, state: PluginState = 'enable'): Promise<Plugin | Error> {
+  public async addPlugin(
+    path: string,
+    state: PluginState = 'enable',
+  ): Promise<Plugin | Error> {
     const plugin = await this.loader.loadFromFile(path, state);
     if (plugin instanceof Error) return plugin;
 
@@ -118,7 +129,11 @@ class PluginManager {
     return this.plugins;
   }
 
-  public emit<Event extends keyof PluginEventMap>(plugin: Plugin, event: Event, ...args: Parameters<PluginEventMap[Event]>): void {
+  public emit<Event extends keyof PluginEventMap>(
+    plugin: Plugin,
+    event: Event,
+    ...args: Parameters<PluginEventMap[Event]>
+  ): void {
     this.loader.runPlugin(plugin, (plugin) => {
       plugin.js?.listeners[event]?.forEach((callback) => {
         (callback as (...args: unknown[]) => void)(...args);
@@ -126,7 +141,10 @@ class PluginManager {
     });
   }
 
-  public broadcast<Event extends keyof PluginEventMap>(event: Event, ...args: Parameters<PluginEventMap[Event]>): void {
+  public broadcast<Event extends keyof PluginEventMap>(
+    event: Event,
+    ...args: Parameters<PluginEventMap[Event]>
+  ): void {
     this.plugins.forEach((plugin) => this.emit(plugin, event, ...args));
   }
 

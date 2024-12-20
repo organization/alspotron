@@ -46,7 +46,10 @@ const ThemeListContainer = () => {
       suffix += 1;
     }
 
-    const style: StyleConfig = themeList()[target() ?? ''] ?? presetThemes[target() ?? ''] ?? DEFAULT_STYLE;
+    const style: StyleConfig =
+      themeList()[target() ?? ''] ??
+      presetThemes[target() ?? ''] ??
+      DEFAULT_STYLE;
 
     setTheme(`${newName} ${suffix}`, style);
     setAddOpen(false);
@@ -56,11 +59,13 @@ const ThemeListContainer = () => {
   const onRenameConfirm = () => {
     const newName = name();
     const oldName = target();
-    
+
     if (typeof oldName !== 'string') return;
     const original = themeList()[oldName];
 
-    const presetNames = Object.keys(presetThemes).map((name) => t(`setting.theme.preset.${name}`));
+    const presetNames = Object.keys(presetThemes).map((name) =>
+      t(`setting.theme.preset.${name}`),
+    );
     if (themeList()[newName] || presetNames.includes(newName)) {
       setNameOpen(false);
       setNameConflictOpen(true);
@@ -79,7 +84,10 @@ const ThemeListContainer = () => {
     setDeleteOpen(false);
   };
 
-  const onImportTheme: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = async (event) => {    
+  const onImportTheme: JSX.InputEventHandlerUnion<
+    HTMLInputElement,
+    InputEvent
+  > = async (event) => {
     const file = event.target.files?.item(0);
     if (!file) return;
 
@@ -102,7 +110,11 @@ const ThemeListContainer = () => {
   };
 
   return (
-    <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
+    <div
+      class={
+        'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'
+      }
+    >
       <div class={'text-3xl mb-1'}>
         <Trans key={'setting.title.theme'} />
       </div>
@@ -113,9 +125,9 @@ const ThemeListContainer = () => {
         {(name) => (
           <Card class={'flex flex-row justify-start items-center gap-4'}>
             <div class={'text-md'}>
-              <Trans key={`setting.theme.preset.${name}`}/>
+              <Trans key={`setting.theme.preset.${name}`} />
             </div>
-            <div class={'flex-1'}/>
+            <div class={'flex-1'} />
             <button
               class={'btn-primary flex justify-center items-center'}
               onClick={(event) => {
@@ -124,17 +136,17 @@ const ThemeListContainer = () => {
                 event.stopPropagation();
               }}
             >
-              <Trans key={'setting.theme.add-theme-from'}/>
+              <Trans key={'setting.theme.add-theme-from'} />
             </button>
           </Card>
         )}
       </For>
       <div class={'text-md mt-4 mb-1'}>
-        <Trans key={'setting.theme.available-themes'}/>
+        <Trans key={'setting.theme.available-themes'} />
       </div>
       <Show when={Object.keys(themeList()).length === 0}>
         <div class={'text-md text-gray-500 p-5 text-center'}>
-          <Trans key={'setting.theme.no-available-themes'}/>
+          <Trans key={'setting.theme.no-available-themes'} />
         </div>
       </Show>
       <For each={Object.keys(themeList())}>
@@ -142,27 +154,27 @@ const ThemeListContainer = () => {
           <Card
             class={'flex flex-row justify-start items-center gap-4'}
             subCards={[
-              <div class={'w-full h-full flex justify-start items-center gap-3'}>
+              <div
+                class={'w-full h-full flex justify-start items-center gap-3'}
+              >
                 <button
                   class={'btn-error flex justify-center items-center'}
                   onClick={() => onDelete(name)}
                 >
-                  <Trans key={'setting.theme.delete-theme'}/>
+                  <Trans key={'setting.theme.delete-theme'} />
                 </button>
-                <div class={'flex-1'}/>
+                <div class={'flex-1'} />
                 <button
                   class={'btn-text flex justify-center items-center'}
                   onClick={() => onRename(name)}
                 >
-                  <Trans key={'setting.theme.rename-theme'}/>
+                  <Trans key={'setting.theme.rename-theme'} />
                 </button>
               </div>,
             ]}
           >
-            <div class={'text-md'}>
-              {name}
-            </div>
-            <div class={'flex-1'}/>
+            <div class={'text-md'}>{name}</div>
+            <div class={'flex-1'} />
             <button
               class={'btn-primary flex justify-center items-center'}
               onClick={(event) => {
@@ -170,32 +182,35 @@ const ThemeListContainer = () => {
                 event.stopPropagation();
               }}
             >
-              <Trans key={'setting.theme.edit-theme'}/>
+              <Trans key={'setting.theme.edit-theme'} />
             </button>
           </Card>
         )}
       </For>
       <div class={'text-md mt-4 mb-1'}>
-        <Trans key={'setting.theme.edit-theme'}/>
+        <Trans key={'setting.theme.edit-theme'} />
       </div>
       <Card class={'flex flex-row justify-start items-center gap-4'}>
-        <Trans key={'setting.theme.add-theme'}/>
-        <div class={'flex-1'}/>
-        <button
-          class={'btn-primary'}
-          onClick={onShowAdd}
-        >
-          <Trans key={'setting.theme.add-theme'}/>
+        <Trans key={'setting.theme.add-theme'} />
+        <div class={'flex-1'} />
+        <button class={'btn-primary'} onClick={onShowAdd}>
+          <Trans key={'setting.theme.add-theme'} />
         </button>
       </Card>
       <Card class={'flex flex-row justify-start items-center gap-4'}>
-        <Trans key={'setting.theme.import-theme'}/>
-        <div class={'flex-1'}/>
+        <Trans key={'setting.theme.import-theme'} />
+        <div class={'flex-1'} />
         <label for={'import-theme'}>
           <a class={'btn-primary'}>
             <Trans key={'setting.theme.import-from-file'} />
           </a>
-          <input id={'import-theme'} type={'file'} class={'hidden'} accept={'application/json'} onInput={onImportTheme} />
+          <input
+            id={'import-theme'}
+            type={'file'}
+            class={'hidden'}
+            accept={'application/json'}
+            onInput={onImportTheme}
+          />
         </label>
       </Card>
       <Modal
@@ -219,7 +234,11 @@ const ThemeListContainer = () => {
         <div class={'text-md mb-1'}>
           {t('setting.theme.rename-alert', { name: target() })}
         </div>
-        <input class={'input w-full'} value={name()} onChange={(event) => setName(event.target.value)} />
+        <input
+          class={'input w-full'}
+          value={name()}
+          onChange={(event) => setName(event.target.value)}
+        />
       </Modal>
       <Modal
         open={deleteOpen()}
@@ -276,9 +295,7 @@ const ThemeListContainer = () => {
           {error()?.message}
         </div>
         <pre class={'text-white bg-slate-700 font-mono'}>
-          <code>
-            {JSON.stringify(error(), null, 2)}
-          </code>
+          <code>{JSON.stringify(error(), null, 2)}</code>
         </pre>
       </Modal>
       <Modal
@@ -299,13 +316,16 @@ const ThemeListContainer = () => {
         <div class={'text-xl mb-2'}>
           {t('setting.theme.add-theme-from.title')}
         </div>
-        <Trans key={'setting.theme.built-in-themes'}/>
+        <Trans key={'setting.theme.built-in-themes'} />
         <For each={Object.keys(presetThemes)}>
           {(name) => (
-            <Card class={'flex flex-row justify-start items-center gap-4'} onClick={() => setTarget(name)}>
+            <Card
+              class={'flex flex-row justify-start items-center gap-4'}
+              onClick={() => setTarget(name)}
+            >
               <Show
                 when={target() === name}
-                fallback={<div class={'w-6 h-6'}/>}
+                fallback={<div class={'w-6 h-6'} />}
               >
                 <svg
                   class={'w-6 h-6 fill-none'}
@@ -319,21 +339,24 @@ const ThemeListContainer = () => {
                 </svg>
               </Show>
               <div class={'text-md'}>
-                <Trans key={`setting.theme.preset.${name}`}/>
+                <Trans key={`setting.theme.preset.${name}`} />
               </div>
-              <div class={'flex-1'}/>
+              <div class={'flex-1'} />
             </Card>
           )}
         </For>
         <div class={'text-md mt-4 mb-1'}>
-          <Trans key={'setting.theme.custom-themes'}/>
+          <Trans key={'setting.theme.custom-themes'} />
         </div>
         <For each={Object.keys(themeList())}>
           {(name) => (
-            <Card class={'flex flex-row justify-start items-center gap-4'} onClick={() => setTarget(name)}>
+            <Card
+              class={'flex flex-row justify-start items-center gap-4'}
+              onClick={() => setTarget(name)}
+            >
               <Show
                 when={target() === name}
-                fallback={<div class={'w-6 h-6'}/>}
+                fallback={<div class={'w-6 h-6'} />}
               >
                 <svg
                   class={'w-6 h-6 fill-none'}
@@ -346,16 +369,14 @@ const ThemeListContainer = () => {
                   />
                 </svg>
               </Show>
-              <div class={'text-md'}>
-                {name}
-              </div>
-              <div class={'flex-1'}/>
+              <div class={'text-md'}>{name}</div>
+              <div class={'flex-1'} />
             </Card>
           )}
         </For>
       </Modal>
     </div>
-  )
+  );
 };
 
 export default ThemeListContainer;

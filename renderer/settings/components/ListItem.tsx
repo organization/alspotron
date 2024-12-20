@@ -30,11 +30,9 @@ const ListItem = (props: ListItemProps) => {
         when={typeof local.icon === 'string'}
         fallback={local.icon as JSX.Element}
       >
-        <img src={local.icon as string} alt='Local Icon'/>
+        <img src={local.icon as string} alt="Local Icon" />
       </Show>
-      <div class={'text-md ml-4'}>
-        {local.title}
-      </div>
+      <div class={'text-md ml-4'}>{local.title}</div>
     </li>
   );
 };

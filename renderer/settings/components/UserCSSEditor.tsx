@@ -4,12 +4,26 @@ import { keymap } from '@codemirror/view';
 import { CodeMirror } from '@solid-codemirror/codemirror';
 import { githubDarkInit } from '@uiw/codemirror-theme-github';
 import { basicSetup, EditorView } from 'codemirror';
-import { createEffect, createSignal, For, getOwner, runWithOwner, untrack } from 'solid-js';
+import {
+  createEffect,
+  createSignal,
+  For,
+  getOwner,
+  runWithOwner,
+  untrack,
+} from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
 
-import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
+import {
+  userCSSSelectors,
+  userCSSTransitions,
+  userCSSVariables,
+} from '../../utils/userCSSSelectors';
 
-const debounce = <P extends unknown[]>(fn: (...args: P) => void, timeout: number) => {
+const debounce = <P extends unknown[]>(
+  fn: (...args: P) => void,
+  timeout: number,
+) => {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   return (...args: P) => {
@@ -18,7 +32,7 @@ const debounce = <P extends unknown[]>(fn: (...args: P) => void, timeout: number
     }
 
     timeoutId = setTimeout(() => fn(...args), timeout);
-  }
+  };
 };
 
 export interface UserCSSEditorProps {
@@ -52,7 +66,7 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
     settings: {
       gutterBackground: '#0d1117',
       gutterBorder: 'transparent',
-    }
+    },
   });
 
   const userCSSTheme = EditorView.theme({
@@ -83,14 +97,16 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
   const addCodeSnippet = (codeSnippet: string) => {
     const activeEditor = editor();
     activeEditor?.dispatch({
-      changes: { from: activeEditor.state.selection.main.head, insert: codeSnippet }
+      changes: {
+        from: activeEditor.state.selection.main.head,
+        insert: codeSnippet,
+      },
     });
   };
 
-  const buildSelectorSnippet = (selector: string) =>
-    `\n${selector} {\n}`
+  const buildSelectorSnippet = (selector: string) => `\n${selector} {\n}`;
 
-  const addUserCSSSelector = (selectorName: string) => 
+  const addUserCSSSelector = (selectorName: string) =>
     addCodeSnippet(buildSelectorSnippet(`alspotron-${selectorName}`));
 
   const addUserCSSTransition = (transitionName: string) => {
@@ -98,7 +114,7 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
       `alspotron-${transitionName}-enter`,
       `alspotron-${transitionName}-exit-to`,
       `alspotron-${transitionName}-move`,
-      `alspotron-${transitionName}-enter-active, alspotron-${transitionName}-exit-active`
+      `alspotron-${transitionName}-enter-active, alspotron-${transitionName}-exit-active`,
     ];
 
     addCodeSnippet(transitionClasses.map(buildSelectorSnippet).join('\n'));
@@ -110,7 +126,10 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
   return (
     <>
       <div>
-        <b><Trans key={'setting.user-css-warning.bold'} /></b> <Trans key={'setting.user-css-warning.0'} />
+        <b>
+          <Trans key={'setting.user-css-warning.bold'} />
+        </b>{' '}
+        <Trans key={'setting.user-css-warning.0'} />
         <br />
         <br />
         <Trans key={'setting.user-css-warning.1'} />
@@ -120,7 +139,11 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
         <div class="flex flex-wrap gap-1 min-w-[750px]">
           <For each={Object.keys(userCSSSelectors)}>
             {(selectorName) => (
-              <button class="btn-text flex-auto" type="button" onClick={() => addUserCSSSelector(selectorName)}>
+              <button
+                class="btn-text flex-auto"
+                type="button"
+                onClick={() => addUserCSSSelector(selectorName)}
+              >
                 {selectorName}
               </button>
             )}
@@ -128,7 +151,11 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
 
           <For each={Object.keys(userCSSTransitions)}>
             {(transitionName) => (
-              <button class="btn-text flex-auto" type="button" onClick={() => addUserCSSTransition(transitionName)}>
+              <button
+                class="btn-text flex-auto"
+                type="button"
+                onClick={() => addUserCSSTransition(transitionName)}
+              >
                 {transitionName}
               </button>
             )}
@@ -136,7 +163,11 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
 
           <For each={Object.entries(userCSSVariables)}>
             {([variableName, variableValue]) => (
-              <button class="btn-text flex-auto" type="button" onClick={() => addUserCSSVariable(variableValue)}>
+              <button
+                class="btn-text flex-auto"
+                type="button"
+                onClick={() => addUserCSSVariable(variableValue)}
+              >
                 {variableName}
               </button>
             )}

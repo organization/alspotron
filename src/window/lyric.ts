@@ -8,7 +8,11 @@ import { WindowProvider } from './types';
 
 import { config, themeList } from '../config';
 import { deepmerge } from '../../utils/merge';
-import { DEFAULT_CONFIG, DEFAULT_STYLE, PRESET_PREFIX } from '../../common/constants';
+import {
+  DEFAULT_CONFIG,
+  DEFAULT_STYLE,
+  PRESET_PREFIX,
+} from '../../common/constants';
 import { getFile } from '../../utils/resource';
 import presetThemes from '../../common/presets';
 
@@ -34,7 +38,10 @@ const LYRIC_WINDOW_OPTIONS = {
   icon: iconPath,
 };
 
-export class LyricWindowProvider extends EventEmitter implements WindowProvider {
+export class LyricWindowProvider
+  extends EventEmitter
+  implements WindowProvider
+{
   private alwaysOnTopFix: NodeJS.Timeout | null = null;
   private invisibleFix: NodeJS.Timeout | null = null;
   private invisibleCount = 5;
@@ -44,15 +51,22 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
 
   public window: BrowserWindow;
 
-  constructor(index: number, options: Electron.BrowserWindowConstructorOptions = {}) {
+  constructor(
+    index: number,
+    options: Electron.BrowserWindowConstructorOptions = {},
+  ) {
     super();
 
     this.index = index;
-    this.window = new BrowserWindow(deepmerge(LYRIC_WINDOW_OPTIONS, options, {
-      focusable: config.get().streamingMode,
-      skipTaskbar: !config.get().streamingMode,
-    }));
-    this.window.webContents.executeJavaScript(`window.index = ${index};window.setIndex?.(${index});`);
+    this.window = new BrowserWindow(
+      deepmerge(LYRIC_WINDOW_OPTIONS, options, {
+        focusable: config.get().streamingMode,
+        skipTaskbar: !config.get().streamingMode,
+      }),
+    );
+    this.window.webContents.executeJavaScript(
+      `window.index = ${index};window.setIndex?.(${index});`,
+    );
 
     Menu.setApplicationMenu(null);
 
@@ -101,7 +115,9 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
 
   setIndex(index: number, force = false) {
     this.index = index;
-    this.window.webContents.executeJavaScript(`window.index = ${index};window.setIndex?.(${index});${force ? 'window.enabled = true' : ''}`);
+    this.window.webContents.executeJavaScript(
+      `window.index = ${index};window.setIndex?.(${index});${force ? 'window.enabled = true' : ''}`,
+    );
     this.updateWindowConfig();
   }
 
@@ -177,9 +193,13 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
 
     const style = this.getStyle();
     const bounds = this.getDisplayBounds();
-    const windowPosition = views[this.index]?.position ?? DEFAULT_CONFIG.views[0].position;
+    const windowPosition =
+      views[this.index]?.position ?? DEFAULT_CONFIG.views[0].position;
 
-    const windowWidth = Math.min(Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth), bounds.width);
+    const windowWidth = Math.min(
+      Math.max(style.nowPlaying.maxWidth, style.lyric.maxWidth),
+      bounds.width,
+    );
     const windowHeight = style.maxHeight;
 
     const anchorX = (() => {
@@ -188,13 +208,15 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
       }
 
       if (windowPosition.anchor.includes('right')) {
-        return bounds.x
-          + (bounds.width - windowWidth)
-          - (windowPosition?.right ?? 0) - style.position.right;
+        return (
+          bounds.x +
+          (bounds.width - windowWidth) -
+          (windowPosition?.right ?? 0) -
+          style.position.right
+        );
       }
 
-      return bounds.x
-        + ((bounds.width - windowWidth) / 2);
+      return bounds.x + (bounds.width - windowWidth) / 2;
     })();
 
     const anchorY = (() => {
@@ -203,13 +225,16 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
       }
 
       if (windowPosition.anchor.includes('bottom')) {
-        return bounds.y
-          + bounds.height - windowHeight
-          - (windowPosition?.bottom ?? 0) - style.position.bottom;
+        return (
+          bounds.y +
+          bounds.height -
+          windowHeight -
+          (windowPosition?.bottom ?? 0) -
+          style.position.bottom
+        );
       }
 
-      return bounds.y
-        + ((bounds.height - windowHeight) / 2);
+      return bounds.y + (bounds.height - windowHeight) / 2;
     })();
 
     return {
@@ -223,7 +248,11 @@ export class LyricWindowProvider extends EventEmitter implements WindowProvider 
   protected getDisplayBounds() {
     const { views } = config.get();
     const windowPosition = views[this.index]?.position;
-    const display = screen.getAllDisplays().find((display) => display.id === windowPosition?.display) ?? screen.getPrimaryDisplay();
+    const display =
+      screen
+        .getAllDisplays()
+        .find((display) => display.id === windowPosition?.display) ??
+      screen.getPrimaryDisplay();
 
     return display.bounds;
   }

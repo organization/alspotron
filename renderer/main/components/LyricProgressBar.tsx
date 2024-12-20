@@ -9,7 +9,10 @@ import { cx } from '../../utils/classNames';
 
 import { formatTime } from '../../utils/formatTime';
 
-import { userCSSSelectors, userCSSVariables } from '../../utils/userCSSSelectors';
+import {
+  userCSSSelectors,
+  userCSSVariables,
+} from '../../utils/userCSSSelectors';
 
 import { useClassStyle } from '../../hooks/useClassStyle';
 
@@ -32,11 +35,16 @@ interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
 const LyricProgressBar = (props: LyricProgressBarProps) => {
   const theme = useStyle();
   const themeStyle = () => props.theme ?? theme();
-  const { coverUrl, title, artist, progress, duration, status } = usePlayingInfo();
-  const [style, containerProps] = splitProps(
-    props,
-    ['class', 'style', 'progressClass', 'progressStyle', 'textClass', 'textStyle'],
-  );
+  const { coverUrl, title, artist, progress, duration, status } =
+    usePlayingInfo();
+  const [style, containerProps] = splitProps(props, [
+    'class',
+    'style',
+    'progressClass',
+    'progressStyle',
+    'textClass',
+    'textStyle',
+  ]);
   const [progressTransition, setProgressTransition] = createSignal(false);
 
   let percent = 0;
@@ -47,9 +55,9 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     percent = progress() / duration();
 
     if (Math.abs(percent - oldPercent) > 0.01) {
-      setProgressTransition(true)
+      setProgressTransition(true);
     } else if (progressTransition()) {
-      setProgressTransition(false)
+      setProgressTransition(false);
     }
   });
 
@@ -76,12 +84,17 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     `;
   });
 
-  useClassStyle(userCSSSelectors['nowplaying-progress-bar'], () => `
+  useClassStyle(
+    userCSSSelectors['nowplaying-progress-bar'],
+    () => `
     position: absolute;
     inset: 0;
-  `);
+  `,
+  );
 
-  useClassStyle(userCSSSelectors['nowplaying-progress'], () => `
+  useClassStyle(
+    userCSSSelectors['nowplaying-progress'],
+    () => `
     position: absolute;
     inset: 0;
     
@@ -91,34 +104,46 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     transform: scaleX(var(${userCSSVariables['var-nowplaying-percent']}));
     
     ${progressTransition() ? 'transition: transform 0.225s cubic-bezier(0.34, 1.56, 0.64, 1);' : ''}
-  `);
+  `,
+  );
 
-  useClassStyle(userCSSSelectors['nowplaying-container'], () => `
+  useClassStyle(
+    userCSSSelectors['nowplaying-container'],
+    () => `
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
     gap: 0.5rem;
-  `);
+  `,
+  );
 
-  useClassStyle(userCSSSelectors['nowplaying-cover'], () => `
+  useClassStyle(
+    userCSSSelectors['nowplaying-cover'],
+    () => `
     width: 1.5rem;
     height: 1.5rem;
     
     object-fit: contain;
 
     transition: all 0.225s ease-out;
-  `);
+  `,
+  );
 
-  useClassStyle(`${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['nowplaying-cover']}`, () => `
+  useClassStyle(
+    `${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['nowplaying-cover']}`,
+    () => `
     filter: grayscale(100%);
     scale: 95%;
-  `);
+  `,
+  );
 
   const textStyle = () => `
     font-size: ${themeStyle().nowPlaying.fontSize}px;
   `;
-  useClassStyle(userCSSSelectors['nowplaying-playing-text'], () => `
+  useClassStyle(
+    userCSSSelectors['nowplaying-playing-text'],
+    () => `
     ${textStyle()}
     
     width: fit-content;
@@ -127,7 +152,8 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     justify-content: flex-start;
     align-items: center;
     gap: 0.5rem;
-  `);
+  `,
+  );
 
   useClassStyle(userCSSSelectors['nowplaying-artist'], textStyle);
   useClassStyle(userCSSSelectors['nowplaying-divider'], textStyle);
@@ -136,7 +162,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
   return (
     <div
       style={`
-        ${userCSSVariables['var-nowplaying-percent']}: ${duration() > 0 ? (progress() / duration() * 100) : 0}%;
+        ${userCSSVariables['var-nowplaying-percent']}: ${duration() > 0 ? (progress() / duration()) * 100 : 0}%;
         ${userCSSVariables['var-nowplaying-duration']}: '${formatTime(duration())}';
         ${userCSSVariables['var-nowplaying-progress']}: '${formatTime(progress())}';
         ${style.style ?? ''}
@@ -149,10 +175,13 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     >
       <div class={userCSSSelectors['nowplaying-progress-bar']}>
         <span
-          class={cx(userCSSSelectors['nowplaying-progress'], style.progressClass)}
+          class={cx(
+            userCSSSelectors['nowplaying-progress'],
+            style.progressClass,
+          )}
           style={style.progressStyle}
         />
-     </div>
+      </div>
       <div class={userCSSSelectors['nowplaying-container']}>
         <img
           src={coverUrl() ?? icon}
@@ -175,7 +204,10 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
               {artist()}
             </span>
             <span
-              class={cx(userCSSSelectors['nowplaying-divider'], style.textClass)}
+              class={cx(
+                userCSSSelectors['nowplaying-divider'],
+                style.textClass,
+              )}
               style={style.textStyle}
             >
               {' - '}
@@ -190,7 +222,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
         </Marquee>
       </div>
     </div>
-  )
+  );
 };
 
 export default LyricProgressBar;

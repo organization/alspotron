@@ -4,7 +4,8 @@ import { cx } from '../utils/classNames';
 
 const MAX_MOVE_OFFSET = 40 - 20;
 
-export interface SwitchProps extends Omit<JSX.InputHTMLAttributes<HTMLDivElement>, 'value' | 'onChange'> {
+export interface SwitchProps
+  extends Omit<JSX.InputHTMLAttributes<HTMLDivElement>, 'value' | 'onChange'> {
   value?: boolean;
   onChange?: (value: boolean) => void;
 }
@@ -37,10 +38,15 @@ const Switch = (props: SwitchProps) => {
       setMove(false);
 
       let newOffset = 0;
-      if (Math.abs(startOffset - offset()) < 0.1 && Math.abs(timestamp -event.timeStamp) < 500) { // click
+      if (
+        Math.abs(startOffset - offset()) < 0.1 &&
+        Math.abs(timestamp - event.timeStamp) < 500
+      ) {
+        // click
         local.onChange?.(!local.value);
         newOffset = local.value ? 0 : 1;
-      } else { // move
+      } else {
+        // move
         local.onChange?.(offset() > 0.5);
         newOffset = offset() > 0.5 ? 1 : 0;
       }
@@ -59,14 +65,17 @@ const Switch = (props: SwitchProps) => {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', cleanUp);
       window.removeEventListener('pointercancel', cleanUp);
-    }
+    };
 
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', cleanUp);
     window.addEventListener('pointercancel', cleanUp);
   };
   const onMove = (event: PointerEvent) => {
-    const now = Math.min(Math.max(0, startXOffset + event.pageX - startX - 10), MAX_MOVE_OFFSET);
+    const now = Math.min(
+      Math.max(0, startXOffset + event.pageX - startX - 10),
+      MAX_MOVE_OFFSET,
+    );
 
     setOffset(Math.min(Math.max(now / MAX_MOVE_OFFSET, 0), 1));
   };
@@ -76,7 +85,9 @@ const Switch = (props: SwitchProps) => {
       {...leftProps}
       class={cx(
         'relative w-[40px] h-[20px] rounded-full border-[1px]',
-        local.value ? 'bg-primary-500 border-primary-500 active:bg-primary-600' : 'border-black/30 dark:border-white',
+        local.value
+          ? 'bg-primary-500 border-primary-500 active:bg-primary-600'
+          : 'border-black/30 dark:border-white',
       )}
       onPointerDown={onMoveStart}
       onClick={(event) => event.stopPropagation()}
@@ -94,7 +105,7 @@ const Switch = (props: SwitchProps) => {
         }}
       />
     </div>
-  )
+  );
 };
 
 export default Switch;

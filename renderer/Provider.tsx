@@ -15,7 +15,11 @@ const Provider = (props: ProviderProps) => {
   createRenderEffect(() => {
     const theme = config()?.appTheme;
 
-    if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    if (
+      theme === 'dark' ||
+      (theme === 'system' &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ) {
       document.body.dataset.colorScheme = 'dark';
     } else {
       document.body.dataset.colorScheme = 'light';
@@ -26,7 +30,7 @@ const Provider = (props: ProviderProps) => {
     <TransProvider
       options={{
         resources: LangResource,
-        lng: config()?.language
+        lng: config()?.language,
       }}
     >
       {props.children}

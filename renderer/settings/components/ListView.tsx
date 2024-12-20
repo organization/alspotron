@@ -6,7 +6,6 @@ import { cx } from '../../utils/classNames';
 
 import type { JSX } from 'solid-js/jsx-runtime';
 
-
 export interface ListItemData {
   id: string;
   label: string;
@@ -21,10 +20,14 @@ export interface ListViewProps extends JSX.HTMLAttributes<HTMLUListElement> {
 }
 
 const ListView = (props: ListViewProps) => {
-  const [local, leftProps] = splitProps(props, ['items', 'onSelectItem', 'value']);
+  const [local, leftProps] = splitProps(props, [
+    'items',
+    'onSelectItem',
+    'value',
+  ]);
 
-  // eslint-disable-next-line solid/reactivity
-  const [tab, setTab] = local.value ?? createSignal(props.initItem ?? local.items[0].id);
+  const [tab, setTab] =
+    local.value ?? createSignal(props.initItem ?? local.items[0].id);
   const [tabHeight, setTabHeight] = createSignal<number[]>([]);
   const index = () => local.items.findIndex((item) => item.id === tab());
 
@@ -34,13 +37,12 @@ const ListView = (props: ListViewProps) => {
     const newTabHeight: number[] = [];
 
     const offset = listParent?.getBoundingClientRect()?.y ?? 0;
-    Array.from(listParent?.children ?? [])
-      .forEach((item) => {
-        if (!item.classList.contains('list-view-item')) return;
+    Array.from(listParent?.children ?? []).forEach((item) => {
+      if (!item.classList.contains('list-view-item')) return;
 
-        const rect = item.getBoundingClientRect();
-        newTabHeight.push(rect.y - offset);
-      });
+      const rect = item.getBoundingClientRect();
+      newTabHeight.push(rect.y - offset);
+    });
 
     setTabHeight(newTabHeight);
   });
@@ -54,7 +56,10 @@ const ListView = (props: ListViewProps) => {
     <ul
       {...leftProps}
       ref={listParent}
-      class={cx('relative flex flex-col justify-start items-start p-4 gap-1', leftProps.class)}
+      class={cx(
+        'relative flex flex-col justify-start items-start p-4 gap-1',
+        leftProps.class,
+      )}
     >
       <div
         style={`translate: 0px ${tabHeight()[index()] + 1}px;`}

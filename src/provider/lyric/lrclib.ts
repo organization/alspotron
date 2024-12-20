@@ -1,6 +1,11 @@
 import { z } from 'zod';
 
-import { LyricProvider, LyricData, LyricMetadata, SearchParams } from '../../../common/provider';
+import {
+  LyricProvider,
+  LyricData,
+  LyricMetadata,
+  SearchParams,
+} from '../../../common/provider';
 
 import type { ButtonOption, SettingOption } from '../../../common/plugins';
 
@@ -46,12 +51,17 @@ export class LrclibLyricProvider implements LyricProvider {
     if (params.artist) query.set('artist_name', this.encode(params.artist));
     if (params.album) query.set('album_name', this.encode(params.album));
 
-    const response = await fetch(`https://lrclib.net/api/search?${query.toString()}`);
+    const response = await fetch(
+      `https://lrclib.net/api/search?${query.toString()}`,
+    );
     const json = await response.json();
     const parsed = await LyricResponseSchema.array().spa(json);
 
     if (!parsed.success) {
-      console.warn('[Alspotron] [Lrclib] Failed to parse search response', parsed.error);
+      console.warn(
+        '[Alspotron] [Lrclib] Failed to parse search response',
+        parsed.error,
+      );
       return null;
     }
 
@@ -76,12 +86,17 @@ export class LrclibLyricProvider implements LyricProvider {
     if (params.artist) query.set('artist_name', this.encode(params.artist));
     if (params.album) query.set('album_name', this.encode(params.album));
 
-    const response = await fetch(`https://lrclib.net/api/search?${query.toString()}`);
+    const response = await fetch(
+      `https://lrclib.net/api/search?${query.toString()}`,
+    );
     const json = await response.json();
     const parsed = await LyricResponseSchema.array().spa(json);
 
     if (!parsed.success) {
-      console.warn('[Alspotron] [Lrclib] Failed to parse search response', parsed.error);
+      console.warn(
+        '[Alspotron] [Lrclib] Failed to parse search response',
+        parsed.error,
+      );
       return [];
     }
 
@@ -98,7 +113,9 @@ export class LrclibLyricProvider implements LyricProvider {
     return encodeURIComponent(str).replace(/%20/g, '+');
   }
 
-  private responseToMetadata(lyric: z.infer<typeof LyricResponseSchema>): LyricMetadata {
+  private responseToMetadata(
+    lyric: z.infer<typeof LyricResponseSchema>,
+  ): LyricMetadata {
     return {
       id: lyric.id.toString(),
       title: lyric.trackName,
@@ -109,16 +126,18 @@ export class LrclibLyricProvider implements LyricProvider {
   }
 
   private syncedLyricsToLyric(lyrics: string): Record<number, string[]> {
-    return lyrics.split('\n')
-      .reduce((prev, line) => {
+    return lyrics.split('\n').reduce(
+      (prev, line) => {
         const [time, ...text] = line.split(']');
         const [minute, second] = time.slice(1).split(':').map(Number);
-        const timestamp = (minute * 60 * 1000) + (second * 1000);
+        const timestamp = minute * 60 * 1000 + second * 1000;
 
         return {
           ...prev,
           [timestamp]: [text.join(']')],
         };
-      }, {} as Record<number, string[]>);
+      },
+      {} as Record<number, string[]>,
+    );
   }
 }

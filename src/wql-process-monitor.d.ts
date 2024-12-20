@@ -13,12 +13,12 @@ declare module '@jellybrick/wql-process-monitor' {
      * Subscribe to the creation event
      * @default true
      */
-    creation?: boolean,
+    creation?: boolean;
     /**
      * Subscribe to the deletion event
      * @default true
      */
-    deletion?: boolean,
+    deletion?: boolean;
     /**
      * Exclude events originating from System32 and SysWOW64 Windows folder as well as integrated OneDrive FileCoAuth.exe.
      * e.g. cmd.exe, powershell.exe, svchost.exe, RuntimeBroker.exe, and others Windows processes.
@@ -28,7 +28,7 @@ declare module '@jellybrick/wql-process-monitor' {
      * You can implement your own filter on top of the event emitter result instead.
      * @default false
      */
-    filterWindowsNoise?: boolean,
+    filterWindowsNoise?: boolean;
     /**
      * Exclude events originating from Program Files, Program Files (x86), AppData local and AppData Roaming.
      *
@@ -37,7 +37,7 @@ declare module '@jellybrick/wql-process-monitor' {
      * You can implement your own filter on top of the event emitter result instead.
      * @default false
      */
-    filterUsualProgramLocations?: boolean,
+    filterUsualProgramLocations?: boolean;
     /**
      * Custom list of process to exclude.
      * eg: ["firefox.exe","chrome.exe",...]
@@ -47,7 +47,7 @@ declare module '@jellybrick/wql-process-monitor' {
      * If you have a huge list consider implementing your own filter on top of the event emitter result instead.
      * @default []
      */
-    filter?: string[],
+    filter?: string[];
     /**
      * Use `filter` option as a whitelist.
      * `filterWindowsNoise` / `filterUsualProgramLocations` can still be used.
@@ -55,7 +55,7 @@ declare module '@jellybrick/wql-process-monitor' {
      *
      * @default false
      */
-    whitelist?: boolean,
+    whitelist?: boolean;
   };
 
   interface Promises {
@@ -64,21 +64,23 @@ declare module '@jellybrick/wql-process-monitor' {
      * @param option
      * @returns {Promise<Emittery<{creation: [string, string, string?], deletion: [string, string]}>>}
      */
-    subscribe(option?: Options): Promise<Emittery<{
-      /**
-       * Process creation event
-       * @param {string} processName process name
-       * @param {string} processId process identifier (Process id should be number...)
-       * @param {string} filepath file location path (if available*)
-       */
-      creation: [string, string, string?],
-      /**
-       * Process deletion event
-       * @param {string} processName process name
-       * @param {string} processId process identifier
-       */
-      deletion: [string, string]
-    }>>;
+    subscribe(option?: Options): Promise<
+      Emittery<{
+        /**
+         * Process creation event
+         * @param {string} processName process name
+         * @param {string} processId process identifier (Process id should be number...)
+         * @param {string} filepath file location path (if available*)
+         */
+        creation: [string, string, string?];
+        /**
+         * Process deletion event
+         * @param {string} processName process name
+         * @param {string} processId process identifier
+         */
+        deletion: [string, string];
+      }>
+    >;
 
     /**
      * @deprecated Since version >= 2.0 this is automatically done for you when you call subscribe(). Method was merely kept for backward compatibility.
@@ -109,13 +111,13 @@ declare module '@jellybrick/wql-process-monitor' {
        * @param {string} processId process identifier (Process id should be number...)
        * @param {string} filepath file location path (if available*)
        */
-      creation: [string, string, string?],
+      creation: [string, string, string?];
       /**
        * Process deletion event
        * @param {string} processName process name
        * @param {string} processId process identifier
        */
-      deletion: [string, string]
+      deletion: [string, string];
     }>;
 
     /**
