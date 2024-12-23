@@ -1,4 +1,4 @@
-export type LEGACY_Config0_23_2 = {
+export type LEGACY_Config0_23_1 = {
   version: 3;
   views: {
     enabled: boolean;
