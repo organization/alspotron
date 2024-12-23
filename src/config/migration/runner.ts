@@ -9,7 +9,6 @@ const shouldMigration = (prev: string, next: string, range: string) => {
   return satisfies(next, range);
 };
 
-
 export const createMigrator = (table: MigrateTable, prevVersion: string) => {
   const nowVersion = packageJson.version;
 

@@ -11,8 +11,12 @@ const usePluginOverride = async <Target extends keyof OverrideMap>(
 
   const isEnabled = plugins().some((plugin) => plugin.state === 'enable');
   if (isEnabled) {
-    const result = await window.ipcRenderer.invoke('override-plugin', target, ...args as never[]) as false | OverrideParameterMap[Target];
-    
+    const result = (await window.ipcRenderer.invoke(
+      'override-plugin',
+      target,
+      ...(args as never[]),
+    )) as false | OverrideParameterMap[Target];
+
     if (result !== false) await originalFn(...result);
   } else {
     await originalFn(...args);

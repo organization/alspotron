@@ -8,7 +8,6 @@
     "moduleResolution": "node",
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
-    "types": ["vite/client"],
     "baseUrl": ".",
     "outDir": "./dist",
     "strict": true,

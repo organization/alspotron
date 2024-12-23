@@ -5,7 +5,11 @@ import { serve } from '@hono/node-server';
 
 import { BaseSourceProvider } from './base-source-provider';
 
-import { TunaObsBody, TunaObsBodySchema, UpdateData } from '../../../common/schema';
+import {
+  TunaObsBody,
+  TunaObsBodySchema,
+  UpdateData,
+} from '../../../common/schema';
 import { getTranslation } from '../../../common/intl';
 
 import type { Http2SecureServer, Http2Server } from 'node:http2';
@@ -32,7 +36,8 @@ export class TunaObsProvider extends BaseSourceProvider {
 
     this.app.use('*', cors({ origin: '*' }));
 
-    this.app.post('/',
+    this.app.post(
+      '/',
       validator('json', (value, c) => {
         const parsed = TunaObsBodySchema.safeParse(value);
         if (!parsed.success) {
@@ -65,13 +70,16 @@ export class TunaObsProvider extends BaseSourceProvider {
     if (!Number.isFinite(this.port)) this.port = 1608;
     if (!Number.isFinite(this.interpolationTime)) this.interpolationTime = 100;
 
-    this.server = serve({
-      fetch: this.app.fetch,
-      port: this.port,
-      hostname: '127.0.0.1',
-    }, () => {
-      this.emit('start');
-    });
+    this.server = serve(
+      {
+        fetch: this.app.fetch,
+        port: this.port,
+        hostname: '127.0.0.1',
+      },
+      () => {
+        this.emit('start');
+      },
+    );
     this.setupInterpolation();
 
     this.server.on('error', (err) => {
@@ -101,13 +109,18 @@ export class TunaObsProvider extends BaseSourceProvider {
     return this.server !== null;
   }
 
-  public override getOptions(language: string): Exclude<SettingOption, ButtonOption>[] {
+  public override getOptions(
+    language: string,
+  ): Exclude<SettingOption, ButtonOption>[] {
     return [
       {
         type: 'string',
         key: 'port',
         name: getTranslation('provider.source.tuna-obs.port.name', language),
-        description: getTranslation('provider.source.tuna-obs.port.description', language),
+        description: getTranslation(
+          'provider.source.tuna-obs.port.description',
+          language,
+        ),
         default: '1608',
       },
       {
@@ -115,10 +128,16 @@ export class TunaObsProvider extends BaseSourceProvider {
         key: 'interpolationTime',
         min: 1,
         max: 3000,
-        name: getTranslation('provider.source.tuna-obs.interpolation-time.name', language),
-        description: getTranslation('provider.source.tuna-obs.interpolation-time.description', language),
+        name: getTranslation(
+          'provider.source.tuna-obs.interpolation-time.name',
+          language,
+        ),
+        description: getTranslation(
+          'provider.source.tuna-obs.interpolation-time.description',
+          language,
+        ),
         default: 100,
-      }
+      },
     ];
   }
 
@@ -133,7 +152,8 @@ export class TunaObsProvider extends BaseSourceProvider {
 
     if (options.interpolationTime) {
       this.interpolationTime = Number(options.interpolationTime);
-      if (!Number.isFinite(this.interpolationTime)) this.interpolationTime = 100;
+      if (!Number.isFinite(this.interpolationTime))
+        this.interpolationTime = 100;
 
       this.setupInterpolation();
     }
@@ -147,7 +167,10 @@ export class TunaObsProvider extends BaseSourceProvider {
       if (!this.lastUpdateData) return;
       if (this.lastUpdateData.data.type !== 'playing') return;
 
-      if (this.lastUpdateData.data.duration - this.lastUpdateData.data.progress < this.interpolationTime) {
+      if (
+        this.lastUpdateData.data.duration - this.lastUpdateData.data.progress <
+        this.interpolationTime
+      ) {
         this.lastUpdateData.data.progress = this.lastUpdateData.data.duration;
       } else {
         this.lastUpdateData.data.progress += this.interpolationTime;
@@ -165,9 +188,11 @@ export class TunaObsProvider extends BaseSourceProvider {
 
     if (data.data.status === 'playing' || data.data.status === 'paused') {
       const id = `${data.data.title}:${data.data.cover_url}`;
-      const lastLyric = this.lastUpdateData?.data.type !== 'idle' && this.lastUpdateData?.data.id === id
-        ? this.lastUpdateData.data.playerLyrics
-        : undefined;
+      const lastLyric =
+        this.lastUpdateData?.data.type !== 'idle' &&
+        this.lastUpdateData?.data.id === id
+          ? this.lastUpdateData.data.playerLyrics
+          : undefined;
 
       result.data = {
         type: data.data.status,

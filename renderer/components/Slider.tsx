@@ -1,4 +1,11 @@
-import { createSignal, For, JSX, mergeProps, onMount, splitProps } from 'solid-js';
+import {
+  createSignal,
+  For,
+  JSX,
+  mergeProps,
+  onMount,
+  splitProps,
+} from 'solid-js';
 
 import { cx } from '../utils/classNames';
 
@@ -7,7 +14,8 @@ interface SliderLabel {
   label: string;
 }
 
-export interface SliderProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+export interface SliderProps
+  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   min?: number;
   max?: number;
   step?: number;
@@ -18,13 +26,16 @@ export interface SliderProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'o
 
 export const Slider = (props: SliderProps) => {
   const [local, leftProps] = splitProps(
-    mergeProps({
-      min: 0,
-      max: 100,
-      step: 1,
-      value: 0,
-      label: [],
-    }, props),
+    mergeProps(
+      {
+        min: 0,
+        max: 100,
+        step: 1,
+        value: 0,
+        label: [],
+      },
+      props,
+    ),
     ['min', 'max', 'value', 'step', 'label', 'onChange'],
   );
 
@@ -59,7 +70,7 @@ export const Slider = (props: SliderProps) => {
 
     const max = Math.max(1, maxWidth());
     const now = Math.min(Math.max(0, event.pageX - domRect.left - 6), max);
-    const value = local.min + ((now / max) * (local.max - local.min));
+    const value = local.min + (now / max) * (local.max - local.min);
     const newValue = ~~(value / local.step) * local.step;
 
     local.onChange?.(newValue);
@@ -84,10 +95,16 @@ export const Slider = (props: SliderProps) => {
       )}
       onPointerDown={onMoveStart}
     >
-      <div class={'absolute left-[4px] right-[4px] h-[4px] bg-gray-300 rounded-full -z-2'}/>
       <div
-        style={'scale: var(--value) 100%;'}
-        class={'absolute left-[4px] right-[4px] h-[4px] bg-primary-500 rounded-full -z-1 origin-left'}
+        class={
+          'absolute left-[4px] right-[4px] h-[4px] bg-gray-300 rounded-full -z-2'
+        }
+      />
+      <div
+        style={{ 'scale': 'var(--value) 100%' }}
+        class={
+          'absolute left-[4px] right-[4px] h-[4px] bg-primary-500 rounded-full -z-1 origin-left'
+        }
       />
       <div
         class={`
@@ -100,7 +117,7 @@ export const Slider = (props: SliderProps) => {
       <For each={local.label}>
         {(item) => (
           <div
-            style={`left: ${((item.value - local.min) / (local.max - local.min) * maxWidth()) + 8}px;`}
+            style={`left: ${((item.value - local.min) / (local.max - local.min)) * maxWidth() + 8}px;`}
             class={`
               absolute left-[8px] bottom-0 text-sm
               w-full text-center

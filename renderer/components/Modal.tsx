@@ -1,5 +1,5 @@
-import { createEffect, For, JSX, onCleanup, Show, splitProps } from 'solid-js'
-import { Portal } from 'solid-js/web'
+import { createEffect, For, JSX, onCleanup, Show, splitProps } from 'solid-js';
+import { Portal } from 'solid-js/web';
 import { Transition } from 'solid-transition-group';
 
 import { cx } from '../utils/classNames';
@@ -18,9 +18,9 @@ export interface ModalProps extends JSX.HTMLAttributes<HTMLDivElement> {
 
 const Modal = (props: ModalProps) => {
   const [local, leftProps] = splitProps(props, ['open', 'onClose', 'buttons']);
-  
+
   let content!: HTMLDivElement;
-  
+
   const listener = (event: MouseEvent) => {
     const isOutside = !event.composedPath().some((it) => it === content);
 
@@ -42,28 +42,43 @@ const Modal = (props: ModalProps) => {
     <Portal mount={document.querySelector('#app')!}>
       <Transition name={'modal'}>
         <Show when={local.open}>
-          <div class={'fixed inset-0 bg-gray-900/40 w-full h-full flex justify-center items-center '}>
+          <div
+            class={
+              'fixed inset-0 bg-gray-900/40 w-full h-full flex justify-center items-center '
+            }
+          >
             <div
               {...leftProps}
               ref={content}
-              class={cx(`
+              class={cx(
+                `
                 w-fit h-fit max-h-[80vh] flex flex-col rounded overflow-hidden
                 shadow-xl shadow-black/10 border-[1px]
                 bg-stone-100 border-black/10 dark:bg-stone-700 dark:border-white/10
-              `, leftProps.class)}
+              `,
+                leftProps.class,
+              )}
             >
-              <div class={'text-black dark:text-white px-6 py-5 fluent-scrollbar'}>
+              <div
+                class={'text-black dark:text-white px-6 py-5 fluent-scrollbar'}
+              >
                 {props.children}
               </div>
               <Show when={local.buttons}>
-                <div class={'flex justify-end items-center gap-2 bg-stone-200 dark:bg-stone-800 px-6 py-5'}>
+                <div
+                  class={
+                    'flex justify-end items-center gap-2 bg-stone-200 dark:bg-stone-800 px-6 py-5'
+                  }
+                >
                   <For each={local.buttons ?? []}>
                     {(button) => (
                       <button
                         class={
-                          button.type === 'positive' ? 'btn-primary' :
-                          button.type === 'negative' ? 'btn-error' :
-                          'btn-text'
+                          button.type === 'positive'
+                            ? 'btn-primary'
+                            : button.type === 'negative'
+                              ? 'btn-error'
+                              : 'btn-text'
                         }
                         onClick={button.onClick}
                       >

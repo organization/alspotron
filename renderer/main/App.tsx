@@ -91,13 +91,13 @@ const useProximityStyle = () => {
     }
 
     const sensitivity = style().proximitySensitivity ?? 1;
-    return Math.max(0, Math.min((1 - (distance() * 2)) * sensitivity, 1));
+    return Math.max(0, Math.min((1 - distance() * 2) * sensitivity, 1));
   });
   const proximityOpacity = createMemo(() => {
     if (distance() > 0.5) return 1;
     const rate = blendRate();
 
-    return (fullDimmedOpacity() * rate) + (1 - rate);
+    return fullDimmedOpacity() * rate + (1 - rate);
   });
 
   return {
@@ -115,11 +115,7 @@ const App = () => {
 
   const { view } = useCurrent();
   const style = useStyle();
-  const {
-    rate,
-    opacity,
-    handles: proximityHandles,
-  } = useProximityStyle();
+  const { rate, opacity, handles: proximityHandles } = useProximityStyle();
 
   return (
     <Show when={window.enabled || view()?.enabled}>
@@ -131,13 +127,13 @@ const App = () => {
           }}
           {...proximityHandles}
         >
-          <AlertView/>
-          <Lyrics/>
+          <AlertView />
+          <Lyrics />
           <Show when={style().nowPlaying?.visible ?? true}>
-            <LyricProgressBar/>
+            <LyricProgressBar />
           </Show>
         </AnchoredView>
-        <UserCSS/>
+        <UserCSS />
       </PlayingInfoProvider>
     </Show>
   );

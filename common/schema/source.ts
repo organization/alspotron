@@ -33,10 +33,6 @@ export const PausedDataSchema = BaseDataSchema.extend({
 
 export type UpdateData = z.infer<typeof UpdateDataSchema>;
 export const UpdateDataSchema = z.object({
-  data: z.union([
-    PlayingDataSchema,
-    PausedDataSchema,
-    IdleDataSchema,
-  ]),
+  data: z.union([PlayingDataSchema, PausedDataSchema, IdleDataSchema]),
   provider: z.string(),
 });

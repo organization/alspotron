@@ -17,15 +17,18 @@ export const App = () => {
       `}
     >
       <PlayingInfoProvider>
-        <Transition name={`page-${url() === '/' ? 'left' : 'right'}`} mode={'outin'}>
+        <Transition
+          name={`page-${url() === '/' ? 'left' : 'right'}`}
+          mode={'outin'}
+        >
           <HashRouter
             transformUrl={(url) => {
               setUrl(url);
               return url;
             }}
           >
-            <Route path={'/'} component={MainContainer}/>
-            <Route path={'/debug'} component={DebugContainer}/>
+            <Route path={'/'} component={MainContainer} />
+            <Route path={'/debug'} component={DebugContainer} />
           </HashRouter>
         </Transition>
       </PlayingInfoProvider>

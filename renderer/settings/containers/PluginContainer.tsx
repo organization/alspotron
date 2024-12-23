@@ -21,14 +21,15 @@ const PluginContainer = () => {
   const [error, setError] = createSignal<Error | null>(null);
 
   const pluginIdList = () => plugins().map((plugin) => plugin.id);
-  const logs = () => plugins()
-    .flatMap((plugin) => plugin.logs.map((log) => ({ plugin, log })))
-    .sort((a, b) => a.log.time - b.log.time);
+  const logs = () =>
+    plugins()
+      .flatMap((plugin) => plugin.logs.map((log) => ({ plugin, log })))
+      .sort((a, b) => a.log.time - b.log.time);
 
   let refreshPlugin: NodeJS.Timeout | null = null;
   createEffect(() => {
     if (refreshPlugin) clearInterval(refreshPlugin);
-    
+
     if (showLog()) {
       refresh();
 
@@ -41,7 +42,10 @@ const PluginContainer = () => {
     if (refreshPlugin) clearInterval(refreshPlugin);
   });
 
-  const onAddPlugin: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = async (event) => {
+  const onAddPlugin: JSX.InputEventHandlerUnion<
+    HTMLInputElement,
+    InputEvent
+  > = async (event) => {
     const file = event.target.files?.item(0);
     if (!file) {
       setOpen(true);
@@ -59,13 +63,21 @@ const PluginContainer = () => {
     refresh();
   };
   const reloadPlugins = async () => {
-    await Promise.all(pluginIdList().map((id) => window.ipcRenderer.invoke('reload-plugin', id)));
+    await Promise.all(
+      pluginIdList().map((id) =>
+        window.ipcRenderer.invoke('reload-plugin', id),
+      ),
+    );
 
     refresh();
   };
 
   return (
-    <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
+    <div
+      class={
+        'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'
+      }
+    >
       <div class={'text-3xl mb-1'}>
         <Trans key={'setting.title.plugin'} />
       </div>
@@ -78,7 +90,13 @@ const PluginContainer = () => {
           <a class={'btn-primary'}>
             <Trans key={'setting.plugin.add-plugin.from-file'} />
           </a>
-          <input id={'plugin'} type={'file'} class={'hidden'} accept={'application/zip'} onInput={onAddPlugin} />
+          <input
+            id={'plugin'}
+            type={'file'}
+            class={'hidden'}
+            accept={'application/zip'}
+            onInput={onAddPlugin}
+          />
         </label>
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -95,9 +113,11 @@ const PluginContainer = () => {
           subCards={[
             <div class={'w-full max-h-[400px] fluent-scrollbar'}>
               <For each={logs()}>
-                {({ plugin, log }) => <PluginLog log={log} showPlugin={plugin} />}
+                {({ plugin, log }) => (
+                  <PluginLog log={log} showPlugin={plugin} />
+                )}
               </For>
-            </div>
+            </div>,
           ]}
         >
           <Trans key={'setting.plugin.show-log'} />
@@ -106,9 +126,7 @@ const PluginContainer = () => {
       <div class={'text-md mt-4 mb-1'}>
         <Trans key={'setting.plugin.loaded-plugin'} />
       </div>
-      <For each={pluginIdList()}>
-        {(id) => <PluginCard id={id} />}
-      </For>
+      <For each={pluginIdList()}>{(id) => <PluginCard id={id} />}</For>
       <Modal
         open={open()}
         onClose={() => setOpen(false)}
@@ -129,9 +147,7 @@ const PluginContainer = () => {
           {error()?.message}
         </div>
         <pre class={'text-white bg-slate-700 font-mono'}>
-          <code>
-            {JSON.stringify(error(), null, 2)}
-          </code>
+          <code>{JSON.stringify(error(), null, 2)}</code>
         </pre>
       </Modal>
     </div>

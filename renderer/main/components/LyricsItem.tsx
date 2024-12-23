@@ -20,7 +20,8 @@ const LyricsItem = (props: LyricsItemProps) => {
   const [init, setInit] = createSignal(false);
 
   const style = createMemo(() => {
-    if (!init()) return `--transition-delay: calc(255ms + var(${userCSSVariables['var-lyric-order']}) * 75ms);`;
+    if (!init())
+      return `--transition-delay: calc(255ms + var(${userCSSVariables['var-lyric-order']}) * 75ms);`;
 
     return `
       --transition-delay: calc(var(${userCSSVariables['var-lyric-order']}) * 75ms);
@@ -29,10 +30,14 @@ const LyricsItem = (props: LyricsItemProps) => {
   });
 
   onMount(() => {
-    dom.addEventListener('transitionend', () => {
-      dom.style.willChange = 'auto';
-      setInit(true);
-    }, { once: true });
+    dom.addEventListener(
+      'transitionend',
+      () => {
+        dom.style.willChange = 'auto';
+        setInit(true);
+      },
+      { once: true },
+    );
   });
 
   return (

@@ -14,15 +14,26 @@ import { getLyricMapperId } from '../../common/utils';
 import { Slider } from '../components/Slider';
 
 const SideBar = () => {
-  const { coverUrl, title, lyrics, playerLyrics, lyricData, lyricMode, isMapped } = usePlayingInfo();
+  const {
+    coverUrl,
+    title,
+    lyrics,
+    playerLyrics,
+    lyricData,
+    lyricMode,
+    isMapped,
+  } = usePlayingInfo();
   const [, lyricTime] = useLyric();
   const [lyricMapper, setLyricMapper] = useLyricMapper();
   const [t] = useTransContext();
 
-  const lyricMapperItem = () => lyricMapper()[getLyricMapperId(title(), coverUrl())];
+  const lyricMapperItem = () =>
+    lyricMapper()[getLyricMapperId(title(), coverUrl())];
   const lyricItems = createMemo(() => {
     if (lyricMode() === 'player') {
-      return Object.entries(playerLyrics() ?? {}).map(([time, lyrics]) => new Entry(~~time, lyrics));
+      return Object.entries(playerLyrics() ?? {}).map(
+        ([time, lyrics]) => new Entry(~~time, lyrics),
+      );
     } else {
       return lyrics()?.toJSON() ?? [];
     }
@@ -60,17 +71,17 @@ const SideBar = () => {
       `}
     >
       <div class={'text-xl'}>
-        <Trans key={'lyrics.current-playing-track'}/>
+        <Trans key={'lyrics.current-playing-track'} />
       </div>
-      <LyricProgressBar class={'!w-[280px]'}/>
+      <LyricProgressBar class={'!w-[280px]'} />
       <div class={'text-xl mt-4'}>
-        <Trans key={'lyrics.current-applied-lyric'}/>
+        <Trans key={'lyrics.current-applied-lyric'} />
       </div>
       <Card
         class={'w-full flex flex-row justify-start items-center gap-1'}
         subCards={[
           <div class={'w-full h-full flex justify-between items-center'}>
-            <Trans key={'lyrics.mode'}/>
+            <Trans key={'lyrics.mode'} />
             <Selector
               mode={'select'}
               options={['auto', 'player', 'none'] as LyricMode[]}
@@ -79,9 +90,11 @@ const SideBar = () => {
               onChange={onChangeLyricMode}
             />
           </div>,
-          <div class={'w-full h-full flex flex-col justify-between items-center'}>
+          <div
+            class={'w-full h-full flex flex-col justify-between items-center'}
+          >
             <div class={'w-full h-full flex justify-between items-center'}>
-              <Trans key={'lyrics.delay'}/>
+              <Trans key={'lyrics.delay'} />
               <label class={'input-group group'}>
                 <input
                   type={'number'}
@@ -122,17 +135,20 @@ const SideBar = () => {
           </div>,
         ]}
       >
-        <div class={'w-[calc(100%-24px)] flex flex-col justify-center items-start'}>
+        <div
+          class={'w-[calc(100%-24px)] flex flex-col justify-center items-start'}
+        >
           <Show when={lyricData()}>
             <Marquee class={'w-full'} gap={32}>
               <div class={'text-xs text-black/50 dark:text-white/50'}>
-                <Trans key={'lyrics.lyric-id'}/>: {lyricData()?.id ?? 'N/A'}
+                <Trans key={'lyrics.lyric-id'} />: {lyricData()?.id ?? 'N/A'}
                 {' · '}
-                <Trans key={'lyrics.lyric-author'}/>: {lyricData()?.register?.name ?? 'N/A'}
+                <Trans key={'lyrics.lyric-author'} />:{' '}
+                {lyricData()?.register?.name ?? 'N/A'}
                 {' · '}
                 <Switch fallback={t('lyrics.auto-recognized')}>
                   <Match when={isMapped()}>
-                    <Trans key={'lyrics.manually-specified'}/>
+                    <Trans key={'lyrics.manually-specified'} />
                   </Match>
                 </Switch>
               </div>
@@ -141,13 +157,14 @@ const SideBar = () => {
           <Marquee class={'w-full'} gap={32}>
             {lyricData()?.title ?? 'N/A'}
           </Marquee>
-          <div class={'text-sm'}>
-            {lyricData()?.artist ?? 'N/A'}
-          </div>
+          <div class={'text-sm'}>{lyricData()?.artist ?? 'N/A'}</div>
         </div>
       </Card>
       <div
-        class={'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto will-change-scroll'}>
+        class={
+          'fluent-scrollbar flex-1 block text-center overflow-scroll overflow-x-visible overflow-y-auto will-change-scroll'
+        }
+      >
         <For each={lyricItems()}>
           {({ first: time, second: lyrics }) => (
             <div

@@ -7,7 +7,11 @@ import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import useLyric from '../../hooks/useLyric';
 
 import { cx } from '../../utils/classNames';
-import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
+import {
+  userCSSSelectors,
+  userCSSTransitions,
+  userCSSVariables,
+} from '../../utils/userCSSSelectors';
 
 import useConfig from '../../hooks/useConfig';
 import useStyle from '../../hooks/useStyle';
@@ -47,7 +51,9 @@ export const useLyricsStyle = (
 ) => {
   const { view } = useCurrent();
 
-  useClassStyle(userCSSSelectors['lyrics-container'], () => `
+  useClassStyle(
+    userCSSSelectors['lyrics-container'],
+    () => `
     width: 100%;
 
     display: flex;
@@ -56,40 +62,61 @@ export const useLyricsStyle = (
     align-items: ${anchorTypeToItemsAlignType(view()?.position.anchor)};
     row-gap: ${style()?.lyric.multipleContainerRowGap}rem;
  
-  `);
-  useClassStyle(`${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['lyrics-container']}`, () => `
+  `,
+  );
+  useClassStyle(
+    `${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['lyrics-container']}`,
+    () => `
     opacity: ${style()?.lyric.stoppedOpacity};
-  `);
+  `,
+  );
 
-  useClassStyle(userCSSSelectors['lyrics-transition-wrapper'], () => `
+  useClassStyle(
+    userCSSSelectors['lyrics-transition-wrapper'],
+    () => `
     top: var(--top, 0);
     width: fit-content;
-  `);
+  `,
+  );
 
-  useClassStyle(userCSSSelectors['lyrics-wrapper'], () => `
+  useClassStyle(
+    userCSSSelectors['lyrics-wrapper'],
+    () => `
     transition: all 0.6s;
-  `);
-  useClassStyle(userCSSSelectors['lyrics-wrapper--previous'], () => `
+  `,
+  );
+  useClassStyle(
+    userCSSSelectors['lyrics-wrapper--previous'],
+    () => `
     scale: ${style()?.lyric.previousLyricScale};
     opacity: ${style()?.lyric.previousLyricOpacity};
     transform-origin: ${anchorTypeToOriginType(view()?.position.anchor, '100%')};
-  `);
-  useClassStyle(userCSSSelectors['lyrics-wrapper--next'], () => `
+  `,
+  );
+  useClassStyle(
+    userCSSSelectors['lyrics-wrapper--next'],
+    () => `
     scale: ${style()?.lyric.nextLyricScale};
     opacity: ${style()?.lyric.nextLyricOpacity};
     transform-origin: ${anchorTypeToOriginType(view()?.position.anchor)};
-  `);
+  `,
+  );
 
-  useClassStyle(userCSSSelectors['lyrics'], () => `
+  useClassStyle(
+    userCSSSelectors['lyrics'],
+    () => `
     display: flex;
     flex-direction: ${style()?.lyric.direction ?? 'column'};
     align-items: ${anchorTypeToItemsAlignType(view()?.position.anchor)};
     row-gap: ${style()?.lyric.containerRowGap}rem;
 
     transform-origin: ${anchorTypeToOriginType(view()?.position.anchor)};
-   `);
+   `,
+  );
 
-  useClassStyle(userCSSSelectors['lyrics-item'], () => `
+  useClassStyle(
+    userCSSSelectors['lyrics-item'],
+    () => `
     top: var(--top);
     
     width: fit-content;
@@ -108,11 +135,15 @@ export const useLyricsStyle = (
     font-size: ${style()?.lyric.fontSize}px;
     color: ${style()?.lyric.color};
     background-color: ${style()?.lyric.background};
-  `);
+  `,
+  );
 
-  useClassStyle(`${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['lyrics-item']}`, () => `
+  useClassStyle(
+    `${userCSSSelectors['wrapper--stopped']} .${userCSSSelectors['lyrics-item']}`,
+    () => `
     scale: 0.95;
-  `);
+  `,
+  );
 };
 
 const Lyrics = (props: LyricsProps) => {
@@ -123,7 +154,7 @@ const Lyrics = (props: LyricsProps) => {
   const [, , lyricsRange, getPreviousLyricLength] = useLyric();
 
   const orderOffset = () => (getPreviousLyricLength() ?? 0) * 3;
-  const offset = () => style().animationAtOnce ? 1 : 3;
+  const offset = () => (style().animationAtOnce ? 1 : 3);
 
   const animation = () => {
     const configuredName = style()?.animation ?? 'pretty';
@@ -141,29 +172,34 @@ const Lyrics = (props: LyricsProps) => {
       class={cx(userCSSSelectors['lyrics-container'], props.class)}
       {...containerProps}
     >
-      <TransitionGroup
-        name={animation()}
-        appear
-      >
+      <TransitionGroup name={animation()} appear>
         <For each={lyricsRange()}>
           {(lyrics, index) => (
             <div
-              onTransitionStart={(event) => event.currentTarget.style.setProperty('--top', `${event.currentTarget?.offsetTop}px`)}
+              onTransitionStart={(event) =>
+                event.currentTarget.style.setProperty(
+                  '--top',
+                  `${event.currentTarget?.offsetTop}px`,
+                )
+              }
               class={userCSSSelectors['lyrics-transition-wrapper']}
             >
               <div
                 classList={{
                   [userCSSSelectors['lyrics-wrapper']]: true,
-                  [userCSSSelectors['lyrics-wrapper--previous']]: index() < (getPreviousLyricLength() ?? 0),
-                  [userCSSSelectors['lyrics-wrapper--current']]: index() === (getPreviousLyricLength() ?? 0),
-                  [userCSSSelectors['lyrics-wrapper--next']]: index() > (getPreviousLyricLength() ?? 0),
+                  [userCSSSelectors['lyrics-wrapper--previous']]:
+                    index() < (getPreviousLyricLength() ?? 0),
+                  [userCSSSelectors['lyrics-wrapper--current']]:
+                    index() === (getPreviousLyricLength() ?? 0),
+                  [userCSSSelectors['lyrics-wrapper--next']]:
+                    index() > (getPreviousLyricLength() ?? 0),
                 }}
               >
                 <LyricsTransition
                   animation={animation()}
                   lyrics={lyrics}
                   status={status()}
-                  style={`${userCSSVariables['var-lyric-order-offset']}: ${orderOffset() + (index() * offset())};`}
+                  style={`${userCSSVariables['var-lyric-order-offset']}: ${orderOffset() + index() * offset()};`}
                   {...containerProps}
                 />
               </div>

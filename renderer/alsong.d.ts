@@ -3,31 +3,31 @@ declare module 'alsong' {
 
   type LyricTimestamp = number;
   type LyricRegister = {
-    name: string,
-    email: string,
-    url: string,
-    phone: string,
-    comment: string
+    name: string;
+    email: string;
+    url: string;
+    phone: string;
+    comment: string;
   };
 
   export type Lyric = {
-    lyricId: number,
-    title: string,
-    artist: string,
-    album: string,
-    lyric: Record<LyricTimestamp, string[]>,
-    lyricRaw: string,
-    firstRegister: LyricRegister,
-    register: LyricRegister
+    lyricId: number;
+    title: string;
+    artist: string;
+    album: string;
+    lyric: Record<LyricTimestamp, string[]>;
+    lyricRaw: string;
+    firstRegister: LyricRegister;
+    register: LyricRegister;
   };
 
   export type LyricMetadata = {
-    lyricId: number,
-    playtime: number,
-    title: string,
-    artist: string,
-    album: string,
-    registerDate: Date
+    lyricId: number;
+    playtime: number;
+    title: string;
+    artist: string;
+    album: string;
+    registerDate: Date;
   };
 
   type AlsongMusic = stream | Buffer | string;
@@ -38,27 +38,31 @@ declare module 'alsong' {
   };
 
   type LyricCompat = {
-    strInfoID: string,
-    strOnlyLyricWord: string,
-    strTitle: string,
-    strLyric: string,
-    strArtistName: string,
-    strAlbumName: string,
-    strRegisterFirstName: string,
-    strRegisterFirstEMail: string,
-    strRegisterFirstURL: string,
-    strRegisterFirstPhone: string,
-    strRegisterFirstComment: string,
-    strRegisterName: string,
-    strRegisterEMail: string,
-    strRegisterURL: string,
-    strRegisterPhone: string,
-    strRegisterComment: string,
+    strInfoID: string;
+    strOnlyLyricWord: string;
+    strTitle: string;
+    strLyric: string;
+    strArtistName: string;
+    strAlbumName: string;
+    strRegisterFirstName: string;
+    strRegisterFirstEMail: string;
+    strRegisterFirstURL: string;
+    strRegisterFirstPhone: string;
+    strRegisterFirstComment: string;
+    strRegisterName: string;
+    strRegisterEMail: string;
+    strRegisterURL: string;
+    strRegisterPhone: string;
+    strRegisterComment: string;
     lyric: Record<LyricTimestamp, string[]>;
   };
 
   interface AlsongCompat {
-    (artist: string, title: string, parseLyric?: boolean): Promise<LyricCompat[]>;
+    (
+      artist: string,
+      title: string,
+      parseLyric?: boolean,
+    ): Promise<LyricCompat[]>;
 
     (music: AlsongMusic, parseLyric?: boolean): Promise<LyricCompat | null>;
 
@@ -66,7 +70,11 @@ declare module 'alsong' {
   }
 
   export interface Alsong {
-    (artist: string, title: string, option?: AlsongOption): Promise<LyricMetadata[]>;
+    (
+      artist: string,
+      title: string,
+      option?: AlsongOption,
+    ): Promise<LyricMetadata[]>;
 
     (music: AlsongMusic): Promise<Lyric | null>;
 
@@ -78,7 +86,11 @@ declare module 'alsong' {
 
     getLyricByHash(hash: string): Promise<Lyric | null>;
 
-    getLyricListByArtistName(artist: string, title: string, option?: AlsongOption): Promise<LyricMetadata[]>;
+    getLyricListByArtistName(
+      artist: string,
+      title: string,
+      option?: AlsongOption,
+    ): Promise<LyricMetadata[]>;
 
     compat(resolver?: 'v1' | 'v2'): AlsongCompat;
   }

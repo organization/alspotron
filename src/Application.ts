@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import ProgressBar from 'electron-progressbar';
-import { autoUpdater, UpdateInfo } from 'electron-differential-updater';
+import { autoUpdater, UpdateInfo } from 'electron-updater';
 import {
   app,
   BrowserWindow,
@@ -13,7 +13,7 @@ import {
   nativeImage,
   Rectangle,
   screen,
-  Tray
+  Tray,
 } from 'electron';
 import { PartialDeep } from 'type-fest';
 import alsong from 'alsong';
@@ -21,23 +21,37 @@ import alsong from 'alsong';
 import PluginManager from './plugins/plugin-manager';
 import { config, gameList, lyricMapper, themeList } from './config';
 
-import { LyricSearchWindowProvider, LyricWindowProvider, SettingWindowProvider, TrayWindowProvider } from './window';
+import {
+  LyricSearchWindowProvider,
+  LyricWindowProvider,
+  SettingWindowProvider,
+  TrayWindowProvider,
+} from './window';
 
 import { OverlayManager } from './overlay';
 
-import { AlsongLyricProvider, LrclibLyricProvider, TunaObsProvider, WebNowPlayingProvider, } from './provider';
+import {
+  AlsongLyricProvider,
+  LrclibLyricProvider,
+  TunaObsProvider,
+  WebNowPlayingProvider,
+} from './provider';
 
 import { DEFAULT_CONFIG } from '../common/constants';
 import { getTranslation } from '../common/intl';
 
 import { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
-import { LyricProvider, SourceProvider, } from '../common/provider';
+import { LyricProvider, SourceProvider } from '../common/provider';
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
 import { isMacOS, isWin32 } from '../utils/is';
 
 import type { UpdateData } from '../common/schema';
-import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
+import type {
+  OverrideMap,
+  OverrideParameterMap,
+  PluginEventMap,
+} from '../common/plugins';
 
 // Set application name for Windows 10+ notifications
 if (isWin32()) {
@@ -76,13 +90,15 @@ class Application {
   private tray!: Tray;
   private lastUpdate: UpdateData | null = null;
   public handleMap = {
-    'get-registered-process-list': () => this.overlayManager.registeredProcessList,
+    'get-registered-process-list': () =>
+      this.overlayManager.registeredProcessList,
     'get-icon': (_, path: string) => {
       if (isWin32()) {
         try {
           // HACK: dynamic import is not working
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const extractIcon = (require('extract-file-icon') as typeof import('extract-file-icon'));
+          const extractIcon =
+            // eslint-disable-next-line @typescript-eslint/no-require-imports
+            require('extract-file-icon') as typeof import('extract-file-icon');
           const result = extractIcon(path, 32);
 
           return `data:image/png;base64,${Buffer.from(result).toString('base64')}`;
@@ -105,34 +121,59 @@ class Application {
       });
       this.broadcastPlugin('stop-overlay');
     },
-    'inject-overlay-to-process': async (_, processId: number, name?: string, filePath?: string) => {
+    'inject-overlay-to-process': async (
+      _,
+      processId: number,
+      name?: string,
+      filePath?: string,
+    ) => {
       if (process.platform !== 'win32') return;
 
-      await this.overridePlugin('inject-overlay-to-process', async (processId, name, filePath) => {
-        const gamePathList = Object.keys(gameList.get() ?? {});
+      await this.overridePlugin(
+        'inject-overlay-to-process',
+        async (processId, name, filePath) => {
+          const gamePathList = Object.keys(gameList.get() ?? {});
 
-        if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
-          await this.overlayManager.createProcess(processId, filePath);
-        }
-      }, processId, name, filePath);
+          if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
+            await this.overlayManager.createProcess(processId, filePath);
+          }
+        },
+        processId,
+        name,
+        filePath,
+      );
 
-      this.broadcastPlugin('inject-overlay-to-process', processId, name, filePath);
+      this.broadcastPlugin(
+        'inject-overlay-to-process',
+        processId,
+        name,
+        filePath,
+      );
     },
     'remove-overlay-from-process': (_, processId: number) => {
       this.broadcastPlugin('remove-overlay-from-process', processId);
-      this.overridePlugin('remove-overlay-from-process', (processId) => {
-        this.overlayManager.deleteProcess(processId);
-      }, processId);
+      this.overridePlugin(
+        'remove-overlay-from-process',
+        (processId) => {
+          this.overlayManager.deleteProcess(processId);
+        },
+        processId,
+      );
     },
     'get-current-version': () => autoUpdater.currentVersion.version,
-    'compare-with-current-version': (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion),
+    'compare-with-current-version': (_, otherVersion: string) =>
+      autoUpdater.currentVersion.compare(otherVersion),
     'check-update': async () => autoUpdater.checkForUpdatesAndNotify(),
     'get-last-update': () => this.lastUpdate,
 
     'set-config': async (_, data: PartialDeep<Config>) => {
-      await this.overridePlugin('config', (data) => {
-        config.set(data);
-      }, data);
+      await this.overridePlugin(
+        'config',
+        (data) => {
+          config.set(data);
+        },
+        data,
+      );
     },
     'get-default-config': () => DEFAULT_CONFIG,
     'reset-config': () => {
@@ -140,27 +181,56 @@ class Application {
       lyricMapper.set({}, false);
       gameList.set({}, false);
 
-      this.pluginManager.getPlugins()
+      this.pluginManager
+        .getPlugins()
         .forEach((plugin) => this.pluginManager.removePlugin(plugin));
     },
-    'set-lyric-mapper': async (_, data: Partial<LyricMapper>, useFallback: boolean = true) => {
-      await this.overridePlugin('lyric-mapper', (data) => {
-        lyricMapper.set(data, useFallback);
-      }, data);
+    'set-lyric-mapper': async (
+      _,
+      data: Partial<LyricMapper>,
+      useFallback: boolean = true,
+    ) => {
+      await this.overridePlugin(
+        'lyric-mapper',
+        (data) => {
+          lyricMapper.set(data, useFallback);
+        },
+        data,
+      );
     },
     'get-lyric-mapper': () => lyricMapper.get(),
-    'set-game-list': async (_, data: Partial<GameList>, useFallback: boolean = true) => {
-      await this.overridePlugin('game-list', (data) => {
-        gameList.set(data, useFallback);
-      }, data);
+    'set-game-list': async (
+      _,
+      data: Partial<GameList>,
+      useFallback: boolean = true,
+    ) => {
+      await this.overridePlugin(
+        'game-list',
+        (data) => {
+          gameList.set(data, useFallback);
+        },
+        data,
+      );
     },
     'get-game-list': () => gameList.get(),
-    'set-theme': async (_, name: string, data: PartialDeep<StyleConfig> | null, useFallback: boolean = true) => {
-      await this.overridePlugin('set-theme', (data) => {
-        themeList.set({
-          [name]: data ?? undefined,
-        }, useFallback);
-      }, data);
+    'set-theme': async (
+      _,
+      name: string,
+      data: PartialDeep<StyleConfig> | null,
+      useFallback: boolean = true,
+    ) => {
+      await this.overridePlugin(
+        'set-theme',
+        (data) => {
+          themeList.set(
+            {
+              [name]: data ?? undefined,
+            },
+            useFallback,
+          );
+        },
+        data,
+      );
     },
     'get-theme-list': () => themeList.get(),
 
@@ -171,34 +241,52 @@ class Application {
       this.broadcastPlugin('window-minimize');
     },
     'window-maximize': () => {
-      const isMaximized = BrowserWindow.getFocusedWindow()?.isMaximized() ?? false;
+      const isMaximized =
+        BrowserWindow.getFocusedWindow()?.isMaximized() ?? false;
 
-      this.overridePlugin('window-maximize', (isMaximized) => {
-        if (isMaximized) BrowserWindow.getFocusedWindow()?.unmaximize();
-        else BrowserWindow.getFocusedWindow()?.maximize();
-      }, isMaximized);
+      this.overridePlugin(
+        'window-maximize',
+        (isMaximized) => {
+          if (isMaximized) BrowserWindow.getFocusedWindow()?.unmaximize();
+          else BrowserWindow.getFocusedWindow()?.maximize();
+        },
+        isMaximized,
+      );
 
       this.broadcastPlugin('window-maximize', !isMaximized);
     },
-    'window-is-maximized': () => !!BrowserWindow.getFocusedWindow()?.isMaximized(),
+    'window-is-maximized': () =>
+      !!BrowserWindow.getFocusedWindow()?.isMaximized(),
     'window-close': () => {
       this.overridePlugin('window-close', () => {
         BrowserWindow.getFocusedWindow()?.close();
       });
       this.broadcastPlugin('window-close');
     },
-    'open-window': (_, target: 'lyrics' | 'settings' | 'tray', bounds?: Rectangle) => {
+    'open-window': (
+      _,
+      target: 'lyrics' | 'settings' | 'tray',
+      bounds?: Rectangle,
+    ) => {
       if (target === 'lyrics') {
-        if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
-          if (this.lyricSearchWindowProvider.window.isMinimized()) this.lyricSearchWindowProvider.window.restore();
+        if (
+          this.lyricSearchWindowProvider &&
+          !this.lyricSearchWindowProvider.window.isDestroyed()
+        ) {
+          if (this.lyricSearchWindowProvider.window.isMinimized())
+            this.lyricSearchWindowProvider.window.restore();
           this.lyricSearchWindowProvider.window.show();
         } else {
           this.initLyricSearchWindow();
         }
       }
       if (target === 'settings') {
-        if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
-          if (this.settingWindowProvider.window.isMinimized()) this.settingWindowProvider.window.restore();
+        if (
+          this.settingWindowProvider &&
+          !this.settingWindowProvider.window.isDestroyed()
+        ) {
+          if (this.settingWindowProvider.window.isMinimized())
+            this.settingWindowProvider.window.restore();
           this.settingWindowProvider.window.show();
         } else {
           this.initSettingWindow();
@@ -209,25 +297,49 @@ class Application {
         this.trayWindowProvider?.show(bounds ?? this.tray.getBounds());
       }
     },
-    'open-devtool': (_, target: 'main' | 'lyrics' | 'settings' | 'tray', index: number = 0) => {
+    'open-devtool': (
+      _,
+      target: 'main' | 'lyrics' | 'settings' | 'tray',
+      index: number = 0,
+    ) => {
       if (target === 'main') {
-        if (this.lyricWindowProviders && !this.lyricWindowProviders[index].window.isDestroyed()) {
-          this.lyricWindowProviders[index].window.webContents.openDevTools({ mode: 'detach' });
+        if (
+          this.lyricWindowProviders &&
+          !this.lyricWindowProviders[index].window.isDestroyed()
+        ) {
+          this.lyricWindowProviders[index].window.webContents.openDevTools({
+            mode: 'detach',
+          });
         }
       }
       if (target === 'lyrics') {
-        if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
-          this.lyricSearchWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+        if (
+          this.lyricSearchWindowProvider &&
+          !this.lyricSearchWindowProvider.window.isDestroyed()
+        ) {
+          this.lyricSearchWindowProvider.window.webContents.openDevTools({
+            mode: 'detach',
+          });
         }
       }
       if (target === 'settings') {
-        if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
-          this.settingWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+        if (
+          this.settingWindowProvider &&
+          !this.settingWindowProvider.window.isDestroyed()
+        ) {
+          this.settingWindowProvider.window.webContents.openDevTools({
+            mode: 'detach',
+          });
         }
       }
       if (target === 'tray') {
-        if (this.trayWindowProvider && !this.trayWindowProvider.window.isDestroyed()) {
-          this.trayWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+        if (
+          this.trayWindowProvider &&
+          !this.trayWindowProvider.window.isDestroyed()
+        ) {
+          this.trayWindowProvider.window.webContents.openDevTools({
+            mode: 'detach',
+          });
         }
       }
     },
@@ -236,28 +348,37 @@ class Application {
       this.broadcastPlugin('before-add-plugin', pluginPath);
 
       let error: Error | null = null;
-      await this.overridePlugin('add-plugin', async (pluginPath) => {
-        const result = await this.pluginManager.addPlugin(pluginPath);
-        if (result instanceof Error) {
-          error = result;
-          return;
-        }
+      await this.overridePlugin(
+        'add-plugin',
+        async (pluginPath) => {
+          const result = await this.pluginManager.addPlugin(pluginPath);
+          if (result instanceof Error) {
+            error = result;
+            return;
+          }
 
-        this.broadcastPlugin('add-plugin', result, result.path);
-      }, pluginPath);
+          this.broadcastPlugin('add-plugin', result, result.path);
+        },
+        pluginPath,
+      );
 
       return error as Error | null;
     },
-    'get-plugin': (_, id: string) => pure(this.pluginManager.getPlugins().find((it) => it.id === id)),
+    'get-plugin': (_, id: string) =>
+      pure(this.pluginManager.getPlugins().find((it) => it.id === id)),
     'remove-plugin': (_, id: string) => {
       const target = this.pluginManager.getPlugins().find((it) => it.id === id);
 
       if (!target) return;
 
       this.broadcastPlugin('before-remove-plugin', target);
-      this.overridePlugin('remove-plugin', (target) => {
-        this.pluginManager.removePlugin(target);
-      }, target);
+      this.overridePlugin(
+        'remove-plugin',
+        (target) => {
+          this.pluginManager.removePlugin(target);
+        },
+        target,
+      );
       this.broadcastPlugin('after-remove-plugin', target);
 
       config.set({ plugins: { list: { [id]: undefined } } });
@@ -266,48 +387,68 @@ class Application {
       const target = this.pluginManager.getPlugins().find((it) => it.id === id);
       if (!target) return;
 
-      await this.overridePlugin('reload-plugin', async (target) => {
-        await this.pluginManager.reloadPlugin(target);
-      }, target);
+      await this.overridePlugin(
+        'reload-plugin',
+        async (target) => {
+          await this.pluginManager.reloadPlugin(target);
+        },
+        target,
+      );
     },
     'set-plugin-state': async (_, id: string, state: 'disable' | 'enable') => {
       const target = this.pluginManager.getPlugins().find((it) => it.id === id);
       if (!target) return;
 
-      await this.overridePlugin('change-plugin-state', async (target, state) => {
-        await this.pluginManager.setPluginState(target.id, state);
-      }, target, state);
+      await this.overridePlugin(
+        'change-plugin-state',
+        async (target, state) => {
+          await this.pluginManager.setPluginState(target.id, state);
+        },
+        target,
+        state,
+      );
 
       this.broadcastPlugin('change-plugin-state', target, state);
     },
     'broadcast-plugin': (_, event: keyof PluginEventMap, ...args) => {
-      this.broadcastPlugin(event, ...args as Parameters<PluginEventMap[typeof event]>);
+      this.broadcastPlugin(
+        event,
+        ...(args as Parameters<PluginEventMap[typeof event]>),
+      );
     },
     'override-plugin': (_, target: keyof OverrideMap, ...args) => {
       return new Promise((resolve) => {
         let isResolved = false;
 
         (async () => {
-          await this.overridePlugin(target, (...provided) => {
-            isResolved = true;
-            resolve(provided);
-          }, ...args as never);
+          await this.overridePlugin(
+            target,
+            (...provided) => {
+              isResolved = true;
+              resolve(provided);
+            },
+            ...(args as never),
+          );
 
           if (!isResolved) resolve(false);
         })();
       });
     },
 
-    'get-all-source-providers': () => this.getAllSourceProviders().map((it) => ({
-      name: it.name,
-      options: it.getOptions(config.get().language),
-    })),
-    'get-current-source-provider-state': () => this.sourceProvider.isRunning() ? 'start' : 'close',
+    'get-all-source-providers': () =>
+      this.getAllSourceProviders().map((it) => ({
+        name: it.name,
+        options: it.getOptions(config.get().language),
+      })),
+    'get-current-source-provider-state': () =>
+      this.sourceProvider.isRunning() ? 'start' : 'close',
     'restart-source-provider': () => {
       if (!this.sourceProvider) this.initSourceProvider();
       else {
         if (this.sourceProvider.isRunning()) this.sourceProvider.close();
-        this.sourceProvider.start(config.get().providers.source.config[this.sourceProvider.name]);
+        this.sourceProvider.start(
+          config.get().providers.source.config[this.sourceProvider.name],
+        );
       }
     },
 
@@ -322,21 +463,37 @@ class Application {
       this.lyricWindowProviders[index].updateWindowConfig();
     },
 
-    'lyric-provider:get-all-lyric-providers': () => this.getAllLyricProviders().map((it) => it.name),
-    'lyric-provider:get-lyric': async (_, ...params: Parameters<LyricProvider['getLyric']>) => this.lyricProvider.getLyric(...params),
-    'lyric-provider:get-lyric-by-id': async (_, ...params: Parameters<LyricProvider['getLyricById']>) => this.lyricProvider.getLyricById(...params),
-    'lyric-provider:search-lyrics': async (_, ...params: Parameters<LyricProvider['searchLyrics']>) => this.lyricProvider.searchLyrics(...params),
-    'lyric-provider:get-options': (_, ...params: Parameters<LyricProvider['getOptions']>) => this.lyricProvider.getOptions(...params),
-    'lyric-provider:on-option-change': (_, ...params: Parameters<LyricProvider['onOptionChange']>) => this.lyricProvider.onOptionChange(...params),
-  } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown>;
+    'lyric-provider:get-all-lyric-providers': () =>
+      this.getAllLyricProviders().map((it) => it.name),
+    'lyric-provider:get-lyric': async (
+      _,
+      ...params: Parameters<LyricProvider['getLyric']>
+    ) => this.lyricProvider.getLyric(...params),
+    'lyric-provider:get-lyric-by-id': async (
+      _,
+      ...params: Parameters<LyricProvider['getLyricById']>
+    ) => this.lyricProvider.getLyricById(...params),
+    'lyric-provider:search-lyrics': async (
+      _,
+      ...params: Parameters<LyricProvider['searchLyrics']>
+    ) => this.lyricProvider.searchLyrics(...params),
+    'lyric-provider:get-options': (
+      _,
+      ...params: Parameters<LyricProvider['getOptions']>
+    ) => this.lyricProvider.getOptions(...params),
+    'lyric-provider:on-option-change': (
+      _,
+      ...params: Parameters<LyricProvider['onOptionChange']>
+    ) => this.lyricProvider.onOptionChange(...params),
+  } satisfies Record<
+    string,
+    (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown
+  >;
 
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
     this.overlayManager.setCorsHeader(this.setCorsHandler.bind(this));
-    this.sourceProviders = [
-      new TunaObsProvider(),
-      new WebNowPlayingProvider(),
-    ];
+    this.sourceProviders = [new TunaObsProvider(), new WebNowPlayingProvider()];
     this.lyricProviders = [
       new AlsongLyricProvider(alsong),
       new LrclibLyricProvider(),
@@ -345,38 +502,54 @@ class Application {
 
   get sourceProvider() {
     const providerName = config.get().sourceProvider;
-    return this.getAllSourceProviders().find((it) => it.name === providerName) ?? this.sourceProviders[0];
+    return (
+      this.getAllSourceProviders().find((it) => it.name === providerName) ??
+      this.sourceProviders[0]
+    );
   }
 
   get lyricProvider() {
     const providerName = config.get().lyricProvider;
-    return this.getAllLyricProviders().find((it) => it.name === providerName) ?? this.lyricProviders[0];
+    return (
+      this.getAllLyricProviders().find((it) => it.name === providerName) ??
+      this.lyricProviders[0]
+    );
   }
 
   initSourceProvider() {
-    console.log(`[Alspotron] init source provider "${this.sourceProvider.name}"`);
-    this.sourceProvider.start(config.get().providers.source.config[this.sourceProvider.name]);
+    console.log(
+      `[Alspotron] init source provider "${this.sourceProvider.name}"`,
+    );
+    this.sourceProvider.start(
+      config.get().providers.source.config[this.sourceProvider.name],
+    );
 
     this.sourceProvider.on('start', () => {
       this.broadcast('current-source-provider-state', 'start');
-      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_square.png')).resize({
-        width: 16,
-        height: 16
-      }));
+      this.tray.setImage(
+        nativeImage.createFromPath(getFile('./assets/icon_square.png')).resize({
+          width: 16,
+          height: 16,
+        }),
+      );
     });
     this.sourceProvider.on('close', () => {
       this.broadcast('current-source-provider-state', 'close');
-      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
-        width: 16,
-        height: 16
-      }));
+      this.tray.setImage(
+        nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
+          width: 16,
+          height: 16,
+        }),
+      );
     });
     this.sourceProvider.on('error', (err) => {
       this.broadcast('current-source-provider-state', 'error', err.toString());
-      this.tray.setImage(nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
-        width: 16,
-        height: 16
-      }));
+      this.tray.setImage(
+        nativeImage.createFromPath(getFile('./assets/icon_error.png')).resize({
+          width: 16,
+          height: 16,
+        }),
+      );
     });
 
     this.sourceProvider.on('update', (body) => {
@@ -409,10 +582,16 @@ class Application {
 
   initOverlay() {
     this.overlayManager.on('register-process', () => {
-      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
+      this.broadcast(
+        'registered-process-list',
+        this.overlayManager.registeredProcessList,
+      );
     });
     this.overlayManager.on('unregister-process', () => {
-      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
+      this.broadcast(
+        'registered-process-list',
+        this.overlayManager.registeredProcessList,
+      );
     });
 
     gameList.watch(() => {
@@ -425,7 +604,8 @@ class Application {
 
     autoUpdater.autoDownload = false;
     autoUpdater.on('update-available', async (it: UpdateInfo) => {
-      const downloadLink = 'https://github.com/organization/alspotron/releases/latest';
+      const downloadLink =
+        'https://github.com/organization/alspotron/releases/latest';
 
       const language = config.get().language;
       const { response } = await dialog.showMessageBox({
@@ -435,8 +615,14 @@ class Application {
           getTranslation('updater.download-and-auto-install', language),
         ],
         title: `${getTranslation('updater.update-alert', language)} (${it.version})`,
-        message: getTranslation('updater.update-available', language).replace('{{version}}', it.version),
-        detail: getTranslation('updater.download-at', language).replace('{{link}}', downloadLink),
+        message: getTranslation('updater.update-available', language).replace(
+          '{{version}}',
+          it.version,
+        ),
+        detail: getTranslation('updater.download-at', language).replace(
+          '{{link}}',
+          downloadLink,
+        ),
         defaultId: 1,
         cancelId: 0,
       });
@@ -472,8 +658,12 @@ class Application {
         type: 'normal',
         label: getTranslation('tray.lyrics.label', config.get().language),
         click: () => {
-          if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
-            if (this.lyricSearchWindowProvider.window.isMinimized()) this.lyricSearchWindowProvider.window.restore();
+          if (
+            this.lyricSearchWindowProvider &&
+            !this.lyricSearchWindowProvider.window.isDestroyed()
+          ) {
+            if (this.lyricSearchWindowProvider.window.isMinimized())
+              this.lyricSearchWindowProvider.window.restore();
             this.lyricSearchWindowProvider.window.show();
           } else {
             this.initLyricSearchWindow();
@@ -484,13 +674,17 @@ class Application {
         type: 'normal',
         label: getTranslation('tray.setting.label', config.get().language),
         click: () => {
-          if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
-            if (this.settingWindowProvider.window.isMinimized()) this.settingWindowProvider.window.restore();
+          if (
+            this.settingWindowProvider &&
+            !this.settingWindowProvider.window.isDestroyed()
+          ) {
+            if (this.settingWindowProvider.window.isMinimized())
+              this.settingWindowProvider.window.restore();
             this.settingWindowProvider.window.show();
           } else {
             this.initSettingWindow();
           }
-        }
+        },
       },
       {
         type: 'separator',
@@ -502,7 +696,7 @@ class Application {
         click: () => {
           this.overlayManager.stopOverlay();
           app.quit();
-        }
+        },
       },
     ];
 
@@ -516,7 +710,10 @@ class Application {
           label: getTranslation('tray.devtools.label', config.get().language),
           submenu: [
             ...this.lyricWindowProviders.map((provider, index) => ({
-              label: getTranslation('tray.devtools.lyric-viewer.label', config.get().language).replace('{{index}}', `${index}`),
+              label: getTranslation(
+                'tray.devtools.lyric-viewer.label',
+                config.get().language,
+              ).replace('{{index}}', `${index}`),
               click: () => {
                 if (!provider.window.isDestroyed()) {
                   provider.window.webContents.openDevTools({ mode: 'detach' });
@@ -524,30 +721,54 @@ class Application {
               },
             })),
             {
-              label: getTranslation('tray.devtools.lyrics.label', config.get().language),
+              label: getTranslation(
+                'tray.devtools.lyrics.label',
+                config.get().language,
+              ),
               click: () => {
-                if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
-                  this.lyricSearchWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+                if (
+                  this.lyricSearchWindowProvider &&
+                  !this.lyricSearchWindowProvider.window.isDestroyed()
+                ) {
+                  this.lyricSearchWindowProvider.window.webContents.openDevTools(
+                    { mode: 'detach' },
+                  );
                 }
               },
             },
             {
-              label: getTranslation('tray.devtools.setting.label', config.get().language),
+              label: getTranslation(
+                'tray.devtools.setting.label',
+                config.get().language,
+              ),
               click: () => {
-                if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
-                  this.settingWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+                if (
+                  this.settingWindowProvider &&
+                  !this.settingWindowProvider.window.isDestroyed()
+                ) {
+                  this.settingWindowProvider.window.webContents.openDevTools({
+                    mode: 'detach',
+                  });
                 }
               },
             },
             {
-              label: getTranslation('tray.devtools.tray.label', config.get().language),
+              label: getTranslation(
+                'tray.devtools.tray.label',
+                config.get().language,
+              ),
               click: () => {
-                if (this.trayWindowProvider && !this.trayWindowProvider.window.isDestroyed()) {
-                  this.trayWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
+                if (
+                  this.trayWindowProvider &&
+                  !this.trayWindowProvider.window.isDestroyed()
+                ) {
+                  this.trayWindowProvider.window.webContents.openDevTools({
+                    mode: 'detach',
+                  });
                 }
               },
-            }
-          ]
+            },
+          ],
         },
       );
     }
@@ -556,7 +777,9 @@ class Application {
   }
 
   initTray() {
-    const trayIcon = nativeImage.createFromPath(getFile('./assets/icon_error.png'));
+    const trayIcon = nativeImage.createFromPath(
+      getFile('./assets/icon_error.png'),
+    );
 
     this.tray = new Tray(trayIcon.resize({ width: 16, height: 16 }));
     this.initMenu();
@@ -599,22 +822,21 @@ class Application {
     originalFn: (...args: OverrideParameterMap[Target]) => Promise<void> | void,
     ...args: OverrideParameterMap[Target]
   ): Promise<void> {
-    const overrideFnList = this.pluginManager.getPlugins()
-      .flatMap((plugin) => plugin.state === 'enable'
-        ? plugin.js.overrides[target] ?? []
-        : []
+    const overrideFnList = this.pluginManager
+      .getPlugins()
+      .flatMap((plugin) =>
+        plugin.state === 'enable' ? (plugin.js.overrides[target] ?? []) : [],
       );
 
-    await Promise.all(overrideFnList.map(async (overrideFn, index) => {
-      const fn = (
-        index === overrideFnList.length - 1
-          ? originalFn
-          : async () => {
-          }
-      ) as (...args: OverrideParameterMap[Target]) => Promise<void>;
+    await Promise.all(
+      overrideFnList.map(async (overrideFn, index) => {
+        const fn = (
+          index === overrideFnList.length - 1 ? originalFn : async () => {}
+        ) as (...args: OverrideParameterMap[Target]) => Promise<void>;
 
-      await overrideFn(fn, ...args);
-    }));
+        await overrideFn(fn, ...args);
+      }),
+    );
 
     if (overrideFnList.length === 0) {
       await originalFn(...args);
@@ -623,27 +845,51 @@ class Application {
 
   broadcast<T>(event: string, ...args: T[]) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-    this.broadcastPlugin(event as keyof PluginEventMap, ...args as any);
+    this.broadcastPlugin(event as keyof PluginEventMap, ...(args as any));
 
     this.lyricWindowProviders.forEach((it) => {
       if (it.window.isDestroyed()) return;
 
       it.window.webContents.send(event, ...args);
     });
-    if (this.overlayManager.windowProvider && !this.overlayManager.windowProvider.window.isDestroyed()) this.overlayManager.windowProvider.window.webContents.send(event, ...args);
-    if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) this.lyricSearchWindowProvider.window.webContents.send(event, ...args);
-    if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) this.settingWindowProvider.window.webContents.send(event, ...args);
-    if (this.trayWindowProvider && !this.trayWindowProvider.window.isDestroyed()) this.trayWindowProvider.window.webContents.send(event, ...args);
+    if (
+      this.overlayManager.windowProvider &&
+      !this.overlayManager.windowProvider.window.isDestroyed()
+    )
+      this.overlayManager.windowProvider.window.webContents.send(
+        event,
+        ...args,
+      );
+    if (
+      this.lyricSearchWindowProvider &&
+      !this.lyricSearchWindowProvider.window.isDestroyed()
+    )
+      this.lyricSearchWindowProvider.window.webContents.send(event, ...args);
+    if (
+      this.settingWindowProvider &&
+      !this.settingWindowProvider.window.isDestroyed()
+    )
+      this.settingWindowProvider.window.webContents.send(event, ...args);
+    if (
+      this.trayWindowProvider &&
+      !this.trayWindowProvider.window.isDestroyed()
+    )
+      this.trayWindowProvider.window.webContents.send(event, ...args);
   }
 
-  broadcastPlugin<T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) {
+  broadcastPlugin<T extends keyof PluginEventMap>(
+    event: T,
+    ...args: Parameters<PluginEventMap[T]>
+  ) {
     this.pluginManager.broadcast(event, ...args);
   }
 
   getAllSourceProviders() {
     return [
       ...this.sourceProviders,
-      ...this.pluginManager.getPlugins().flatMap((it) => it.js.providers.source),
+      ...this.pluginManager
+        .getPlugins()
+        .flatMap((it) => it.js.providers.source),
     ];
   }
 
@@ -665,20 +911,30 @@ class Application {
       }
 
       if (lastConfig.sourceProvider !== config.sourceProvider) {
-        const notExist = !this.getAllSourceProviders().some((it) => it.name === config.sourceProvider);
+        const notExist = !this.getAllSourceProviders().some(
+          (it) => it.name === config.sourceProvider,
+        );
         if (notExist) {
-          console.log(`[Alspotron] Source provider "${config.sourceProvider}" is not exist`);
+          console.log(
+            `[Alspotron] Source provider "${config.sourceProvider}" is not exist`,
+          );
           return;
         }
 
-        const oldProvider = this.getAllSourceProviders().find((it) => it.name === lastConfig.sourceProvider);
+        const oldProvider = this.getAllSourceProviders().find(
+          (it) => it.name === lastConfig.sourceProvider,
+        );
         oldProvider?.close();
 
         this.initSourceProvider();
       }
 
-      if (lastConfig.providers.source.config !== config.providers.source.config) {
-        this.sourceProvider.onOptionChange(config.providers.source.config[this.sourceProvider.name]);
+      if (
+        lastConfig.providers.source.config !== config.providers.source.config
+      ) {
+        this.sourceProvider.onOptionChange(
+          config.providers.source.config[this.sourceProvider.name],
+        );
       }
 
       lastConfig = config;
@@ -693,15 +949,16 @@ class Application {
       this.broadcast('theme-list', themeList);
     });
 
-    Object.entries(this.handleMap)
-      .forEach(([event, handler]) => {
-        ipcMain.handle(event, handler as (event: Electron.IpcMainInvokeEvent) => unknown);
-      });
+    Object.entries(this.handleMap).forEach(([event, handler]) => {
+      ipcMain.handle(
+        event,
+        handler as (event: Electron.IpcMainInvokeEvent) => unknown,
+      );
+    });
 
-    Object.entries(this.onMap)
-      .forEach(([event, handler]) => {
-        ipcMain.on(event, handler as (event: Electron.IpcMainEvent) => unknown);
-      });
+    Object.entries(this.onMap).forEach(([event, handler]) => {
+      ipcMain.on(event, handler as (event: Electron.IpcMainEvent) => unknown);
+    });
   }
 
   initMainWindow() {
@@ -718,7 +975,11 @@ class Application {
 
       if (config.views.length > this.lyricWindowProviders.length) {
         isChanged = true;
-        for (let i = this.lyricWindowProviders.length; i < config.views.length; i++) {
+        for (
+          let i = this.lyricWindowProviders.length;
+          i < config.views.length;
+          i++
+        ) {
           this.lyricWindowProviders[i] = new LyricWindowProvider(i);
           this.setCorsHandler(this.lyricWindowProviders[i].window.webContents);
 
@@ -760,20 +1021,18 @@ class Application {
   }
 
   private setCorsHandler(webContents: Electron.WebContents) {
-    webContents.session.webRequest.onBeforeSendHeaders(
-      (details, callback) => {
-        const provider = this.lyricProvider;
+    webContents.session.webRequest.onBeforeSendHeaders((details, callback) => {
+      const provider = this.lyricProvider;
 
-        if (provider && provider.onBeforeSendHeaders) {
-          const result = provider.onBeforeSendHeaders(details);
+      if (provider && provider.onBeforeSendHeaders) {
+        const result = provider.onBeforeSendHeaders(details);
 
-          callback(result);
-          return;
-        }
+        callback(result);
+        return;
+      }
 
-        callback(details);
-      },
-    );
+      callback(details);
+    });
     webContents.session.webRequest.onHeadersReceived((details, callback) => {
       const provider = this.lyricProvider;
 

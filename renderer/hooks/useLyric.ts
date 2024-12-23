@@ -17,7 +17,10 @@ const useLyric = () => {
 
   const averageLyricLines = createMemo(() => {
     const lyricsArray = Array.from(lyrics() ?? []);
-    return lyricsArray.reduce((count, row) => count + row.second.length, 0) / lyricsArray.length;
+    return (
+      lyricsArray.reduce((count, row) => count + row.second.length, 0) /
+      lyricsArray.length
+    );
   });
 
   const isPrevNextLyricsEnabled = () =>
@@ -31,13 +34,12 @@ const useLyric = () => {
     const mapper = lyricMapper()[getLyricMapperId(title(), coverUrl())];
     const delay = mapper?.delay ?? 0;
     const last = tempLyrics.lower_bound(
-      progress() + delay + (
-        BIAS + (
-          style().animation !== 'none' && !style().animationAtOnce ?
-            TRANSITION_DURATION :
-            0
-        )
-      ),
+      progress() +
+        delay +
+        (BIAS +
+          (style().animation !== 'none' && !style().animationAtOnce
+            ? TRANSITION_DURATION
+            : 0)),
     );
 
     if (!last.equals(tempLyrics.begin())) {
@@ -51,15 +53,14 @@ const useLyric = () => {
   const index = createMemo(() => lastIter()?.first);
 
   const nextLyricsIter = createMemo(() => {
-    let nextLyricLength = isPrevNextLyricsEnabled() ? style().lyric.nextLyric : 0;
+    let nextLyricLength = isPrevNextLyricsEnabled()
+      ? style().lyric.nextLyric
+      : 0;
 
     const now = lastIter();
     const tempLyrics = lyrics();
 
-    if (
-      !tempLyrics ||
-      !now
-    ) {
+    if (!tempLyrics || !now) {
       return null;
     } else if (now.index() + nextLyricLength >= tempLyrics.end().index()) {
       nextLyricLength = tempLyrics.end().index() - now.index() - 1;
@@ -69,15 +70,14 @@ const useLyric = () => {
   });
 
   const getPreviousLyricLength = createMemo(() => {
-    let previousLyricLength = isPrevNextLyricsEnabled() ? style().lyric.previousLyric : 0;
+    let previousLyricLength = isPrevNextLyricsEnabled()
+      ? style().lyric.previousLyric
+      : 0;
 
     const now = lastIter();
     const tempLyrics = lyrics();
 
-    if (
-      !tempLyrics ||
-      !now
-    ) {
+    if (!tempLyrics || !now) {
       return null;
     } else if (now.index() - previousLyricLength < tempLyrics.begin().index()) {
       previousLyricLength = now.index() - tempLyrics.begin().index();
@@ -92,10 +92,7 @@ const useLyric = () => {
     const now = lastIter();
     const tempLyrics = lyrics();
 
-    if (
-      !tempLyrics ||
-      !now
-    ) {
+    if (!tempLyrics || !now) {
       return null;
     }
 

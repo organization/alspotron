@@ -1,6 +1,12 @@
 import { Plugin } from './plugin';
 
-import { Config, GameList, LyricMapper, StyleConfig, UpdateData } from '../schema';
+import {
+  Config,
+  GameList,
+  LyricMapper,
+  StyleConfig,
+  UpdateData,
+} from '../schema';
 
 import type { PartialDeep } from 'type-fest';
 
@@ -20,9 +26,17 @@ export interface PluginEventMap {
   'change-plugin-state': (plugin: Plugin, state: 'enable' | 'disable') => void;
   'start-overlay': () => void;
   'stop-overlay': () => void;
-  'inject-overlay-to-process': (processId: number, name?: string, filePath?: string) => void;
+  'inject-overlay-to-process': (
+    processId: number,
+    name?: string,
+    filePath?: string,
+  ) => void;
   'remove-overlay-from-process': (processId: number) => void;
-  'change-source-provider-state': (provider: string, state: 'start' | 'error' | 'close', arg: unknown) => void;
+  'change-source-provider-state': (
+    provider: string,
+    state: 'start' | 'error' | 'close',
+    arg: unknown,
+  ) => void;
   'button-click': (buttonId: string) => void;
 }
 export interface OverrideParameterMap {
@@ -41,14 +55,22 @@ export interface OverrideParameterMap {
   'change-plugin-state': [plugin: Plugin, state: 'enable' | 'disable'];
   'start-overlay': [];
   'stop-overlay': [];
-  'inject-overlay-to-process': [processId: number, name?: string, filePath?: string];
+  'inject-overlay-to-process': [
+    processId: number,
+    name?: string,
+    filePath?: string,
+  ];
   'remove-overlay-from-process': [processId: number];
 
   /* renderer */
-  'search-lyrics': [artist: string, title: string, options?: {
-    playtime?: number;
-    page?: number;
-  }];
+  'search-lyrics': [
+    artist: string,
+    title: string,
+    options?: {
+      playtime?: number;
+      page?: number;
+    },
+  ];
 }
 export type OverrideMap = {
   [Key in keyof OverrideParameterMap]: (

@@ -16,9 +16,16 @@ const PresetCard = (props: PresetCardProps) => {
   return (
     <Card
       {...leftProps}
-      class={cx('relative group h-full aspect-square !p-0 overflow-hidden z-0 cursor-pointer', leftProps.class)}
+      class={cx(
+        'relative group h-full aspect-square !p-0 overflow-hidden z-0 cursor-pointer',
+        leftProps.class,
+      )}
     >
-      <img src={local.url} class={'-z-1 group-hover:opacity-50'} alt={'Preset Image'}/>
+      <img
+        src={local.url}
+        class={'-z-1 group-hover:opacity-50'}
+        alt={'Preset Image'}
+      />
       <div
         class={`
           absolute left-0 right-0 bottom-0
@@ -31,17 +38,30 @@ const PresetCard = (props: PresetCardProps) => {
         }}
       >
         <Show when={local.selected}>
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z" class={'fill-primary-500'} />
+          <svg
+            width="16"
+            height="16"
+            fill="none"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m8.5 16.586-3.793-3.793a1 1 0 0 0-1.414 1.414l4.5 4.5a1 1 0 0 0 1.414 0l11-11a1 1 0 0 0-1.414-1.414L8.5 16.586Z"
+              class={'fill-primary-500'}
+            />
           </svg>
         </Show>
         {local.name}
       </div>
       <Show when={local.selected}>
-        <div class={'absolute inset-0 pointer-events-none shadow-[0_0_0_4px_var(--tw-shadow-color)_inset] shadow-primary-500 rounded z-[1]'} />
+        <div
+          class={
+            'absolute inset-0 pointer-events-none shadow-[0_0_0_4px_var(--tw-shadow-color)_inset] shadow-primary-500 rounded z-[1]'
+          }
+        />
       </Show>
     </Card>
-  )
+  );
 };
 
 export default PresetCard;

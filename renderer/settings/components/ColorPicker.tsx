@@ -5,7 +5,8 @@ import colors from 'tailwindcss/colors';
 
 import type { JSX } from 'solid-js/jsx-runtime';
 
-export interface ColorPickerProps extends JSX.InputHTMLAttributes<HTMLInputElement> {
+export interface ColorPickerProps
+  extends JSX.InputHTMLAttributes<HTMLInputElement> {
   value?: string;
   onColorChange?: (color: string) => void;
 }
@@ -29,7 +30,7 @@ const ColorPicker = (props: ColorPickerProps) => {
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', cleanUp);
       window.removeEventListener('pointercancel', cleanUp);
-    }
+    };
 
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', cleanUp);
@@ -42,12 +43,17 @@ const ColorPicker = (props: ColorPickerProps) => {
     const now = Math.min(Math.max(0, event.pageX - rect.left - 6), max);
 
     setAlpha(now / max);
-    props.onColorChange?.(Color(color()).rgb().alpha(now / max).string());
+    props.onColorChange?.(
+      Color(color())
+        .rgb()
+        .alpha(now / max)
+        .string(),
+    );
   };
   const onChangeColor = (color: string) => {
     setColor(color);
     props.onColorChange?.(Color(color).rgb().alpha(alpha()).string());
-  }
+  };
 
   createEffect(() => {
     const color = Color(props.value);
@@ -71,15 +77,23 @@ const ColorPicker = (props: ColorPickerProps) => {
         style={{
           '--alpha': `${alpha() * 108}px`,
         }}
-        class={'relative min-w-[120px] h-16px flex justify-start items-center z-0 cursor-pointer'}
+        class={
+          'relative min-w-[120px] h-16px flex justify-start items-center z-0 cursor-pointer'
+        }
         onPointerDown={onMoveStart}
       >
-        <div class={'absolute left-[4px] right-[4px] h-[4px] bg-gray-300 rounded-full -z-2'} />
+        <div
+          class={
+            'absolute left-[4px] right-[4px] h-[4px] bg-gray-300 rounded-full -z-2'
+          }
+        />
         <div
           style={{
             scale: `${alpha() * 100}% 100%`,
           }}
-          class={'absolute left-[4px] right-[4px] h-[4px] bg-primary-500 rounded-full -z-1 origin-left'}
+          class={
+            'absolute left-[4px] right-[4px] h-[4px] bg-primary-500 rounded-full -z-1 origin-left'
+          }
         />
         <div
           class={`
@@ -93,7 +107,7 @@ const ColorPicker = (props: ColorPickerProps) => {
         />
       </div>
     </div>
-  )
+  );
 };
 
 export default ColorPicker;

@@ -77,7 +77,7 @@ export const DEFAULT_CONFIG = {
         bottom: 32,
         right: 32,
       },
-    }
+    },
   ],
   appTheme: 'system' as const,
   language: 'ko' as 'ko' | 'en' | 'ja' | 'de',

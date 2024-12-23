@@ -1,17 +1,17 @@
 import { Migrator } from '../types';
 import {
-  Config,
   GameList,
-  LEGACY_Config0_20_0, LEGACY_Config0_22_0,
+  LEGACY_Config0_20_0,
+  LEGACY_Config0_22_0,
   LEGACY_GameList0_20_0,
   LEGACY_StyleConfig0_20_0,
-  StyleConfig,
+  LEGACY_StyleConfig0_24_0,
 } from '../../../../common/schema';
 import { DEFAULT_CONFIG, DEFAULT_STYLE } from '../../../../common/constants';
 
 export const LEGACY_migrator0_20_0: Migrator = {
   config: (data: unknown) => {
-    const configData = data as LEGACY_Config0_20_0 ?? {};
+    const configData = (data as LEGACY_Config0_20_0) ?? {};
 
     return {
       version: 2,
@@ -45,19 +45,24 @@ export const LEGACY_migrator0_20_0: Migrator = {
     const gameData = data as LEGACY_GameList0_20_0;
 
     return {
-      [DEFAULT_CONFIG.views[0].name]: Object.entries(gameData).map(([key, value]) => ({
-        name: value ?? 'unknown',
-        path: key
-      })),
+      [DEFAULT_CONFIG.views[0].name]: Object.entries(gameData).map(
+        ([key, value]) => ({
+          name: value ?? 'unknown',
+          path: key,
+        }),
+      ),
     } satisfies GameList;
   },
   themeList: (data: unknown) => {
-    const themeList = data as Record<string, LEGACY_StyleConfig0_20_0 | undefined>;
+    const themeList = data as Record<
+      string,
+      LEGACY_StyleConfig0_20_0 | undefined
+    >;
 
     return Object.entries(themeList).reduce((acc, [key, value]) => {
       if (value === undefined) return acc;
 
-      const newValue: StyleConfig = {
+      const newValue: LEGACY_StyleConfig0_24_0 = {
         ...value,
         position: DEFAULT_STYLE.position,
       };
@@ -67,5 +72,5 @@ export const LEGACY_migrator0_20_0: Migrator = {
         [key]: newValue,
       };
     }, {});
-  }
+  },
 };

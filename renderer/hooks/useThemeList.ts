@@ -7,7 +7,9 @@ const useThemeList = () => {
   const [themeList, setThemeList] = createSignal<Required<ThemeList>>({});
 
   (async () => {
-    const result = await window.ipcRenderer.invoke('get-theme-list') as Record<string, StyleConfig>;
+    const result = (await window.ipcRenderer.invoke(
+      'get-theme-list',
+    )) as Record<string, StyleConfig>;
 
     setThemeList(result || {});
   })();
@@ -25,7 +27,11 @@ const useThemeList = () => {
     setThemeList(requiredData);
   });
 
-  const setList = async (name: string, newTheme: PartialDeep<StyleConfig> | null, useFallback = true) => {
+  const setList = async (
+    name: string,
+    newTheme: PartialDeep<StyleConfig> | null,
+    useFallback = true,
+  ) => {
     await window.ipcRenderer.invoke('set-theme', name, newTheme, useFallback);
   };
 

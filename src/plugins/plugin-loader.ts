@@ -4,7 +4,12 @@ import fs from 'node:fs/promises';
 import zip from 'zip-lib';
 
 import { loadPlugin, loadFromPath } from './v1/v1-loader';
-import { PluginRunner, VersionedPluginRunnerOptions, PluginManifestSchema, PluginManifest } from './types';
+import {
+  PluginRunner,
+  VersionedPluginRunnerOptions,
+  PluginManifestSchema,
+  PluginManifest,
+} from './types';
 
 import { createLogger } from './v1/v1-logger';
 
@@ -22,17 +27,27 @@ class PluginLoader {
     this.folder = options.folder ?? './plugins';
   }
 
-  public async loadFromFolder(path: string, state: PluginState = 'enable'): Promise<Plugin | Error> {
-    const plugin = await this.loadPlugin(path, state).catch((err) => err as Error);
+  public async loadFromFolder(
+    path: string,
+    state: PluginState = 'enable',
+  ): Promise<Plugin | Error> {
+    const plugin = await this.loadPlugin(path, state).catch(
+      (err) => err as Error,
+    );
 
     return plugin;
   }
 
-  public async loadFromFile(pluginPath: string, state: PluginState = 'enable'): Promise<Plugin | Error> {
+  public async loadFromFile(
+    pluginPath: string,
+    state: PluginState = 'enable',
+  ): Promise<Plugin | Error> {
     const pluginFileName = path.basename(pluginPath).replace(/\.\w+$/, '');
     const extractPath = path.resolve(this.folder, pluginFileName);
 
-    const extractResult = await zip.extract(pluginPath, extractPath).catch((err) => err as Error);
+    const extractResult = await zip
+      .extract(pluginPath, extractPath)
+      .catch((err) => err as Error);
     if (extractResult instanceof Error) {
       const error = Error('Failed to extract plugin');
       error.cause = extractResult;
@@ -40,7 +55,10 @@ class PluginLoader {
       return error;
     }
 
-    const isNested = await fs.stat(path.join(extractPath, pluginFileName)).then(() => true).catch(() => false);
+    const isNested = await fs
+      .stat(path.join(extractPath, pluginFileName))
+      .then(() => true)
+      .catch(() => false);
     if (isNested) {
       try {
         const tempPath = path.join(extractPath, '../', `temp-${Date.now()}`);
@@ -55,29 +73,42 @@ class PluginLoader {
       }
     }
 
-    return await this.loadPlugin(extractPath, state).catch((err) => err as Error);
+    return await this.loadPlugin(extractPath, state).catch(
+      (err) => err as Error,
+    );
   }
 
-  loadFromProvider(provider: PluginProvider | null, cssList: string[], manifestJson: PluginManifest, state: PluginState = 'enable'): Plugin | null {
+  loadFromProvider(
+    provider: PluginProvider | null,
+    cssList: string[],
+    manifestJson: PluginManifest,
+    state: PluginState = 'enable',
+  ): Plugin | null {
     const versionedOption: VersionedPluginRunnerOptions = { state };
 
     let newPlugin: Plugin | null = null;
-    if (manifestJson.manifestVersion === 1) newPlugin = loadPlugin(provider, cssList, manifestJson, this.runPlugin, versionedOption);
+    if (manifestJson.manifestVersion === 1)
+      newPlugin = loadPlugin(
+        provider,
+        cssList,
+        manifestJson,
+        this.runPlugin,
+        versionedOption,
+      );
 
-    if (!newPlugin) throw Error(`Manifest version "${manifestJson.manifestVersion}" is not supported`);
+    if (!newPlugin)
+      throw Error(
+        `Manifest version "${manifestJson.manifestVersion}" is not supported`,
+      );
 
     return newPlugin;
   }
 
   public unloadPlugin(plugin: Plugin): Error | null {
-    return this.runPlugin(
-      plugin,
-      (plugin) => plugin.js.off?.(),
-      {
-        message: 'Failed to unload plugin',
-        force: true,
-      },
-    );
+    return this.runPlugin(plugin, (plugin) => plugin.js.off?.(), {
+      message: 'Failed to unload plugin',
+      force: true,
+    });
   }
 
   public runPlugin: PluginRunner = (plugin, fn, { force, message } = {}) => {
@@ -90,28 +121,42 @@ class PluginLoader {
       const error = Error(message ?? 'Failed to run plugin');
       error.cause = err;
 
-      if (err instanceof Error) logger.error(err.name, err.message, err.stack, err.cause, '\n', JSON.stringify(err, null, 2));
+      if (err instanceof Error)
+        logger.error(
+          err.name,
+          err.message,
+          err.stack,
+          err.cause,
+          '\n',
+          JSON.stringify(err, null, 2),
+        );
       else logger.error('Error object is not `Error`:', err);
       logger.error('Plugin will be disabled');
       return error;
     }
 
     return null;
-  }
+  };
 
-  private async loadPlugin(pluginPath: string, state: PluginState = 'enable'): Promise<Plugin> {
+  private async loadPlugin(
+    pluginPath: string,
+    state: PluginState = 'enable',
+  ): Promise<Plugin> {
     const stats = await fs.stat(pluginPath);
     if (!stats.isDirectory()) throw Error(`"${pluginPath}" is not a directory`);
 
-    const manifest = await fs.readFile(path.join(pluginPath, 'manifest.json'), 'utf-8')
+    const manifest = await fs
+      .readFile(path.join(pluginPath, 'manifest.json'), 'utf-8')
       .catch((err) => {
         const error = Error('Cannot load manifest.json');
         error.cause = err;
 
         throw error;
       });
-    
-    const [manifestJson, err] = errorSync(() => PluginManifestSchema.parse(JSON.parse(manifest)));
+
+    const [manifestJson, err] = errorSync(() =>
+      PluginManifestSchema.parse(JSON.parse(manifest)),
+    );
     if (err || manifestJson === null) {
       const error = Error('Manifest is not valid');
       error.cause = err;
@@ -122,9 +167,18 @@ class PluginLoader {
     const versionedOption: VersionedPluginRunnerOptions = { state };
 
     let newPlugin: Plugin | null = null;
-    if (manifestJson.manifestVersion === 1) newPlugin = await loadFromPath(pluginPath, manifestJson, this.runPlugin, versionedOption);
+    if (manifestJson.manifestVersion === 1)
+      newPlugin = await loadFromPath(
+        pluginPath,
+        manifestJson,
+        this.runPlugin,
+        versionedOption,
+      );
 
-    if (!newPlugin) throw Error(`Manifest version "${manifestJson.manifestVersion}" is not supported`);
+    if (!newPlugin)
+      throw Error(
+        `Manifest version "${manifestJson.manifestVersion}" is not supported`,
+      );
 
     return newPlugin;
   }

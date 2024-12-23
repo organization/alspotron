@@ -41,6 +41,10 @@ export interface LyricProvider {
   getOptions(language: string): Exclude<SettingOption, ButtonOption>[];
   onOptionChange(options: Record<string, unknown>): void;
 
-  onBeforeSendHeaders?(_details: Electron.OnBeforeSendHeadersListenerDetails): Electron.BeforeSendResponse;
-  onHeadersReceived?(_details: Electron.OnHeadersReceivedListenerDetails): Electron.HeadersReceivedResponse;
+  onBeforeSendHeaders?(
+    _details: Electron.OnBeforeSendHeadersListenerDetails,
+  ): Electron.BeforeSendResponse;
+  onHeadersReceived?(
+    _details: Electron.OnHeadersReceivedListenerDetails,
+  ): Electron.HeadersReceivedResponse;
 }

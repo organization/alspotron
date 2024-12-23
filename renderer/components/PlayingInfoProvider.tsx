@@ -57,11 +57,15 @@ const PlayingInfoContext = createContext<PlayingInfo>({
 const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [updateData, setUpdateData] = createSignal<UpdateData | null>(null);
 
-  const get = <Type, >(getter: (data: PlayingData | PausedData) => Type, defaultValue: Type) => on([updateData], ([data]) => {
-    if (!data) return defaultValue;
-    if (data.data.type === 'idle') return defaultValue;
-    return getter(data.data);
-  });
+  const get = <Type,>(
+    getter: (data: PlayingData | PausedData) => Type,
+    defaultValue: Type,
+  ) =>
+    on([updateData], ([data]) => {
+      if (!data) return defaultValue;
+      if (data.data.type === 'idle') return defaultValue;
+      return getter(data.data);
+    });
   const id = createMemo(get((data) => data.id, ''));
   const title = createMemo(get((data) => data.title, 'Not Playing'));
   const artist = createMemo(get((data) => data.artists.join(', '), 'N/A'));
@@ -69,10 +73,15 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const duration = createMemo(get((data) => data.duration, 0));
   const status = createMemo(() => updateData()?.data.type ?? 'idle');
   const coverUrl = createMemo(get((data) => data.coverUrl, null));
-  const playerLyrics = createMemo(get((data) => data.playerLyrics ?? null, null));
+  const playerLyrics = createMemo(
+    get((data) => data.playerLyrics ?? null, null),
+  );
 
   const [lyricData, setLyricData] = createSignal<LyricData | null>(null);
-  const [lyrics, setLyrics] = createSignal<experimental.FlatMap<number, string[]> | null>(null);
+  const [lyrics, setLyrics] = createSignal<experimental.FlatMap<
+    number,
+    string[]
+  > | null>(null);
   const [isMapped, setIsMapped] = createSignal(false);
 
   const provider = useLyricProvider();
@@ -103,11 +112,13 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     await usePluginOverride(
       'search-lyrics',
       async (artist, title, options) => {
-        metadata = await lyricProvider.searchLyrics({
-          artist,
-          title,
-          playtime: options?.playtime,
-        }).catch(() => []);
+        metadata = await lyricProvider
+          .searchLyrics({
+            artist,
+            title,
+            playtime: options?.playtime,
+          })
+          .catch(() => []);
       },
       artist,
       title,
@@ -159,8 +170,10 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     } else {
       const id = mapperData?.mode?.id;
       const providerLyric = id
-        ? await provider()?.getLyricById(id).catch(() => null)
-        : await getLyric(data) ?? null;
+        ? await provider()
+            ?.getLyricById(id)
+            .catch(() => null)
+        : ((await getLyric(data)) ?? null);
 
       if (providerLyric) lyricData = providerLyric;
       else if (data.data.type !== 'idle' && data.data.playerLyrics) {

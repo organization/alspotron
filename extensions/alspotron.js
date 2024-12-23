@@ -5,12 +5,13 @@
 (function Alspotron() {
   const LyricResolvers = {
     v2(uri) {
-      return Spicetify.CosmosAsync
-        .get(`https://spclient.wg.spotify.com/color-lyrics/v2/track/${uri.id}?format=json&vocalRemoval=false&market=from_token`)
-        .then(payload =>
+      return Spicetify.CosmosAsync.get(
+        `https://spclient.wg.spotify.com/color-lyrics/v2/track/${uri.id}?format=json&vocalRemoval=false&market=from_token`,
+      )
+        .then((payload) =>
           payload.lyrics.syncType === 'LINE_SYNCED'
             ? payload.lyrics.lines
-            : Promise.reject('No synced lyrics')
+            : Promise.reject('No synced lyrics'),
         )
         .catch(() => {
           return [];
@@ -19,17 +20,16 @@
 
     get current() {
       return this['v2'];
-    }
+    },
   };
 
   const getLyric = async () => {
     const uri = Spicetify.URI.from(Spicetify.Player.data.item.uri);
     const lines = await LyricResolvers.current(uri);
-    return lines
-      .reduce((lyric, line) => {
-        lyric[line.startTimeMs] = [line.words];
-        return lyric;
-      }, {});
+    return lines.reduce((lyric, line) => {
+      lyric[line.startTimeMs] = [line.words];
+      return lyric;
+    }, {});
   };
 
   let previousInfo = {};
@@ -37,7 +37,7 @@
     const uri = Spicetify.Player.data.item.uri;
     let imageUrl = Spicetify.Player.data.item.metadata.image_xlarge_url;
     if (imageUrl?.indexOf('localfile') === -1) {
-      imageUrl = `https://i.scdn.co/image/${imageUrl.substring(imageUrl.lastIndexOf(":") + 1)}`;
+      imageUrl = `https://i.scdn.co/image/${imageUrl.substring(imageUrl.lastIndexOf(':') + 1)}`;
     }
 
     const info = {
@@ -47,7 +47,7 @@
       cover_url: imageUrl,
       uri: uri,
       duration: Spicetify.Player.getDuration(),
-      progress: Spicetify.Player.getProgress()
+      progress: Spicetify.Player.getProgress(),
     };
 
     if (!Spicetify.Player.isPlaying()) {
@@ -70,13 +70,13 @@
       method: 'POST',
       mode: 'cors',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         data: {
-          ...info
-        }
-      })
+          ...info,
+        },
+      }),
     });
   };
 

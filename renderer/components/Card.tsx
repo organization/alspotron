@@ -14,20 +14,30 @@ export interface CardProps extends JSX.HTMLAttributes<HTMLDivElement> {
 }
 
 const Card = (props: CardProps) => {
-  const [local, leftProps] = splitProps(props, ['expand', 'setExpand', 'onExpand', 'subCards']);
+  const [local, leftProps] = splitProps(props, [
+    'expand',
+    'setExpand',
+    'onExpand',
+    'subCards',
+  ]);
 
-  const [expand, setExpand] = local.setExpand ? [() => local.expand, local.setExpand] : createSignal(local.expand);
+  const [expand, setExpand] = local.setExpand
+    ? [() => local.expand, local.setExpand]
+    : createSignal(local.expand);
 
   const isSubCard = () => 'subCards' in local;
 
-  const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = (event) => {
+  const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = (
+    event,
+  ) => {
     if (isSubCard()) {
       const isExpand = !(expand() ?? false);
       setExpand(isExpand);
       local.onExpand?.(isExpand);
     }
 
-    if (typeof leftProps.onClick === 'function') return leftProps.onClick(event);
+    if (typeof leftProps.onClick === 'function')
+      return leftProps.onClick(event);
   };
 
   const mainCard = (
@@ -41,7 +51,8 @@ const Card = (props: CardProps) => {
           dark:bg-white/5 dark:hover:bg-white/10 dark:active:bg-white/[2.5%]
         `,
         leftProps.class,
-        isSubCard() && 'rounded-t hover:shadow-[0_0_0_1px] hover:shadow-white/10',
+        isSubCard() &&
+          'rounded-t hover:shadow-[0_0_0_1px] hover:shadow-white/10',
         !isSubCard() && 'rounded',
         isSubCard() && !expand() && 'rounded-b',
       )}
@@ -50,17 +61,27 @@ const Card = (props: CardProps) => {
       {leftProps.children}
       <Switch>
         <Match when={expand() === true}>
-          <svg class={'w-4 h-4 fill-none ml-auto'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            class={'w-4 h-4 fill-none ml-auto'}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
               d="M4.293 15.707a1 1 0 0 0 1.414 0L12 9.414l6.293 6.293a1 1 0 0 0 1.414-1.414l-7-7a1 1 0 0 0-1.414 0l-7 7a1 1 0 0 0 0 1.414Z"
-              class={'fill-black dark:fill-white'}/>
+              class={'fill-black dark:fill-white'}
+            />
           </svg>
         </Match>
         <Match when={isSubCard()}>
-          <svg class={'w-4 h-4 fill-none ml-auto'} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg
+            class={'w-4 h-4 fill-none ml-auto'}
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
             <path
               d="M4.293 8.293a1 1 0 0 1 1.414 0L12 14.586l6.293-6.293a1 1 0 1 1 1.414 1.414l-7 7a1 1 0 0 1-1.414 0l-7-7a1 1 0 0 1 0-1.414Z"
-              class={'fill-black dark:fill-white'}/>
+              class={'fill-black dark:fill-white'}
+            />
           </svg>
         </Match>
       </Switch>
@@ -79,7 +100,8 @@ const Card = (props: CardProps) => {
                   class={'hover:!bg-white/[7.5%]'}
                   classList={{
                     '!rounded-none': index() !== local.subCards!.length - 1,
-                    '!rounded-t-none rounded-b': index() === local.subCards!.length - 1,
+                    '!rounded-t-none rounded-b':
+                      index() === local.subCards!.length - 1,
                   }}
                 >
                   {element}

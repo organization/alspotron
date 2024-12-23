@@ -44,8 +44,10 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
 
         if (key === 'TITLE') this.lastUpdateData.title = data;
         if (key === 'ARTIST') this.lastUpdateData.artists = [data];
-        if (key === 'POSITION') this.lastUpdateData.progress = this.convertTime(data);
-        if (key === 'DURATION') this.lastUpdateData.duration = this.convertTime(data);
+        if (key === 'POSITION')
+          this.lastUpdateData.progress = this.convertTime(data);
+        if (key === 'DURATION')
+          this.lastUpdateData.duration = this.convertTime(data);
         if (key === 'COVER') this.lastUpdateData.coverUrl = data;
         if (key === 'STATE') {
           if (idleTimeout !== null) {
@@ -108,7 +110,7 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
 
   private convertTime(time: string) {
     const [min, sec] = time.split(':').map(Number);
-    return ((min * 60) + sec) * 1000;
+    return (min * 60 + sec) * 1000;
   }
 
   private updateData() {
