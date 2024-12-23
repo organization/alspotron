@@ -1,7 +1,9 @@
-import { Show } from 'solid-js';
+import { createSignal, Show } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 import { Trans } from '@jellybrick/solid-i18next';
+import { Transition } from 'solid-transition-group';
 
+import { MenuContainer } from './MenuContainer';
 import { SearchContainer } from './SearchContainer';
 
 import useConfig from '../../hooks/useConfig';
@@ -10,6 +12,7 @@ import MainIcon from '../../../assets/icon_music.png';
 export const MainContainer = () => {
   const navigate = useNavigate();
   const [config] = useConfig();
+  const [isMenuVisible, setIsMenuVisible] = createSignal(false);
 
   const onSetting = () => {
     window.ipcRenderer.invoke('open-window', 'settings');
@@ -23,10 +26,13 @@ export const MainContainer = () => {
   const onDebug = () => {
     navigate('/debug');
   };
+  const onToggleMenu = () => {
+    setIsMenuVisible((prevIsVisible) => !prevIsVisible);
+  };
 
   return (
     <div class={'w-full h-full flex flex-col justify-start items-stretch'}>
-      <div class={'w-full flex justify-start items-center gap-2 p-4 pb-0'}>
+      <div class={'w-full flex justify-start items-center gap-2 p-4 pb-0 z-20 relative'}>
         <div
           class={
             'text-lg font-bold flex-1 flex justify-start items-center gap-1'
@@ -53,6 +59,14 @@ export const MainContainer = () => {
             </svg>
           </button>
         </Show>
+        <button class={'w-fit btn-icon btn-borderless'} onClick={onToggleMenu}>
+          <svg class={'w-[16px] h-[16px] fill-none'} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+            <path
+              d="M440-120v-240h80v80h320v80H520v80h-80Zm-320-80v-80h240v80H120Zm160-160v-80H120v-80h160v-80h80v240h-80Zm160-80v-80h400v80H440Zm160-160v-240h80v80h160v80H680v80h-80Zm-480-80v-80h400v80H120Z"
+              class={'fill-black dark:fill-white'}
+            />
+          </svg>
+        </button>
         <button class={'w-fit btn-icon btn-borderless'} onClick={onQuit}>
           <svg
             class={'w-[16px] h-[16px] fill-none'}
@@ -66,6 +80,11 @@ export const MainContainer = () => {
           </svg>
         </button>
       </div>
+      <Transition name="tray-menu">
+        <Show when={isMenuVisible()}>
+          <MenuContainer onClose={onToggleMenu} />
+        </Show>
+      </Transition>
       <SearchContainer />
       <div class={'h-[1px] mx-4 bg-black/20 dark:bg-white/20'} />
       <div class={'grid grid-cols-2 justify-start items-stretch gap-2 p-4'}>

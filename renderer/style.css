@@ -310,6 +310,22 @@ html, body, #app {
   opacity: 0;
 }
 
+.tray-menu-enter-active {
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tray-menu-exit-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tray-menu-enter {
+  opacity: 0;
+}
+
+.tray-menu-exit-to {
+  opacity: 0;
+}
+
 /* keyframes */
 @keyframes background {
   0% {
