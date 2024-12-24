@@ -32,6 +32,9 @@
   "lyrics.delay.slowly": "Slowly",
   "lyrics.delay.default": "Default",
   "lyrics.delay.fastly": "Fastly",
+  "lyrics.search-mode.default": "Default Search",
+  "lyrics.search-mode.id": "ID Search",
+  "lyrics.id": "ID",
 
   "setting.title.position": "Position",
   "setting.title.view": "View",

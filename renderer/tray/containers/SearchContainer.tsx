@@ -8,7 +8,6 @@ import {
   startTransition,
 } from 'solid-js';
 
-import alsong from 'alsong';
 import { useTransContext } from '@jellybrick/solid-i18next';
 
 import { Marquee } from '@suyongs/solid-utility';
@@ -19,10 +18,8 @@ import usePluginOverride from '../../hooks/usePluginOverride';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import Spinner from '../../components/Spinner';
 import Modal from '../../components/Modal';
-
-type LyricMetadata = Awaited<
-  ReturnType<typeof alsong.getLyricListByArtistName>
->[number];
+import { useLyricProvider } from '../../hooks/useLyricProvider';
+import { LyricMetadata } from '../../../common/provider';
 
 export const SearchContainer = () => {
   const {
@@ -35,6 +32,7 @@ export const SearchContainer = () => {
   } = usePlayingInfo();
   const [, setLyricMapper] = useLyricMapper();
   const [t] = useTransContext();
+  const provider = useLyricProvider();
 
   const [open, setOpen] = createSignal(false);
   const [title, setTitle] = createSignal(playingTitle());
@@ -42,7 +40,7 @@ export const SearchContainer = () => {
 
   const [searchList, setSearchList] = createSignal<LyricMetadata[]>([]);
   const [loading, setLoading] = createSignal(false);
-  const currentLyricID = () => Number(lyricData()?.id);
+  const currentLyricID = () => lyricData()?.id;
 
   createEffect(
     on([playingTitle, playingArtist, status], async () => {
@@ -57,18 +55,24 @@ export const SearchContainer = () => {
   const onSearch = async () => {
     setLoading(true);
 
+    const lyricProvider = provider();
     await usePluginOverride(
       'search-lyrics',
-      async (artist, title, options) => {
-        const result = await alsong(artist, title, options).catch((e) => {
-          console.error(e);
-          return [];
-        });
+      async (_, artist, title, __, options) => {
+        const result = await lyricProvider
+          .searchLyrics({
+            artist,
+            title,
+            playtime: options?.playtime,
+          })
+          .catch(() => []);
 
         setSearchList(result);
       },
+      'default',
       artist(),
       title(),
+      '',
       { playtime: duration() },
     );
 
@@ -79,7 +83,7 @@ export const SearchContainer = () => {
       [id()]: {
         mode: {
           type: 'provider' as const,
-          id: metadata.lyricId.toString(),
+          id: metadata.id,
         },
       },
     };
@@ -159,7 +163,7 @@ export const SearchContainer = () => {
             <Card
               class={`
               flex flex-row justify-start items-center gap-1
-              ${currentLyricID() === item.lyricId ? '!bg-primary-100 dark:!bg-primary-800 hover:!bg-primary-200 hover:dark:!bg-primary-700' : ''}
+              ${currentLyricID() === item.id ? '!bg-primary-100 dark:!bg-primary-800 hover:!bg-primary-200 hover:dark:!bg-primary-700' : ''}
             `}
               onClick={() => onSelect(item)}
             >
@@ -169,7 +173,7 @@ export const SearchContainer = () => {
                 }
               >
                 <div class={'h-fit text-xs text-black/50 dark:text-white/50'}>
-                  ID: {item.lyricId}
+                  ID: {item.id}
                 </div>
                 <Marquee class={'w-full'} gap={16}>
                   {item.title}
@@ -177,7 +181,7 @@ export const SearchContainer = () => {
                 <div class={'text-sm'}>{item.artist}</div>
               </div>
               <Show
-                when={currentLyricID() !== item.lyricId}
+                when={currentLyricID() !== item.id}
                 fallback={
                   <svg
                     class={

@@ -2,10 +2,12 @@ import {
   createEffect,
   createSignal,
   For,
+  Match,
   on,
   onCleanup,
   Show,
   startTransition,
+  Switch,
 } from 'solid-js';
 import {
   Trans,
@@ -13,8 +15,6 @@ import {
   useTransContext,
 } from '@jellybrick/solid-i18next';
 import { Marquee } from '@suyongs/solid-utility';
-
-import alsong from 'alsong';
 
 import SideBar from './SideBar';
 
@@ -34,21 +34,26 @@ import { formatTime } from '../utils/formatTime';
 import { LangResource } from '../../common/intl';
 import { useLyricProvider } from '../hooks/useLyricProvider';
 import { LyricMetadata } from '../../common/provider';
+import Selector from '../components/Select';
 
 const LyricsMapEditor = () => {
   usePluginsCSS();
 
   const lyricProvider = useLyricProvider();
   const {
+    lyricData,
+    id: playingId,
     title: playingTitle,
     artist: playingArtist,
     duration,
     status,
-    id,
   } = usePlayingInfo();
+
+  const [searchMode, setSearchMode] = createSignal<'default' | 'id'>('default');
 
   const [title, setTitle] = createSignal(playingTitle());
   const [artist, setArtist] = createSignal(playingArtist());
+  const [id, setId] = createSignal('');
 
   const [loading, setLoading] = createSignal(false);
   const [searchList, setSearchList] = createSignal<LyricMetadata[]>([]);
@@ -71,64 +76,63 @@ const LyricsMapEditor = () => {
     observer.disconnect();
   });
 
-  const onSearch = async () => {
+  const onSearch = async (nextPage = false) => {
     setLoading(true);
+
+    if (!nextPage) {
+      setPage(0);
+    }
 
     await usePluginOverride(
       'search-lyrics',
-      async (artist, title, options) => {
-        const result = await lyricProvider()
-          .searchLyrics({
-            artist,
-            title,
-            playtime: options?.playtime,
-            page: options?.page,
-          })
-          .catch((e) => {
-            console.error(e);
-            return [];
-          });
+      async (mode, artist, title, id, options) => {
+        const list: LyricMetadata[] = [];
 
-        setSearchList(result);
-        setPage(0);
-        setHasNext(true);
-      },
-      artist(),
-      title(),
-      { playtime: duration(), page: 0 },
-    );
+        if (mode === 'default') {
+          list.push(
+            ...(await lyricProvider()
+              .searchLyrics({
+                artist,
+                title,
+                playtime: options?.playtime,
+                page: options?.page,
+              })
+              .catch((e) => {
+                console.error(e);
+                return [];
+              })),
+          );
+        }
+        if (mode === 'id') {
+          const result = await lyricProvider()
+            .getLyricById(id)
+            .catch((e) => {
+              console.error(e);
+              return null;
+            });
 
-    setLoading(false);
-  };
-
-  const onSearchNextPage = async () => {
-    setLoading(true);
-
-    await usePluginOverride(
-      'search-lyrics',
-      async (artist, title, options) => {
-        const result = await lyricProvider()
-          .searchLyrics({
-            artist,
-            title,
-            playtime: options?.playtime,
-            page: options?.page,
-          })
-          .catch((e) => {
-            console.error(e);
-            return [];
-          });
-
-        if (result.length === 0) {
-          setHasNext(false);
-          return;
+          if (result) list.push(result);
         }
 
-        setSearchList([...searchList(), ...result]);
-        setPage(page() + 1);
+        if (nextPage) {
+          const isDuplicated = searchList().at(-1)?.id === list.at(-1)?.id;
+
+          if (!isDuplicated) {
+            setPage(page() + 1);
+            setSearchList([...searchList(), ...list]);
+          } else {
+            setHasNext(false);
+          }
+        } else {
+          setPage(0);
+          setSearchList(list);
+          setHasNext(true);
+        }
       },
+      searchMode(),
       artist(),
       title(),
+      id(),
       { playtime: duration(), page: page() },
     );
 
@@ -137,7 +141,7 @@ const LyricsMapEditor = () => {
 
   const onSelect = async (metadata: LyricMetadata) => {
     const newMapper = {
-      [id()]: {
+      [playingId()]: {
         mode: {
           type: 'provider' as const,
           id: metadata.id,
@@ -151,7 +155,7 @@ const LyricsMapEditor = () => {
 
   const observer = new IntersectionObserver((entries) => {
     if (!loading() && entries[0].intersectionRatio > 0) {
-      onSearchNextPage();
+      onSearch(true);
     }
   });
 
@@ -179,18 +183,43 @@ const LyricsMapEditor = () => {
               onSearch();
             }}
           >
-            <input
-              class={'input'}
-              placeholder={t('lyrics.artist')}
-              value={artist()}
-              onInput={(event) => setArtist(event.target.value)}
+            <Selector
+              mode={'select'}
+              placeholder={t('lyrics.search-mode')}
+              class={'select min-w-[90px] w-16 basis-1/5'}
+              options={['default', 'id'] as const}
+              value={searchMode()}
+              onChange={setSearchMode}
+              format={(str) => t(`lyrics.search-mode.${str}`)}
             />
-            <input
-              class={'input flex-1'}
-              placeholder={t('lyrics.title')}
-              value={title()}
-              onInput={(event) => setTitle(event.target.value)}
-            />
+            <Switch>
+              <Match when={searchMode() === 'default'}>
+                <>
+                  <input
+                    class={'input w-16 basis-1/5'}
+                    placeholder={t('lyrics.artist')}
+                    value={artist()}
+                    onInput={(event) => setArtist(event.target.value)}
+                  />
+                  <input
+                    class={'input w-16 basis-1/5 flex-1'}
+                    placeholder={t('lyrics.title')}
+                    value={title()}
+                    onInput={(event) => setTitle(event.target.value)}
+                  />
+                </>
+              </Match>
+              <Match when={searchMode() === 'id'}>
+                <>
+                  <input
+                    class={'input flex-1 w-16 basis-1/5'}
+                    placeholder={t('lyrics.id')}
+                    value={id()}
+                    onInput={(event) => setId(event.target.value)}
+                  />
+                </>
+              </Match>
+            </Switch>
             <button type={'submit'} class={'btn-text btn-icon !min-w-0'}>
               <svg
                 width="16"
@@ -222,7 +251,9 @@ const LyricsMapEditor = () => {
             <For each={searchList()}>
               {(item) => (
                 <Card
-                  class={'flex flex-row justify-start items-center gap-1'}
+                  class={`flex flex-row justify-start items-center gap-1
+                  ${lyricData()?.id === item.id ? '!bg-primary-100 dark:!bg-primary-800 hover:!bg-primary-200 hover:dark:!bg-primary-700' : ''}
+                  `}
                   onClick={() => onSelect(item)}
                 >
                   <div
@@ -274,19 +305,35 @@ const LyricsMapEditor = () => {
                       </div>
                     </Show>
                   </div>
-                  <svg
-                    width="16"
-                    height="16"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class={'self-center  flex-shrink-0'}
+                  <Show
+                    when={lyricData()?.id !== item.id}
+                    fallback={
+                      <svg
+                        class={'w-6 h-6 fill-none self-center flex-shrink-0'}
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 -960 960 960"
+                      >
+                        <path
+                          d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"
+                          class={'fill-green-500'}
+                        />
+                      </svg>
+                    }
                   >
-                    <path
-                      d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z"
-                      class={'fill-black dark:fill-white'}
-                    />
-                  </svg>
+                    <svg
+                      width="16"
+                      height="16"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class={'w-6 h-6 fill-none self-center flex-shrink-0'}
+                    >
+                      <path
+                        d="M8.293 4.293a1 1 0 0 0 0 1.414L14.586 12l-6.293 6.293a1 1 0 1 0 1.414 1.414l7-7a1 1 0 0 0 0-1.414l-7-7a1 1 0 0 0-1.414 0Z"
+                        class={'fill-black dark:fill-white'}
+                      />
+                    </svg>
+                  </Show>
                 </Card>
               )}
             </For>

@@ -36,6 +36,9 @@
   "lyrics.delay.slowly": "천천히",
   "lyrics.delay.default": "보통",
   "lyrics.delay.fastly": "빠르게",
+  "lyrics.search-mode.default": "기본 검색",
+  "lyrics.search-mode.id": "아이디 검색",
+  "lyrics.id": "아이디",
 
   "setting.title.position": "위치",
   "setting.title.view": "창",

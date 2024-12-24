@@ -111,7 +111,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     let metadata: LyricMetadata[] = [];
     await usePluginOverride(
       'search-lyrics',
-      async (artist, title, options) => {
+      async (_, artist, title, __, options) => {
         metadata = await lyricProvider
           .searchLyrics({
             artist,
@@ -120,8 +120,10 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
           })
           .catch(() => []);
       },
+      'default',
       artist,
       title,
+      '',
       { playtime: data.data.duration },
     );
 

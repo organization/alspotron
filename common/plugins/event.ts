@@ -64,8 +64,10 @@ export interface OverrideParameterMap {
 
   /* renderer */
   'search-lyrics': [
+    mode: 'default' | 'id',
     artist: string,
     title: string,
+    id: string,
     options?: {
       playtime?: number;
       page?: number;
