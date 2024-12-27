@@ -50,7 +50,7 @@
     "@types/stylis": "4.2.7",
     "@types/ws": "8.5.13",
     "autoprefixer": "10.4.20",
-    "bufferutil": "4.0.8",
+    "bufferutil": "4.0.9",
     "electron": "33.2.1",
     "electron-builder": "24.13.3",
     "eslint": "9.17.0",
