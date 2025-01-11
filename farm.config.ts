@@ -8,6 +8,7 @@ import solid from 'vite-plugin-solid';
 
 export default defineConfig({
   compilation: {
+    sourcemap: false,
     input: {
       main: path.join(__dirname, './renderer/index.html'),
       settings: path.join(__dirname, './renderer/settings.html'),
@@ -32,6 +33,7 @@ export default defineConfig({
         input: './index.ts',
         farm: {
           compilation: {
+            sourcemap: false,
             externalNodeBuiltins: true,
             external: [
               '^electron$',
@@ -55,6 +57,7 @@ export default defineConfig({
         input: './src/preload.ts',
         farm: {
           compilation: {
+            sourcemap: false,
             externalNodeBuiltins: true,
             external: [
               '^electron$',
