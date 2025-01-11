@@ -2,9 +2,9 @@ import path from 'node:path';
 
 import { defineConfig } from '@farmfe/core';
 import farmPluginPostcss from '@farmfe/js-plugin-postcss';
+import electron from '@farmfe/js-plugin-electron';
 
 import solid from 'vite-plugin-solid';
-import electron from './farm-plugins/electron';
 
 export default defineConfig({
   compilation: {
