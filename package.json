@@ -41,7 +41,7 @@
     "@farmfe/cli": "1.0.4",
     "@farmfe/js-plugin-electron": "1.0.3",
     "@farmfe/js-plugin-tailwindcss": "0.0.5",
-    "@stylistic/eslint-plugin-js": "2.12.1",
+    "@stylistic/eslint-plugin-js": "2.13.0",
     "@total-typescript/ts-reset": "0.6.1",
     "@types/color": "4.2.0",
     "@types/electron-progressbar": "1.2.7",
