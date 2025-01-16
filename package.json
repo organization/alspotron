@@ -51,7 +51,7 @@
     "@types/stylis": "4.2.7",
     "@types/ws": "8.5.13",
     "bufferutil": "4.0.9",
-    "electron": "33.3.1",
+    "electron": "34.0.0",
     "electron-builder": "26.0.0-alpha.9",
     "eslint": "9.18.0",
     "eslint-config-prettier": "9.1.0",
@@ -120,7 +120,7 @@
     "axios": "1.7.9",
     "simple-update-notifier": "2.0.0",
     "@electron/get": "3.1.0",
-    "electron": "33.3.1",
+    "electron": "34.0.0",
     "http-errors": "2.0.0"
   },
   "build": {
