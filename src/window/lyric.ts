@@ -15,6 +15,7 @@ import {
 } from '../../common/constants';
 import { getFile } from '../../utils/resource';
 import presetThemes from '../../common/presets';
+import { isMacOS, isWin32 } from '../../utils/is';
 
 const iconPath = getFile('./assets/icon_square.png');
 const LYRIC_WINDOW_OPTIONS = {
@@ -71,8 +72,8 @@ export class LyricWindowProvider
     Menu.setApplicationMenu(null);
 
     this.window.setTitle(`Alspotron: ${config.get().views[index].name}`);
-    this.window.setThumbnailClip(this.getWindowRect());
-    this.window.setAlwaysOnTop(true, 'main-menu', 1);
+    if (isWin32()) this.window.setThumbnailClip(this.getWindowRect());
+    this.window.setAlwaysOnTop(true, isMacOS() ? 'screen-saver' : 'main-menu', 1);
     this.window.setVisibleOnAllWorkspaces(true, {
       visibleOnFullScreen: true,
     });
@@ -171,7 +172,7 @@ export class LyricWindowProvider
     this.window.setSize(windowRect.width, windowRect.height);
     this.window.setResizable(resizable);
     this.window.setPosition(windowRect.x, windowRect.y);
-    this.window.setThumbnailClip(windowRect);
+    if (isWin32()) this.window.setThumbnailClip(windowRect);
   }
 
   private getStyle() {
