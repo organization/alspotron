@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import { defineConfig } from '@farmfe/core';
-import tailwind from '@farmfe/js-plugin-tailwindcss';
+import farmPluginPostcss from '@farmfe/js-plugin-postcss';
 import electron from '@farmfe/js-plugin-electron';
 
 import solid from 'vite-plugin-solid';
@@ -72,6 +72,6 @@ export default defineConfig({
         },
       },
     }),
-    tailwind(),
+    farmPluginPostcss(),
   ],
 });
