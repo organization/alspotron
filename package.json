@@ -66,7 +66,7 @@
     "postcss": "8.5.1",
     "tailwindcss": "3.4.17",
     "terser": "5.38.1",
-    "type-fest": "4.33.0",
+    "type-fest": "4.34.1",
     "typescript": "5.7.3",
     "typescript-eslint": "8.23.0",
     "utf-8-validate": "6.0.5",
