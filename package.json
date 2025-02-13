@@ -52,7 +52,7 @@
     "@types/ws": "8.5.14",
     "autoprefixer": "10.4.20",
     "bufferutil": "4.0.9",
-    "electron": "34.1.1",
+    "electron": "34.2.0",
     "electron-builder": "26.0.6",
     "eslint": "9.20.1",
     "eslint-config-prettier": "10.0.1",
@@ -122,7 +122,7 @@
     "axios": "1.7.9",
     "simple-update-notifier": "2.0.0",
     "@electron/get": "3.1.0",
-    "electron": "34.1.1",
+    "electron": "34.2.0",
     "http-errors": "2.0.0"
   },
   "build": {
