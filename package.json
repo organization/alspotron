@@ -51,7 +51,7 @@
     "@types/ws": "8.18.0",
     "autoprefixer": "10.4.21",
     "bufferutil": "4.0.9",
-    "electron": "35.1.1",
+    "electron": "35.1.2",
     "electron-builder": "26.0.12",
     "eslint": "9.23.0",
     "eslint-config-prettier": "10.1.1",
@@ -122,7 +122,7 @@
     "axios": "1.8.4",
     "simple-update-notifier": "2.0.0",
     "@electron/get": "4.0.0",
-    "electron": "35.1.1",
+    "electron": "35.1.2",
     "http-errors": "2.0.0"
   },
   "build": {
