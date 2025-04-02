@@ -1,0 +1,55 @@
+{
+  "font": "Pretendard JP Variable",
+  "fontWeight": "400",
+  "animation": "pretty",
+  "animationAtOnce": false,
+  "maxHeight": 400,
+  "proximityOpacity": 0,
+  "proximitySensitivity": 2,
+  "rowGap": 2,
+  "nowPlaying": {
+    "color": "#FFFFFF",
+    "background": "rgba(29, 29, 29, .50)",
+    "backgroundProgress": "rgba(29, 29, 29, .80)",
+    "fontSize": 13,
+    "maxWidth": 300,
+    "visible": true,
+    "stoppedOpacity": 0.5
+  },
+  "lyric": {
+    "color": "#FFFFFF",
+    "background": "rgba(29, 29, 29, .70)",
+    "fontSize": 13,
+    "maxWidth": 700,
+    "stoppedOpacity": 0.5,
+    "containerRowGap": 1,
+    "multipleContainerRowGap": 1,
+    "direction": "column",
+    "nextLyric": 0,
+    "previousLyric": 0,
+    "nextLyricScale": 0.9,
+    "previousLyricScale": 0.9,
+    "nextLyricOpacity": 0.5,
+    "previousLyricOpacity": 0.5,
+    "prevNextLyricThreshold": -1
+  },
+  "position": {
+    "availableAnchor": [
+      "top-left",
+      "top",
+      "top-right",
+      "left",
+      "center",
+      "right",
+      "bottom-left",
+      "bottom",
+      "bottom-right"
+    ],
+    "top": 0,
+    "left": 0,
+    "bottom": 0,
+    "right": 0,
+    "index": 0
+  },
+  "userCSS": null
+}

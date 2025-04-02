@@ -228,6 +228,7 @@
   "setting.theme.built-in-themes": "내장된 테마",
   "setting.theme.no-available-themes": "사용 가능한 테마 없음",
   "setting.theme.preset.default": "기본 테마",
+  "setting.theme.preset.classic": "클래식 테마",
   "setting.theme.preset.album-cover": "앨범 커버 테마",
   "setting.theme.preset.multiple-lyric": "가사 테마",
   "setting.theme.preset.dynamic-island": "다이나믹 아일랜드 테마",
