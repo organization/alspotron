@@ -9,7 +9,24 @@ import { defaultConfigDirectory } from './config';
 import { StyleConfig, ThemeList } from '../../common/schema';
 
 let throttleTimer: NodeJS.Timeout | null = null;
-export const themeList = new State<ThemeList>({});
+export const themeList = new State<ThemeList>(
+  {},
+  {
+    middleware: (value, next) => {
+      const result = Object.entries(value)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .reduce(
+          (prev, [key, value]) => ({
+            ...prev,
+            [key]: value,
+          }),
+          {},
+        );
+
+      next(result);
+    },
+  },
+);
 themeList.watch((value) => {
   if (throttleTimer) clearTimeout(throttleTimer);
 
