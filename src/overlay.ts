@@ -96,8 +96,10 @@ export class OverlayManager extends EventEmitter {
     const windowManager = nodeWindowManager.windowManager;
 
     if (this.tmp) {
-      await this.tmp.close();
+      this.tmp.destroy();
+      this.tmp = null;
     }
+
     try {
       this.tmp = await Overlay.attach(pid);
     } catch (e) {
@@ -297,7 +299,12 @@ export class OverlayManager extends EventEmitter {
       );
 
       if (this.tmp) {
-        this.tmp.updateBitmap(image.getSize().width, image.getBitmap());
+        try {
+          this.tmp.updateBitmap(image.getSize().width, image.getBitmap());
+        } catch (err) {
+          this.tmp.destroy();
+          this.tmp = null;
+        }
       }
     });
 
@@ -339,6 +346,10 @@ export class OverlayManager extends EventEmitter {
         };
 
         this.overlay?.sendWindowBounds(window.id, { rect: bounds });
+        if (this.tmp) {
+          this.tmp.reposition(bounds.x, bounds.y);
+        }
+
         this.provider?.updateWindowConfig();
         throttle = null;
       }, 1000);
@@ -362,6 +373,11 @@ export class OverlayManager extends EventEmitter {
 
     window.on('close', () => {
       config.unwatch(onUpdate);
+
+      if (this.tmp) {
+        this.tmp.destroy();
+        this.tmp = null;
+      }
     });
 
     window.webContents.on('cursor-changed', (_, type) => {
