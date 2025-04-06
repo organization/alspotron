@@ -299,12 +299,14 @@ export class OverlayManager extends EventEmitter {
       );
 
       if (this.tmp) {
-        try {
-          this.tmp.updateBitmap(image.getSize().width, image.getBitmap());
-        } catch (err) {
-          this.tmp.destroy();
-          this.tmp = null;
-        }
+        this.tmp
+          .updateBitmap(image.getSize().width, image.getBitmap())
+          .catch(() => {
+            if (this.tmp) {
+              this.tmp.destroy();
+              this.tmp = null;
+            }
+          });
       }
     });
 
