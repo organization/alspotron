@@ -59,7 +59,7 @@ export class SettingWindowProvider implements WindowProvider {
     });
 
     if (app.isPackaged && !process.env.FARM_DEV_SERVER_URL) {
-      this.window.loadFile(path.join(__dirname, 'settings.html'));
+      this.window.loadFile(path.join(__dirname, '../settings.html'));
     } else {
       this.window.loadURL(`${process.env.FARM_DEV_SERVER_URL}/settings.html`);
     }
