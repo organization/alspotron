@@ -45,7 +45,7 @@ export default defineConfig({
               '^hmc-win32$',
               '^extract-file-icon$',
               '^node-window-manager$',
-              'asdf-overlay-node'
+              '^asdf-overlay-node$'
             ],
             output: {
               targetEnv: 'node-next',
