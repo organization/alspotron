@@ -35,7 +35,7 @@ export class SettingWindowProvider implements WindowProvider {
       width: 1000,
       height: 800,
       webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
+        preload: path.join(__dirname, '../preload/preload.js'),
         nodeIntegration: true,
       },
       title: getTranslation('title.setting', config.get().language),

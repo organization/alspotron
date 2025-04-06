@@ -35,7 +35,7 @@ export class LyricSearchWindowProvider implements WindowProvider {
       width: 1000,
       height: 600,
       webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
+        preload: path.join(__dirname, '../preload/preload.js'),
         nodeIntegration: true,
       },
       title: getTranslation('title.lyrics', config.get().language),

@@ -41,7 +41,7 @@ export class TrayWindowProvider implements WindowProvider {
       width: this.WIDTH,
       height: this.HEIGHT,
       webPreferences: {
-        preload: path.join(__dirname, './preload.js'),
+        preload: path.join(__dirname, '../preload/preload.js'),
         nodeIntegration: true,
       },
       movable: false,

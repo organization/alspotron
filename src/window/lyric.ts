@@ -32,7 +32,7 @@ const LYRIC_WINDOW_OPTIONS = {
   hiddenInMissionControl: true,
   roundedCorners: false,
   webPreferences: {
-    preload: path.join(__dirname, './preload.js'),
+    preload: path.join(__dirname, '../preload/preload.js'),
     nodeIntegration: true,
   },
   show: false,

@@ -212,7 +212,7 @@ export class OverlayManager extends EventEmitter {
             process.resourcesPath,
             `./assets/${electronOverlayWithArch}`,
           )
-        : path.join(__dirname, '..', `./assets/${electronOverlayWithArch}`),
+        : path.join(__dirname, '..', `../assets/${electronOverlayWithArch}`),
     );
 
     this.overlay = module.exports as IOverlay;

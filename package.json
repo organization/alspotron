@@ -2,23 +2,23 @@
   "name": "alspotron",
   "version": "0.24.2",
   "description": "Alspotron is a lyric viewer for YouTube Music / Spotify.",
-  "main": "./dist/index.js",
+  "main": "./dist/main/index.js",
   "scripts": {
     "dev": "farm",
     "postinstall": "patch-package",
     "clean": "farm clean",
     "build": "farm build",
-    "dist": "npm run clean && npm run build && electron-builder -p never",
-    "dist:all": "npm run clean && npm run build && electron-builder --win --mac --linux -p never",
-    "dist:mac": "npm run clean && npm run build && electron-builder --mac dmg:x64 -p never",
-    "dist:mac:arm64": "npm run clean && npm run build && electron-builder --mac dmg:arm64 -p never",
-    "dist:win": "npm run clean && npm run build && electron-builder --win -p never",
-    "dist:win:x64": "npm run clean && npm run build && electron-builder --win nsis-web:x64 -p never",
-    "dist:linux": "npm run clean && npm run build && electron-builder --linux -p never",
-    "dist:linux:deb:arm64": "npm run clean && npm run build && electron-builder --linux deb:arm64 -p never",
-    "release:mac": "npm run clean && npm run build && electron-builder --mac -p always",
-    "release:win": "npm run clean && npm run build && electron-builder --win -p always",
-    "release:linux": "npm run clean && npm run build && electron-builder --linux -p always -c.snap.publish=github",
+    "dist": "pnpm clean && pnpm build && electron-builder -p never",
+    "dist:all": "pnpm clean && pnpm build && electron-builder --win --mac --linux -p never",
+    "dist:mac": "pnpm clean && pnpm build && electron-builder --mac dmg:x64 -p never",
+    "dist:mac:arm64": "pnpm clean && pnpm build && electron-builder --mac dmg:arm64 -p never",
+    "dist:win": "pnpm clean && pnpm build && electron-builder --win -p never",
+    "dist:win:x64": "pnpm clean && pnpm build && electron-builder --win nsis-web:x64 -p never",
+    "dist:linux": "pnpm clean && pnpm build && electron-builder --linux -p never",
+    "dist:linux:deb:arm64": "pnpm clean && pnpm build && electron-builder --linux deb:arm64 -p never",
+    "release:mac": "pnpm clean && pnpm build && electron-builder --mac -p always",
+    "release:win": "pnpm clean && pnpm build && electron-builder --win -p always",
+    "release:linux": "pnpm clean && pnpm build && electron-builder --linux -p always -c.snap.publish=github",
     "dist:only": "electron-builder",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
@@ -49,6 +49,7 @@
     "@types/node-forge": "1.3.11",
     "@types/stylis": "4.2.7",
     "@types/ws": "8.18.1",
+    "@vanilla-extract/vite-plugin": "5.0.1",
     "autoprefixer": "10.4.21",
     "bufferutil": "4.0.9",
     "electron": "35.1.4",
@@ -86,6 +87,7 @@
     "@solidjs/router": "0.15.3",
     "@suyongs/solid-utility": "0.4.4",
     "@uiw/codemirror-theme-github": "4.23.10",
+    "@vanilla-extract/css": "1.17.1",
     "alsong": "3.0.1",
     "codemirror": "6.0.1",
     "color": "5.0.0",
@@ -242,5 +244,20 @@
       "output": "./pack/",
       "app": "."
     }
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@jellybrick/ffi-napi",
+      "@jellybrick/ref-napi",
+      "bufferutil",
+      "core-js",
+      "electron",
+      "electron-winstaller",
+      "esbuild",
+      "extract-file-icon",
+      "glasstron",
+      "node-window-manager",
+      "utf-8-validate"
+    ]
   }
 }

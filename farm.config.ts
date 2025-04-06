@@ -5,9 +5,11 @@ import farmPluginPostcss from '@farmfe/js-plugin-postcss';
 import electron from '@farmfe/js-plugin-electron';
 
 import solid from 'vite-plugin-solid';
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 
 export default defineConfig({
   compilation: {
+    presetEnv: false,
     sourcemap: false,
     input: {
       main: path.join(__dirname, './renderer/index.html'),
@@ -20,12 +22,17 @@ export default defineConfig({
       path: 'dist',
       publicPath: './',
     },
+    persistentCache: false,
   },
   vitePlugins: [
     () => ({
       vitePlugin: solid(),
       filters: ['\\.tsx$', '\\.jsx$']
-    })
+    }),
+    () => ({
+      vitePlugin: vanillaExtractPlugin(),
+      filters: ['\\.css\\.ts$', '\\.vanilla\\.css$']
+    }),
   ],
   plugins: [
     electron({
@@ -44,11 +51,11 @@ export default defineConfig({
               '^glasstron$',
               '^hmc-win32$',
               '^extract-file-icon$',
-              '^node-window-manager$'
+              '^node-window-manager$',
             ],
             output: {
               targetEnv: 'node-next',
-              path: 'dist',
+              path: 'dist/main',
             },
           },
         },
@@ -66,7 +73,7 @@ export default defineConfig({
             ],
             output: {
               targetEnv: 'node-next',
-              path: 'dist',
+              path: 'dist/preload',
             },
           },
         },
