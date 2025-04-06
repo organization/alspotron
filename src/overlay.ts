@@ -105,7 +105,11 @@ export class OverlayManager extends EventEmitter {
 
     if (asdfOverlay) {
       try {
-        this.tmp = await asdfOverlay.Overlay.attach(pid);
+        this.tmp = await asdfOverlay.Overlay.attach(
+          // hack: electron asar path fix
+          asdfOverlay.defaultDllDir().replace('app.asar', 'app.asar.unpacked'),
+          pid,
+        );
       } catch (e) {
         console.error('test inject error: ', e);
       }
