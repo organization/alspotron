@@ -5,6 +5,8 @@ import { EventEmitter } from 'events';
 import { app } from 'electron';
 import { hmc } from 'hmc-win32';
 
+import { Overlay } from 'asdf-overlay-node';
+
 import { config, gameList } from './config';
 import { IOverlay } from './electron-overlay';
 import { OverlayWindowProvider } from './window';
@@ -24,6 +26,8 @@ export class OverlayManager extends EventEmitter {
   private applyCorsHeader:
     | ((webContents: Electron.WebContents) => void)
     | null = null;
+
+  private tmp: Overlay | null = null;
 
   constructor() {
     super();
@@ -90,6 +94,15 @@ export class OverlayManager extends EventEmitter {
   public async createProcess(pid: number, path: string): Promise<boolean> {
     if (!wql || !nodeWindowManager) return Promise.resolve(false);
     const windowManager = nodeWindowManager.windowManager;
+
+    if (this.tmp) {
+      await this.tmp.close();
+    }
+    try {
+      this.tmp = await Overlay.attach(pid);
+    } catch (e) {
+      console.error('test inject error: ', e);
+    }
 
     return new Promise((resolve) => {
       let injectCount = 0;
@@ -282,6 +295,10 @@ export class OverlayManager extends EventEmitter {
         image.getSize().width,
         image.getSize().height,
       );
+
+      if (this.tmp) {
+        this.tmp.updateBitmap(image.getSize().width, image.getBitmap());
+      }
     });
 
     let isFocused = false;
@@ -305,6 +322,10 @@ export class OverlayManager extends EventEmitter {
 
       this.overlay?.sendWindowBounds(window.id, { rect: bounds });
       this.provider?.updateWindowConfig();
+
+      if (this.tmp) {
+        this.tmp.reposition(bounds.x, bounds.y);
+      }
 
       throttle = setTimeout(() => {
         if (!isFocused) return;

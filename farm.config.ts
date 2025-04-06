@@ -44,7 +44,8 @@ export default defineConfig({
               '^glasstron$',
               '^hmc-win32$',
               '^extract-file-icon$',
-              '^node-window-manager$'
+              '^node-window-manager$',
+              'asdf-overlay-node'
             ],
             output: {
               targetEnv: 'node-next',
