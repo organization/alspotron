@@ -4,8 +4,7 @@ import { EventEmitter } from 'events';
 
 import { app } from 'electron';
 import { hmc } from 'hmc-win32';
-
-import { Overlay } from 'asdf-overlay-node';
+import { type Overlay } from 'asdf-overlay-node';
 
 import { config, gameList } from './config';
 import { IOverlay } from './electron-overlay';
@@ -16,6 +15,8 @@ import { isWin32 } from '../utils/is';
 type IOverlay = typeof IOverlay;
 let wql: typeof import('@jellybrick/wql-process-monitor') | undefined;
 let nodeWindowManager: typeof import('node-window-manager') | undefined;
+
+let asdfOverlay: typeof import('asdf-overlay-node') | undefined;
 
 export class OverlayManager extends EventEmitter {
   private overlay: IOverlay | null = null;
@@ -40,6 +41,8 @@ export class OverlayManager extends EventEmitter {
         require('@jellybrick/wql-process-monitor') as typeof import('@jellybrick/wql-process-monitor');
       nodeWindowManager =
         require('node-window-manager') as typeof import('node-window-manager');
+
+      asdfOverlay = require('asdf-overlay-node') as typeof asdfOverlay;
     }
 
     this.init();
@@ -100,10 +103,12 @@ export class OverlayManager extends EventEmitter {
       this.tmp = null;
     }
 
-    try {
-      this.tmp = await Overlay.attach(pid);
-    } catch (e) {
-      console.error('test inject error: ', e);
+    if (asdfOverlay) {
+      try {
+        this.tmp = await asdfOverlay.Overlay.attach(pid);
+      } catch (e) {
+        console.error('test inject error: ', e);
+      }
     }
 
     return new Promise((resolve) => {
