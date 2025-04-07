@@ -12,22 +12,27 @@ export default defineConfig({
       index: path.join(__dirname, './src/index.ts'),
     },
     output: {
-      targetEnv: 'library',
+      targetEnv: 'library-browser',
       filename: 'style.css',
       path: 'dist',
       clean: true,
     },
-    external: ['solid-js', '@vanilla-extract/css'],
+    external: [
+      'solid-js',
+      '@vanilla-extract/css',
+      '@vanilla-extract/dynamic',
+      '@vanilla-extract/recipes'
+    ],
     persistentCache: false,
   },
   vitePlugins: [
     () => ({
-      vitePlugin: solid(),
-      filters: ['\\.tsx$', '\\.jsx$'],
-    }),
-    () => ({
       vitePlugin: vanillaExtractPlugin(),
       filters: ['\\.css\\.ts$', '\\.vanilla\\.css$'],
+    }),
+    () => ({
+      vitePlugin: solid(),
+      filters: ['\\.tsx$', '\\.jsx$'],
     }),
   ],
   plugins: [
