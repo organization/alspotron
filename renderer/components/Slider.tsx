@@ -1,11 +1,4 @@
-import {
-  createSignal,
-  For,
-  JSX,
-  mergeProps,
-  onMount,
-  splitProps,
-} from 'solid-js';
+import { createSignal, For, type JSX, mergeProps, onMount, splitProps } from 'solid-js';
 
 import { cx } from '../utils/classNames';
 
@@ -14,8 +7,7 @@ interface SliderLabel {
   label: string;
 }
 
-export interface SliderProps
-  extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+export interface SliderProps extends Omit<JSX.HTMLAttributes<HTMLDivElement>, 'onChange'> {
   min?: number;
   max?: number;
   step?: number;
@@ -95,16 +87,10 @@ export const Slider = (props: SliderProps) => {
       )}
       onPointerDown={onMoveStart}
     >
+      <div class={'absolute left-[4px] right-[4px] h-[4px] bg-gray-300 rounded-full -z-2'} />
       <div
-        class={
-          'absolute left-[4px] right-[4px] h-[4px] bg-gray-300 rounded-full -z-2'
-        }
-      />
-      <div
-        style={{ 'scale': 'var(--value) 100%' }}
-        class={
-          'absolute left-[4px] right-[4px] h-[4px] bg-primary-500 rounded-full -z-1 origin-left'
-        }
+        style={{ scale: 'var(--value) 100%' }}
+        class={'absolute left-[4px] right-[4px] h-[4px] bg-primary-500 rounded-full -z-1 origin-left'}
       />
       <div
         class={`

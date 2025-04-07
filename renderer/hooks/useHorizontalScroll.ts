@@ -3,10 +3,7 @@ interface HorizontalScrollOptions {
 }
 
 //https://stackoverflow.com/questions/70226035/smooth-horizontal-wheel-only-scrolling
-const useHorizontalScroll = (
-  container: HTMLElement,
-  { offset = 16 }: HorizontalScrollOptions = {},
-) => {
+const useHorizontalScroll = (container: HTMLElement, { offset = 16 }: HorizontalScrollOptions = {}) => {
   let scrollWidth: number;
   let targetLeft: number;
   const getScrollStep = () => scrollWidth / offset;
@@ -20,11 +17,7 @@ const useHorizontalScroll = (
     container.scrollBy(dX, 0);
 
     if (dX === diff) return;
-    if (
-      beforeLeft === container.scrollLeft ||
-      container.scrollLeft === targetLeft
-    )
-      return;
+    if (beforeLeft === container.scrollLeft || container.scrollLeft === targetLeft) return;
 
     requestAnimationFrame(scrollLeft);
   };
@@ -33,10 +26,7 @@ const useHorizontalScroll = (
     event.preventDefault();
 
     scrollWidth = container.scrollWidth - container.clientWidth;
-    targetLeft = Math.min(
-      scrollWidth,
-      Math.max(0, container.scrollLeft + event.deltaY),
-    );
+    targetLeft = Math.min(scrollWidth, Math.max(0, container.scrollLeft + event.deltaY));
 
     requestAnimationFrame(scrollLeft);
   });

@@ -75,9 +75,7 @@ export declare namespace IOverlay {
 
   export function stop(): void;
 
-  export function setEventCallback<T extends unknown[]>(
-    cb: (event: string, ...args: T) => void,
-  ): void;
+  export function setEventCallback<T extends unknown[]>(cb: (event: string, ...args: T) => void): void;
 
   export function setHotkeys(hotkeys: IHotkey[]): void;
 
@@ -92,30 +90,15 @@ export declare namespace IOverlay {
     intercept: boolean;
   }): void;
 
-  export function addWindow(
-    windowId: number,
-    details: IOverlayWindowDetails,
-  ): void;
+  export function addWindow(windowId: number, details: IOverlayWindowDetails): void;
 
   export function closeWindow(windowId: number): void;
 
-  export function sendWindowBounds(
-    windowId: number,
-    details: { rect: IRectangle },
-  ): void;
+  export function sendWindowBounds(windowId: number, details: { rect: IRectangle }): void;
 
-  export function sendFrameBuffer(
-    windowId: number,
-    buffer: Buffer,
-    width: number,
-    height: number,
-  ): void;
+  export function sendFrameBuffer(windowId: number, buffer: Buffer, width: number, height: number): void;
 
   export function translateInputEvent(
     event: InputEventPayload,
-  ):
-    | Electron.MouseInputEvent
-    | Electron.MouseWheelInputEvent
-    | Electron.KeyboardInputEvent
-    | undefined;
+  ): Electron.MouseInputEvent | Electron.MouseWheelInputEvent | Electron.KeyboardInputEvent | undefined;
 }

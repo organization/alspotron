@@ -5,16 +5,11 @@ import { app } from 'electron';
 import { State } from './state';
 
 import { DEFAULT_CONFIG } from '../../common/constants';
-import { Config, ConfigSchema } from '../../common/schema';
+import { type Config, ConfigSchema } from '../../common/schema';
 
 export const defaultConfigDirectory = app.getPath('userData');
 const getCurrentLocale = () =>
-  (/en|ko|ja|de/.exec(app.getLocale())?.at(0) as
-    | 'ko'
-    | 'en'
-    | 'ja'
-    | 'de'
-    | undefined) ?? 'ko';
+  (/en|ko|ja|de/.exec(app.getLocale())?.at(0) as 'ko' | 'en' | 'ja' | 'de' | undefined) ?? 'ko';
 app.on('ready', () => {
   DEFAULT_CONFIG.language = getCurrentLocale();
 }); // to get the correct locale

@@ -31,8 +31,7 @@ const PluginCard = (props: PluginCardProps) => {
   const refreshPlugin = async () => {
     const id = plugin()?.id;
 
-    if (typeof id === 'string')
-      await window.ipcRenderer.invoke('reload-plugin', id);
+    if (typeof id === 'string') await window.ipcRenderer.invoke('reload-plugin', id);
 
     refresh();
   };
@@ -53,7 +52,10 @@ const PluginCard = (props: PluginCardProps) => {
             <Trans key={'setting.plugin.enable-plugin'} />
           </div>
           <div class={'flex-1'} />
-          <button class={'btn-text'} onClick={refreshPlugin}>
+          <button
+            class={'btn-text'}
+            onClick={refreshPlugin}
+          >
             <Trans key={'setting.plugin.reload'} />
           </button>
           <button
@@ -103,13 +105,14 @@ const PluginCard = (props: PluginCardProps) => {
             {plugin()?.author}
           </span>
         </div>
-        <Marquee class={'text-gray-400'} gap={18}>
+        <Marquee
+          class={'text-gray-400'}
+          gap={18}
+        >
           {plugin()?.description}
         </Marquee>
       </div>
-      <div class={'text-gray-400'}>
-        {plugin()?.version ?? `v${plugin()?.versionCode}`}
-      </div>
+      <div class={'text-gray-400'}>{plugin()?.version ?? `v${plugin()?.versionCode}`}</div>
     </Card>
   );
 };

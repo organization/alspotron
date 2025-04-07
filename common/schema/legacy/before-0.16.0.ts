@@ -42,16 +42,7 @@ export type LEGACY_Config0_16_0 = {
   };
 
   windowPosition: {
-    anchor:
-      | 'top-left'
-      | 'top'
-      | 'top-right'
-      | 'left'
-      | 'center'
-      | 'right'
-      | 'bottom-left'
-      | 'bottom'
-      | 'bottom-right';
+    anchor: 'top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right';
     display: number | null;
     top: number | null;
     left: number | null;

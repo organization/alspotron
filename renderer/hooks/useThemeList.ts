@@ -24,18 +24,12 @@ const useThemeList = () => {
   };
 
   onMount(async () => {
-    const result = (await window.ipcRenderer.invoke(
-      'get-theme-list',
-    )) as Record<string, StyleConfig>;
+    const result = (await window.ipcRenderer.invoke('get-theme-list')) as Record<string, StyleConfig>;
 
     setRequiredList(result || {});
   });
 
-  const setList = async (
-    name: string,
-    newTheme: PartialDeep<StyleConfig> | null,
-    useFallback = true,
-  ) => {
+  const setList = async (name: string, newTheme: PartialDeep<StyleConfig> | null, useFallback = true) => {
     await window.ipcRenderer.invoke('set-theme', name, newTheme, useFallback);
   };
 

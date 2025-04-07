@@ -1,5 +1,5 @@
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
-import { For, Show, createSignal, JSX } from 'solid-js';
+import { For, Show, createSignal, type JSX } from 'solid-js';
 import { useNavigate } from '@solidjs/router';
 
 import Card from '../../components/Card';
@@ -8,7 +8,7 @@ import useConfig from '../../hooks/useConfig';
 import useThemeList from '../../hooks/useThemeList';
 
 import presetThemes from '../../../common/presets';
-import { StyleConfig } from '../../../common/schema';
+import type { StyleConfig } from '../../../common/schema';
 import { DEFAULT_STYLE, PRESET_PREFIX } from '../../../common/constants';
 
 const ThemeListContainer = () => {
@@ -46,10 +46,7 @@ const ThemeListContainer = () => {
       suffix += 1;
     }
 
-    const style: StyleConfig =
-      themeList()[target() ?? ''] ??
-      presetThemes[target() ?? ''] ??
-      DEFAULT_STYLE;
+    const style: StyleConfig = themeList()[target() ?? ''] ?? presetThemes[target() ?? ''] ?? DEFAULT_STYLE;
 
     setTheme(`${newName} ${suffix}`, style);
     setAddOpen(false);
@@ -63,9 +60,7 @@ const ThemeListContainer = () => {
     if (typeof oldName !== 'string') return;
     const original = themeList()[oldName];
 
-    const presetNames = Object.keys(presetThemes).map((name) =>
-      t(`setting.theme.preset.${name}`),
-    );
+    const presetNames = Object.keys(presetThemes).map((name) => t(`setting.theme.preset.${name}`));
     if (themeList()[newName] || presetNames.includes(newName)) {
       setNameOpen(false);
       setNameConflictOpen(true);
@@ -84,10 +79,7 @@ const ThemeListContainer = () => {
     setDeleteOpen(false);
   };
 
-  const onImportTheme: JSX.InputEventHandlerUnion<
-    HTMLInputElement,
-    InputEvent
-  > = async (event) => {
+  const onImportTheme: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = async (event) => {
     const file = event.target.files?.item(0);
     if (!file) return;
 
@@ -110,11 +102,7 @@ const ThemeListContainer = () => {
   };
 
   return (
-    <div
-      class={
-        'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'
-      }
-    >
+    <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1'}>
         <Trans key={'setting.title.theme'} />
       </div>
@@ -154,9 +142,7 @@ const ThemeListContainer = () => {
           <Card
             class={'flex flex-row justify-start items-center gap-4'}
             subCards={[
-              <div
-                class={'w-full h-full flex justify-start items-center gap-3'}
-              >
+              <div class={'w-full h-full flex justify-start items-center gap-3'}>
                 <button
                   class={'btn-error flex justify-center items-center'}
                   onClick={() => onDelete(name)}
@@ -193,7 +179,10 @@ const ThemeListContainer = () => {
       <Card class={'flex flex-row justify-start items-center gap-4'}>
         <Trans key={'setting.theme.add-theme'} />
         <div class={'flex-1'} />
-        <button class={'btn-primary'} onClick={onShowAdd}>
+        <button
+          class={'btn-primary'}
+          onClick={onShowAdd}
+        >
           <Trans key={'setting.theme.add-theme'} />
         </button>
       </Card>
@@ -228,12 +217,8 @@ const ThemeListContainer = () => {
           },
         ]}
       >
-        <div class={'text-xl mb-2'}>
-          {t('setting.theme.rename-alert-title')}
-        </div>
-        <div class={'text-md mb-1'}>
-          {t('setting.theme.rename-alert', { name: target() })}
-        </div>
+        <div class={'text-xl mb-2'}>{t('setting.theme.rename-alert-title')}</div>
+        <div class={'text-md mb-1'}>{t('setting.theme.rename-alert', { name: target() })}</div>
         <input
           class={'input w-full'}
           value={name()}
@@ -251,9 +236,7 @@ const ThemeListContainer = () => {
           },
         ]}
       >
-        <div class={'text-xl'}>
-          {t('common.delete.confirm', { name: target() })}
-        </div>
+        <div class={'text-xl'}>{t('common.delete.confirm', { name: target() })}</div>
       </Modal>
       <Modal
         open={nameConflictOpen()}
@@ -268,12 +251,8 @@ const ThemeListContainer = () => {
           },
         ]}
       >
-        <div class={'text-xl mb-2'}>
-          {t('setting.theme.rename-conflict-title')}
-        </div>
-        <div class={'text-md mb-1'}>
-          {t('setting.theme.rename-conflict', { name: name() })}
-        </div>
+        <div class={'text-xl mb-2'}>{t('setting.theme.rename-conflict-title')}</div>
+        <div class={'text-md mb-1'}>{t('setting.theme.rename-conflict', { name: name() })}</div>
       </Modal>
       <Modal
         open={open()}
@@ -286,9 +265,7 @@ const ThemeListContainer = () => {
           },
         ]}
       >
-        <div class={'text-black dark:text-white text-lg'}>
-          {t('setting.theme.import-theme-failed')}
-        </div>
+        <div class={'text-black dark:text-white text-lg'}>{t('setting.theme.import-theme-failed')}</div>
         <div class={'text-black dark:text-white font-mono'}>
           {error()?.name}
           {': '}
@@ -313,9 +290,7 @@ const ThemeListContainer = () => {
           },
         ]}
       >
-        <div class={'text-xl mb-2'}>
-          {t('setting.theme.add-theme-from.title')}
-        </div>
+        <div class={'text-xl mb-2'}>{t('setting.theme.add-theme-from.title')}</div>
         <Trans key={'setting.theme.built-in-themes'} />
         <For each={Object.keys(presetThemes)}>
           {(name) => (

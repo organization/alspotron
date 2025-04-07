@@ -82,9 +82,7 @@ const TitleBar = () => {
         <Button
           onClick={() => {
             window.ipcRenderer.invoke('window-maximize').then(async () => {
-              setMaximized(
-                await window.ipcRenderer.invoke('window-is-maximized'),
-              );
+              setMaximized(await window.ipcRenderer.invoke('window-is-maximized'));
             });
           }}
         >

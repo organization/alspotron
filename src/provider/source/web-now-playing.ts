@@ -2,7 +2,7 @@ import { WebSocketServer } from 'ws';
 
 import { BaseSourceProvider } from './base-source-provider';
 
-import { BaseUpdateData, UpdateData } from '../../../common/schema';
+import type { BaseUpdateData, UpdateData } from '../../../common/schema';
 
 export class WebNowPlayingProvider extends BaseSourceProvider {
   public override name = 'web-now-playing';
@@ -44,10 +44,8 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
 
         if (key === 'TITLE') this.lastUpdateData.title = data;
         if (key === 'ARTIST') this.lastUpdateData.artists = [data];
-        if (key === 'POSITION')
-          this.lastUpdateData.progress = this.convertTime(data);
-        if (key === 'DURATION')
-          this.lastUpdateData.duration = this.convertTime(data);
+        if (key === 'POSITION') this.lastUpdateData.progress = this.convertTime(data);
+        if (key === 'DURATION') this.lastUpdateData.duration = this.convertTime(data);
         if (key === 'COVER') this.lastUpdateData.coverUrl = data;
         if (key === 'STATE') {
           if (idleTimeout !== null) {

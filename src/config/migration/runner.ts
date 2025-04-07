@@ -1,6 +1,6 @@
 import { clean, lt, minVersion, satisfies } from 'semver';
 
-import { MigrateTable, MigratorData } from './types';
+import type { MigrateTable, MigratorData } from './types';
 
 import packageJson from '../../../package.json';
 

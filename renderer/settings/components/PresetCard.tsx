@@ -16,10 +16,7 @@ const PresetCard = (props: PresetCardProps) => {
   return (
     <Card
       {...leftProps}
-      class={cx(
-        'relative group h-full aspect-square !p-0 overflow-hidden z-0 cursor-pointer',
-        leftProps.class,
-      )}
+      class={cx('relative group h-full aspect-square !p-0 overflow-hidden z-0 cursor-pointer', leftProps.class)}
     >
       <img
         src={local.url}

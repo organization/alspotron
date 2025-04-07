@@ -10,7 +10,7 @@ import { getTranslation } from '../../../common/intl';
 import Modal from '../../components/Modal';
 import Switch from '../../components/Switch';
 import useServer from '../../hooks/useServer';
-import { SettingOption } from '../../../common/plugins';
+import type { SettingOption } from '../../../common/plugins';
 import { SettingOptionRenderer } from '../components/SettingOptionRenderer';
 import { useLyricProvider } from '../../hooks/useLyricProvider';
 import { DEFAULT_CONFIG } from '../../../common/constants';
@@ -39,8 +39,7 @@ const GeneralContainer = () => {
   const [lyricProviderOptions] = createResource(lyricProvider, () =>
     lyricProvider().getOptions(config()?.language ?? DEFAULT_CONFIG.language),
   );
-  const sourceProvider = () =>
-    sourceProviders().find((it) => it.name === config()?.sourceProvider);
+  const sourceProvider = () => sourceProviders().find((it) => it.name === config()?.sourceProvider);
   const sourceProviderOptions = () => sourceProvider()?.options ?? [];
 
   const onResetConfig = async () => {
@@ -53,16 +52,10 @@ const GeneralContainer = () => {
     await window.ipcRenderer.invoke('restart-application');
   };
 
-  window.ipcRenderer
-    .invoke('get-all-source-providers')
-    .then(setSourceProviders);
+  window.ipcRenderer.invoke('get-all-source-providers').then(setSourceProviders);
 
   return (
-    <div
-      class={
-        'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'
-      }
-    >
+    <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1 px-4'}>
         <Trans key={'setting.title.general'} />
       </div>
@@ -119,11 +112,7 @@ const GeneralContainer = () => {
             <div class={'flex flex-row justify-start items-center gap-1'}>
               <SettingOptionRenderer
                 option={option}
-                value={
-                  config()?.providers?.source?.config[
-                    sourceProvider()?.name ?? ''
-                  ][option.key]
-                }
+                value={config()?.providers?.source?.config[sourceProvider()?.name ?? ''][option.key]}
                 onChange={(value) => {
                   setConfig({
                     providers: {
@@ -133,9 +122,7 @@ const GeneralContainer = () => {
                         config: {
                           ...config()?.providers?.source?.config,
                           [sourceProvider()?.name ?? '']: {
-                            ...config()?.providers?.source?.config[
-                              sourceProvider()?.name ?? ''
-                            ],
+                            ...config()?.providers?.source?.config[sourceProvider()?.name ?? ''],
                             [option.key]: value,
                           },
                         },
@@ -173,11 +160,7 @@ const GeneralContainer = () => {
             <div class={'flex flex-row justify-start items-center gap-1'}>
               <SettingOptionRenderer
                 option={option}
-                value={
-                  config()?.providers?.lyric?.config[
-                    lyricProvider()?.name ?? ''
-                  ][option.key]
-                }
+                value={config()?.providers?.lyric?.config[lyricProvider()?.name ?? ''][option.key]}
                 onChange={(value) => {
                   setConfig({
                     providers: {
@@ -187,9 +170,7 @@ const GeneralContainer = () => {
                         config: {
                           ...config()?.providers?.lyric?.config,
                           [lyricProvider()?.name ?? '']: {
-                            ...config()?.providers?.lyric?.config[
-                              lyricProvider()?.name ?? ''
-                            ],
+                            ...config()?.providers?.lyric?.config[lyricProvider()?.name ?? ''],
                             [option.key]: value,
                           },
                         },
@@ -244,9 +225,7 @@ const GeneralContainer = () => {
           </div>
           <Switch
             value={!!config()?.experimental.alwaysOnTopFix}
-            onChange={(checked) =>
-              setConfig({ experimental: { alwaysOnTopFix: checked } })
-            }
+            onChange={(checked) => setConfig({ experimental: { alwaysOnTopFix: checked } })}
           />
         </Card>
       </div>
@@ -258,7 +237,10 @@ const GeneralContainer = () => {
           <div class={'text-md'}>
             <Trans key={'setting.general.restart-server'} />
           </div>
-          <button class={'btn-primary'} onClick={restartServer}>
+          <button
+            class={'btn-primary'}
+            onClick={restartServer}
+          >
             <Trans key={'setting.general.restart'} />
           </button>
         </Card>
@@ -266,7 +248,10 @@ const GeneralContainer = () => {
           <div class={'text-md'}>
             <Trans key={'setting.general.restart-program'} />
           </div>
-          <button class={'btn-primary'} onClick={() => setRestartOpen(true)}>
+          <button
+            class={'btn-primary'}
+            onClick={() => setRestartOpen(true)}
+          >
             <Trans key={'setting.general.restart'} />
           </button>
         </Card>
@@ -292,9 +277,7 @@ const GeneralContainer = () => {
               ? [
                   <div
                     class={'w-full h-full flex justify-start items-center'}
-                    onClick={() =>
-                      window.ipcRenderer.invoke('open-devtool', 'lyrics')
-                    }
+                    onClick={() => window.ipcRenderer.invoke('open-devtool', 'lyrics')}
                   >
                     <div class={'text-md'}>
                       <Trans key={'tray.devtools.lyrics.label'} />
@@ -313,9 +296,7 @@ const GeneralContainer = () => {
                   </div>,
                   <div
                     class={'w-full h-full flex justify-start items-center'}
-                    onClick={() =>
-                      window.ipcRenderer.invoke('open-devtool', 'settings')
-                    }
+                    onClick={() => window.ipcRenderer.invoke('open-devtool', 'settings')}
                   >
                     <div class={'text-md'}>
                       <Trans key={'tray.devtools.setting.label'} />
@@ -355,7 +336,10 @@ const GeneralContainer = () => {
           <div class={'text-md'}>
             <Trans key={'setting.general.reset-config'} />
           </div>
-          <button class={'btn-error'} onClick={() => setResetOpen(true)}>
+          <button
+            class={'btn-error'}
+            onClick={() => setResetOpen(true)}
+          >
             <Trans key={'setting.general.reset'} />
           </button>
         </Card>
@@ -372,9 +356,7 @@ const GeneralContainer = () => {
           },
         ]}
       >
-        <div class={'text-white text-lg'}>
-          {t('setting.general.require-alert')}
-        </div>
+        <div class={'text-white text-lg'}>{t('setting.general.require-alert')}</div>
       </Modal>
       <Modal
         open={restartOpen()}
@@ -464,9 +446,7 @@ const GeneralContainer = () => {
           },
         ]}
       >
-        <div class={'text-white text-lg'}>
-          {t('setting.general.language.alert')}
-        </div>
+        <div class={'text-white text-lg'}>{t('setting.general.language.alert')}</div>
       </Modal>
     </div>
   );

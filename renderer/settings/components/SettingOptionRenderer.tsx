@@ -4,12 +4,7 @@ import { Marquee } from '@suyongs/solid-utility';
 import Selector from '../../components/Select';
 import Switch from '../../components/Switch';
 
-import type {
-  ButtonOption,
-  NumberOption,
-  SelectOption,
-  SettingOption,
-} from '../../../common/plugins';
+import type { ButtonOption, NumberOption, SelectOption, SettingOption } from '../../../common/plugins';
 
 export interface SettingOptionRendererProps<Type> {
   option: SettingOption;
@@ -18,18 +13,15 @@ export interface SettingOptionRendererProps<Type> {
   onChange?: (value: Type) => void;
   onClick?: () => void;
 }
-export const SettingOptionRenderer = <Type,>(
-  props: SettingOptionRendererProps<Type>,
-) => {
+export const SettingOptionRenderer = <Type,>(props: SettingOptionRendererProps<Type>) => {
   return (
     <>
-      <div
-        class={
-          'w-[0] flex flex-col justify-center items-stretch flex-1 basis-[100%]'
-        }
-      >
+      <div class={'w-[0] flex flex-col justify-center items-stretch flex-1 basis-[100%]'}>
         <Marquee class={'w-full'}>{props.option.name}</Marquee>
-        <Marquee class={'text-gray-400'} gap={18}>
+        <Marquee
+          class={'text-gray-400'}
+          gap={18}
+        >
           {props.option.description}
         </Marquee>
       </div>
@@ -37,15 +29,11 @@ export const SettingOptionRenderer = <Type,>(
       <SwitchFlow>
         <Match when={props.option.type === 'select'}>
           <Selector
-            options={(props.option as SelectOption).options.map(
-              ({ value }) => value,
-            )}
+            options={(props.option as SelectOption).options.map(({ value }) => value)}
             value={props.value as string}
             onChange={(value) => props.onChange?.(value as Type)}
             format={(option) =>
-              (props.option as SelectOption).options.find(
-                (it) => it.value === option,
-              )?.label ?? option
+              (props.option as SelectOption).options.find((it) => it.value === option)?.label ?? option
             }
           />
         </Match>
@@ -77,11 +65,8 @@ export const SettingOptionRenderer = <Type,>(
         <Match when={props.option.type === 'button'}>
           <button
             classList={{
-              'btn-primary':
-                ((props.option as ButtonOption).variant ?? 'primary') ===
-                'primary',
-              'btn-secondary':
-                (props.option as ButtonOption).variant === 'secondary',
+              'btn-primary': ((props.option as ButtonOption).variant ?? 'primary') === 'primary',
+              'btn-secondary': (props.option as ButtonOption).variant === 'secondary',
               'btn-error': (props.option as ButtonOption).variant === 'error',
             }}
             onClick={() => props.onClick?.()}

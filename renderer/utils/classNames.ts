@@ -10,5 +10,4 @@ export const cl = (obj?: Record<string, boolean | undefined>): string => {
   return result.join(' ');
 };
 
-export const cx = (...classNames: unknown[]): string =>
-  classNames.filter((it) => !!it).join(' ');
+export const cx = (...classNames: unknown[]): string => classNames.filter((it) => !!it).join(' ');

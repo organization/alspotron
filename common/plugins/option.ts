@@ -38,10 +38,4 @@ export interface LabelOption extends BaseSettingOption {
   default?: never;
 }
 
-export type SettingOption =
-  | SelectOption
-  | StringOption
-  | NumberOption
-  | BooleanOption
-  | ButtonOption
-  | LabelOption;
+export type SettingOption = SelectOption | StringOption | NumberOption | BooleanOption | ButtonOption | LabelOption;

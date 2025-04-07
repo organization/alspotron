@@ -2,11 +2,11 @@ import path from 'node:path';
 
 import { MicaBrowserWindow } from 'mica-electron';
 
-import { app, shell, Rectangle, screen } from 'electron';
+import { app, shell, type Rectangle, screen } from 'electron';
 
-import { GlasstronOptions } from 'glasstron';
+import type { GlasstronOptions } from 'glasstron';
 
-import { WindowProvider } from './types';
+import type { WindowProvider } from './types';
 import { PlatformBrowserWindow } from './platform-browser-window';
 
 import { getFile } from '../../utils/resource';
@@ -83,14 +83,8 @@ export class TrayWindowProvider implements WindowProvider {
     const screenBounds = screen.getPrimaryDisplay().bounds;
     const width = this.WIDTH;
     const height = this.HEIGHT;
-    const x =
-      rectangle.x + width > screenBounds.width
-        ? rectangle.x + rectangle.width - width
-        : rectangle.x;
-    const y =
-      rectangle.y + height > screenBounds.height
-        ? rectangle.y - height
-        : rectangle.y + rectangle.height;
+    const x = rectangle.x + width > screenBounds.width ? rectangle.x + rectangle.width - width : rectangle.x;
+    const y = rectangle.y + height > screenBounds.height ? rectangle.y - height : rectangle.y + rectangle.height;
 
     this.window.show();
     this.window.setBounds({ x, y, width, height }, false);

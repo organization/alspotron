@@ -6,7 +6,7 @@ import { app } from 'electron';
 import { hmc } from 'hmc-win32';
 
 import { config, gameList } from './config';
-import { IOverlay } from './electron-overlay';
+import type { IOverlay } from './electron-overlay';
 import { OverlayWindowProvider } from './window';
 
 import { isWin32 } from '../utils/is';
@@ -21,9 +21,7 @@ export class OverlayManager extends EventEmitter {
   private registeredProcesses: { pid: number; path: string }[] = [];
   private scaleFactor = 1.0;
   private markQuit = false;
-  private applyCorsHeader:
-    | ((webContents: Electron.WebContents) => void)
-    | null = null;
+  private applyCorsHeader: ((webContents: Electron.WebContents) => void) | null = null;
 
   constructor() {
     super();
@@ -32,10 +30,8 @@ export class OverlayManager extends EventEmitter {
       console.log('load wql process monitor');
 
       // HACK: import statement is not work because Electron's threading model is different from Windows COM's
-      wql =
-        require('@jellybrick/wql-process-monitor') as typeof import('@jellybrick/wql-process-monitor');
-      nodeWindowManager =
-        require('node-window-manager') as typeof import('node-window-manager');
+      wql = require('@jellybrick/wql-process-monitor') as typeof import('@jellybrick/wql-process-monitor');
+      nodeWindowManager = require('node-window-manager') as typeof import('node-window-manager');
     }
 
     this.init();
@@ -59,9 +55,7 @@ export class OverlayManager extends EventEmitter {
     const windowList = this.overlay.getTopWindows(true);
     hmc
       .getDetailsProcessList()
-      .filter(({ pid }) =>
-        windowList.some((window) => window.processId === pid),
-      )
+      .filter(({ pid }) => windowList.some((window) => window.processId === pid))
       .forEach(({ pid, name, path }) => {
         this.onProcessCreation(pid, name, path);
       });
@@ -96,9 +90,7 @@ export class OverlayManager extends EventEmitter {
 
       const tryToInject = () => {
         if (!this.overlay || !nodeWindowManager) return;
-        const isInit = this.overlay
-          .getTopWindows(true)
-          .some((window) => window.processId === pid);
+        const isInit = this.overlay.getTopWindows(true).some((window) => window.processId === pid);
 
         injectCount += 1;
         if (injectCount > 20) {
@@ -115,9 +107,7 @@ export class OverlayManager extends EventEmitter {
         console.log('[Alspotron] try to inject process:', pid);
         let isFirstRun = false;
         if (this.registeredProcesses.length === 0) {
-          const window = windowManager
-            .getWindows()
-            .find((window) => window.processId === pid);
+          const window = windowManager.getWindows().find((window) => window.processId === pid);
           if (window) this.scaleFactor = window.getMonitor().getScaleFactor();
 
           this.provider = new OverlayWindowProvider(nodeWindowManager);
@@ -127,10 +117,7 @@ export class OverlayManager extends EventEmitter {
         }
 
         for (const window of this.overlay.getTopWindows(true)) {
-          if (
-            window.processId === pid &&
-            !this.registeredProcesses.some((it) => it.pid === pid)
-          ) {
+          if (window.processId === pid && !this.registeredProcesses.some((it) => it.pid === pid)) {
             this.overlay.injectProcess(window);
 
             this.registeredProcesses.push({
@@ -172,9 +159,7 @@ export class OverlayManager extends EventEmitter {
 
   public setGamePath(path: string) {
     const list = gameList.get();
-    const viewName = Object.keys(list).find((key) =>
-      list[key].some((it) => it.path === path),
-    );
+    const viewName = Object.keys(list).find((key) => list[key].some((it) => it.path === path));
     if (!viewName) return;
 
     const views = config.get().views;
@@ -194,12 +179,8 @@ export class OverlayManager extends EventEmitter {
         filterWindowsNoise: true,
       })
       .then((listener) => {
-        listener.on('creation', ([name, pid, filePath]) =>
-          this.onProcessCreation(Number(pid), name, filePath),
-        );
-        listener.on('deletion', ([name, pid]) =>
-          this.onProcessDeletion(Number(pid), name),
-        );
+        listener.on('creation', ([name, pid, filePath]) => this.onProcessCreation(Number(pid), name, filePath));
+        listener.on('deletion', ([name, pid]) => this.onProcessDeletion(Number(pid), name));
       });
 
     const electronOverlayWithArch = `electron-overlay${process.arch === 'ia32' ? 'ia32' : ''}.node`;
@@ -208,10 +189,7 @@ export class OverlayManager extends EventEmitter {
     process.dlopen(
       module,
       app.isPackaged
-        ? path.join(
-            process.resourcesPath,
-            `./assets/${electronOverlayWithArch}`,
-          )
+        ? path.join(process.resourcesPath, `./assets/${electronOverlayWithArch}`)
         : path.join(__dirname, '..', `../assets/${electronOverlayWithArch}`),
     );
 
@@ -225,10 +203,7 @@ export class OverlayManager extends EventEmitter {
 
     const gamePathList = Object.values(gameList.get() ?? {}).flat();
 
-    if (
-      typeof filePath === 'string' &&
-      gamePathList.some((it) => it.path === filePath)
-    ) {
+    if (typeof filePath === 'string' && gamePathList.some((it) => it.path === filePath)) {
       this.createProcess(pid, filePath);
     }
   }
@@ -276,12 +251,7 @@ export class OverlayManager extends EventEmitter {
     window.webContents.on('paint', (_, __, image: Electron.NativeImage) => {
       if (this.markQuit || !this.overlay) return;
 
-      this.overlay.sendFrameBuffer(
-        window.id,
-        image.getBitmap(),
-        image.getSize().width,
-        image.getSize().height,
-      );
+      this.overlay.sendFrameBuffer(window.id, image.getBitmap(), image.getSize().width, image.getSize().height);
     });
 
     let isFocused = false;

@@ -5,7 +5,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "baseUrl": ".",
@@ -14,8 +14,5 @@
     "noImplicitAny": true,
     "strictFunctionTypes": true
   },
-  "exclude": [
-    "*.config.ts",
-    "examples"
-  ]
+  "exclude": ["*.config.ts", "examples"]
 }

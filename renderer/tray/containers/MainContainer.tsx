@@ -33,11 +33,7 @@ export const MainContainer = () => {
   return (
     <div class={'w-full h-full flex flex-col justify-start items-stretch'}>
       <div class={'w-full flex justify-start items-center gap-2 p-4 pb-0 z-20 relative'}>
-        <div
-          class={
-            'text-lg font-bold flex-1 flex justify-start items-center gap-1'
-          }
-        >
+        <div class={'text-lg font-bold flex-1 flex justify-start items-center gap-1'}>
           <img
             src={MainIcon}
             class={'w-5 h-5 object-contain'}
@@ -46,7 +42,10 @@ export const MainContainer = () => {
           Alspotron
         </div>
         <Show when={config()?.developer}>
-          <button class={'w-fit btn-icon btn-borderless'} onClick={onDebug}>
+          <button
+            class={'w-fit btn-icon btn-borderless'}
+            onClick={onDebug}
+          >
             <svg
               class={'w-[18px] h-[18px] fill-none'}
               xmlns="http://www.w3.org/2000/svg"
@@ -59,15 +58,25 @@ export const MainContainer = () => {
             </svg>
           </button>
         </Show>
-        <button class={'w-fit btn-icon btn-borderless'} onClick={onToggleMenu}>
-          <svg class={'w-[16px] h-[16px] fill-none'} xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960">
+        <button
+          class={'w-fit btn-icon btn-borderless'}
+          onClick={onToggleMenu}
+        >
+          <svg
+            class={'w-[16px] h-[16px] fill-none'}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 -960 960 960"
+          >
             <path
               d="M440-120v-240h80v80h320v80H520v80h-80Zm-320-80v-80h240v80H120Zm160-160v-80H120v-80h160v-80h80v240h-80Zm160-80v-80h400v80H440Zm160-160v-240h80v80h160v80H680v80h-80Zm-480-80v-80h400v80H120Z"
               class={'fill-black dark:fill-white'}
             />
           </svg>
         </button>
-        <button class={'w-fit btn-icon btn-borderless'} onClick={onQuit}>
+        <button
+          class={'w-fit btn-icon btn-borderless'}
+          onClick={onQuit}
+        >
           <svg
             class={'w-[16px] h-[16px] fill-none'}
             xmlns="http://www.w3.org/2000/svg"

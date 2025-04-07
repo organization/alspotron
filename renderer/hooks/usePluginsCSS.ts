@@ -10,8 +10,7 @@ const usePluginsCSS = () => {
       const id = `plugin-${plugin.id}`;
       const css = plugin.css?.join('\n');
 
-      const style =
-        document.querySelector(`#${id}`) ?? document.createElement('style');
+      const style = document.querySelector(`#${id}`) ?? document.createElement('style');
       if (!css || plugin.state !== 'enable') {
         if (style.isConnected) style.remove();
 

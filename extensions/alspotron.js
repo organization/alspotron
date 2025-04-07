@@ -9,9 +9,7 @@
         `https://spclient.wg.spotify.com/color-lyrics/v2/track/${uri.id}?format=json&vocalRemoval=false&market=from_token`,
       )
         .then((payload) =>
-          payload.lyrics.syncType === 'LINE_SYNCED'
-            ? payload.lyrics.lines
-            : Promise.reject('No synced lyrics'),
+          payload.lyrics.syncType === 'LINE_SYNCED' ? payload.lyrics.lines : Promise.reject('No synced lyrics'),
         )
         .catch(() => {
           return [];

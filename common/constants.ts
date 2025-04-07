@@ -40,16 +40,7 @@ export const DEFAULT_STYLE = {
   },
 
   position: {
-    availableAnchor: [
-      'top-left',
-      'top',
-      'top-right',
-      'left',
-      'right',
-      'bottom-left',
-      'bottom',
-      'bottom-right',
-    ],
+    availableAnchor: ['top-left', 'top', 'top-right', 'left', 'right', 'bottom-left', 'bottom', 'bottom-right'],
     top: -32,
     left: -32,
     bottom: -32,

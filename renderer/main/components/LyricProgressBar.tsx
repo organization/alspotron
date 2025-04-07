@@ -9,10 +9,7 @@ import { cx } from '../../utils/classNames';
 
 import { formatTime } from '../../utils/formatTime';
 
-import {
-  userCSSSelectors,
-  userCSSVariables,
-} from '../../utils/userCSSSelectors';
+import { userCSSSelectors, userCSSVariables } from '../../utils/userCSSSelectors';
 
 import { useClassStyle } from '../../hooks/useClassStyle';
 
@@ -35,8 +32,7 @@ interface LyricProgressBarProps extends JSX.HTMLAttributes<HTMLDivElement> {
 const LyricProgressBar = (props: LyricProgressBarProps) => {
   const theme = useStyle();
   const themeStyle = () => props.theme ?? theme();
-  const { coverUrl, title, artist, progress, duration, status } =
-    usePlayingInfo();
+  const { coverUrl, title, artist, progress, duration, status } = usePlayingInfo();
   const [style, containerProps] = splitProps(props, [
     'class',
     'style',
@@ -175,10 +171,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
     >
       <div class={userCSSSelectors['nowplaying-progress-bar']}>
         <span
-          class={cx(
-            userCSSSelectors['nowplaying-progress'],
-            style.progressClass,
-          )}
+          class={cx(userCSSSelectors['nowplaying-progress'], style.progressClass)}
           style={style.progressStyle}
         />
       </div>
@@ -192,7 +185,10 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
           style={`${userCSSVariables['var-cover-url']}: '${coverUrl() ?? icon}';`}
           alt={'Thumbnail'}
         />
-        <Marquee gap={32} class={userCSSSelectors['nowplaying-marquee']}>
+        <Marquee
+          gap={32}
+          class={userCSSSelectors['nowplaying-marquee']}
+        >
           <div
             class={userCSSSelectors['nowplaying-playing-text']}
             style={style.textStyle}
@@ -204,10 +200,7 @@ const LyricProgressBar = (props: LyricProgressBarProps) => {
               {artist()}
             </span>
             <span
-              class={cx(
-                userCSSSelectors['nowplaying-divider'],
-                style.textClass,
-              )}
+              class={cx(userCSSSelectors['nowplaying-divider'], style.textClass)}
               style={style.textStyle}
             >
               {' - '}

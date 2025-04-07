@@ -1,14 +1,8 @@
-import { Accessor } from 'solid-js';
+import type { Accessor } from 'solid-js';
 
-import { PluginLogger } from './logger';
-import {
-  BooleanOption,
-  ButtonOption,
-  LabelOption,
-  NumberOption,
-  SettingOption,
-} from './option';
-import { PluginEventMap, OverrideMap } from './event';
+import type { PluginLogger } from './logger';
+import type { BooleanOption, ButtonOption, LabelOption, NumberOption, SettingOption } from './option';
+import type { PluginEventMap, OverrideMap } from './event';
 
 import type { PartialDeep } from 'type-fest';
 import type { Config } from '../schema';
@@ -34,23 +28,14 @@ export type UseSettingResult<Option extends SettingOption> = {
 };
 
 export interface PluginContext {
-  on<K extends keyof PluginEventMap>(
-    event: K,
-    listener: PluginEventMap[K],
-  ): void;
+  on<K extends keyof PluginEventMap>(event: K, listener: PluginEventMap[K]): void;
   // once<K extends keyof PluginEventMap>(event: K, listener: PluginEventMap[K]): void;
   // off<K extends keyof PluginEventMap>(event: K, listener: PluginEventMap[K]): void;
   // emit<K extends keyof PluginEventMap>(event: K, ...args: Parameters<PluginEventMap[K]>): void;
 
   useConfig(): [Accessor<Config>, (config: PartialDeep<Config>) => void];
-  useSetting<Option extends SettingOption>(
-    options: Option,
-    onValueChange?: () => void,
-  ): UseSettingResult<Option>;
-  useOverride<Target extends keyof OverrideMap>(
-    target: Target,
-    fn: OverrideMap[Target],
-  ): void;
+  useSetting<Option extends SettingOption>(options: Option, onValueChange?: () => void): UseSettingResult<Option>;
+  useOverride<Target extends keyof OverrideMap>(target: Target, fn: OverrideMap[Target]): void;
 
   registerSourceProvider(provider: SourceProvider): () => void;
   registerLyricProvider(provider: LyricProvider): () => void;

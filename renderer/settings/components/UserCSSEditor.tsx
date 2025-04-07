@@ -4,26 +4,12 @@ import { keymap } from '@codemirror/view';
 import { CodeMirror } from '@solid-codemirror/codemirror';
 import { githubDarkInit } from '@uiw/codemirror-theme-github';
 import { basicSetup, EditorView } from 'codemirror';
-import {
-  createEffect,
-  createSignal,
-  For,
-  getOwner,
-  runWithOwner,
-  untrack,
-} from 'solid-js';
+import { createEffect, createSignal, For, getOwner, runWithOwner, untrack } from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
 
-import {
-  userCSSSelectors,
-  userCSSTransitions,
-  userCSSVariables,
-} from '../../utils/userCSSSelectors';
+import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
 
-const debounce = <P extends unknown[]>(
-  fn: (...args: P) => void,
-  timeout: number,
-) => {
+const debounce = <P extends unknown[]>(fn: (...args: P) => void, timeout: number) => {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   return (...args: P) => {
@@ -75,7 +61,7 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
     },
 
     '.cm-activeLineGutter': {
-      'background': 'transparent !important',
+      background: 'transparent !important',
     },
 
     '.cm-content': {
@@ -84,9 +70,9 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
     },
 
     '.cm-editor': {
-      'flex': 1,
+      flex: 1,
       'min-width': '0',
-      'padding': '6px 3px',
+      padding: '6px 3px',
     },
 
     '.cm-gutters': {
@@ -120,8 +106,7 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
     addCodeSnippet(transitionClasses.map(buildSelectorSnippet).join('\n'));
   };
 
-  const addUserCSSVariable = (variableName: string) =>
-    addCodeSnippet(`var(${variableName})`);
+  const addUserCSSVariable = (variableName: string) => addCodeSnippet(`var(${variableName})`);
 
   return (
     <>

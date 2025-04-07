@@ -2,10 +2,7 @@ import { splitProps } from 'solid-js';
 
 import useStyle from '../../hooks/useStyle';
 
-import {
-  userCSSSelectors,
-  userCSSVariables,
-} from '../../utils/userCSSSelectors';
+import { userCSSSelectors, userCSSVariables } from '../../utils/userCSSSelectors';
 import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import { useClassStyle } from '../../hooks/useClassStyle';
 import useCurrent from '../../hooks/useCurrent';
@@ -23,11 +20,7 @@ const AnchoredView = (props: AnchoredViewProps) => {
   const { status } = usePlayingInfo();
   const { view } = useCurrent();
 
-  const [filteredProps, containerProps] = splitProps(props, [
-    'class',
-    'classList',
-    'children',
-  ]);
+  const [filteredProps, containerProps] = splitProps(props, ['class', 'classList', 'children']);
 
   useClassStyle(userCSSSelectors.wrapper, () => {
     const anchor = view()?.position.anchor ?? '';

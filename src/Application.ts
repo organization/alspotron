@@ -1,57 +1,43 @@
 import path from 'node:path';
 
 import ProgressBar from 'electron-progressbar';
-import { autoUpdater, UpdateInfo } from 'electron-updater';
+import { autoUpdater, type UpdateInfo } from 'electron-updater';
 import {
   app,
   BrowserWindow,
   dialog,
   ipcMain,
   Menu,
-  MenuItem,
-  MenuItemConstructorOptions,
+  type MenuItem,
+  type MenuItemConstructorOptions,
   nativeImage,
-  Rectangle,
+  type Rectangle,
   screen,
   Tray,
 } from 'electron';
-import { PartialDeep } from 'type-fest';
+import type { PartialDeep } from 'type-fest';
 import alsong from 'alsong';
 
 import PluginManager from './plugins/plugin-manager';
 import { config, gameList, lyricMapper, themeList } from './config';
 
-import {
-  LyricSearchWindowProvider,
-  LyricWindowProvider,
-  SettingWindowProvider,
-  TrayWindowProvider,
-} from './window';
+import { LyricSearchWindowProvider, LyricWindowProvider, SettingWindowProvider, TrayWindowProvider } from './window';
 
-import { OverlayManager } from './overlay';
+import type { OverlayManager } from './overlay';
 
-import {
-  AlsongLyricProvider,
-  LrclibLyricProvider,
-  TunaObsProvider,
-  WebNowPlayingProvider,
-} from './provider';
+import { AlsongLyricProvider, LrclibLyricProvider, TunaObsProvider, WebNowPlayingProvider } from './provider';
 
 import { DEFAULT_CONFIG } from '../common/constants';
 import { getTranslation } from '../common/intl';
 
-import { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
-import { LyricProvider, SourceProvider } from '../common/provider';
+import type { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
+import type { LyricProvider, SourceProvider } from '../common/provider';
 import { pure } from '../utils/pure';
 import { getFile } from '../utils/resource';
 import { isMacOS, isWin32 } from '../utils/is';
 
 import type { UpdateData } from '../common/schema';
-import type {
-  OverrideMap,
-  OverrideParameterMap,
-  PluginEventMap,
-} from '../common/plugins';
+import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
 
 // Set application name for Windows 10+ notifications
 if (isWin32()) {
@@ -90,8 +76,7 @@ class Application {
   private tray!: Tray;
   private lastUpdate: UpdateData | null = null;
   public handleMap = {
-    'get-registered-process-list': () =>
-      this.overlayManager.registeredProcessList,
+    'get-registered-process-list': () => this.overlayManager.registeredProcessList,
     'get-icon': (_, path: string) => {
       if (isWin32()) {
         try {
@@ -121,12 +106,7 @@ class Application {
       });
       this.broadcastPlugin('stop-overlay');
     },
-    'inject-overlay-to-process': async (
-      _,
-      processId: number,
-      name?: string,
-      filePath?: string,
-    ) => {
+    'inject-overlay-to-process': async (_, processId: number, name?: string, filePath?: string) => {
       if (process.platform !== 'win32') return;
 
       await this.overridePlugin(
@@ -143,12 +123,7 @@ class Application {
         filePath,
       );
 
-      this.broadcastPlugin(
-        'inject-overlay-to-process',
-        processId,
-        name,
-        filePath,
-      );
+      this.broadcastPlugin('inject-overlay-to-process', processId, name, filePath);
     },
     'remove-overlay-from-process': (_, processId: number) => {
       this.broadcastPlugin('remove-overlay-from-process', processId);
@@ -161,8 +136,7 @@ class Application {
       );
     },
     'get-current-version': () => autoUpdater.currentVersion.version,
-    'compare-with-current-version': (_, otherVersion: string) =>
-      autoUpdater.currentVersion.compare(otherVersion),
+    'compare-with-current-version': (_, otherVersion: string) => autoUpdater.currentVersion.compare(otherVersion),
     'check-update': async () => autoUpdater.checkForUpdatesAndNotify(),
     'get-last-update': () => this.lastUpdate,
 
@@ -181,15 +155,9 @@ class Application {
       lyricMapper.set({}, false);
       gameList.set({}, false);
 
-      this.pluginManager
-        .getPlugins()
-        .forEach((plugin) => this.pluginManager.removePlugin(plugin));
+      this.pluginManager.getPlugins().forEach((plugin) => this.pluginManager.removePlugin(plugin));
     },
-    'set-lyric-mapper': async (
-      _,
-      data: Partial<LyricMapper>,
-      useFallback: boolean = true,
-    ) => {
+    'set-lyric-mapper': async (_, data: Partial<LyricMapper>, useFallback = true) => {
       await this.overridePlugin(
         'lyric-mapper',
         (data) => {
@@ -199,11 +167,7 @@ class Application {
       );
     },
     'get-lyric-mapper': () => lyricMapper.get(),
-    'set-game-list': async (
-      _,
-      data: Partial<GameList>,
-      useFallback: boolean = true,
-    ) => {
+    'set-game-list': async (_, data: Partial<GameList>, useFallback = true) => {
       await this.overridePlugin(
         'game-list',
         (data) => {
@@ -213,12 +177,7 @@ class Application {
       );
     },
     'get-game-list': () => gameList.get(),
-    'set-theme': async (
-      _,
-      name: string,
-      data: PartialDeep<StyleConfig> | null,
-      useFallback: boolean = true,
-    ) => {
+    'set-theme': async (_, name: string, data: PartialDeep<StyleConfig> | null, useFallback = true) => {
       await this.overridePlugin(
         'set-theme',
         (data) => {
@@ -241,8 +200,7 @@ class Application {
       this.broadcastPlugin('window-minimize');
     },
     'window-maximize': () => {
-      const isMaximized =
-        BrowserWindow.getFocusedWindow()?.isMaximized() ?? false;
+      const isMaximized = BrowserWindow.getFocusedWindow()?.isMaximized() ?? false;
 
       this.overridePlugin(
         'window-maximize',
@@ -255,38 +213,25 @@ class Application {
 
       this.broadcastPlugin('window-maximize', !isMaximized);
     },
-    'window-is-maximized': () =>
-      !!BrowserWindow.getFocusedWindow()?.isMaximized(),
+    'window-is-maximized': () => !!BrowserWindow.getFocusedWindow()?.isMaximized(),
     'window-close': () => {
       this.overridePlugin('window-close', () => {
         BrowserWindow.getFocusedWindow()?.close();
       });
       this.broadcastPlugin('window-close');
     },
-    'open-window': (
-      _,
-      target: 'lyrics' | 'settings' | 'tray',
-      bounds?: Rectangle,
-    ) => {
+    'open-window': (_, target: 'lyrics' | 'settings' | 'tray', bounds?: Rectangle) => {
       if (target === 'lyrics') {
-        if (
-          this.lyricSearchWindowProvider &&
-          !this.lyricSearchWindowProvider.window.isDestroyed()
-        ) {
-          if (this.lyricSearchWindowProvider.window.isMinimized())
-            this.lyricSearchWindowProvider.window.restore();
+        if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
+          if (this.lyricSearchWindowProvider.window.isMinimized()) this.lyricSearchWindowProvider.window.restore();
           this.lyricSearchWindowProvider.window.show();
         } else {
           this.initLyricSearchWindow();
         }
       }
       if (target === 'settings') {
-        if (
-          this.settingWindowProvider &&
-          !this.settingWindowProvider.window.isDestroyed()
-        ) {
-          if (this.settingWindowProvider.window.isMinimized())
-            this.settingWindowProvider.window.restore();
+        if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
+          if (this.settingWindowProvider.window.isMinimized()) this.settingWindowProvider.window.restore();
           this.settingWindowProvider.window.show();
         } else {
           this.initSettingWindow();
@@ -297,46 +242,30 @@ class Application {
         this.trayWindowProvider?.show(bounds ?? this.tray.getBounds());
       }
     },
-    'open-devtool': (
-      _,
-      target: 'main' | 'lyrics' | 'settings' | 'tray',
-      index: number = 0,
-    ) => {
+    'open-devtool': (_, target: 'main' | 'lyrics' | 'settings' | 'tray', index = 0) => {
       if (target === 'main') {
-        if (
-          this.lyricWindowProviders &&
-          !this.lyricWindowProviders[index].window.isDestroyed()
-        ) {
+        if (this.lyricWindowProviders && !this.lyricWindowProviders[index].window.isDestroyed()) {
           this.lyricWindowProviders[index].window.webContents.openDevTools({
             mode: 'detach',
           });
         }
       }
       if (target === 'lyrics') {
-        if (
-          this.lyricSearchWindowProvider &&
-          !this.lyricSearchWindowProvider.window.isDestroyed()
-        ) {
+        if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
           this.lyricSearchWindowProvider.window.webContents.openDevTools({
             mode: 'detach',
           });
         }
       }
       if (target === 'settings') {
-        if (
-          this.settingWindowProvider &&
-          !this.settingWindowProvider.window.isDestroyed()
-        ) {
+        if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
           this.settingWindowProvider.window.webContents.openDevTools({
             mode: 'detach',
           });
         }
       }
       if (target === 'tray') {
-        if (
-          this.trayWindowProvider &&
-          !this.trayWindowProvider.window.isDestroyed()
-        ) {
+        if (this.trayWindowProvider && !this.trayWindowProvider.window.isDestroyed()) {
           this.trayWindowProvider.window.webContents.openDevTools({
             mode: 'detach',
           });
@@ -364,8 +293,7 @@ class Application {
 
       return error as Error | null;
     },
-    'get-plugin': (_, id: string) =>
-      pure(this.pluginManager.getPlugins().find((it) => it.id === id)),
+    'get-plugin': (_, id: string) => pure(this.pluginManager.getPlugins().find((it) => it.id === id)),
     'remove-plugin': (_, id: string) => {
       const target = this.pluginManager.getPlugins().find((it) => it.id === id);
 
@@ -411,10 +339,7 @@ class Application {
       this.broadcastPlugin('change-plugin-state', target, state);
     },
     'broadcast-plugin': (_, event: keyof PluginEventMap, ...args) => {
-      this.broadcastPlugin(
-        event,
-        ...(args as Parameters<PluginEventMap[typeof event]>),
-      );
+      this.broadcastPlugin(event, ...(args as Parameters<PluginEventMap[typeof event]>));
     },
     'override-plugin': (_, target: keyof OverrideMap, ...args) => {
       return new Promise((resolve) => {
@@ -440,15 +365,12 @@ class Application {
         name: it.name,
         options: it.getOptions(config.get().language),
       })),
-    'get-current-source-provider-state': () =>
-      this.sourceProvider.isRunning() ? 'start' : 'close',
+    'get-current-source-provider-state': () => (this.sourceProvider.isRunning() ? 'start' : 'close'),
     'restart-source-provider': () => {
       if (!this.sourceProvider) this.initSourceProvider();
       else {
         if (this.sourceProvider.isRunning()) this.sourceProvider.close();
-        this.sourceProvider.start(
-          config.get().providers.source.config[this.sourceProvider.name],
-        );
+        this.sourceProvider.start(config.get().providers.source.config[this.sourceProvider.name]);
       }
     },
 
@@ -459,70 +381,43 @@ class Application {
       app.relaunch();
       app.exit(0);
     },
-    'update-window': (_, index: number = 0) => {
+    'update-window': (_, index = 0) => {
       this.lyricWindowProviders[index].updateWindowConfig();
     },
 
-    'lyric-provider:get-all-lyric-providers': () =>
-      this.getAllLyricProviders().map((it) => it.name),
-    'lyric-provider:get-lyric': async (
-      _,
-      ...params: Parameters<LyricProvider['getLyric']>
-    ) => this.lyricProvider.getLyric(...params),
-    'lyric-provider:get-lyric-by-id': async (
-      _,
-      ...params: Parameters<LyricProvider['getLyricById']>
-    ) => this.lyricProvider.getLyricById(...params),
-    'lyric-provider:search-lyrics': async (
-      _,
-      ...params: Parameters<LyricProvider['searchLyrics']>
-    ) => this.lyricProvider.searchLyrics(...params),
-    'lyric-provider:get-options': (
-      _,
-      ...params: Parameters<LyricProvider['getOptions']>
-    ) => this.lyricProvider.getOptions(...params),
-    'lyric-provider:on-option-change': (
-      _,
-      ...params: Parameters<LyricProvider['onOptionChange']>
-    ) => this.lyricProvider.onOptionChange(...params),
-  } satisfies Record<
-    string,
-    (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown
-  >;
+    'lyric-provider:get-all-lyric-providers': () => this.getAllLyricProviders().map((it) => it.name),
+    'lyric-provider:get-lyric': async (_, ...params: Parameters<LyricProvider['getLyric']>) =>
+      this.lyricProvider.getLyric(...params),
+    'lyric-provider:get-lyric-by-id': async (_, ...params: Parameters<LyricProvider['getLyricById']>) =>
+      this.lyricProvider.getLyricById(...params),
+    'lyric-provider:search-lyrics': async (_, ...params: Parameters<LyricProvider['searchLyrics']>) =>
+      this.lyricProvider.searchLyrics(...params),
+    'lyric-provider:get-options': (_, ...params: Parameters<LyricProvider['getOptions']>) =>
+      this.lyricProvider.getOptions(...params),
+    'lyric-provider:on-option-change': (_, ...params: Parameters<LyricProvider['onOptionChange']>) =>
+      this.lyricProvider.onOptionChange(...params),
+  } satisfies Record<string, (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown>;
 
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
     this.overlayManager.setCorsHeader(this.setCorsHandler.bind(this));
     this.sourceProviders = [new TunaObsProvider(), new WebNowPlayingProvider()];
-    this.lyricProviders = [
-      new AlsongLyricProvider(alsong),
-      new LrclibLyricProvider(),
-    ];
+    this.lyricProviders = [new AlsongLyricProvider(alsong), new LrclibLyricProvider()];
   }
 
   get sourceProvider() {
     const providerName = config.get().sourceProvider;
-    return (
-      this.getAllSourceProviders().find((it) => it.name === providerName) ??
-      this.sourceProviders[0]
-    );
+    return this.getAllSourceProviders().find((it) => it.name === providerName) ?? this.sourceProviders[0];
   }
 
   get lyricProvider() {
     const providerName = config.get().lyricProvider;
-    return (
-      this.getAllLyricProviders().find((it) => it.name === providerName) ??
-      this.lyricProviders[0]
-    );
+    return this.getAllLyricProviders().find((it) => it.name === providerName) ?? this.lyricProviders[0];
   }
 
   initSourceProvider() {
-    console.log(
-      `[Alspotron] init source provider "${this.sourceProvider.name}"`,
-    );
-    this.sourceProvider.start(
-      config.get().providers.source.config[this.sourceProvider.name],
-    );
+    console.log(`[Alspotron] init source provider "${this.sourceProvider.name}"`);
+    this.sourceProvider.start(config.get().providers.source.config[this.sourceProvider.name]);
 
     this.sourceProvider.on('start', () => {
       this.broadcast('current-source-provider-state', 'start');
@@ -582,16 +477,10 @@ class Application {
 
   initOverlay() {
     this.overlayManager.on('register-process', () => {
-      this.broadcast(
-        'registered-process-list',
-        this.overlayManager.registeredProcessList,
-      );
+      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
     });
     this.overlayManager.on('unregister-process', () => {
-      this.broadcast(
-        'registered-process-list',
-        this.overlayManager.registeredProcessList,
-      );
+      this.broadcast('registered-process-list', this.overlayManager.registeredProcessList);
     });
 
     gameList.watch(() => {
@@ -604,8 +493,7 @@ class Application {
 
     autoUpdater.autoDownload = false;
     autoUpdater.on('update-available', async (it: UpdateInfo) => {
-      const downloadLink =
-        'https://github.com/organization/alspotron/releases/latest';
+      const downloadLink = 'https://github.com/organization/alspotron/releases/latest';
 
       const language = config.get().language;
       const { response } = await dialog.showMessageBox({
@@ -615,14 +503,8 @@ class Application {
           getTranslation('updater.download-and-auto-install', language),
         ],
         title: `${getTranslation('updater.update-alert', language)} (${it.version})`,
-        message: getTranslation('updater.update-available', language).replace(
-          '{{version}}',
-          it.version,
-        ),
-        detail: getTranslation('updater.download-at', language).replace(
-          '{{link}}',
-          downloadLink,
-        ),
+        message: getTranslation('updater.update-available', language).replace('{{version}}', it.version),
+        detail: getTranslation('updater.download-at', language).replace('{{link}}', downloadLink),
         defaultId: 1,
         cancelId: 0,
       });
@@ -658,12 +540,8 @@ class Application {
         type: 'normal',
         label: getTranslation('tray.lyrics.label', config.get().language),
         click: () => {
-          if (
-            this.lyricSearchWindowProvider &&
-            !this.lyricSearchWindowProvider.window.isDestroyed()
-          ) {
-            if (this.lyricSearchWindowProvider.window.isMinimized())
-              this.lyricSearchWindowProvider.window.restore();
+          if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
+            if (this.lyricSearchWindowProvider.window.isMinimized()) this.lyricSearchWindowProvider.window.restore();
             this.lyricSearchWindowProvider.window.show();
           } else {
             this.initLyricSearchWindow();
@@ -674,12 +552,8 @@ class Application {
         type: 'normal',
         label: getTranslation('tray.setting.label', config.get().language),
         click: () => {
-          if (
-            this.settingWindowProvider &&
-            !this.settingWindowProvider.window.isDestroyed()
-          ) {
-            if (this.settingWindowProvider.window.isMinimized())
-              this.settingWindowProvider.window.restore();
+          if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
+            if (this.settingWindowProvider.window.isMinimized()) this.settingWindowProvider.window.restore();
             this.settingWindowProvider.window.show();
           } else {
             this.initSettingWindow();
@@ -710,10 +584,10 @@ class Application {
           label: getTranslation('tray.devtools.label', config.get().language),
           submenu: [
             ...this.lyricWindowProviders.map((provider, index) => ({
-              label: getTranslation(
-                'tray.devtools.lyric-viewer.label',
-                config.get().language,
-              ).replace('{{index}}', `${index}`),
+              label: getTranslation('tray.devtools.lyric-viewer.label', config.get().language).replace(
+                '{{index}}',
+                `${index}`,
+              ),
               click: () => {
                 if (!provider.window.isDestroyed()) {
                   provider.window.webContents.openDevTools({ mode: 'detach' });
@@ -721,31 +595,17 @@ class Application {
               },
             })),
             {
-              label: getTranslation(
-                'tray.devtools.lyrics.label',
-                config.get().language,
-              ),
+              label: getTranslation('tray.devtools.lyrics.label', config.get().language),
               click: () => {
-                if (
-                  this.lyricSearchWindowProvider &&
-                  !this.lyricSearchWindowProvider.window.isDestroyed()
-                ) {
-                  this.lyricSearchWindowProvider.window.webContents.openDevTools(
-                    { mode: 'detach' },
-                  );
+                if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed()) {
+                  this.lyricSearchWindowProvider.window.webContents.openDevTools({ mode: 'detach' });
                 }
               },
             },
             {
-              label: getTranslation(
-                'tray.devtools.setting.label',
-                config.get().language,
-              ),
+              label: getTranslation('tray.devtools.setting.label', config.get().language),
               click: () => {
-                if (
-                  this.settingWindowProvider &&
-                  !this.settingWindowProvider.window.isDestroyed()
-                ) {
+                if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed()) {
                   this.settingWindowProvider.window.webContents.openDevTools({
                     mode: 'detach',
                   });
@@ -753,15 +613,9 @@ class Application {
               },
             },
             {
-              label: getTranslation(
-                'tray.devtools.tray.label',
-                config.get().language,
-              ),
+              label: getTranslation('tray.devtools.tray.label', config.get().language),
               click: () => {
-                if (
-                  this.trayWindowProvider &&
-                  !this.trayWindowProvider.window.isDestroyed()
-                ) {
+                if (this.trayWindowProvider && !this.trayWindowProvider.window.isDestroyed()) {
                   this.trayWindowProvider.window.webContents.openDevTools({
                     mode: 'detach',
                   });
@@ -777,9 +631,7 @@ class Application {
   }
 
   initTray() {
-    const trayIcon = nativeImage.createFromPath(
-      getFile('./assets/icon_error.png'),
-    );
+    const trayIcon = nativeImage.createFromPath(getFile('./assets/icon_error.png'));
 
     this.tray = new Tray(trayIcon.resize({ width: 16, height: 16 }));
     this.initMenu();
@@ -824,15 +676,13 @@ class Application {
   ): Promise<void> {
     const overrideFnList = this.pluginManager
       .getPlugins()
-      .flatMap((plugin) =>
-        plugin.state === 'enable' ? (plugin.js.overrides[target] ?? []) : [],
-      );
+      .flatMap((plugin) => (plugin.state === 'enable' ? (plugin.js.overrides[target] ?? []) : []));
 
     await Promise.all(
       overrideFnList.map(async (overrideFn, index) => {
-        const fn = (
-          index === overrideFnList.length - 1 ? originalFn : async () => {}
-        ) as (...args: OverrideParameterMap[Target]) => Promise<void>;
+        const fn = (index === overrideFnList.length - 1 ? originalFn : async () => {}) as (
+          ...args: OverrideParameterMap[Target]
+        ) => Promise<void>;
 
         await overrideFn(fn, ...args);
       }),
@@ -852,52 +702,26 @@ class Application {
 
       it.window.webContents.send(event, ...args);
     });
-    if (
-      this.overlayManager.windowProvider &&
-      !this.overlayManager.windowProvider.window.isDestroyed()
-    )
-      this.overlayManager.windowProvider.window.webContents.send(
-        event,
-        ...args,
-      );
-    if (
-      this.lyricSearchWindowProvider &&
-      !this.lyricSearchWindowProvider.window.isDestroyed()
-    )
+    if (this.overlayManager.windowProvider && !this.overlayManager.windowProvider.window.isDestroyed())
+      this.overlayManager.windowProvider.window.webContents.send(event, ...args);
+    if (this.lyricSearchWindowProvider && !this.lyricSearchWindowProvider.window.isDestroyed())
       this.lyricSearchWindowProvider.window.webContents.send(event, ...args);
-    if (
-      this.settingWindowProvider &&
-      !this.settingWindowProvider.window.isDestroyed()
-    )
+    if (this.settingWindowProvider && !this.settingWindowProvider.window.isDestroyed())
       this.settingWindowProvider.window.webContents.send(event, ...args);
-    if (
-      this.trayWindowProvider &&
-      !this.trayWindowProvider.window.isDestroyed()
-    )
+    if (this.trayWindowProvider && !this.trayWindowProvider.window.isDestroyed())
       this.trayWindowProvider.window.webContents.send(event, ...args);
   }
 
-  broadcastPlugin<T extends keyof PluginEventMap>(
-    event: T,
-    ...args: Parameters<PluginEventMap[T]>
-  ) {
+  broadcastPlugin<T extends keyof PluginEventMap>(event: T, ...args: Parameters<PluginEventMap[T]>) {
     this.pluginManager.broadcast(event, ...args);
   }
 
   getAllSourceProviders() {
-    return [
-      ...this.sourceProviders,
-      ...this.pluginManager
-        .getPlugins()
-        .flatMap((it) => it.js.providers.source),
-    ];
+    return [...this.sourceProviders, ...this.pluginManager.getPlugins().flatMap((it) => it.js.providers.source)];
   }
 
   getAllLyricProviders() {
-    return [
-      ...this.lyricProviders,
-      ...this.pluginManager.getPlugins().flatMap((it) => it.js.providers.lyric),
-    ];
+    return [...this.lyricProviders, ...this.pluginManager.getPlugins().flatMap((it) => it.js.providers.lyric)];
   }
 
   initHook() {
@@ -911,30 +735,20 @@ class Application {
       }
 
       if (lastConfig.sourceProvider !== config.sourceProvider) {
-        const notExist = !this.getAllSourceProviders().some(
-          (it) => it.name === config.sourceProvider,
-        );
+        const notExist = !this.getAllSourceProviders().some((it) => it.name === config.sourceProvider);
         if (notExist) {
-          console.log(
-            `[Alspotron] Source provider "${config.sourceProvider}" is not exist`,
-          );
+          console.log(`[Alspotron] Source provider "${config.sourceProvider}" is not exist`);
           return;
         }
 
-        const oldProvider = this.getAllSourceProviders().find(
-          (it) => it.name === lastConfig.sourceProvider,
-        );
+        const oldProvider = this.getAllSourceProviders().find((it) => it.name === lastConfig.sourceProvider);
         oldProvider?.close();
 
         this.initSourceProvider();
       }
 
-      if (
-        lastConfig.providers.source.config !== config.providers.source.config
-      ) {
-        this.sourceProvider.onOptionChange(
-          config.providers.source.config[this.sourceProvider.name],
-        );
+      if (lastConfig.providers.source.config !== config.providers.source.config) {
+        this.sourceProvider.onOptionChange(config.providers.source.config[this.sourceProvider.name]);
       }
 
       lastConfig = config;
@@ -950,10 +764,7 @@ class Application {
     });
 
     Object.entries(this.handleMap).forEach(([event, handler]) => {
-      ipcMain.handle(
-        event,
-        handler as (event: Electron.IpcMainInvokeEvent) => unknown,
-      );
+      ipcMain.handle(event, handler as (event: Electron.IpcMainInvokeEvent) => unknown);
     });
 
     Object.entries(this.onMap).forEach(([event, handler]) => {
@@ -975,11 +786,7 @@ class Application {
 
       if (config.views.length > this.lyricWindowProviders.length) {
         isChanged = true;
-        for (
-          let i = this.lyricWindowProviders.length;
-          i < config.views.length;
-          i++
-        ) {
+        for (let i = this.lyricWindowProviders.length; i < config.views.length; i++) {
           this.lyricWindowProviders[i] = new LyricWindowProvider(i);
           this.setCorsHandler(this.lyricWindowProviders[i].window.webContents);
 

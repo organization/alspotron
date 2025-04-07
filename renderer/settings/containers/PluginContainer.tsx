@@ -42,10 +42,7 @@ const PluginContainer = () => {
     if (refreshPlugin) clearInterval(refreshPlugin);
   });
 
-  const onAddPlugin: JSX.InputEventHandlerUnion<
-    HTMLInputElement,
-    InputEvent
-  > = async (event) => {
+  const onAddPlugin: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = async (event) => {
     const file = event.target.files?.item(0);
     if (!file) {
       setOpen(true);
@@ -63,21 +60,13 @@ const PluginContainer = () => {
     refresh();
   };
   const reloadPlugins = async () => {
-    await Promise.all(
-      pluginIdList().map((id) =>
-        window.ipcRenderer.invoke('reload-plugin', id),
-      ),
-    );
+    await Promise.all(pluginIdList().map((id) => window.ipcRenderer.invoke('reload-plugin', id)));
 
     refresh();
   };
 
   return (
-    <div
-      class={
-        'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'
-      }
-    >
+    <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1'}>
         <Trans key={'setting.title.plugin'} />
       </div>
@@ -101,7 +90,10 @@ const PluginContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <Trans key={'setting.plugin.reload-all-plugins'} />
-        <button class={'btn-primary'} onClick={reloadPlugins}>
+        <button
+          class={'btn-primary'}
+          onClick={reloadPlugins}
+        >
           <Trans key={'setting.plugin.reload'} />
         </button>
       </Card>
@@ -114,7 +106,10 @@ const PluginContainer = () => {
             <div class={'w-full max-h-[400px] fluent-scrollbar'}>
               <For each={logs()}>
                 {({ plugin, log }) => (
-                  <PluginLog log={log} showPlugin={plugin} />
+                  <PluginLog
+                    log={log}
+                    showPlugin={plugin}
+                  />
                 )}
               </For>
             </div>,
@@ -138,9 +133,7 @@ const PluginContainer = () => {
           },
         ]}
       >
-        <div class={'text-black dark:text-white text-lg'}>
-          {t('setting.plugin.load-plugin-failed')}
-        </div>
+        <div class={'text-black dark:text-white text-lg'}>{t('setting.plugin.load-plugin-failed')}</div>
         <div class={'text-black dark:text-white font-mono'}>
           {error()?.name}
           {': '}

@@ -24,16 +24,7 @@ import type { PartialDeep } from 'type-fest';
 
 import type { StyleConfig } from '../../../common/schema';
 
-const ANIMATION_LIST = [
-  'none',
-  'fade',
-  'pretty',
-  'slide',
-  'show-up',
-  'scale',
-  'slime',
-  'custom',
-];
+const ANIMATION_LIST = ['none', 'fade', 'pretty', 'slide', 'show-up', 'scale', 'slime', 'custom'];
 
 const ThemeContainer = () => {
   const params = useParams();
@@ -83,9 +74,7 @@ const ThemeContainer = () => {
   onMount(() => {
     let isTick = false;
     interval = setInterval(() => {
-      const nextPreview = untrack(() =>
-        isTick ? PREVIEW_TEXT_A : PREVIEW_TEXT_B,
-      );
+      const nextPreview = untrack(() => (isTick ? PREVIEW_TEXT_A : PREVIEW_TEXT_B));
 
       isTick = !isTick;
       setAnimationPreview(nextPreview);
@@ -95,8 +84,7 @@ const ThemeContainer = () => {
   });
   (async () => {
     const fontList = await window.getFont({ disableQuoting: true });
-    if (!fontList.includes('Pretendard JP Variable'))
-      fontList.push('Pretendard JP Variable');
+    if (!fontList.includes('Pretendard JP Variable')) fontList.push('Pretendard JP Variable');
 
     setFontList(fontList);
   })();
@@ -144,15 +132,9 @@ const ThemeContainer = () => {
   return (
     <div
       ref={parentRef}
-      class={
-        'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'
-      }
+      class={'flex-1 flex flex-col justify-start items-stretch gap-1 py-4 fluent-scrollbar'}
     >
-      <div
-        class={
-          'text-3xl mb-1 px-4 flex justify-start items-center gap-2 select-none'
-        }
-      >
+      <div class={'text-3xl mb-1 px-4 flex justify-start items-center gap-2 select-none'}>
         <span
           class={'text-3xl opacity-80 hover:opacity-100'}
           onClick={onThemeListPage}
@@ -170,9 +152,7 @@ const ThemeContainer = () => {
             class={'fill-black dark:fill-white'}
           />
         </svg>
-        <span class={'text-3xl'}>
-          {themeName() ?? t('setting.theme.unknown')}
-        </span>
+        <span class={'text-3xl'}>{themeName() ?? t('setting.theme.unknown')}</span>
       </div>
       <Show when={theme()}>
         <div
@@ -180,8 +160,7 @@ const ThemeContainer = () => {
           class={cx(
             'sticky top-[-16px] z-50 mx-4 rounded-lg transition-all',
             scrollY() <= previewOffset() && 'shadow-none',
-            scrollY() > previewOffset() &&
-              'shadow-xl bg-gray-200 dark:bg-gray-800',
+            scrollY() > previewOffset() && 'shadow-xl bg-gray-200 dark:bg-gray-800',
           )}
         >
           <LyricPreview theme={theme()!} />
@@ -191,7 +170,10 @@ const ThemeContainer = () => {
         <Card class={'flex flex-row justify-start items-center gap-4'}>
           <Trans key={'setting.theme.export-theme'} />
           <div class={'flex-1'} />
-          <button class={'btn-primary'} onClick={onExport}>
+          <button
+            class={'btn-primary'}
+            onClick={onExport}
+          >
             <Trans key={'setting.theme.export-as-file'} />
           </button>
         </Card>
@@ -242,17 +224,7 @@ const ThemeContainer = () => {
               'font-family': theme()?.font,
               'font-weight': theme()?.fontWeight,
             }}
-            options={[
-              '100',
-              '200',
-              '300',
-              '400',
-              '500',
-              '600',
-              '700',
-              '800',
-              '900',
-            ]}
+            options={['100', '200', '300', '400', '500', '600', '700', '800', '900']}
             value={theme()?.fontWeight ?? '400'}
             onChange={(value) => setTheme({ fontWeight: value })}
             renderItem={(props, option, isSelected) => (
@@ -284,11 +256,7 @@ const ThemeContainer = () => {
               <div class={'text-md'}>
                 <Trans key={'setting.theme.preview'} />
               </div>
-              <div
-                class={
-                  'relative w-full max-h-32 flex flex-col justify-start items-start gap-4'
-                }
-              >
+              <div class={'relative w-full max-h-32 flex flex-col justify-start items-start gap-4'}>
                 <LyricsTransition
                   animation={animation()}
                   class={'w-full items-end'}
@@ -343,13 +311,9 @@ const ThemeContainer = () => {
                 "input w-48 after:content-['test'] after:absolute after:right-[0.5rem] after:top-[50%] after:transform-[translateY(-50%) scale(0.5)]"
               }
               value={(theme()?.proximityOpacity ?? 0) * 100}
-              onChange={(event) =>
-                setTheme({ proximityOpacity: event.target.valueAsNumber / 100 })
-              }
+              onChange={(event) => setTheme({ proximityOpacity: event.target.valueAsNumber / 100 })}
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              %
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>%</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -360,9 +324,7 @@ const ThemeContainer = () => {
             type={'number'}
             class={'input w-48'}
             value={theme()?.proximitySensitivity}
-            onChange={(event) =>
-              setTheme({ proximitySensitivity: event.target.valueAsNumber })
-            }
+            onChange={(event) => setTheme({ proximitySensitivity: event.target.valueAsNumber })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -374,33 +336,23 @@ const ThemeContainer = () => {
               type={'number'}
               class={'input w-48'}
               value={theme()?.maxHeight}
-              onChange={(event) =>
-                setTheme({ maxHeight: event.target.valueAsNumber })
-              }
+              onChange={(event) => setTheme({ maxHeight: event.target.valueAsNumber })}
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              px
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>px</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
           <div class={'text-md'}>
-            <Trans
-              key={'setting.theme.margin-between-lyrics-and-progressbar'}
-            />
+            <Trans key={'setting.theme.margin-between-lyrics-and-progressbar'} />
           </div>
           <label class={'input-group group'}>
             <input
               type={'number'}
               class={'input w-48'}
               value={theme()?.rowGap}
-              onChange={(event) =>
-                setTheme({ rowGap: event.target.valueAsNumber })
-              }
+              onChange={(event) => setTheme({ rowGap: event.target.valueAsNumber })}
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              rem
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>rem</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-start items-center gap-1'}>
@@ -415,9 +367,7 @@ const ThemeContainer = () => {
                 : t('setting.position.hide-now-playing-panel')
             }
             value={theme()?.nowPlaying?.visible?.toString() ?? 'true'}
-            onChange={(value) =>
-              setTheme({ nowPlaying: { visible: value === 'true' } })
-            }
+            onChange={(value) => setTheme({ nowPlaying: { visible: value === 'true' } })}
             options={['true', 'false']}
             class={'select'}
           />
@@ -445,9 +395,7 @@ const ThemeContainer = () => {
                     await window.ipcRenderer.invoke('update-window');
                   }}
                 />
-                <span class={'suffix group-focus-within:suffix-focus-within'}>
-                  px
-                </span>
+                <span class={'suffix group-focus-within:suffix-focus-within'}>px</span>
               </label>
               <div />
               <label class={'input-group group'}>
@@ -464,15 +412,11 @@ const ThemeContainer = () => {
                     await window.ipcRenderer.invoke('update-window');
                   }}
                 />
-                <span class={'suffix group-focus-within:suffix-focus-within'}>
-                  px
-                </span>
+                <span class={'suffix group-focus-within:suffix-focus-within'}>px</span>
               </label>
               <img
                 src={icon}
-                class={
-                  'w-12 h-12 object-contain self-center justify-self-center'
-                }
+                class={'w-12 h-12 object-contain self-center justify-self-center'}
                 alt={'Icon'}
               />
               <label class={'input-group group'}>
@@ -489,9 +433,7 @@ const ThemeContainer = () => {
                     await window.ipcRenderer.invoke('update-window');
                   }}
                 />
-                <span class={'suffix group-focus-within:suffix-focus-within'}>
-                  px
-                </span>
+                <span class={'suffix group-focus-within:suffix-focus-within'}>px</span>
               </label>
               <div />
               <label class={'input-group group'}>
@@ -508,9 +450,7 @@ const ThemeContainer = () => {
                     await window.ipcRenderer.invoke('update-window');
                   }}
                 />
-                <span class={'suffix group-focus-within:suffix-focus-within'}>
-                  px
-                </span>
+                <span class={'suffix group-focus-within:suffix-focus-within'}>px</span>
               </label>
             </div>,
           ]}
@@ -520,8 +460,8 @@ const ThemeContainer = () => {
           </div>
           <div class={'flex-1'} />
           <div class={'text-md text-black/50 dark:text-white/80 mr-2'}>
-            {theme()?.position.top}px / {theme()?.position.right}px /{' '}
-            {theme()?.position.bottom}px / {theme()?.position.left}px
+            {theme()?.position.top}px / {theme()?.position.right}px / {theme()?.position.bottom}px /{' '}
+            {theme()?.position.left}px
           </div>
         </Card>
         <Card
@@ -551,14 +491,10 @@ const ThemeContainer = () => {
                     class={cx(
                       'flex',
                       anchor.includes('top') && 'items-start',
-                      !anchor.includes('top') &&
-                        !anchor.includes('bottom') &&
-                        'items-center',
+                      !anchor.includes('top') && !anchor.includes('bottom') && 'items-center',
                       anchor.includes('bottom') && 'items-end',
                       anchor.includes('left') && 'justify-start',
-                      !anchor.includes('left') &&
-                        !anchor.includes('right') &&
-                        'justify-center',
+                      !anchor.includes('left') && !anchor.includes('right') && 'justify-center',
                       anchor.includes('right') && 'justify-end',
                       theme()?.position.availableAnchor.includes(anchor) &&
                         '!bg-primary-500/50 hover:!bg-primary-500/60 active:!bg-primary-500/40',
@@ -567,11 +503,8 @@ const ThemeContainer = () => {
                       const list = theme()?.position.availableAnchor ?? [];
 
                       if (list.includes(anchor)) {
-                        const newAnchorList = list.filter(
-                          (item) => item !== anchor,
-                        );
-                        if (newAnchorList.length === 0)
-                          newAnchorList.push('center');
+                        const newAnchorList = list.filter((item) => item !== anchor);
+                        if (newAnchorList.length === 0) newAnchorList.push('center');
 
                         const views =
                           config()?.views?.map((view) => {
@@ -580,9 +513,7 @@ const ThemeContainer = () => {
                               ...view,
                               position: {
                                 ...view.position,
-                                anchor: newAnchorList.includes(anchor)
-                                  ? anchor
-                                  : newAnchorList[0],
+                                anchor: newAnchorList.includes(anchor) ? anchor : newAnchorList[0],
                               },
                             };
                           }) ?? [];
@@ -629,9 +560,7 @@ const ThemeContainer = () => {
                 })
               }
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              px
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>px</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -649,9 +578,7 @@ const ThemeContainer = () => {
           </div>
           <ColorPicker
             value={theme()?.nowPlaying.background}
-            onColorChange={(color) =>
-              setTheme({ nowPlaying: { background: color } })
-            }
+            onColorChange={(color) => setTheme({ nowPlaying: { background: color } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -660,9 +587,7 @@ const ThemeContainer = () => {
           </div>
           <ColorPicker
             value={theme()?.nowPlaying.backgroundProgress}
-            onColorChange={(color) =>
-              setTheme({ nowPlaying: { backgroundProgress: color } })
-            }
+            onColorChange={(color) => setTheme({ nowPlaying: { backgroundProgress: color } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -680,9 +605,7 @@ const ThemeContainer = () => {
                 })
               }
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              px
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>px</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -702,9 +625,7 @@ const ThemeContainer = () => {
                 })
               }
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              %
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>%</span>
           </label>
         </Card>
       </div>
@@ -721,13 +642,9 @@ const ThemeContainer = () => {
               type={'number'}
               class={'input w-48'}
               value={theme()?.lyric.fontSize}
-              onChange={(event) =>
-                setTheme({ lyric: { fontSize: event.target.valueAsNumber } })
-              }
+              onChange={(event) => setTheme({ lyric: { fontSize: event.target.valueAsNumber } })}
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              px
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>px</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -745,9 +662,7 @@ const ThemeContainer = () => {
           </div>
           <ColorPicker
             value={theme()?.lyric.background}
-            onColorChange={(color) =>
-              setTheme({ lyric: { background: color } })
-            }
+            onColorChange={(color) => setTheme({ lyric: { background: color } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -765,9 +680,7 @@ const ThemeContainer = () => {
                 })
               }
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              %
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>%</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -785,16 +698,12 @@ const ThemeContainer = () => {
                 })
               }
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              rem
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>rem</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
           <div class={'text-md'}>
-            <Trans
-              key={'setting.theme.margin-between-multiple-lyrics-containers'}
-            />
+            <Trans key={'setting.theme.margin-between-multiple-lyrics-containers'} />
           </div>
           <label class={'input-group group'}>
             <input
@@ -809,23 +718,17 @@ const ThemeContainer = () => {
                 })
               }
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              rem
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>rem</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-start items-center gap-1'}>
           <div class={'font-md'}>
-            <Trans
-              key={'setting.position.select-orientation-to-display-lyrics'}
-            />
+            <Trans key={'setting.position.select-orientation-to-display-lyrics'} />
           </div>
           <div class={'flex-1'} />
           <Selector
             format={(value) =>
-              value === 'column'
-                ? t('setting.position.from-top-to-bottom')
-                : t('setting.position.from-bottom-to-top')
+              value === 'column' ? t('setting.position.from-top-to-bottom') : t('setting.position.from-bottom-to-top')
             }
             value={theme()?.lyric?.direction ?? 'column'}
             onChange={(value) => setTheme({ lyric: { direction: value } })}
@@ -884,9 +787,7 @@ const ThemeContainer = () => {
                 })
               }
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              %
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>%</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -906,9 +807,7 @@ const ThemeContainer = () => {
                 })
               }
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              %
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>%</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -926,9 +825,7 @@ const ThemeContainer = () => {
                 })
               }
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              %
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>%</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -948,9 +845,7 @@ const ThemeContainer = () => {
                 })
               }
             />
-            <span class={'suffix group-focus-within:suffix-focus-within'}>
-              %
-            </span>
+            <span class={'suffix group-focus-within:suffix-focus-within'}>%</span>
           </label>
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-4'}>
@@ -959,9 +854,7 @@ const ThemeContainer = () => {
               <Trans key={'setting.theme.prevnext-lyric-threshold'} />
             </div>
             <div class={'text-sm opacity-50 whitespace-pre-line'}>
-              <Trans
-                key={'setting.theme.prevnext-lyric-threshold-description'}
-              />
+              <Trans key={'setting.theme.prevnext-lyric-threshold-description'} />
             </div>
           </div>
           <label class={'input-group group'}>
@@ -991,11 +884,7 @@ const ThemeContainer = () => {
             />,
           ]}
         >
-          <div
-            class={
-              'w-full h-full flex flex-col justify-center items-start gap-0'
-            }
-          >
+          <div class={'w-full h-full flex flex-col justify-center items-start gap-0'}>
             <div class={'text-md'}>
               <Trans key={'setting.theme.user-css'} />
             </div>

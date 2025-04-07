@@ -27,9 +27,7 @@ export const StyleConfigSchema = z.object({
   nowPlaying: z.object({
     color: z.string().catch(DEFAULT_STYLE.nowPlaying.color),
     background: z.string().catch(DEFAULT_STYLE.nowPlaying.background),
-    backgroundProgress: z
-      .string()
-      .catch(DEFAULT_STYLE.nowPlaying.backgroundProgress),
+    backgroundProgress: z.string().catch(DEFAULT_STYLE.nowPlaying.backgroundProgress),
     fontSize: z.number().catch(DEFAULT_STYLE.nowPlaying.fontSize),
     maxWidth: z.number().catch(DEFAULT_STYLE.nowPlaying.maxWidth),
     visible: z.boolean().catch(DEFAULT_STYLE.nowPlaying.visible),
@@ -43,31 +41,19 @@ export const StyleConfigSchema = z.object({
     maxWidth: z.number().catch(DEFAULT_STYLE.lyric.maxWidth),
     stoppedOpacity: z.number().catch(DEFAULT_STYLE.lyric.stoppedOpacity),
     containerRowGap: z.number().catch(DEFAULT_STYLE.lyric.containerRowGap),
-    multipleContainerRowGap: z
-      .number()
-      .catch(DEFAULT_STYLE.lyric.multipleContainerRowGap),
-    direction: z
-      .union([z.literal('column'), z.literal('column-reverse')])
-      .catch(DEFAULT_STYLE.lyric.direction),
+    multipleContainerRowGap: z.number().catch(DEFAULT_STYLE.lyric.multipleContainerRowGap),
+    direction: z.union([z.literal('column'), z.literal('column-reverse')]).catch(DEFAULT_STYLE.lyric.direction),
     nextLyric: z.number().catch(DEFAULT_STYLE.lyric.nextLyric),
     previousLyric: z.number().catch(DEFAULT_STYLE.lyric.previousLyric),
     nextLyricScale: z.number().catch(DEFAULT_STYLE.lyric.nextLyricScale),
-    previousLyricScale: z
-      .number()
-      .catch(DEFAULT_STYLE.lyric.previousLyricScale),
+    previousLyricScale: z.number().catch(DEFAULT_STYLE.lyric.previousLyricScale),
     nextLyricOpacity: z.number().catch(DEFAULT_STYLE.lyric.nextLyricOpacity),
-    previousLyricOpacity: z
-      .number()
-      .catch(DEFAULT_STYLE.lyric.previousLyricOpacity),
-    prevNextLyricThreshold: z
-      .number()
-      .catch(DEFAULT_STYLE.lyric.prevNextLyricThreshold),
+    previousLyricOpacity: z.number().catch(DEFAULT_STYLE.lyric.previousLyricOpacity),
+    prevNextLyricThreshold: z.number().catch(DEFAULT_STYLE.lyric.prevNextLyricThreshold),
   }),
 
   position: z.object({
-    availableAnchor: z
-      .array(AnchorSchema)
-      .catch(DEFAULT_STYLE.position.availableAnchor),
+    availableAnchor: z.array(AnchorSchema).catch(DEFAULT_STYLE.position.availableAnchor),
     top: z.number().catch(DEFAULT_STYLE.position.top),
     left: z.number().catch(DEFAULT_STYLE.position.left),
     bottom: z.number().catch(DEFAULT_STYLE.position.bottom),
@@ -90,10 +76,7 @@ export const ConfigSchema = z.object({
       name: z.string().catch(DEFAULT_CONFIG.views[0].name),
       position: z.object({
         anchor: AnchorSchema.catch(DEFAULT_CONFIG.views[0].position.anchor),
-        display: z
-          .number()
-          .nullable()
-          .catch(DEFAULT_CONFIG.views[0].position.display),
+        display: z.number().nullable().catch(DEFAULT_CONFIG.views[0].position.display),
         top: z.number().catch(DEFAULT_CONFIG.views[0].position.top),
         left: z.number().catch(DEFAULT_CONFIG.views[0].position.left),
         bottom: z.number().catch(DEFAULT_CONFIG.views[0].position.bottom),

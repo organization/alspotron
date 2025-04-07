@@ -1,24 +1,8 @@
-import {
-  createMemo,
-  createRenderEffect,
-  on,
-  onCleanup,
-  onMount,
-} from 'solid-js';
-import {
-  compile,
-  serialize,
-  stringify,
-  prefixer,
-  middleware,
-  Middleware,
-} from 'stylis';
+import { createMemo, createRenderEffect, on, onCleanup, onMount } from 'solid-js';
+import { compile, serialize, stringify, prefixer, middleware, type Middleware } from 'stylis';
 
 import useStyle from '../hooks/useStyle';
-import {
-  userCSSSelectors,
-  userCSSTransitions,
-} from '../utils/userCSSSelectors';
+import { userCSSSelectors, userCSSTransitions } from '../utils/userCSSSelectors';
 
 import type { StyleConfig } from '../../common/schema';
 
@@ -34,8 +18,8 @@ const userCSSMiddleware: Middleware = (element) => {
         return `.${userCSSSelectors[selectorName as keyof typeof userCSSSelectors]}`;
       }
 
-      const transitionName = Object.keys(userCSSTransitions).find(
-        (transitionName) => selectorName.startsWith(transitionName),
+      const transitionName = Object.keys(userCSSTransitions).find((transitionName) =>
+        selectorName.startsWith(transitionName),
       ) as keyof typeof userCSSTransitions;
 
       if (transitionName) {
@@ -63,10 +47,7 @@ const UserCSS = (props: UserCSSProps) => {
     on(userCSS, (css) => {
       if (!css) return '';
 
-      return serialize(
-        compile(css),
-        middleware([userCSSMiddleware, prefixer, stringify]),
-      );
+      return serialize(compile(css), middleware([userCSSMiddleware, prefixer, stringify]));
     }),
   );
 
@@ -79,9 +60,7 @@ const UserCSS = (props: UserCSSProps) => {
     });
   });
   onMount(() => {
-    document.adoptedStyleSheets = document.adoptedStyleSheets.concat([
-      stylesheet,
-    ]);
+    document.adoptedStyleSheets = document.adoptedStyleSheets.concat([stylesheet]);
   });
   onCleanup(() => {
     document.adoptedStyleSheets = document.adoptedStyleSheets.filter(

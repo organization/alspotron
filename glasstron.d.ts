@@ -1,5 +1,5 @@
 declare module 'glasstron' {
-  import { BrowserWindow as ElectronBrowserWindow } from 'electron';
+  import type { BrowserWindow as ElectronBrowserWindow } from 'electron';
 
   export type GlasstronOnlyOptions = {
     blur?: boolean;
@@ -7,8 +7,7 @@ declare module 'glasstron' {
     blurGnomeSigma?: number;
     blurCornerRadius?: number;
   };
-  export type GlasstronOptions = Electron.BrowserWindowConstructorOptions &
-    GlasstronOnlyOptions;
+  export type GlasstronOptions = Electron.BrowserWindowConstructorOptions & GlasstronOnlyOptions;
 
   type GlassBrowserWindow = {
     new (options?: GlasstronOptions): ElectronBrowserWindow;

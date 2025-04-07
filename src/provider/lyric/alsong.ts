@@ -1,15 +1,6 @@
-import {
-  LyricData,
-  LyricMetadata,
-  LyricProvider,
-  SearchParams,
-} from '../../../common/provider';
+import type { LyricData, LyricMetadata, LyricProvider, SearchParams } from '../../../common/provider';
 
-import type {
-  Alsong,
-  Lyric as AlsongLyric,
-  LyricMetadata as AlsongLyricMetadata,
-} from 'alsong';
+import type { Alsong, Lyric as AlsongLyric, LyricMetadata as AlsongLyricMetadata } from 'alsong';
 import type { ButtonOption, SettingOption } from '../../../common/plugins';
 
 const convertLyricMetadata = (metadata: AlsongLyricMetadata): LyricMetadata => {
@@ -56,9 +47,8 @@ export class AlsongLyricProvider implements LyricProvider {
       return {
         requestHeaders: {
           ...details.requestHeaders,
-          'Origin': '*',
-          'User-Agent':
-            'Dalvik/2.2.0 (Linux; U; Android 11; Pixel 4a Build/RQ3A.210805.001.A1)',
+          Origin: '*',
+          'User-Agent': 'Dalvik/2.2.0 (Linux; U; Android 11; Pixel 4a Build/RQ3A.210805.001.A1)',
         },
       };
     }

@@ -5,15 +5,15 @@ import zip from 'zip-lib';
 
 import { loadPlugin, loadFromPath } from './v1/v1-loader';
 import {
-  PluginRunner,
-  VersionedPluginRunnerOptions,
+  type PluginRunner,
+  type VersionedPluginRunnerOptions,
   PluginManifestSchema,
-  PluginManifest,
+  type PluginManifest,
 } from './types';
 
 import { createLogger } from './v1/v1-logger';
 
-import { Plugin, PluginProvider, PluginState } from '../../common/plugins';
+import type { Plugin, PluginProvider, PluginState } from '../../common/plugins';
 import { errorSync } from '../../utils/error';
 
 export interface PluginLoaderOptions {
@@ -27,27 +27,17 @@ class PluginLoader {
     this.folder = options.folder ?? './plugins';
   }
 
-  public async loadFromFolder(
-    path: string,
-    state: PluginState = 'enable',
-  ): Promise<Plugin | Error> {
-    const plugin = await this.loadPlugin(path, state).catch(
-      (err) => err as Error,
-    );
+  public async loadFromFolder(path: string, state: PluginState = 'enable'): Promise<Plugin | Error> {
+    const plugin = await this.loadPlugin(path, state).catch((err) => err as Error);
 
     return plugin;
   }
 
-  public async loadFromFile(
-    pluginPath: string,
-    state: PluginState = 'enable',
-  ): Promise<Plugin | Error> {
+  public async loadFromFile(pluginPath: string, state: PluginState = 'enable'): Promise<Plugin | Error> {
     const pluginFileName = path.basename(pluginPath).replace(/\.\w+$/, '');
     const extractPath = path.resolve(this.folder, pluginFileName);
 
-    const extractResult = await zip
-      .extract(pluginPath, extractPath)
-      .catch((err) => err as Error);
+    const extractResult = await zip.extract(pluginPath, extractPath).catch((err) => err as Error);
     if (extractResult instanceof Error) {
       const error = Error('Failed to extract plugin');
       error.cause = extractResult;
@@ -73,9 +63,7 @@ class PluginLoader {
       }
     }
 
-    return await this.loadPlugin(extractPath, state).catch(
-      (err) => err as Error,
-    );
+    return await this.loadPlugin(extractPath, state).catch((err) => err as Error);
   }
 
   loadFromProvider(
@@ -88,18 +76,9 @@ class PluginLoader {
 
     let newPlugin: Plugin | null = null;
     if (manifestJson.manifestVersion === 1)
-      newPlugin = loadPlugin(
-        provider,
-        cssList,
-        manifestJson,
-        this.runPlugin,
-        versionedOption,
-      );
+      newPlugin = loadPlugin(provider, cssList, manifestJson, this.runPlugin, versionedOption);
 
-    if (!newPlugin)
-      throw Error(
-        `Manifest version "${manifestJson.manifestVersion}" is not supported`,
-      );
+    if (!newPlugin) throw Error(`Manifest version "${manifestJson.manifestVersion}" is not supported`);
 
     return newPlugin;
   }
@@ -122,14 +101,7 @@ class PluginLoader {
       error.cause = err;
 
       if (err instanceof Error)
-        logger.error(
-          err.name,
-          err.message,
-          err.stack,
-          err.cause,
-          '\n',
-          JSON.stringify(err, null, 2),
-        );
+        logger.error(err.name, err.message, err.stack, err.cause, '\n', JSON.stringify(err, null, 2));
       else logger.error('Error object is not `Error`:', err);
       logger.error('Plugin will be disabled');
       return error;
@@ -138,25 +110,18 @@ class PluginLoader {
     return null;
   };
 
-  private async loadPlugin(
-    pluginPath: string,
-    state: PluginState = 'enable',
-  ): Promise<Plugin> {
+  private async loadPlugin(pluginPath: string, state: PluginState = 'enable'): Promise<Plugin> {
     const stats = await fs.stat(pluginPath);
     if (!stats.isDirectory()) throw Error(`"${pluginPath}" is not a directory`);
 
-    const manifest = await fs
-      .readFile(path.join(pluginPath, 'manifest.json'), 'utf-8')
-      .catch((err) => {
-        const error = Error('Cannot load manifest.json');
-        error.cause = err;
+    const manifest = await fs.readFile(path.join(pluginPath, 'manifest.json'), 'utf-8').catch((err) => {
+      const error = Error('Cannot load manifest.json');
+      error.cause = err;
 
-        throw error;
-      });
+      throw error;
+    });
 
-    const [manifestJson, err] = errorSync(() =>
-      PluginManifestSchema.parse(JSON.parse(manifest)),
-    );
+    const [manifestJson, err] = errorSync(() => PluginManifestSchema.parse(JSON.parse(manifest)));
     if (err || manifestJson === null) {
       const error = Error('Manifest is not valid');
       error.cause = err;
@@ -168,17 +133,9 @@ class PluginLoader {
 
     let newPlugin: Plugin | null = null;
     if (manifestJson.manifestVersion === 1)
-      newPlugin = await loadFromPath(
-        pluginPath,
-        manifestJson,
-        this.runPlugin,
-        versionedOption,
-      );
+      newPlugin = await loadFromPath(pluginPath, manifestJson, this.runPlugin, versionedOption);
 
-    if (!newPlugin)
-      throw Error(
-        `Manifest version "${manifestJson.manifestVersion}" is not supported`,
-      );
+    if (!newPlugin) throw Error(`Manifest version "${manifestJson.manifestVersion}" is not supported`);
 
     return newPlugin;
   }

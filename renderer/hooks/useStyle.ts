@@ -1,4 +1,4 @@
-import { Accessor, createMemo } from 'solid-js';
+import { type Accessor, createMemo } from 'solid-js';
 
 import useThemeList from './useThemeList';
 import useCurrent from './useCurrent';

@@ -19,9 +19,7 @@ const InfoContainer = () => {
 
   const refreshUpdateData = async () => {
     const updateResult = await window.ipcRenderer.invoke('check-update');
-    const currentVersion = await window.ipcRenderer.invoke(
-      'get-current-version',
-    );
+    const currentVersion = await window.ipcRenderer.invoke('get-current-version');
     if (!updateResult) {
       setUpdateData({
         updateCheckResult: null,
@@ -46,11 +44,7 @@ const InfoContainer = () => {
   };
 
   return (
-    <div
-      class={
-        'flex-1 p-4 flex flex-col justify-start items-stretch gap-1 fluent-scrollbar'
-      }
-    >
+    <div class={'flex-1 p-4 flex flex-col justify-start items-stretch gap-1 fluent-scrollbar'}>
       <div class={'text-3xl mb-1'}>
         <Trans key={'setting.title.about'} />
       </div>
@@ -68,9 +62,7 @@ const InfoContainer = () => {
         />
         <div class={'flex flex-col justify-center items-start'}>
           <div class={'text-md'}>Alspotron</div>
-          <div class={'text-xs text-black/50 dark:text-white/75'}>
-            https://github.com/organization/alspotron
-          </div>
+          <div class={'text-xs text-black/50 dark:text-white/75'}>https://github.com/organization/alspotron</div>
         </div>
         <div class={'flex-1'} />
         <svg
@@ -88,9 +80,7 @@ const InfoContainer = () => {
       </Card>
       <Card
         class={'flex flex-row justify-start items-center gap-1'}
-        onClick={() =>
-          onLink('https://github.com/organization/alspotron/issues/new')
-        }
+        onClick={() => onLink('https://github.com/organization/alspotron/issues/new')}
       >
         <img
           src={ErrorIcon}
@@ -142,11 +132,7 @@ const InfoContainer = () => {
             <div class={'flex flex-col'}>
               <Switch
                 fallback={
-                  <div
-                    class={
-                      'w-full h-full flex flex-row justify-start items-center gap-6'
-                    }
-                  >
+                  <div class={'w-full h-full flex flex-row justify-start items-center gap-6'}>
                     <Spinner class={'w-4 h-4 stroke-primary-500'} />
                     <Trans key={'setting.about.checking-for-updates'} />
                   </div>
@@ -160,8 +146,7 @@ const InfoContainer = () => {
                     <Trans
                       key={'setting.about.latest-version'}
                       options={{
-                        version:
-                          updateData()?.updateCheckResult?.updateInfo.version,
+                        version: updateData()?.updateCheckResult?.updateInfo.version,
                       }}
                     />
                   </div>
@@ -180,15 +165,16 @@ const InfoContainer = () => {
               </Switch>
             </div>
             <div class={'flex-1'} />
-            <button class={'btn-primary'} onClick={() => refreshUpdateData()}>
+            <button
+              class={'btn-primary'}
+              onClick={() => refreshUpdateData()}
+            >
               <Trans key={'setting.about.refresh'} />
             </button>
           </div>,
           <div
             class={'w-full h-full flex justify-start items-center'}
-            onClick={() =>
-              onLink('https://github.com/organization/alspotron/releases')
-            }
+            onClick={() => onLink('https://github.com/organization/alspotron/releases')}
           >
             <Trans key={'setting.about.visit-releases-page'} />
             <div class={'flex-1'} />
@@ -219,9 +205,7 @@ const InfoContainer = () => {
           <div class={'text-md'}>
             <Trans key={'setting.about.version'} />
           </div>
-          <div class={'text-xs text-black/50 dark:text-white/75'}>
-            {packageJson.version}
-          </div>
+          <div class={'text-xs text-black/50 dark:text-white/75'}>{packageJson.version}</div>
         </div>
       </Card>
       <div class={'text-md mt-8 mb-1'}>
@@ -239,8 +223,7 @@ const InfoContainer = () => {
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>Khinenw</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            <Trans key={'setting.about.alspotify-developer'} />,{' '}
-            <Trans key={'setting.about.alspotron-developer'} />
+            <Trans key={'setting.about.alspotify-developer'} />, <Trans key={'setting.about.alspotron-developer'} />
           </div>
         </div>
         <div class={'flex-1'} />

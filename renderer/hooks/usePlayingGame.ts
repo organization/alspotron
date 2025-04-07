@@ -4,9 +4,7 @@ const usePlayingGame = () => {
   const [gameList, setGameList] = createSignal<number[]>([]);
 
   (async () => {
-    const result = await window.ipcRenderer.invoke(
-      'get-registered-process-list',
-    );
+    const result = await window.ipcRenderer.invoke('get-registered-process-list');
 
     setGameList(result.map((it) => it.pid) || []);
   })();
@@ -20,9 +18,7 @@ const usePlayingGame = () => {
 
     const allProcessList = window.hmc.getDetailsProcessList();
 
-    return allProcessList.filter((process) =>
-      processList.some((it) => Number(it) === Number(process.pid)),
-    );
+    return allProcessList.filter((process) => processList.some((it) => Number(it) === Number(process.pid)));
   });
 };
 

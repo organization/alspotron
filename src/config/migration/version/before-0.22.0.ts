@@ -1,8 +1,5 @@
-import { Migrator } from '../types';
-import {
-  LEGACY_Config0_22_0,
-  LEGACY_Config0_23_1,
-} from '../../../../common/schema';
+import type { Migrator } from '../types';
+import type { LEGACY_Config0_22_0, LEGACY_Config0_23_1 } from '../../../../common/schema';
 import { DEFAULT_CONFIG } from '../../../../common/constants';
 
 export const LEGACY_migrator0_22_0: Migrator = {

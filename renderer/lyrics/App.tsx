@@ -1,28 +1,12 @@
-import {
-  createEffect,
-  createSignal,
-  For,
-  Match,
-  on,
-  onCleanup,
-  Show,
-  startTransition,
-  Switch,
-} from 'solid-js';
-import {
-  Trans,
-  TransProvider,
-  useTransContext,
-} from '@jellybrick/solid-i18next';
+import { createEffect, createSignal, For, Match, on, onCleanup, Show, startTransition, Switch } from 'solid-js';
+import { Trans, TransProvider, useTransContext } from '@jellybrick/solid-i18next';
 import { Marquee } from '@suyongs/solid-utility';
 
 import SideBar from './SideBar';
 
 import Card from '../components/Card';
 import Layout from '../components/Layout';
-import PlayingInfoProvider, {
-  usePlayingInfo,
-} from '../components/PlayingInfoProvider';
+import PlayingInfoProvider, { usePlayingInfo } from '../components/PlayingInfoProvider';
 import Spinner from '../components/Spinner';
 import UserCSS from '../components/UserCSS';
 import useLyricMapper from '../hooks/useLyricMapper';
@@ -33,21 +17,14 @@ import { formatTime } from '../utils/formatTime';
 
 import { LangResource } from '../../common/intl';
 import { useLyricProvider } from '../hooks/useLyricProvider';
-import { LyricMetadata } from '../../common/provider';
+import type { LyricMetadata } from '../../common/provider';
 import Selector from '../components/Select';
 
 const LyricsMapEditor = () => {
   usePluginsCSS();
 
   const lyricProvider = useLyricProvider();
-  const {
-    lyricData,
-    id: playingId,
-    title: playingTitle,
-    artist: playingArtist,
-    duration,
-    status,
-  } = usePlayingInfo();
+  const { lyricData, id: playingId, title: playingTitle, artist: playingArtist, duration, status } = usePlayingInfo();
 
   const [searchMode, setSearchMode] = createSignal<'default' | 'id'>('default');
 
@@ -171,11 +148,7 @@ const LyricsMapEditor = () => {
         <PlayingInfoProvider>
           <SideBar />
         </PlayingInfoProvider>
-        <div
-          class={
-            'min-w-0 flex-1 flex flex-col justify-start items-center gap-1 pt-4'
-          }
-        >
+        <div class={'min-w-0 flex-1 flex flex-col justify-start items-center gap-1 pt-4'}>
           <form
             class={'w-full flex gap-2 mb-4 px-4'}
             onSubmit={(event) => {
@@ -220,7 +193,10 @@ const LyricsMapEditor = () => {
                 </>
               </Match>
             </Switch>
-            <button type={'submit'} class={'btn-text btn-icon !min-w-0'}>
+            <button
+              type={'submit'}
+              class={'btn-text btn-icon !min-w-0'}
+            >
               <svg
                 width="16"
                 height="16"
@@ -235,11 +211,7 @@ const LyricsMapEditor = () => {
               </svg>
             </button>
           </form>
-          <div
-            class={
-              'w-full flex flex-col justify-start items-center gap-1 fluent-scrollbar px-4 pb-4'
-            }
-          >
+          <div class={'w-full flex flex-col justify-start items-center gap-1 fluent-scrollbar px-4 pb-4'}>
             <Show when={loading()}>
               <Spinner class={'w-8 h-8 stroke-primary-500'} />
             </Show>
@@ -256,52 +228,31 @@ const LyricsMapEditor = () => {
                   `}
                   onClick={() => onSelect(item)}
                 >
-                  <div
-                    class={
-                      'w-full flex flex-col justify-center items-start overflow-hidden'
-                    }
-                  >
-                    <div
-                      class={'h-fit text-xs text-black/50 dark:text-white/50'}
+                  <div class={'w-full flex flex-col justify-center items-start overflow-hidden'}>
+                    <div class={'h-fit text-xs text-black/50 dark:text-white/50'}>ID: {item.id}</div>
+                    <Marquee
+                      class={'w-full'}
+                      gap={16}
                     >
-                      ID: {item.id}
-                    </div>
-                    <Marquee class={'w-full'} gap={16}>
                       {item.title}
                     </Marquee>
                     <div class={'text-sm'}>{item.artist}</div>
                   </div>
                   <div class={'flex-1'} />
-                  <div
-                    class={
-                      'flex flex-col justify-end items-end mr-3 self-center flex-shrink-0'
-                    }
-                  >
-                    <div
-                      class={
-                        'w-[140px] text-sm text-right text-black/50 dark:text-white/50'
-                      }
-                    >
+                  <div class={'flex flex-col justify-end items-end mr-3 self-center flex-shrink-0'}>
+                    <div class={'w-[140px] text-sm text-right text-black/50 dark:text-white/50'}>
                       {item.registerDate
-                        ? new Date(item.registerDate).toLocaleString(
-                            undefined,
-                            {
-                              timeZone: 'Asia/Seoul',
-                              hour12: false,
-                              dateStyle: 'medium',
-                              timeStyle: 'medium',
-                            },
-                          )
+                        ? new Date(item.registerDate).toLocaleString(undefined, {
+                            timeZone: 'Asia/Seoul',
+                            hour12: false,
+                            dateStyle: 'medium',
+                            timeStyle: 'medium',
+                          })
                         : 'No Date'}
                     </div>
                     <Show when={(item.playtime ?? 0) > 0}>
-                      <div
-                        class={
-                          'h-fit text-sm text-right text-black/50 dark:text-white/50'
-                        }
-                      >
-                        <Trans key={'lyrics.playtime'} />:{' '}
-                        {formatTime(item.playtime ?? 0)}
+                      <div class={'h-fit text-sm text-right text-black/50 dark:text-white/50'}>
+                        <Trans key={'lyrics.playtime'} />: {formatTime(item.playtime ?? 0)}
                       </div>
                     </Show>
                   </div>

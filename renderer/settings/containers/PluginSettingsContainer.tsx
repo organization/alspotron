@@ -5,11 +5,7 @@ import { For, Switch as SwitchFlow, Match, Show, createSignal } from 'solid-js';
 
 import { Marquee } from '@suyongs/solid-utility';
 
-import {
-  ButtonOption,
-  SelectOption,
-  SettingOption,
-} from '../../../common/plugins';
+import { type ButtonOption, SelectOption, type SettingOption } from '../../../common/plugins';
 import Card from '../../components/Card';
 import Switch from '../../components/Switch';
 import Selector from '../../components/Select';
@@ -60,16 +56,8 @@ const PluginSettingsContainer = () => {
   };
 
   return (
-    <div
-      class={
-        'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'
-      }
-    >
-      <div
-        class={
-          'text-3xl mb-1 flex justify-start items-center gap-2 select-none'
-        }
-      >
+    <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
+      <div class={'text-3xl mb-1 flex justify-start items-center gap-2 select-none'}>
         <span
           class={'text-3xl opacity-80 hover:opacity-100'}
           onClick={onPluginPage}
@@ -87,9 +75,7 @@ const PluginSettingsContainer = () => {
             class={'fill-black dark:fill-white'}
           />
         </svg>
-        <span class={'text-3xl'}>
-          {plugin()?.name ?? t('setting.plugin.unknown')}
-        </span>
+        <span class={'text-3xl'}>{plugin()?.name ?? t('setting.plugin.unknown')}</span>
       </div>
       <Card
         class={'flex flex-row justify-between items-center gap-1 mt-4'}
@@ -98,34 +84,13 @@ const PluginSettingsContainer = () => {
             <For
               each={
                 [
-                  [
-                    t('setting.plugin.id'),
-                    plugin()?.id ?? t('setting.plugin.unknown'),
-                  ],
-                  [
-                    t('setting.plugin.name'),
-                    plugin()?.name ?? t('setting.plugin.unknown'),
-                  ],
-                  [
-                    t('setting.plugin.description'),
-                    plugin()?.description ?? t('setting.plugin.unknown'),
-                  ],
-                  [
-                    t('setting.plugin.author'),
-                    plugin()?.author ?? t('setting.plugin.unknown'),
-                  ],
-                  [
-                    t('setting.plugin.version'),
-                    plugin()?.version ?? t('setting.plugin.unknown'),
-                  ],
-                  [
-                    t('setting.plugin.version-code'),
-                    plugin()?.versionCode ?? t('setting.plugin.unknown'),
-                  ],
-                  [
-                    t('setting.plugin.manifest-version'),
-                    plugin()?.manifestVersion ?? t('setting.plugin.unknown'),
-                  ],
+                  [t('setting.plugin.id'), plugin()?.id ?? t('setting.plugin.unknown')],
+                  [t('setting.plugin.name'), plugin()?.name ?? t('setting.plugin.unknown')],
+                  [t('setting.plugin.description'), plugin()?.description ?? t('setting.plugin.unknown')],
+                  [t('setting.plugin.author'), plugin()?.author ?? t('setting.plugin.unknown')],
+                  [t('setting.plugin.version'), plugin()?.version ?? t('setting.plugin.unknown')],
+                  [t('setting.plugin.version-code'), plugin()?.versionCode ?? t('setting.plugin.unknown')],
+                  [t('setting.plugin.manifest-version'), plugin()?.manifestVersion ?? t('setting.plugin.unknown')],
                   [
                     t('setting.plugin.style-count'),
                     t('setting.plugin.count', {
@@ -134,9 +99,7 @@ const PluginSettingsContainer = () => {
                   ],
                   [
                     t('setting.plugin.include-script'),
-                    plugin()?.js
-                      ? t('setting.plugin.include')
-                      : t('setting.plugin.not-include'),
+                    plugin()?.js ? t('setting.plugin.include') : t('setting.plugin.not-include'),
                   ],
                 ] as [string, string][]
               }
@@ -144,7 +107,10 @@ const PluginSettingsContainer = () => {
               {([key, value]) => (
                 <div class={'w-full flex justify-start items-center'}>
                   <div class={'min-w-[128px] text-md'}>{key}</div>
-                  <Marquee class={'w-full text-md text-gray-400'} gap={32}>
+                  <Marquee
+                    class={'w-full text-md text-gray-400'}
+                    gap={32}
+                  >
                     {value}
                   </Marquee>
                 </div>
@@ -179,7 +145,10 @@ const PluginSettingsContainer = () => {
       </Card>
       <Card class={'flex flex-row justify-between items-center gap-1'}>
         <Trans key={'setting.plugin.reload-plugin'} />
-        <button class={'btn-primary'} onClick={reloadPlugin}>
+        <button
+          class={'btn-primary'}
+          onClick={reloadPlugin}
+        >
           <Trans key={'setting.plugin.reload'} />
         </button>
       </Card>
@@ -190,9 +159,7 @@ const PluginSettingsContainer = () => {
           class={'flex flex-row justify-between items-center gap-1'}
           subCards={[
             <div class={'w-full max-h-[400px] fluent-scrollbar'}>
-              <For each={plugin()?.logs}>
-                {(log) => <PluginLog log={log} />}
-              </For>
+              <For each={plugin()?.logs}>{(log) => <PluginLog log={log} />}</For>
             </div>,
           ]}
         >
@@ -221,7 +188,10 @@ const PluginSettingsContainer = () => {
         class={'flex flex-row justify-between items-center gap-1'}
         subCards={[
           <div class={'w-full h-full flex items-center'}>
-            <button class={'btn-error'} onClick={deletePlugin}>
+            <button
+              class={'btn-error'}
+              onClick={deletePlugin}
+            >
               <Trans key={'setting.plugin.delete-plugin'} />
             </button>
           </div>,

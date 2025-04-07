@@ -1,7 +1,7 @@
-import PluginLoader, { PluginLoaderOptions } from './plugin-loader';
+import PluginLoader, { type PluginLoaderOptions } from './plugin-loader';
 
-import { Plugin, PluginEventMap, PluginState } from '../../common/plugins';
-import { Config } from '../../common/schema';
+import type { Plugin, PluginEventMap, PluginState } from '../../common/plugins';
+import type { Config } from '../../common/schema';
 
 import { SpiceifyIntegrationPlugin } from '../../plugins';
 
@@ -30,14 +30,9 @@ class PluginManager {
     this.setConfig = options.set;
   }
 
-  public async setPluginState(
-    idOrPlugin: string | Plugin,
-    state: 'enable' | 'disable',
-  ): Promise<Plugin | null> {
+  public async setPluginState(idOrPlugin: string | Plugin, state: 'enable' | 'disable'): Promise<Plugin | null> {
     const plugin =
-      typeof idOrPlugin === 'string'
-        ? this.plugins.find((plugin) => plugin.id === idOrPlugin)
-        : idOrPlugin;
+      typeof idOrPlugin === 'string' ? this.plugins.find((plugin) => plugin.id === idOrPlugin) : idOrPlugin;
     if (!plugin) return null;
 
     if (state === 'enable') {
@@ -65,12 +60,7 @@ class PluginManager {
   public async loadPredefinedPlugins(): Promise<void> {
     const pluginList = await Promise.all(
       this.predefinedPlugins.map((it) =>
-        this.loader.loadFromProvider(
-          it.provider ?? null,
-          it.cssList,
-          it.manifest,
-          'enable',
-        ),
+        this.loader.loadFromProvider(it.provider ?? null, it.cssList, it.manifest, 'enable'),
       ),
     );
 
@@ -91,10 +81,7 @@ class PluginManager {
     );
   }
 
-  public async addPlugin(
-    path: string,
-    state: PluginState = 'enable',
-  ): Promise<Plugin | Error> {
+  public async addPlugin(path: string, state: PluginState = 'enable'): Promise<Plugin | Error> {
     const plugin = await this.loader.loadFromFile(path, state);
     if (plugin instanceof Error) return plugin;
 
@@ -141,10 +128,7 @@ class PluginManager {
     });
   }
 
-  public broadcast<Event extends keyof PluginEventMap>(
-    event: Event,
-    ...args: Parameters<PluginEventMap[Event]>
-  ): void {
+  public broadcast<Event extends keyof PluginEventMap>(event: Event, ...args: Parameters<PluginEventMap[Event]>): void {
     this.plugins.forEach((plugin) => this.emit(plugin, event, ...args));
   }
 

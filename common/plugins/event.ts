@@ -1,18 +1,12 @@
-import { Plugin } from './plugin';
+import type { Plugin } from './plugin';
 
-import {
-  Config,
-  GameList,
-  LyricMapper,
-  StyleConfig,
-  UpdateData,
-} from '../schema';
+import type { Config, GameList, LyricMapper, StyleConfig, UpdateData } from '../schema';
 
 import type { PartialDeep } from 'type-fest';
 
 export interface PluginEventMap {
-  'update': (updateContext: UpdateData) => void;
-  'config': (config: PartialDeep<Config>) => void;
+  update: (updateContext: UpdateData) => void;
+  config: (config: PartialDeep<Config>) => void;
   'game-list': (gameList: Partial<GameList>) => void;
   'lyric-mapper': (lyricMapper: Partial<LyricMapper>) => void;
   'registered-process-list': (pidList: number[]) => void;
@@ -26,22 +20,14 @@ export interface PluginEventMap {
   'change-plugin-state': (plugin: Plugin, state: 'enable' | 'disable') => void;
   'start-overlay': () => void;
   'stop-overlay': () => void;
-  'inject-overlay-to-process': (
-    processId: number,
-    name?: string,
-    filePath?: string,
-  ) => void;
+  'inject-overlay-to-process': (processId: number, name?: string, filePath?: string) => void;
   'remove-overlay-from-process': (processId: number) => void;
-  'change-source-provider-state': (
-    provider: string,
-    state: 'start' | 'error' | 'close',
-    arg: unknown,
-  ) => void;
+  'change-source-provider-state': (provider: string, state: 'start' | 'error' | 'close', arg: unknown) => void;
   'button-click': (buttonId: string) => void;
 }
 export interface OverrideParameterMap {
-  'update': [updateContext: UpdateData];
-  'config': [config: PartialDeep<Config>];
+  update: [updateContext: UpdateData];
+  config: [config: PartialDeep<Config>];
   'game-list': [gameList: Partial<GameList>];
   'set-theme': [themeList: PartialDeep<StyleConfig> | null];
   'lyric-mapper': [lyricMapper: Partial<LyricMapper>];
@@ -55,11 +41,7 @@ export interface OverrideParameterMap {
   'change-plugin-state': [plugin: Plugin, state: 'enable' | 'disable'];
   'start-overlay': [];
   'stop-overlay': [];
-  'inject-overlay-to-process': [
-    processId: number,
-    name?: string,
-    filePath?: string,
-  ];
+  'inject-overlay-to-process': [processId: number, name?: string, filePath?: string];
   'remove-overlay-from-process': [processId: number];
 
   /* renderer */

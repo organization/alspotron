@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { Plugin, PluginProvider } from '../../common/plugins';
+import type { Plugin, PluginProvider } from '../../common/plugins';
 
 export type PluginManifest = z.infer<typeof PluginManifestSchema>;
 export const PluginManifestSchema = z

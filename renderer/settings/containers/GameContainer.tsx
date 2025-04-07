@@ -40,26 +40,15 @@ const GameContainer = () => {
 
   const updateProcessList = async (isAvailable = true) => {
     const availableWindows = window.hmc.getAllWindowsHandle(true);
-    const availableWindowsPID = availableWindows.map((it) =>
-      window.hmc.getHandleProcessID(it),
-    );
+    const availableWindowsPID = availableWindows.map((it) => window.hmc.getHandleProcessID(it));
 
     const result = await Promise.all(
       window.hmc
         .getDetailsProcessList()
-        .filter(
-          (process) =>
-            !isAvailable || availableWindowsPID.includes(process.pid),
-        )
+        .filter((process) => !isAvailable || availableWindowsPID.includes(process.pid))
         .map(async (data) => {
-          if (
-            data.path.toLowerCase().startsWith(window.systemRoot.toLowerCase())
-          )
-            return null;
-          const icon = (await window.ipcRenderer.invoke(
-            'get-icon',
-            data.path,
-          )) as string;
+          if (data.path.toLowerCase().startsWith(window.systemRoot.toLowerCase())) return null;
+          const icon = (await window.ipcRenderer.invoke('get-icon', data.path)) as string;
 
           return { ...data, icon } as ProcessData;
         }),
@@ -90,19 +79,12 @@ const GameContainer = () => {
 
     await setGameList(list, false);
     setTarget(null);
-    window.ipcRenderer.invoke(
-      'inject-overlay-to-process',
-      data.pid,
-      data.name,
-      data.path,
-    );
+    window.ipcRenderer.invoke('inject-overlay-to-process', data.pid, data.name, data.path);
   };
   const onRemoveGame = (path: string) => {
     const list = { ...gameList() };
 
-    const key = Object.keys(list).find((key) =>
-      list[key].some((it) => it.path === path),
-    );
+    const key = Object.keys(list).find((key) => list[key].some((it) => it.path === path));
     if (!key) return;
 
     const index = list[key].findIndex((it) => it.path === path);
@@ -116,11 +98,7 @@ const GameContainer = () => {
   };
 
   return (
-    <div
-      class={
-        'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'
-      }
-    >
+    <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1'}>
         <Trans key={'setting.title.game-overlay'} />
       </div>
@@ -130,11 +108,12 @@ const GameContainer = () => {
       <For each={playingGame()}>
         {(game) => (
           <Card class={'w-full flex justify-start items-center gap-4'}>
-            <div
-              class={'w-0 flex flex-col justify-center items-stretch flex-1'}
-            >
+            <div class={'w-0 flex flex-col justify-center items-stretch flex-1'}>
               <div class={'w-full'}>{game.name}</div>
-              <Marquee class={'text-sm text-gray-400'} gap={18}>
+              <Marquee
+                class={'text-sm text-gray-400'}
+                gap={18}
+              >
                 {game.path}
               </Marquee>
             </div>
@@ -202,7 +181,11 @@ const GameContainer = () => {
 
       <For each={processList()}>
         {(process) => (
-          <GameCard icon={process.icon} name={process.name} path={process.path}>
+          <GameCard
+            icon={process.icon}
+            name={process.name}
+            path={process.path}
+          >
             <Show
               when={gameList()[process.path]}
               fallback={
@@ -250,9 +233,7 @@ const GameContainer = () => {
         onClose={() => setTarget(null)}
         class={'max-w-[500px]'}
       >
-        <div class={'text-white text-xl mb-2'}>
-          {t('setting.game.select-view-to-show-game-overlay')}
-        </div>
+        <div class={'text-white text-xl mb-2'}>{t('setting.game.select-view-to-show-game-overlay')}</div>
         <For each={config()?.views}>
           {(view) => (
             <Card

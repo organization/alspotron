@@ -1,5 +1,5 @@
-import { SafeParseReturnType } from 'zod';
-import { PartialDeep } from 'type-fest';
+import type { SafeParseReturnType } from 'zod';
+import type { PartialDeep } from 'type-fest';
 
 import { config } from './config';
 import { lyricMapper } from './lyric-mapper';
@@ -7,15 +7,10 @@ import { themeList } from './theme-list';
 import { gameList } from './game-list';
 import { createMigrator, migrateTable } from './migration';
 
-import { State } from './state';
+import type { State } from './state';
 
 import { VERSION } from '../../common/constants';
-import {
-  ConfigSchema,
-  GameListSchema,
-  LyricMapperSchema,
-  ThemeListSchema,
-} from '../../common/schema';
+import { ConfigSchema, GameListSchema, LyricMapperSchema, ThemeListSchema } from '../../common/schema';
 
 let resolver: () => void = () => null;
 const init = {
@@ -55,17 +50,9 @@ const tryMigration = () => {
 
   if (isLoaded) {
     const internalConfig = config.get()['__internal__'];
-    const prevVersion =
-      typeof internalConfig?.version === 'string'
-        ? internalConfig.version
-        : '0.0.0';
+    const prevVersion = typeof internalConfig?.version === 'string' ? internalConfig.version : '0.0.0';
     const nowVersion = VERSION;
-    console.log(
-      '[Alspotron] prepare for migration',
-      prevVersion,
-      '->',
-      nowVersion,
-    );
+    console.log('[Alspotron] prepare for migration', prevVersion, '->', nowVersion);
 
     const migrator = createMigrator(migrateTable, prevVersion);
     const result = migrator({
@@ -81,10 +68,7 @@ const tryMigration = () => {
     const gameListParsed = GameListSchema.safeParse(result.gameList);
 
     let isFailed = false;
-    const applyMigration = <I, O>(
-      parsed: SafeParseReturnType<I, O>,
-      state: State<O>,
-    ) => {
+    const applyMigration = <I, O>(parsed: SafeParseReturnType<I, O>, state: State<O>) => {
       if (parsed.success) {
         state.set(parsed.data as PartialDeep<O>, false);
       } else {

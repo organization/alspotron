@@ -1,12 +1,4 @@
-import {
-  createEffect,
-  createSignal,
-  For,
-  JSX,
-  on,
-  Show,
-  startTransition,
-} from 'solid-js';
+import { createEffect, createSignal, For, type JSX, on, Show, startTransition } from 'solid-js';
 
 import { useTransContext } from '@jellybrick/solid-i18next';
 
@@ -19,17 +11,10 @@ import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import Spinner from '../../components/Spinner';
 import Modal from '../../components/Modal';
 import { useLyricProvider } from '../../hooks/useLyricProvider';
-import { LyricMetadata } from '../../../common/provider';
+import type { LyricMetadata } from '../../../common/provider';
 
 export const SearchContainer = () => {
-  const {
-    lyricData,
-    title: playingTitle,
-    artist: playingArtist,
-    duration,
-    status,
-    id,
-  } = usePlayingInfo();
+  const { lyricData, title: playingTitle, artist: playingArtist, duration, status, id } = usePlayingInfo();
   const [, setLyricMapper] = useLyricMapper();
   const [t] = useTransContext();
   const provider = useLyricProvider();
@@ -91,9 +76,7 @@ export const SearchContainer = () => {
     await setLyricMapper(newMapper);
     setLoading(false);
   };
-  const onArtist: JSX.EventHandlerUnion<HTMLButtonElement, MouseEvent> = (
-    event,
-  ) => {
+  const onArtist: JSX.EventHandlerUnion<HTMLButtonElement, MouseEvent> = (event) => {
     event.preventDefault();
 
     setOpen(true);
@@ -105,11 +88,7 @@ export const SearchContainer = () => {
   };
 
   return (
-    <div
-      class={
-        'w-full flex-1 flex flex-col justify-start items-stretch overflow-hidden'
-      }
-    >
+    <div class={'w-full flex-1 flex flex-col justify-start items-stretch overflow-hidden'}>
       <form
         class={'w-full flex justify-start items-center gap-2 p-4 pt-2'}
         onSubmit={(event) => {
@@ -123,7 +102,10 @@ export const SearchContainer = () => {
           value={title()}
           onInput={(event) => setTitle(event.target.value)}
         />
-        <button type={'submit'} class={'btn-text btn-icon'}>
+        <button
+          type={'submit'}
+          class={'btn-text btn-icon'}
+        >
           <svg
             class={'w-[16px] h-[16px] fill-none'}
             viewBox="0 0 24 24"
@@ -135,7 +117,10 @@ export const SearchContainer = () => {
             />
           </svg>
         </button>
-        <button class={'btn-text btn-icon'} onClick={onArtist}>
+        <button
+          class={'btn-text btn-icon'}
+          onClick={onArtist}
+        >
           <svg
             class={'w-[16px] h-[16px] fill-none'}
             viewBox="0 -960 960 960"
@@ -149,9 +134,7 @@ export const SearchContainer = () => {
         </button>
       </form>
       <div
-        class={
-          'w-full flex flex-col justify-start items-stretch gap-2 flex-1 overflow-auto remove-scrollbar p-4 pt-0'
-        }
+        class={'w-full flex flex-col justify-start items-stretch gap-2 flex-1 overflow-auto remove-scrollbar p-4 pt-0'}
       >
         <Show when={loading()}>
           <div class={'w-full h-full flex justify-center items-center p-4'}>
@@ -167,15 +150,12 @@ export const SearchContainer = () => {
             `}
               onClick={() => onSelect(item)}
             >
-              <div
-                class={
-                  'w-full flex flex-col justify-center items-start overflow-hidden'
-                }
-              >
-                <div class={'h-fit text-xs text-black/50 dark:text-white/50'}>
-                  ID: {item.id}
-                </div>
-                <Marquee class={'w-full'} gap={16}>
+              <div class={'w-full flex flex-col justify-center items-start overflow-hidden'}>
+                <div class={'h-fit text-xs text-black/50 dark:text-white/50'}>ID: {item.id}</div>
+                <Marquee
+                  class={'w-full'}
+                  gap={16}
+                >
                   {item.title}
                 </Marquee>
                 <div class={'text-sm'}>{item.artist}</div>
@@ -184,9 +164,7 @@ export const SearchContainer = () => {
                 when={currentLyricID() !== item.id}
                 fallback={
                   <svg
-                    class={
-                      'w-[24px] h-[24px] fill-none self-center flex-shrink-0'
-                    }
+                    class={'w-[24px] h-[24px] fill-none self-center flex-shrink-0'}
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 -960 960 960"
                   >
@@ -198,9 +176,7 @@ export const SearchContainer = () => {
                 }
               >
                 <svg
-                  class={
-                    'w-[16px] h-[16px] fill-none self-center flex-shrink-0'
-                  }
+                  class={'w-[16px] h-[16px] fill-none self-center flex-shrink-0'}
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
@@ -225,9 +201,7 @@ export const SearchContainer = () => {
           },
         ]}
       >
-        <div class={'text-black dark:text-white text-xl mb-2'}>
-          {t('lyrics.artist')}
-        </div>
+        <div class={'text-black dark:text-white text-xl mb-2'}>{t('lyrics.artist')}</div>
         <input
           class={'input'}
           value={artist()}

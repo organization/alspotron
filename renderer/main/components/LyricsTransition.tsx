@@ -1,15 +1,12 @@
-import { For, JSX, Match, splitProps, Switch, untrack } from 'solid-js';
+import { For, type JSX, Match, splitProps, Switch, untrack } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
 import LyricsItem from './LyricsItem';
 
 import useStyle from '../../hooks/useStyle';
 import { cx } from '../../utils/classNames';
-import { Status } from '../../components/PlayingInfoProvider';
-import {
-  userCSSSelectors,
-  userCSSVariables,
-} from '../../utils/userCSSSelectors';
+import type { Status } from '../../components/PlayingInfoProvider';
+import { userCSSSelectors, userCSSVariables } from '../../utils/userCSSSelectors';
 
 import type { StyleConfig } from '../../../common/schema';
 
@@ -45,11 +42,17 @@ const LyricsTransitionGroupAllAtOnce = (props: LyricsTransitionGroupProps) => {
 
   return (
     <Container>
-      <TransitionGroup name={props.animation} appear>
+      <TransitionGroup
+        name={props.animation}
+        appear
+      >
         <For each={lyricTransitionGroup()}>
           {(lyrics) => (
             <Container>
-              <Lyrics lyrics={lyrics} status={props.lyricsStatus} />
+              <Lyrics
+                lyrics={lyrics}
+                status={props.lyricsStatus}
+              />
             </Container>
           )}
         </For>
@@ -63,8 +66,14 @@ const LyricsTransitionGroupSequential = (props: LyricsTransitionGroupProps) => {
 
   return (
     <Container>
-      <TransitionGroup name={props.animation} appear>
-        <Lyrics lyrics={props.lyrics} status={props.lyricsStatus} />
+      <TransitionGroup
+        name={props.animation}
+        appear
+      >
+        <Lyrics
+          lyrics={props.lyrics}
+          status={props.lyricsStatus}
+        />
       </TransitionGroup>
     </Container>
   );
@@ -79,24 +88,21 @@ type LyricTransitionProps = JSX.HTMLAttributes<HTMLDivElement> & {
 };
 
 const LyricsTransition = (props: LyricTransitionProps) => {
-  const [, lyricsProps, passedProps] = splitProps(
-    props,
-    ['class'],
-    ['lyrics', 'status', 'animation'],
-  );
+  const [, lyricsProps, passedProps] = splitProps(props, ['class'], ['lyrics', 'status', 'animation']);
 
   const theme = useStyle();
   const style = () => props.theme ?? theme();
 
   const Container = (containerProps: { children: JSX.Element }) => (
-    <div class={cx(userCSSSelectors.lyrics, props.class)} {...passedProps}>
+    <div
+      class={cx(userCSSSelectors.lyrics, props.class)}
+      {...passedProps}
+    >
       {containerProps.children}
     </div>
   );
 
-  const LyricsTransitionGroup = (
-    transitionProps: LyricsTransitionGroupProps,
-  ) => (
+  const LyricsTransitionGroup = (transitionProps: LyricsTransitionGroupProps) => (
     <Switch>
       <Match when={style().animationAtOnce}>
         <LyricsTransitionGroupAllAtOnce {...transitionProps} />

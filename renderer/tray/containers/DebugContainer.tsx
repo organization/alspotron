@@ -18,9 +18,7 @@ export const DebugContainer = () => {
 
   return (
     <div
-      class={
-        'w-full h-full flex flex-col justify-start items-stretch gap-2 p-4 fluent-scrollbar !overflow-x-hidden'
-      }
+      class={'w-full h-full flex flex-col justify-start items-stretch gap-2 p-4 fluent-scrollbar !overflow-x-hidden'}
     >
       <Header title={t('tray.devtools.label')} />
       <For each={config()?.views}>
@@ -36,13 +34,22 @@ export const DebugContainer = () => {
           </button>
         )}
       </For>
-      <button class={'w-full btn-text'} onClick={() => onDebug('lyrics')}>
+      <button
+        class={'w-full btn-text'}
+        onClick={() => onDebug('lyrics')}
+      >
         <Trans key={'tray.devtools.lyrics.label'} />
       </button>
-      <button class={'w-full btn-text'} onClick={() => onDebug('settings')}>
+      <button
+        class={'w-full btn-text'}
+        onClick={() => onDebug('settings')}
+      >
         <Trans key={'tray.devtools.setting.label'} />
       </button>
-      <button class={'w-full btn-text'} onClick={() => onDebug('tray')}>
+      <button
+        class={'w-full btn-text'}
+        onClick={() => onDebug('tray')}
+      >
         <Trans key={'tray.devtools.tray.label'} />
       </button>
     </div>

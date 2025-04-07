@@ -17,15 +17,11 @@ const useLyric = () => {
 
   const averageLyricLines = createMemo(() => {
     const lyricsArray = Array.from(lyrics() ?? []);
-    return (
-      lyricsArray.reduce((count, row) => count + row.second.length, 0) /
-      lyricsArray.length
-    );
+    return lyricsArray.reduce((count, row) => count + row.second.length, 0) / lyricsArray.length;
   });
 
   const isPrevNextLyricsEnabled = () =>
-    style().lyric.prevNextLyricThreshold < 0 ||
-    averageLyricLines() < style().lyric.prevNextLyricThreshold;
+    style().lyric.prevNextLyricThreshold < 0 || averageLyricLines() < style().lyric.prevNextLyricThreshold;
 
   const lastIter = () => {
     const tempLyrics = lyrics();
@@ -36,10 +32,7 @@ const useLyric = () => {
     const last = tempLyrics.lower_bound(
       progress() +
         delay +
-        (BIAS +
-          (style().animation !== 'none' && !style().animationAtOnce
-            ? TRANSITION_DURATION
-            : 0)),
+        (BIAS + (style().animation !== 'none' && !style().animationAtOnce ? TRANSITION_DURATION : 0)),
     );
 
     if (!last.equals(tempLyrics.begin())) {
@@ -53,9 +46,7 @@ const useLyric = () => {
   const index = createMemo(() => lastIter()?.first);
 
   const nextLyricsIter = createMemo(() => {
-    let nextLyricLength = isPrevNextLyricsEnabled()
-      ? style().lyric.nextLyric
-      : 0;
+    let nextLyricLength = isPrevNextLyricsEnabled() ? style().lyric.nextLyric : 0;
 
     const now = lastIter();
     const tempLyrics = lyrics();
@@ -70,9 +61,7 @@ const useLyric = () => {
   });
 
   const getPreviousLyricLength = createMemo(() => {
-    let previousLyricLength = isPrevNextLyricsEnabled()
-      ? style().lyric.previousLyric
-      : 0;
+    let previousLyricLength = isPrevNextLyricsEnabled() ? style().lyric.previousLyric : 0;
 
     const now = lastIter();
     const tempLyrics = lyrics();

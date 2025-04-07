@@ -1,4 +1,4 @@
-import { createRenderEffect, JSX } from 'solid-js';
+import { createRenderEffect, type JSX } from 'solid-js';
 import { TransProvider } from '@jellybrick/solid-i18next';
 
 import useConfig from './hooks/useConfig';
@@ -15,11 +15,7 @@ const Provider = (props: ProviderProps) => {
   createRenderEffect(() => {
     const theme = config()?.appTheme;
 
-    if (
-      theme === 'dark' ||
-      (theme === 'system' &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ) {
+    if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.body.dataset.colorScheme = 'dark';
     } else {
       document.body.dataset.colorScheme = 'light';

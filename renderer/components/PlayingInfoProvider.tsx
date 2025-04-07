@@ -1,11 +1,11 @@
 import { experimental } from 'tstl';
 import {
-  Accessor,
+  type Accessor,
   createContext,
   createEffect,
   createMemo,
   createSignal,
-  JSX,
+  type JSX,
   on,
   onCleanup,
   useContext,
@@ -13,9 +13,9 @@ import {
 
 import useLyricMapper from '../hooks/useLyricMapper';
 import usePluginOverride from '../hooks/usePluginOverride';
-import { PausedData, PlayingData, UpdateData } from '../../common/schema';
+import type { PausedData, PlayingData, UpdateData } from '../../common/schema';
 import { useLyricProvider } from '../hooks/useLyricProvider';
-import { LyricData, LyricMetadata } from '../../common/provider';
+import type { LyricData, LyricMetadata } from '../../common/provider';
 
 export type Status = UpdateData['data']['type'];
 export type LyricMode = 'auto' | 'manual' | 'player' | 'none';
@@ -57,10 +57,7 @@ const PlayingInfoContext = createContext<PlayingInfo>({
 const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const [updateData, setUpdateData] = createSignal<UpdateData | null>(null);
 
-  const get = <Type,>(
-    getter: (data: PlayingData | PausedData) => Type,
-    defaultValue: Type,
-  ) =>
+  const get = <Type,>(getter: (data: PlayingData | PausedData) => Type, defaultValue: Type) =>
     on([updateData], ([data]) => {
       if (!data) return defaultValue;
       if (data.data.type === 'idle') return defaultValue;
@@ -73,15 +70,10 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
   const duration = createMemo(get((data) => data.duration, 0));
   const status = createMemo(() => updateData()?.data.type ?? 'idle');
   const coverUrl = createMemo(get((data) => data.coverUrl, null));
-  const playerLyrics = createMemo(
-    get((data) => data.playerLyrics ?? null, null),
-  );
+  const playerLyrics = createMemo(get((data) => data.playerLyrics ?? null, null));
 
   const [lyricData, setLyricData] = createSignal<LyricData | null>(null);
-  const [lyrics, setLyrics] = createSignal<experimental.FlatMap<
-    number,
-    string[]
-  > | null>(null);
+  const [lyrics, setLyrics] = createSignal<experimental.FlatMap<number, string[]> | null>(null);
   const [isMapped, setIsMapped] = createSignal(false);
 
   const provider = useLyricProvider();
@@ -222,11 +214,7 @@ const PlayingInfoProvider = (props: { children: JSX.Element }) => {
     isMapped,
   } satisfies PlayingInfo;
 
-  return (
-    <PlayingInfoContext.Provider value={playingInfo}>
-      {props.children}
-    </PlayingInfoContext.Provider>
-  );
+  return <PlayingInfoContext.Provider value={playingInfo}>{props.children}</PlayingInfoContext.Provider>;
 };
 
 export default PlayingInfoProvider;

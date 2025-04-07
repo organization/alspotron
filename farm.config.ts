@@ -1,7 +1,6 @@
 import path from 'node:path';
 
 import { defineConfig } from '@farmfe/core';
-import farmPluginPostcss from '@farmfe/js-plugin-postcss';
 import electron from '@farmfe/js-plugin-electron';
 
 import solid from 'vite-plugin-solid';
@@ -27,11 +26,11 @@ export default defineConfig({
   vitePlugins: [
     () => ({
       vitePlugin: solid(),
-      filters: ['\\.tsx$', '\\.jsx$']
+      filters: ['\\.tsx$', '\\.jsx$'],
     }),
     () => ({
       vitePlugin: vanillaExtractPlugin(),
-      filters: ['\\.css\\.ts$', '\\.vanilla\\.css$']
+      filters: ['\\.css\\.ts$', '\\.vanilla\\.css$'],
     }),
   ],
   plugins: [
@@ -66,11 +65,7 @@ export default defineConfig({
           compilation: {
             sourcemap: false,
             externalNodeBuiltins: true,
-            external: [
-              '^electron$',
-              '^hmc-win32$',
-              '^font-list$',
-            ],
+            external: ['^electron$', '^hmc-win32$', '^font-list$'],
             output: {
               targetEnv: 'node-next',
               path: 'dist/preload',
@@ -79,6 +74,5 @@ export default defineConfig({
         },
       },
     }),
-    farmPluginPostcss(),
   ],
 });

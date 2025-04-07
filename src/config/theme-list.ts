@@ -6,7 +6,7 @@ import { State } from './state';
 
 import { defaultConfigDirectory } from './config';
 
-import { StyleConfig, ThemeList } from '../../common/schema';
+import type { StyleConfig, ThemeList } from '../../common/schema';
 
 let throttleTimer: NodeJS.Timeout | null = null;
 export const themeList = new State<ThemeList>(
@@ -39,22 +39,14 @@ themeList.watch((value) => {
     await fs.mkdir(themeFolderPath).catch(() => null);
 
     const toDeleteList = (await fs.readdir(themeFolderPath)).filter(
-      (filename) =>
-        filename.match(/\.json$/) &&
-        !names.includes(filename.replace(/\.json$/, '')),
+      (filename) => filename.match(/\.json$/) && !names.includes(filename.replace(/\.json$/, '')),
     );
 
-    await Promise.all(
-      toDeleteList.map(async (filename) =>
-        fs.unlink(path.join(themeFolderPath, filename)),
-      ),
-    );
+    await Promise.all(toDeleteList.map(async (filename) => fs.unlink(path.join(themeFolderPath, filename))));
     await Promise.all(
       names.map(async (name) => {
         const themePath = path.join(themeFolderPath, `${name}.json`);
-        await fs
-          .writeFile(themePath, JSON.stringify(value[name], null, 2), 'utf-8')
-          .catch(() => null);
+        await fs.writeFile(themePath, JSON.stringify(value[name], null, 2), 'utf-8').catch(() => null);
       }),
     );
   }, 1000);
@@ -77,10 +69,7 @@ const loadFromFile = async () => {
       if (filename.match(/\.json$/)?.[0] !== '.json') return;
 
       const name = filename.replace(/\.json$/, '');
-      const data = await fs.readFile(
-        path.join(themeFolderPath, filename),
-        'utf-8',
-      );
+      const data = await fs.readFile(path.join(themeFolderPath, filename), 'utf-8');
       if (data === null) return;
 
       result[name] = JSON.parse(data) as StyleConfig;

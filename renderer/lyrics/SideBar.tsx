@@ -4,36 +4,25 @@ import { Marquee } from '@suyongs/solid-utility';
 import { Entry } from 'tstl';
 
 import Card from '../components/Card';
-import { LyricMode, usePlayingInfo } from '../components/PlayingInfoProvider';
+import { type LyricMode, usePlayingInfo } from '../components/PlayingInfoProvider';
 import useLyric from '../hooks/useLyric';
 import useLyricMapper from '../hooks/useLyricMapper';
 import LyricProgressBar from '../main/components/LyricProgressBar';
 import Selector from '../components/Select';
-import { LyricMapperMode } from '../../common/schema';
+import type { LyricMapperMode } from '../../common/schema';
 import { getLyricMapperId } from '../../common/utils';
 import { Slider } from '../components/Slider';
 
 const SideBar = () => {
-  const {
-    coverUrl,
-    title,
-    lyrics,
-    playerLyrics,
-    lyricData,
-    lyricMode,
-    isMapped,
-  } = usePlayingInfo();
+  const { coverUrl, title, lyrics, playerLyrics, lyricData, lyricMode, isMapped } = usePlayingInfo();
   const [, lyricTime] = useLyric();
   const [lyricMapper, setLyricMapper] = useLyricMapper();
   const [t] = useTransContext();
 
-  const lyricMapperItem = () =>
-    lyricMapper()[getLyricMapperId(title(), coverUrl())];
+  const lyricMapperItem = () => lyricMapper()[getLyricMapperId(title(), coverUrl())];
   const lyricItems = createMemo(() => {
     if (lyricMode() === 'player') {
-      return Object.entries(playerLyrics() ?? {}).map(
-        ([time, lyrics]) => new Entry(~~time, lyrics),
-      );
+      return Object.entries(playerLyrics() ?? {}).map(([time, lyrics]) => new Entry(~~time, lyrics));
     } else {
       return lyrics()?.toJSON() ?? [];
     }
@@ -90,9 +79,7 @@ const SideBar = () => {
               onChange={onChangeLyricMode}
             />
           </div>,
-          <div
-            class={'w-full h-full flex flex-col justify-between items-center'}
-          >
+          <div class={'w-full h-full flex flex-col justify-between items-center'}>
             <div class={'w-full h-full flex justify-between items-center'}>
               <Trans key={'lyrics.delay'} />
               <label class={'input-group group'}>
@@ -108,9 +95,7 @@ const SideBar = () => {
                     });
                   }}
                 />
-                <div class={'suffix group-focus-within:suffix-focus-within'}>
-                  ms
-                </div>
+                <div class={'suffix group-focus-within:suffix-focus-within'}>ms</div>
               </label>
             </div>
             <Slider
@@ -135,16 +120,16 @@ const SideBar = () => {
           </div>,
         ]}
       >
-        <div
-          class={'w-[calc(100%-24px)] flex flex-col justify-center items-start'}
-        >
+        <div class={'w-[calc(100%-24px)] flex flex-col justify-center items-start'}>
           <Show when={lyricData()}>
-            <Marquee class={'w-full'} gap={32}>
+            <Marquee
+              class={'w-full'}
+              gap={32}
+            >
               <div class={'text-xs text-black/50 dark:text-white/50'}>
                 <Trans key={'lyrics.lyric-id'} />: {lyricData()?.id ?? 'N/A'}
                 {' · '}
-                <Trans key={'lyrics.lyric-author'} />:{' '}
-                {lyricData()?.register?.name ?? 'N/A'}
+                <Trans key={'lyrics.lyric-author'} />: {lyricData()?.register?.name ?? 'N/A'}
                 {' · '}
                 <Switch fallback={t('lyrics.auto-recognized')}>
                   <Match when={isMapped()}>
@@ -154,7 +139,10 @@ const SideBar = () => {
               </div>
             </Marquee>
           </Show>
-          <Marquee class={'w-full'} gap={32}>
+          <Marquee
+            class={'w-full'}
+            gap={32}
+          >
             {lyricData()?.title ?? 'N/A'}
           </Marquee>
           <div class={'text-sm'}>{lyricData()?.artist ?? 'N/A'}</div>

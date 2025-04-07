@@ -1,11 +1,4 @@
-import {
-  createSignal,
-  onCleanup,
-  onMount,
-  untrack,
-  JSX,
-  splitProps,
-} from 'solid-js';
+import { createSignal, onCleanup, onMount, untrack, type JSX, splitProps } from 'solid-js';
 import { Trans, useTransContext } from '@jellybrick/solid-i18next';
 
 import Card from '../../components/Card';
@@ -59,9 +52,7 @@ const LyricPreview = (props: LyricPreviewProps) => {
   onMount(() => {
     let isTick = false;
     interval = window.setInterval(() => {
-      const nextPreview = untrack(() =>
-        isTick ? PREVIEW_TEXT_A : PREVIEW_TEXT_B,
-      );
+      const nextPreview = untrack(() => (isTick ? PREVIEW_TEXT_A : PREVIEW_TEXT_B));
 
       isTick = !isTick;
       setAnimationPreview(nextPreview);

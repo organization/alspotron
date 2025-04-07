@@ -55,21 +55,15 @@ module.exports = ({ useConfig, useSetting, useOverride, logger }) => {
   const ignoreArtist = useSetting({
     type: 'boolean',
     key: 'ignore-artist',
-    name:
-      translation[config().language]?.ignoreArtist.name ??
-      translation.en.ignoreArtist.name,
-    description:
-      translation[config().language]?.ignoreArtist.description ??
-      translation.en.ignoreArtist.description,
+    name: translation[config().language]?.ignoreArtist.name ?? translation.en.ignoreArtist.name,
+    description: translation[config().language]?.ignoreArtist.description ?? translation.en.ignoreArtist.description,
   });
 
   const swap = useSetting({
     type: 'boolean',
     key: 'swap',
     name: translation[config().language]?.swap.name ?? translation.en.swap.name,
-    description:
-      translation[config().language]?.swap.description ??
-      translation.en.swap.description,
+    description: translation[config().language]?.swap.description ?? translation.en.swap.description,
   });
 
   useOverride('search-lyrics', (fn, artist, title, options) => {
@@ -82,10 +76,7 @@ module.exports = ({ useConfig, useSetting, useOverride, logger }) => {
     }
     if (ignoreArtist()) newArgs[0] = '';
 
-    logger.debug('change search', [artist, title], '->', [
-      newArgs[0],
-      newArgs[1],
-    ]);
+    logger.debug('change search', [artist, title], '->', [newArgs[0], newArgs[1]]);
     fn(...newArgs);
   });
 };

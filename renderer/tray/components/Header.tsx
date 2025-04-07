@@ -14,9 +14,7 @@ export const Header = (props: HeaderProps) => {
     <div class={'w-full flex h-8 justify-start items-center gap-2 mb-2'}>
       <div class={'header-title flex-1'}>{props.title}</div>
       <button
-        class={
-          'btn-text px-2 pr-3 py-1 min-w-[unset] flex justify-start items-center gap-2'
-        }
+        class={'btn-text px-2 pr-3 py-1 min-w-[unset] flex justify-start items-center gap-2'}
         onClick={onPrev}
       >
         <svg

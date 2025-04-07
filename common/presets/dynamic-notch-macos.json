@@ -34,9 +34,7 @@
     "prevNextLyricThreshold": -1
   },
   "position": {
-    "availableAnchor": [
-      "top"
-    ],
+    "availableAnchor": ["top"],
     "top": 0,
     "left": 0,
     "bottom": 0,

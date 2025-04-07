@@ -1,10 +1,7 @@
 export type MigratorContext = {
   getConfig: () => unknown;
 };
-export type MigratorExecutor = (
-  data: unknown,
-  context: MigratorContext,
-) => unknown;
+export type MigratorExecutor = (data: unknown, context: MigratorContext) => unknown;
 export type Migrator = {
   config?: MigratorExecutor;
   gameList?: MigratorExecutor;

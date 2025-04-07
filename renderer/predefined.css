@@ -45,7 +45,6 @@
   opacity: 0;
 }
 
-
 /* pretty */
 .lyric-pretty-enter-active {
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);

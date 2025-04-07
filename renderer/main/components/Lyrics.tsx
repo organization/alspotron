@@ -1,4 +1,4 @@
-import { Accessor, For, splitProps } from 'solid-js';
+import { type Accessor, For, splitProps } from 'solid-js';
 import { TransitionGroup } from 'solid-transition-group';
 
 import LyricsTransition from './LyricsTransition';
@@ -7,11 +7,7 @@ import { usePlayingInfo } from '../../components/PlayingInfoProvider';
 import useLyric from '../../hooks/useLyric';
 
 import { cx } from '../../utils/classNames';
-import {
-  userCSSSelectors,
-  userCSSTransitions,
-  userCSSVariables,
-} from '../../utils/userCSSSelectors';
+import { userCSSSelectors, userCSSTransitions, userCSSVariables } from '../../utils/userCSSSelectors';
 
 import useConfig from '../../hooks/useConfig';
 import useStyle from '../../hooks/useStyle';
@@ -45,10 +41,7 @@ const anchorTypeToOriginType = (anchor?: string, y = '0') => {
   }
 };
 
-export const useLyricsStyle = (
-  style: Accessor<StyleConfig | null>,
-  config: Accessor<Config | null>,
-) => {
+export const useLyricsStyle = (style: Accessor<StyleConfig | null>, config: Accessor<Config | null>) => {
   const { view } = useCurrent();
 
   useClassStyle(
@@ -172,27 +165,24 @@ const Lyrics = (props: LyricsProps) => {
       class={cx(userCSSSelectors['lyrics-container'], props.class)}
       {...containerProps}
     >
-      <TransitionGroup name={animation()} appear>
+      <TransitionGroup
+        name={animation()}
+        appear
+      >
         <For each={lyricsRange()}>
           {(lyrics, index) => (
             <div
               onTransitionStart={(event) =>
-                event.currentTarget.style.setProperty(
-                  '--top',
-                  `${event.currentTarget?.offsetTop}px`,
-                )
+                event.currentTarget.style.setProperty('--top', `${event.currentTarget?.offsetTop}px`)
               }
               class={userCSSSelectors['lyrics-transition-wrapper']}
             >
               <div
                 classList={{
                   [userCSSSelectors['lyrics-wrapper']]: true,
-                  [userCSSSelectors['lyrics-wrapper--previous']]:
-                    index() < (getPreviousLyricLength() ?? 0),
-                  [userCSSSelectors['lyrics-wrapper--current']]:
-                    index() === (getPreviousLyricLength() ?? 0),
-                  [userCSSSelectors['lyrics-wrapper--next']]:
-                    index() > (getPreviousLyricLength() ?? 0),
+                  [userCSSSelectors['lyrics-wrapper--previous']]: index() < (getPreviousLyricLength() ?? 0),
+                  [userCSSSelectors['lyrics-wrapper--current']]: index() === (getPreviousLyricLength() ?? 0),
+                  [userCSSSelectors['lyrics-wrapper--next']]: index() > (getPreviousLyricLength() ?? 0),
                 }}
               >
                 <LyricsTransition

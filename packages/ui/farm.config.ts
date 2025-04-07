@@ -17,27 +17,23 @@ export default defineConfig({
       path: 'dist',
       clean: true,
     },
-    external: [
-      'solid-js',
-      '@vanilla-extract/css',
-    ],
+    external: ['solid-js', '@vanilla-extract/css'],
     persistentCache: false,
   },
   vitePlugins: [
     () => ({
       vitePlugin: solid(),
-      filters: ['\\.tsx$', '\\.jsx$']
+      filters: ['\\.tsx$', '\\.jsx$'],
     }),
     () => ({
       vitePlugin: vanillaExtractPlugin(),
-      filters: ['\\.css\\.ts$', '\\.vanilla\\.css$']
+      filters: ['\\.css\\.ts$', '\\.vanilla\\.css$'],
     }),
   ],
   plugins: [
     farmJsPluginDts({
       outputDir: './dist/types',
-      // include: ['src/**/*.{ts,tsx}'],
-      // exclude: ['node_modules/**'],
+      include: ['src/**/*.{ts,tsx}'],
       tsConfigPath: './tsconfig.json',
     }),
   ],

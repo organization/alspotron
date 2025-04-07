@@ -5,11 +5,7 @@ import { serve } from '@hono/node-server';
 
 import { BaseSourceProvider } from './base-source-provider';
 
-import {
-  TunaObsBody,
-  TunaObsBodySchema,
-  UpdateData,
-} from '../../../common/schema';
+import { type TunaObsBody, TunaObsBodySchema, type UpdateData } from '../../../common/schema';
 import { getTranslation } from '../../../common/intl';
 
 import type { Http2SecureServer, Http2Server } from 'node:http2';
@@ -109,18 +105,13 @@ export class TunaObsProvider extends BaseSourceProvider {
     return this.server !== null;
   }
 
-  public override getOptions(
-    language: string,
-  ): Exclude<SettingOption, ButtonOption>[] {
+  public override getOptions(language: string): Exclude<SettingOption, ButtonOption>[] {
     return [
       {
         type: 'string',
         key: 'port',
         name: getTranslation('provider.source.tuna-obs.port.name', language),
-        description: getTranslation(
-          'provider.source.tuna-obs.port.description',
-          language,
-        ),
+        description: getTranslation('provider.source.tuna-obs.port.description', language),
         default: '1608',
       },
       {
@@ -128,14 +119,8 @@ export class TunaObsProvider extends BaseSourceProvider {
         key: 'interpolationTime',
         min: 1,
         max: 3000,
-        name: getTranslation(
-          'provider.source.tuna-obs.interpolation-time.name',
-          language,
-        ),
-        description: getTranslation(
-          'provider.source.tuna-obs.interpolation-time.description',
-          language,
-        ),
+        name: getTranslation('provider.source.tuna-obs.interpolation-time.name', language),
+        description: getTranslation('provider.source.tuna-obs.interpolation-time.description', language),
         default: 100,
       },
     ];
@@ -152,8 +137,7 @@ export class TunaObsProvider extends BaseSourceProvider {
 
     if (options.interpolationTime) {
       this.interpolationTime = Number(options.interpolationTime);
-      if (!Number.isFinite(this.interpolationTime))
-        this.interpolationTime = 100;
+      if (!Number.isFinite(this.interpolationTime)) this.interpolationTime = 100;
 
       this.setupInterpolation();
     }
@@ -167,10 +151,7 @@ export class TunaObsProvider extends BaseSourceProvider {
       if (!this.lastUpdateData) return;
       if (this.lastUpdateData.data.type !== 'playing') return;
 
-      if (
-        this.lastUpdateData.data.duration - this.lastUpdateData.data.progress <
-        this.interpolationTime
-      ) {
+      if (this.lastUpdateData.data.duration - this.lastUpdateData.data.progress < this.interpolationTime) {
         this.lastUpdateData.data.progress = this.lastUpdateData.data.duration;
       } else {
         this.lastUpdateData.data.progress += this.interpolationTime;
@@ -190,8 +171,7 @@ export class TunaObsProvider extends BaseSourceProvider {
       const coverUrl = data.data.cover_url ?? data.data.cover;
       const id = `${data.data.title}:${coverUrl}`;
       const lastLyric =
-        this.lastUpdateData?.data.type !== 'idle' &&
-        this.lastUpdateData?.data.id === id
+        this.lastUpdateData?.data.type !== 'idle' && this.lastUpdateData?.data.id === id
           ? this.lastUpdateData.data.playerLyrics
           : undefined;
 

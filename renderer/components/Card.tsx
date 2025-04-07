@@ -14,30 +14,20 @@ export interface CardProps extends JSX.HTMLAttributes<HTMLDivElement> {
 }
 
 const Card = (props: CardProps) => {
-  const [local, leftProps] = splitProps(props, [
-    'expand',
-    'setExpand',
-    'onExpand',
-    'subCards',
-  ]);
+  const [local, leftProps] = splitProps(props, ['expand', 'setExpand', 'onExpand', 'subCards']);
 
-  const [expand, setExpand] = local.setExpand
-    ? [() => local.expand, local.setExpand]
-    : createSignal(local.expand);
+  const [expand, setExpand] = local.setExpand ? [() => local.expand, local.setExpand] : createSignal(local.expand);
 
   const isSubCard = () => 'subCards' in local;
 
-  const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = (
-    event,
-  ) => {
+  const onClick: JSX.EventHandlerUnion<HTMLDivElement, MouseEvent> = (event) => {
     if (isSubCard()) {
       const isExpand = !(expand() ?? false);
       setExpand(isExpand);
       local.onExpand?.(isExpand);
     }
 
-    if (typeof leftProps.onClick === 'function')
-      return leftProps.onClick(event);
+    if (typeof leftProps.onClick === 'function') return leftProps.onClick(event);
   };
 
   const mainCard = (
@@ -51,8 +41,7 @@ const Card = (props: CardProps) => {
           dark:bg-white/5 dark:hover:bg-white/10 dark:active:bg-white/[2.5%]
         `,
         leftProps.class,
-        isSubCard() &&
-          'rounded-t hover:shadow-[0_0_0_1px] hover:shadow-white/10',
+        isSubCard() && 'rounded-t hover:shadow-[0_0_0_1px] hover:shadow-white/10',
         !isSubCard() && 'rounded',
         isSubCard() && !expand() && 'rounded-b',
       )}
@@ -89,7 +78,10 @@ const Card = (props: CardProps) => {
   );
 
   return (
-    <Show when={isSubCard()} fallback={mainCard}>
+    <Show
+      when={isSubCard()}
+      fallback={mainCard}
+    >
       <div class={'flex flex-col justify-start itmes-stretch gap-[1px]'}>
         {mainCard}
         <TransitionGroup name={'card'}>
@@ -100,8 +92,7 @@ const Card = (props: CardProps) => {
                   class={'hover:!bg-white/[7.5%]'}
                   classList={{
                     '!rounded-none': index() !== local.subCards!.length - 1,
-                    '!rounded-t-none rounded-b':
-                      index() === local.subCards!.length - 1,
+                    '!rounded-t-none rounded-b': index() === local.subCards!.length - 1,
                   }}
                 >
                   {element}

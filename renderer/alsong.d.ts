@@ -58,11 +58,7 @@ declare module 'alsong' {
   };
 
   interface AlsongCompat {
-    (
-      artist: string,
-      title: string,
-      parseLyric?: boolean,
-    ): Promise<LyricCompat[]>;
+    (artist: string, title: string, parseLyric?: boolean): Promise<LyricCompat[]>;
 
     (music: AlsongMusic, parseLyric?: boolean): Promise<LyricCompat | null>;
 
@@ -70,11 +66,7 @@ declare module 'alsong' {
   }
 
   export interface Alsong {
-    (
-      artist: string,
-      title: string,
-      option?: AlsongOption,
-    ): Promise<LyricMetadata[]>;
+    (artist: string, title: string, option?: AlsongOption): Promise<LyricMetadata[]>;
 
     (music: AlsongMusic): Promise<Lyric | null>;
 
@@ -86,11 +78,7 @@ declare module 'alsong' {
 
     getLyricByHash(hash: string): Promise<Lyric | null>;
 
-    getLyricListByArtistName(
-      artist: string,
-      title: string,
-      option?: AlsongOption,
-    ): Promise<LyricMetadata[]>;
+    getLyricListByArtistName(artist: string, title: string, option?: AlsongOption): Promise<LyricMetadata[]>;
 
     compat(resolver?: 'v1' | 'v2'): AlsongCompat;
   }

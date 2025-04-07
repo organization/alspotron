@@ -1,6 +1,4 @@
-export const errorSync = <Return>(
-  fn: () => Return,
-): [Return, null] | [null, unknown] => {
+export const errorSync = <Return>(fn: () => Return): [Return, null] | [null, unknown] => {
   try {
     const result = fn();
 
@@ -10,9 +8,7 @@ export const errorSync = <Return>(
   }
 };
 
-export const errorAsync = async <Return>(
-  fn: () => Promise<Return>,
-): Promise<[Return, null] | [null, unknown]> => {
+export const errorAsync = async <Return>(fn: () => Promise<Return>): Promise<[Return, null] | [null, unknown]> => {
   try {
     const result = await fn();
 

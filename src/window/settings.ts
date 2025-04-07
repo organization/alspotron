@@ -3,9 +3,9 @@ import path from 'node:path';
 import { MicaBrowserWindow } from 'mica-electron';
 import { app, shell } from 'electron';
 
-import { GlasstronOptions } from 'glasstron';
+import type { GlasstronOptions } from 'glasstron';
 
-import { WindowProvider } from './types';
+import type { WindowProvider } from './types';
 import { PlatformBrowserWindow } from './platform-browser-window';
 
 import { config } from '../config';

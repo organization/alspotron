@@ -6,7 +6,7 @@ declare namespace NodeJS {
 }
 
 declare module '@jellybrick/wql-process-monitor' {
-  import Emittery from 'emittery';
+  import type Emittery from 'emittery';
 
   type Options = {
     /**

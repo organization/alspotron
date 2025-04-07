@@ -2,11 +2,7 @@ import { z } from 'zod';
 
 export type TunaOBSUpdateData = z.infer<typeof TunaOBSUpdateDataSchema>;
 export const TunaOBSUpdateDataSchema = z.object({
-  status: z.union([
-    z.literal('playing'),
-    z.literal('paused'),
-    z.literal('idle'),
-  ]),
+  status: z.union([z.literal('playing'), z.literal('paused'), z.literal('idle')]),
   title: z.string().optional(),
   artists: z.array(z.string()).optional(),
   progress: z.number().optional(),

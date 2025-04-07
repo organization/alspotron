@@ -1,6 +1,6 @@
 import { Marquee } from '@suyongs/solid-utility';
 
-import { JSX, Show, createSignal } from 'solid-js';
+import { type JSX, Show, createSignal } from 'solid-js';
 
 import Card from '../../components/Card';
 
@@ -24,7 +24,11 @@ const GameCard = (props: GameCardProps) => {
         when={!!props.icon}
         fallback={<div class={'w-6 h-6 aspect-square'} />}
       >
-        <img src={props.icon} class={'w-6 h-6 object-cover'} alt={'Icon'} />
+        <img
+          src={props.icon}
+          class={'w-6 h-6 object-cover'}
+          alt={'Icon'}
+        />
       </Show>
       <div class={'w-0 flex flex-col justify-center items-stretch flex-1'}>
         <div class={'w-full'}>{props.name}</div>

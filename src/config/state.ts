@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import fsSync from 'node:fs';
 
-import { z, ZodTypeDef } from 'zod';
+import type { z, ZodTypeDef } from 'zod';
 
 import { deepmerge } from '../../utils/merge';
 
@@ -10,11 +10,7 @@ import type { PartialDeep } from 'type-fest';
 export type StateMiddlewareOption<T> = {
   raw?: PartialDeep<T>;
 };
-export type StateMiddleware<T> = (
-  value: T,
-  next: (value: T) => T,
-  options?: StateMiddlewareOption<T>,
-) => unknown;
+export type StateMiddleware<T> = (value: T, next: (value: T) => T, options?: StateMiddlewareOption<T>) => unknown;
 export type StateOptions<T> = {
   file?: {
     path?: string;
@@ -56,9 +52,7 @@ export class State<T> {
   }
 
   public set(value: PartialDeep<T>, useFallback = true): void {
-    const newValue = useFallback
-      ? (deepmerge(this.defaultValue, this.value, value) as T)
-      : (value as T);
+    const newValue = useFallback ? (deepmerge(this.defaultValue, this.value, value) as T) : (value as T);
 
     const setter = (data: T) => {
       this.value = data;
@@ -106,11 +100,7 @@ export class State<T> {
   public async loadFromPath(): Promise<void> {
     if (!this.path) throw Error('Cannot load data without path');
     if (!fsSync.existsSync(this.path)) {
-      await fs.writeFile(
-        this.path,
-        JSON.stringify(this.value, null, 2),
-        'utf-8',
-      );
+      await fs.writeFile(this.path, JSON.stringify(this.value, null, 2), 'utf-8');
     }
 
     const str = await fs.readFile(this.path, 'utf-8');
@@ -149,10 +139,7 @@ export class State<T> {
     if (options.file?.path) this.path = options.file.path;
     if (options.file?.schema) this._schema = options.file.schema;
     if (options.file?.autoSync) {
-      this.throttle =
-        typeof options.file?.autoSync === 'number'
-          ? options.file.autoSync
-          : 1000;
+      this.throttle = typeof options.file?.autoSync === 'number' ? options.file.autoSync : 1000;
     }
     if (options.file?.middleware) this.fileMiddleware = options.file.middleware;
     if (options.middleware) this.stateMiddleware = options.middleware;

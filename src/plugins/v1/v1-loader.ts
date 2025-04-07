@@ -6,15 +6,9 @@ import { z } from 'zod';
 
 import { createLogger } from './v1-logger';
 
-import {
-  Plugin,
-  PluginContext,
-  PluginProvider,
-  SettingOption,
-  UseSettingResult,
-} from '../../../common/plugins';
-import { Json } from '../../../utils/types';
-import { VersionedPluginLoader, VersionedPluginPathLoader } from '../types';
+import type { Plugin, PluginContext, PluginProvider, SettingOption, UseSettingResult } from '../../../common/plugins';
+import type { Json } from '../../../utils/types';
+import type { VersionedPluginLoader, VersionedPluginPathLoader } from '../types';
 import { config } from '../../config';
 
 import type { LyricProvider, SourceProvider } from '../../../common/provider';
@@ -34,19 +28,12 @@ const v1ManifestSchema = z
   })
   .passthrough();
 
-export const loadFromPath: VersionedPluginPathLoader = async (
-  pluginPath,
-  rawManifest,
-  runner,
-  options,
-) => {
+export const loadFromPath: VersionedPluginPathLoader = async (pluginPath, rawManifest, runner, options) => {
   const manifest = v1ManifestSchema.parse(rawManifest);
 
   const jsPath = `file://${path.join(pluginPath, manifest.main ?? '')}`;
   const pluginProvider = await import(jsPath)
-    .then(
-      (module) => (module as { default: PluginProvider | undefined }).default,
-    )
+    .then((module) => (module as { default: PluginProvider | undefined }).default)
     .catch((err) => {
       const error = Error(`Failed to load plugin: Cannot load "${jsPath}"`);
       error.cause = err;
@@ -64,13 +51,7 @@ export const loadFromPath: VersionedPluginPathLoader = async (
   return loadPlugin(pluginProvider ?? null, cssList, manifest, runner, options);
 };
 
-export const loadPlugin: VersionedPluginLoader = (
-  pluginProvider,
-  cssList,
-  manifest,
-  runner,
-  options,
-) => {
+export const loadPlugin: VersionedPluginLoader = (pluginProvider, cssList, manifest, runner, options) => {
   const newPlugin: Plugin = {
     rawManifest: JSON.stringify(manifest),
     manifest: manifest as Json,
@@ -110,16 +91,14 @@ export const loadPlugin: VersionedPluginLoader = (
         let lastOptions = options;
         newPlugin.js.settings.push(options);
 
-        const getter = function () {
+        const getter = () => {
           if (options.type === 'button') return;
           if (options.type === 'label') return;
 
           return config.get().plugins.config[newPlugin.id]?.[options.key];
         };
         getter.delete = () => {
-          const index = newPlugin.js.settings.findIndex(
-            (it) => it.key === lastOptions.key,
-          );
+          const index = newPlugin.js.settings.findIndex((it) => it.key === lastOptions.key);
 
           if (index >= 0) {
             newPlugin.js.settings.splice(index, 1);
@@ -130,9 +109,7 @@ export const loadPlugin: VersionedPluginLoader = (
             ...lastOptions,
             ...value,
           };
-          const index = newPlugin.js.settings.findIndex(
-            (it) => it.key === lastOptions.key,
-          );
+          const index = newPlugin.js.settings.findIndex((it) => it.key === lastOptions.key);
 
           if (index >= 0) {
             newPlugin.js.settings.splice(index, 1, newValue);
@@ -152,9 +129,7 @@ export const loadPlugin: VersionedPluginLoader = (
         newPlugin.js.providers.source.push(provider);
 
         return () => {
-          const index = newPlugin.js.providers.source.findIndex(
-            (it) => it === provider,
-          );
+          const index = newPlugin.js.providers.source.findIndex((it) => it === provider);
           if (index >= 0) {
             newPlugin.js.providers.source.splice(index, 1);
           }
@@ -164,9 +139,7 @@ export const loadPlugin: VersionedPluginLoader = (
         newPlugin.js.providers.lyric.push(provider);
 
         return () => {
-          const index = newPlugin.js.providers.lyric.findIndex(
-            (it) => it === provider,
-          );
+          const index = newPlugin.js.providers.lyric.findIndex((it) => it === provider);
           if (index >= 0) {
             newPlugin.js.providers.lyric.splice(index, 1);
           }

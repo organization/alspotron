@@ -29,8 +29,7 @@ const application = new Application(overlayManager);
 })();
 
 // Auto type inference for IPC
-type IpcParameters<T extends (...args: never) => unknown> =
-  Parameters<T> extends [unknown, ...args: infer P] ? P : [];
+type IpcParameters<T extends (...args: never) => unknown> = Parameters<T> extends [unknown, ...args: infer P] ? P : [];
 declare global {
   export type IpcHandleMap = {
     [Event in keyof typeof application.handleMap]: [

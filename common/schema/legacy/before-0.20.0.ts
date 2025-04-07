@@ -44,16 +44,7 @@ export type LEGACY_Config0_20_0 = {
   appTheme: 'system' | 'light' | 'dark';
 
   windowPosition: {
-    anchor:
-      | 'top-left'
-      | 'top'
-      | 'top-right'
-      | 'left'
-      | 'center'
-      | 'right'
-      | 'bottom-left'
-      | 'bottom'
-      | 'bottom-right';
+    anchor: 'top-left' | 'top' | 'top-right' | 'left' | 'center' | 'right' | 'bottom-left' | 'bottom' | 'bottom-right';
     display: number | null;
     top: number;
     left: number;

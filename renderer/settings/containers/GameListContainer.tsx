@@ -1,4 +1,4 @@
-import { createEffect, createSignal, For, JSX } from 'solid-js';
+import { createEffect, createSignal, For, type JSX } from 'solid-js';
 import { Trans } from '@jellybrick/solid-i18next';
 
 import { t } from 'i18next';
@@ -24,9 +24,7 @@ const GameListContainer = () => {
   const [config] = useConfig();
 
   const [fileInput, setFileInput] = createSignal<HTMLInputElement | null>(null);
-  const [availableGameList, setAvailableGameList] = createSignal<GameList[]>(
-    [],
-  );
+  const [availableGameList, setAvailableGameList] = createSignal<GameList[]>([]);
   const [gameOpen, setGameOpen] = createSignal(false);
   const [target, setTarget] = createSignal<string | null>(null);
   const [file, setFile] = createSignal<File | null>(null);
@@ -47,10 +45,7 @@ const GameListContainer = () => {
 
     await Promise.all(
       result.map(async (data) => {
-        data.icon = (await window.ipcRenderer.invoke(
-          'get-icon',
-          data.path,
-        )) as string;
+        data.icon = (await window.ipcRenderer.invoke('get-icon', data.path)) as string;
       }),
     );
 
@@ -64,9 +59,7 @@ const GameListContainer = () => {
   const onRemoveGame = (path: string) => {
     const list = { ...gameList() };
 
-    const key = Object.keys(list).find((key) =>
-      list[key].some((it) => it.path === path),
-    );
+    const key = Object.keys(list).find((key) => list[key].some((it) => it.path === path));
     if (!key) return;
 
     const index = list[key].findIndex((it) => it.path === path);
@@ -76,10 +69,7 @@ const GameListContainer = () => {
     setGameList(list, false);
   };
 
-  const onSelectGame: JSX.InputEventHandlerUnion<
-    HTMLInputElement,
-    InputEvent
-  > = (event) => {
+  const onSelectGame: JSX.InputEventHandlerUnion<HTMLInputElement, InputEvent> = (event) => {
     if (!event.target.files) return;
 
     const file = event.target.files.item(0);
@@ -122,9 +112,7 @@ const GameListContainer = () => {
     if (!path) return;
 
     const list = { ...gameList() };
-    const key = Object.keys(list).find((key) =>
-      list[key].some((it) => it.path === path),
-    );
+    const key = Object.keys(list).find((key) => list[key].some((it) => it.path === path));
     if (!key) return;
 
     const index = list[key].findIndex((it) => it.path === path);
@@ -143,11 +131,7 @@ const GameListContainer = () => {
   };
 
   return (
-    <div
-      class={
-        'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'
-      }
-    >
+    <div class={'flex-1 flex flex-col justify-start items-stretch gap-1 p-4 fluent-scrollbar'}>
       <div class={'text-3xl mb-1 flex justify-start items-center gap-2'}>
         <span
           class={'text-3xl opacity-80 hover:opacity-100 '}
@@ -176,8 +160,15 @@ const GameListContainer = () => {
 
       <For each={availableGameList()}>
         {(game) => (
-          <GameCard icon={game.icon} name={game.name} path={game.path}>
-            <button class={'btn-text'} onClick={() => setTarget(game.path)}>
+          <GameCard
+            icon={game.icon}
+            name={game.name}
+            path={game.path}
+          >
+            <button
+              class={'btn-text'}
+              onClick={() => setTarget(game.path)}
+            >
               <div class={'flex flex-col justify-center items-center'}>
                 <span class={'text-sm text-gray-400'}>적용된 테마</span>
                 <span>{game.theme}</span>
@@ -192,7 +183,10 @@ const GameListContainer = () => {
           </GameCard>
         )}
       </For>
-      <label for={'game-selector'} class={'btn-primary text-center'}>
+      <label
+        for={'game-selector'}
+        class={'btn-primary text-center'}
+      >
         <Trans key={'setting.game.registered-game-list.adding-manually'} />
         <input
           ref={setFileInput}
@@ -208,9 +202,7 @@ const GameListContainer = () => {
         onClose={() => setGameOpen(false)}
         class={'max-w-[500px]'}
       >
-        <div class={'text-white text-xl mb-2'}>
-          {t('setting.game.select-view-to-show-game-overlay')}
-        </div>
+        <div class={'text-white text-xl mb-2'}>{t('setting.game.select-view-to-show-game-overlay')}</div>
         <For each={config()?.views}>
           {(view) => (
             <Card
@@ -229,9 +221,7 @@ const GameListContainer = () => {
         onClose={() => setTarget(null)}
         class={'max-w-[500px]'}
       >
-        <div class={'text-white text-xl mb-2'}>
-          {t('setting.game.select-view-to-show-game-overlay')}
-        </div>
+        <div class={'text-white text-xl mb-2'}>{t('setting.game.select-view-to-show-game-overlay')}</div>
         <For each={config()?.views}>
           {(view) => (
             <Card

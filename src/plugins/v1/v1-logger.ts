@@ -1,23 +1,11 @@
-import {
-  Plugin,
-  PluginLog,
-  PluginLogType,
-  PluginLogger,
-} from '../../../common/plugins';
+import type { Plugin, PluginLog, PluginLogType, PluginLogger } from '../../../common/plugins';
 
-export const createLogExecutor = <Type extends PluginLogType>(
-  plugin: Plugin,
-  type: Type,
-): PluginLogger[Type] => {
+export const createLogExecutor = <Type extends PluginLogType>(plugin: Plugin, type: Type): PluginLogger[Type] => {
   return (...args) => {
     const log: PluginLog = {
       type,
       time: Date.now(),
-      message: args
-        .map((arg) =>
-          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg,
-        )
-        .join(' '),
+      message: args.map((arg) => (typeof arg === 'object' ? JSON.stringify(arg, null, 2) : arg)).join(' '),
       metadata: args.filter((arg) => typeof arg === 'object'),
     };
 

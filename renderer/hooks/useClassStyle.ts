@@ -1,4 +1,4 @@
-import { Accessor, createEffect, on, onCleanup, onMount } from 'solid-js';
+import { type Accessor, createEffect, on, onCleanup, onMount } from 'solid-js';
 
 export const useClassStyle = (className: string, style: Accessor<string>) => {
   const stylesheet = new CSSStyleSheet();
@@ -19,9 +19,9 @@ export const useClassStyle = (className: string, style: Accessor<string>) => {
   );
 
   onCleanup(() => {
-    document.adoptedStyleSheets = Array.from(
-      document.adoptedStyleSheets,
-    ).filter((adoptedStyleSheet) => adoptedStyleSheet !== stylesheet);
+    document.adoptedStyleSheets = Array.from(document.adoptedStyleSheets).filter(
+      (adoptedStyleSheet) => adoptedStyleSheet !== stylesheet,
+    );
   });
 
   return stylesheet;

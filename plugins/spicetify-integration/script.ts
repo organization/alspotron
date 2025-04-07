@@ -4,28 +4,24 @@ import fsSync from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 
-import { PluginProvider } from '../../common/plugins';
+import type { PluginProvider } from '../../common/plugins';
 
 const root = process.env.APPDATA ?? process.env.HOME ?? '';
-const URL =
-  'https://raw.githubusercontent.com/organization/alspotron/master/extensions/alspotron.js';
+const URL = 'https://raw.githubusercontent.com/organization/alspotron/master/extensions/alspotron.js';
 const en = {
   setting: {
     install: {
       name: 'Install Spicetify Extension',
-      description:
-        'Automatically install an extension that allows Alspotron to detect Spicetify playlists.',
+      description: 'Automatically install an extension that allows Alspotron to detect Spicetify playlists.',
       label: 'Install',
     },
     alreadyInstalled: {
       name: 'Spicetify Extension installed',
-      description:
-        'The extension that allows Alspotron to detect Spicetify playlists is already installed.',
+      description: 'The extension that allows Alspotron to detect Spicetify playlists is already installed.',
     },
     notInstalled: {
       name: 'Spicetify Extension not installed',
-      description:
-        'The extension is not installed. Click the install button to install the extension.',
+      description: 'The extension is not installed. Click the install button to install the extension.',
     },
     reinstall: {
       name: 'Reinstall Spicetify Extension',
@@ -47,13 +43,11 @@ const en = {
     },
     installFailed: {
       title: 'Failed to install Spicetify extension',
-      message:
-        'Failed to install the Spicetify extension. Please try again. Error: {{error}}',
+      message: 'Failed to install the Spicetify extension. Please try again. Error: {{error}}',
     },
     installFailedNoSpicetify: {
       title: 'Failed to install Spicetify extension',
-      message:
-        'The Spicetify command does not exist or an error occurred while running it.',
+      message: 'The Spicetify command does not exist or an error occurred while running it.',
     },
     installSuccess: {
       title: 'Installation successful',
@@ -67,19 +61,16 @@ const translation: Record<string, typeof en> = {
     setting: {
       install: {
         name: 'Spicetify 확장 설치',
-        description:
-          'Spicetify의 재생목록을 Alspotron에서 감지할 수 있는 확장을 자동 설치합니다.',
+        description: 'Spicetify의 재생목록을 Alspotron에서 감지할 수 있는 확장을 자동 설치합니다.',
         label: '설치',
       },
       alreadyInstalled: {
         name: 'Spicetify 확장 설치됨',
-        description:
-          'Alspotron에서 Spicetify 재생목록을 감지할 수 있는 확장이 이미 설치되어 있습니다.',
+        description: 'Alspotron에서 Spicetify 재생목록을 감지할 수 있는 확장이 이미 설치되어 있습니다.',
       },
       notInstalled: {
         name: 'Spicetify 확장 미설치됨',
-        description:
-          'Spicetify 확장이 설치되어 있지 않습니다. 설치 버튼을 눌러 확장을 설치해주세요',
+        description: 'Spicetify 확장이 설치되어 있지 않습니다. 설치 버튼을 눌러 확장을 설치해주세요',
       },
       reinstall: {
         name: 'Spicetify 확장 재설치',
@@ -91,23 +82,19 @@ const translation: Record<string, typeof en> = {
     dialog: {
       cannotFindSpicetifyPath: {
         title: 'Spicetify를 찾을 수 없습니다',
-        message:
-          'Spicetify를 감지하지 못하였습니다. extension 폴더가 아닌 Spiceify 자체가 설치된 경로를 선택해주세요',
+        message: 'Spicetify를 감지하지 못하였습니다. extension 폴더가 아닌 Spiceify 자체가 설치된 경로를 선택해주세요',
       },
       selectSpicetifyFolder: {
         title: 'Spicetify가 설치된 경로를 선택해주세요',
-        message:
-          'Spicetify가 설치된 경로를 감지하지 못하였습니다. 수동으로 경로를 선택해주세요',
+        message: 'Spicetify가 설치된 경로를 감지하지 못하였습니다. 수동으로 경로를 선택해주세요',
       },
       installFailed: {
         title: 'Spicetify의 Alsptron 확장 설치에 실패하였습니다',
-        message:
-          'Spicetify의 Alsptron 확장 설치에 실패하였습니다. 다시 시도해주세요. 오류 내역: {{error}}',
+        message: 'Spicetify의 Alsptron 확장 설치에 실패하였습니다. 다시 시도해주세요. 오류 내역: {{error}}',
       },
       installFailedNoSpicetify: {
         title: 'Spicetify의 Alsptron 확장 설치에 실패하였습니다',
-        message:
-          'Spicetify 커맨드가 존재하지 않거나 실행중 오류가 발생하였습니다.',
+        message: 'Spicetify 커맨드가 존재하지 않거나 실행중 오류가 발생하였습니다.',
       },
       installSuccess: {
         title: '확장 설치 성공',
@@ -119,13 +106,7 @@ const translation: Record<string, typeof en> = {
   de: en,
 };
 
-const runner: PluginProvider = ({
-  useConfig,
-  useSetting,
-  logger,
-  on,
-  Electron,
-}) => {
+const runner: PluginProvider = ({ useConfig, useSetting, logger, on, Electron }) => {
   const [config] = useConfig();
 
   logger.info('Spicetify Integration plugin is loaded', config().language);
@@ -134,13 +115,8 @@ const runner: PluginProvider = ({
   const findSpicetifyPath = async (withSelf = true) => {
     let spicetifyPath: string | null = path.resolve(root, 'spicetify/');
 
-    logger.debug(
-      'find',
-      path.resolve(root, 'spicetify/'),
-      path.resolve(root, '.config/spicetify/'),
-    );
-    if (!fsSync.existsSync(spicetifyPath))
-      spicetifyPath = path.resolve(root, '.config/spicetify/');
+    logger.debug('find', path.resolve(root, 'spicetify/'), path.resolve(root, '.config/spicetify/'));
+    if (!fsSync.existsSync(spicetifyPath)) spicetifyPath = path.resolve(root, '.config/spicetify/');
     if (withSelf && !fsSync.existsSync(spicetifyPath)) {
       logger.warn('Spicetify path not found');
 
@@ -165,12 +141,8 @@ const runner: PluginProvider = ({
   };
 
   const findSpicetifyCommandPath = () => {
-    let commandPath: string | null = path.resolve(
-      root,
-      'spicetify\\spicetify.exe',
-    );
-    if (!fsSync.existsSync(commandPath))
-      commandPath = path.resolve(root, '.spicetify/spicetify');
+    let commandPath: string | null = path.resolve(root, 'spicetify\\spicetify.exe');
+    if (!fsSync.existsSync(commandPath)) commandPath = path.resolve(root, '.spicetify/spicetify');
     else commandPath = 'spicetify';
 
     return commandPath;
@@ -206,30 +178,17 @@ const runner: PluginProvider = ({
       await Electron.dialog.showMessageBox({
         type: 'error',
         title: t.dialog.installFailed.title,
-        message: t.dialog.installFailed.message.replace(
-          '{{error}}',
-          result.message,
-        ),
+        message: t.dialog.installFailed.message.replace('{{error}}', result.message),
       });
     }
 
     const command = findSpicetifyCommandPath();
     logger.debug('Spicetify command path:', command);
-    const command1 = await runCommand(command, [
-      'config',
-      'extensions',
-      'alspotron.js',
-    ]).catch((code: number) => code);
-    const command2 = await runCommand(command, ['apply']).catch(
-      (code: number) => code,
-    );
+    const command1 = await runCommand(command, ['config', 'extensions', 'alspotron.js']).catch((code: number) => code);
+    const command2 = await runCommand(command, ['apply']).catch((code: number) => code);
 
     if (command1 !== 0 || command2 !== 0) {
-      logger.error(
-        'Failed to install Spicetify extension:',
-        command1,
-        command2,
-      );
+      logger.error('Failed to install Spicetify extension:', command1, command2);
 
       await Electron.dialog.showMessageBox({
         type: 'error',
@@ -251,11 +210,9 @@ const runner: PluginProvider = ({
   };
 
   const onReinstall = async () => {
-    const command = await runCommand('spicetify', [
-      'config',
-      'extensions',
-      '-alspotron.js',
-    ]).catch((code: number) => code);
+    const command = await runCommand('spicetify', ['config', 'extensions', '-alspotron.js']).catch(
+      (code: number) => code,
+    );
     if (command !== 0) {
       logger.error('Failed to reinstall Spicetify extension:', command);
 

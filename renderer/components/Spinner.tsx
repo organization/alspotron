@@ -8,9 +8,7 @@ export interface SpinnerProps extends JSX.HTMLAttributes<HTMLDivElement> {
   strokeWidth?: number;
 }
 const Spinner = (props: SpinnerProps): JSX.Element => {
-  const [local, leftProps] = splitProps(mergeProps({ strokeWidth: 2 }, props), [
-    'strokeWidth',
-  ]);
+  const [local, leftProps] = splitProps(mergeProps({ strokeWidth: 2 }, props), ['strokeWidth']);
 
   const path = () => {
     const width = local.strokeWidth / 2;

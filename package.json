@@ -8,6 +8,10 @@
     "postinstall": "patch-package",
     "clean": "farm clean",
     "build": "farm build",
+    "lint": "biome lint --write .",
+    "lint:check": "biome lint",
+    "format": "biome format --write .",
+    "format:check": "biome format",
     "dist": "pnpm clean && pnpm build && electron-builder -p never",
     "dist:all": "pnpm clean && pnpm build && electron-builder --win --mac --linux -p never",
     "dist:mac": "pnpm clean && pnpm build && electron-builder --mac dmg:x64 -p never",
@@ -22,11 +26,7 @@
     "dist:only": "electron-builder",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
-  "keywords": [
-    "lyric",
-    "youtube-music",
-    "spotify"
-  ],
+  "keywords": ["lyric", "youtube-music", "spotify"],
   "author": "Su-Yong <simssy2205@gmail.com>",
   "contributors": [
     "JellyBrick <shlee1503@naver.com>",
@@ -37,12 +37,10 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
-    "@eslint/js": "9.24.0",
+    "@biomejs/biome": "1.9.4",
     "@farmfe/cli": "1.0.4",
     "@farmfe/js-plugin-dts": "^0.6.4",
     "@farmfe/js-plugin-electron": "1.0.3",
-    "@farmfe/js-plugin-postcss": "1.12.0",
-    "@stylistic/eslint-plugin-js": "4.2.0",
     "@total-typescript/ts-reset": "0.6.1",
     "@types/color": "4.2.0",
     "@types/electron-progressbar": "1.2.7",
@@ -51,31 +49,21 @@
     "@types/stylis": "4.2.7",
     "@types/ws": "8.18.1",
     "@vanilla-extract/vite-plugin": "5.0.1",
-    "autoprefixer": "10.4.21",
     "bufferutil": "4.0.9",
     "electron": "35.1.4",
     "electron-builder": "26.0.12",
-    "eslint": "9.24.0",
-    "eslint-config-prettier": "10.1.1",
-    "eslint-import-resolver-exports": "1.0.0-beta.5",
-    "eslint-import-resolver-typescript": "4.3.1",
-    "eslint-plugin-import": "2.31.0",
-    "eslint-plugin-prettier": "5.2.6",
-    "eslint-plugin-solid": "0.14.5",
     "node-abi": "4.2.0",
     "node-addon-api": "8.3.1",
     "patch-package": "8.0.0",
-    "postcss": "8.5.3",
     "solid-refresh": "^0.7.5",
-    "tailwindcss": "3.4.17",
     "terser": "5.39.0",
     "type-fest": "4.39.1",
     "typescript": "5.8.3",
-    "typescript-eslint": "8.29.0",
     "utf-8-validate": "6.0.5",
     "vite-plugin-solid": "2.11.6"
   },
   "dependencies": {
+    "@alspotron/ui": "workspace:./packages/ui",
     "@codemirror/commands": "6.8.1",
     "@codemirror/lang-css": "6.3.1",
     "@codemirror/lang-sass": "6.0.2",
@@ -126,13 +114,7 @@
     "asar": true,
     "appId": "me.suyong.alspotron",
     "extends": null,
-    "electronLanguages": [
-      "ko",
-      "en-US",
-      "en-GB",
-      "ja",
-      "de"
-    ],
+    "electronLanguages": ["ko", "en-US", "en-GB", "ja", "de"],
     "files": [
       "dist",
       "!node_modules",
@@ -168,19 +150,14 @@
       "node_modules/extract-file-icon/build/Release/addon.node",
       "node_modules/font-list/**"
     ],
-    "extraResources": [
-      "./assets/**"
-    ],
+    "extraResources": ["./assets/**"],
     "mac": {
       "icon": "build/icon.png",
       "identity": null,
       "target": [
         {
           "target": "dmg",
-          "arch": [
-            "x64",
-            "arm64"
-          ]
+          "arch": ["x64", "arm64"]
         }
       ],
       "category": "public.app-category.music"
@@ -194,19 +171,11 @@
       "target": [
         {
           "target": "nsis-web",
-          "arch": [
-            "x64",
-            "ia32",
-            "arm64"
-          ]
+          "arch": ["x64", "ia32", "arm64"]
         },
         {
           "target": "portable",
-          "arch": [
-            "x64",
-            "ia32",
-            "arm64"
-          ]
+          "arch": ["x64", "ia32", "arm64"]
         }
       ]
     },
@@ -226,12 +195,7 @@
     "linux": {
       "icon": "assets/icon256.png",
       "category": "Utility",
-      "target": [
-        "AppImage",
-        "freebsd",
-        "deb",
-        "rpm"
-      ]
+      "target": ["AppImage", "freebsd", "deb", "rpm"]
     },
     "directories": {
       "buildResources": "./build",
