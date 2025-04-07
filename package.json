@@ -76,7 +76,6 @@
     "vite-plugin-solid": "2.11.6"
   },
   "dependencies": {
-    "@alspotron/ui": "workspace:./packages/ui",
     "@codemirror/commands": "6.8.1",
     "@codemirror/lang-css": "6.3.1",
     "@codemirror/lang-sass": "6.0.2",
@@ -121,14 +120,6 @@
     "hmc-win32": "1.4.92",
     "mica-electron": "1.5.16",
     "node-window-manager": "2.2.4"
-  },
-  "overrides": {
-    "xml2js": "0.6.2",
-    "axios": "1.8.4",
-    "simple-update-notifier": "2.0.0",
-    "@electron/get": "4.0.0",
-    "electron": "35.1.4",
-    "http-errors": "2.0.0"
   },
   "build": {
     "productName": "Alspotron",
@@ -261,6 +252,15 @@
       "glasstron",
       "node-window-manager",
       "utf-8-validate"
-    ]
-  }
+    ],
+    "overrides": {
+      "xml2js": "0.6.2",
+      "axios": "1.8.4",
+      "simple-update-notifier": "2.0.0",
+      "@electron/get": "4.0.0",
+      "electron": "35.1.4",
+      "http-errors": "2.0.0"
+    }
+  },
+  "packageManager": "pnpm@10.6.5+sha512.cdf928fca20832cd59ec53826492b7dc25dc524d4370b6b4adbf65803d32efaa6c1c88147c0ae4e8d579a6c9eec715757b50d4fa35eea179d868eada4ed043af"
 }
