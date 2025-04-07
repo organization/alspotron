@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@alspotron/ui':
+        specifier: workspace:./packages/ui
+        version: link:packages/ui
       '@codemirror/commands':
         specifier: 6.8.1
         version: 6.8.1
@@ -126,6 +129,9 @@ importers:
       '@farmfe/cli':
         specifier: 1.0.4
         version: 1.0.4
+      '@farmfe/js-plugin-dts':
+        specifier: ^0.6.4
+        version: 0.6.4
       '@farmfe/js-plugin-electron':
         specifier: 1.0.3
         version: 1.0.3
@@ -244,6 +250,22 @@ importers:
       node-window-manager:
         specifier: 2.2.4
         version: 2.2.4
+
+  packages/ui:
+    dependencies:
+      '@vanilla-extract/css':
+        specifier: '*'
+        version: 1.17.1
+      solid-js:
+        specifier: '*'
+        version: 1.9.5
+    devDependencies:
+      '@farmfe/cli':
+        specifier: 1.0.4
+        version: 1.0.4
+      '@farmfe/core':
+        specifier: 1.7.2
+        version: 1.7.2(bufferutil@4.0.9)(supports-color@10.0.0)(utf-8-validate@6.0.5)
 
 packages:
 
@@ -740,6 +762,9 @@ packages:
     resolution: {integrity: sha512-HN8YaQJvVBBodqzvq5eFfqbX7ueNsdBvSS8IsTiOZkFlnPr6mikvt5UIySkWHa110yAEdKCuGMCTWedNANzXDQ==}
     engines: {node: '>=16.15.1'}
 
+  '@farmfe/js-plugin-dts@0.6.4':
+    resolution: {integrity: sha512-5xhjtbY1gEs6IdjBrgNcsYaJPFHxu9F9Ab5PKllaCqlg6e0gf/Jy0AshNBasOT3Uzmma6/5cX56i35vwL3U8sw==}
+
   '@farmfe/js-plugin-electron@1.0.3':
     resolution: {integrity: sha512-CeFthXK+nmjc8qC2qHTtSrh0Q1D/ocN2HgVzAR3nYpbOCXKYWEFB/WUyGAKSAlSk+8qYFqxO15AJQQ3twtt79Q==}
 
@@ -1121,6 +1146,9 @@ packages:
 
   '@total-typescript/ts-reset@0.6.1':
     resolution: {integrity: sha512-cka47fVSo6lfQDIATYqb/vO1nvFfbPw7uWLayIXIhGETj0wcOOlrlkobOMDNQOFr9QOafegUPq13V2+6vtD7yg==}
+
+  '@ts-morph/common@0.24.0':
+    resolution: {integrity: sha512-c1xMmNHWpNselmpIqursHeOHHBTIsJLbB+NuovbTTRCNiTLEr/U9dbJ8qy0jd/O2x5pc3seWuOUN5R2IoOTp8A==}
 
   '@tybys/wasm-util@0.9.0':
     resolution: {integrity: sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw==}
@@ -1728,6 +1756,9 @@ packages:
   co@4.6.0:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
     engines: {iojs: '>= 1.0.0', node: '>= 0.12.0'}
+
+  code-block-writer@13.0.3:
+    resolution: {integrity: sha512-Oofo0pq3IKnsFtuHqSF7TqBfr71aeyZDVJ0HpmqB7FBM2qEigL0iPONSCZSO9pE9dZTAxANe5XHG9Uy0YMv8cg==}
 
   codemirror@6.0.1:
     resolution: {integrity: sha512-J8j+nZ+CdWmIeFIGXEFbFPtpiYacFMDR8GlHK3IyHQJMCaVRfGx9NT+Hxivv1ckLWPvNdZqndbr/7lVhrf/Svg==}
@@ -3314,6 +3345,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  mkdirp@3.0.1:
+    resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   mlly@1.7.4:
     resolution: {integrity: sha512-qmdSIPC4bDJXgZTCR7XosJiNKySV7O215tsPtDN9iEO/7q/76b/ijtgRu/+epFXSJhijtTCCGp3DWS549P3xKw==}
 
@@ -3576,6 +3612,9 @@ packages:
     resolution: {integrity: sha512-da8BVIhzjtgScwDJ2TtKsfT5JFWz1hYoBl9rUQ1f38MC2HwnEIkK8VN3dKMKcP7P7bvvgzNDbfNHtx3MsQb5vA==}
     engines: {node: '>=14', npm: '>5'}
     hasBin: true
+
+  path-browserify@1.0.1:
+    resolution: {integrity: sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==}
 
   path-exists@4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
@@ -4239,6 +4278,9 @@ packages:
 
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
+
+  ts-morph@23.0.0:
+    resolution: {integrity: sha512-FcvFx7a9E8TUe6T3ShihXJLiJOiqyafzFKUO4aqIHDUCIvADdGNShcbc2W5PMr3LerXRv7mafvFZ9lRENxJmug==}
 
   tsconfig-paths@3.15.0:
     resolution: {integrity: sha512-2Ac2RgzDe/cn48GvOe3M+o82pEFewD3UPbyoUHHdKasHwJKjds4fLXWf/Ux5kATBKN20oaFGu+jbElp1pos0mg==}
@@ -5244,6 +5286,14 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  '@farmfe/js-plugin-dts@0.6.4':
+    dependencies:
+      chalk: 5.4.0
+      fast-glob: 3.3.2
+      fs-extra: 11.2.0
+      ts-morph: 23.0.0
+      typescript: 5.8.3
+
   '@farmfe/js-plugin-electron@1.0.3': {}
 
   '@farmfe/js-plugin-postcss@1.12.0(@farmfe/core@1.7.2(bufferutil@4.0.9)(supports-color@10.0.0)(utf-8-validate@6.0.5))(postcss@8.5.3)':
@@ -5611,6 +5661,13 @@ snapshots:
   '@tootallnate/once@2.0.0': {}
 
   '@total-typescript/ts-reset@0.6.1': {}
+
+  '@ts-morph/common@0.24.0':
+    dependencies:
+      fast-glob: 3.3.2
+      minimatch: 9.0.5
+      mkdirp: 3.0.1
+      path-browserify: 1.0.1
 
   '@tybys/wasm-util@0.9.0':
     dependencies:
@@ -6403,6 +6460,8 @@ snapshots:
   clone@1.0.4: {}
 
   co@4.6.0: {}
+
+  code-block-writer@13.0.3: {}
 
   codemirror@6.0.1:
     dependencies:
@@ -8203,6 +8262,8 @@ snapshots:
 
   mkdirp@1.0.4: {}
 
+  mkdirp@3.0.1: {}
+
   mlly@1.7.4:
     dependencies:
       acorn: 8.14.0
@@ -8464,6 +8525,8 @@ snapshots:
       slash: 2.0.0
       tmp: 0.0.33
       yaml: 2.6.1
+
+  path-browserify@1.0.1: {}
 
   path-exists@4.0.0: {}
 
@@ -9163,6 +9226,11 @@ snapshots:
       typescript: 5.8.3
 
   ts-interface-checker@0.1.13: {}
+
+  ts-morph@23.0.0:
+    dependencies:
+      '@ts-morph/common': 0.24.0
+      code-block-writer: 13.0.3
 
   tsconfig-paths@3.15.0:
     dependencies:

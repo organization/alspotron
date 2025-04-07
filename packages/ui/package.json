@@ -1,0 +1,29 @@
+{
+  "name": "@alspotron/ui",
+  "version": "0.24.2",
+  "description": "A UI library for Alspotron",
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "scripts": {
+    "dev": "farm",
+    "clean": "farm clean",
+    "build": "farm build",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@farmfe/cli": "1.0.4",
+    "@farmfe/core": "1.7.2",
+    "typescript": "5.8.3"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "solid-js": "*",
+    "@vanilla-extract/css": "*"
+  }
+}

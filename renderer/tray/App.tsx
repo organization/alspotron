@@ -5,6 +5,8 @@ import { HashRouter, Route } from '@solidjs/router';
 import { DebugContainer, MainContainer } from './containers';
 
 import PlayingInfoProvider from '../components/PlayingInfoProvider';
+import { Check, Check2 } from '@alspotron/ui';
+import '@alspotron/ui/style.css';
 
 export const App = () => {
   const [url, setUrl] = createSignal('/');
@@ -16,6 +18,8 @@ export const App = () => {
         text-black dark:text-white bg-slate-100/80 dark:bg-gray-800/80
       `}
     >
+      <Check />
+      <Check2 />
       <PlayingInfoProvider>
         <Transition
           name={`page-${url() === '/' ? 'left' : 'right'}`}
