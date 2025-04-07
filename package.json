@@ -237,6 +237,7 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@biomejs/biome",
       "@jellybrick/ffi-napi",
       "@jellybrick/ref-napi",
       "bufferutil",

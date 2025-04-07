@@ -5,6 +5,7 @@ import farmJsPluginDts from '@farmfe/js-plugin-dts';
 
 import solid from 'vite-plugin-solid';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
+import { farmVanillaExtractBuildPlugin } from '@alspotron/plugin';
 
 export default defineConfig({
   compilation: {
@@ -13,7 +14,6 @@ export default defineConfig({
     },
     output: {
       targetEnv: 'library-browser',
-      filename: 'style.css',
       path: 'dist',
       clean: true,
     },
@@ -21,18 +21,21 @@ export default defineConfig({
       'solid-js',
       '@vanilla-extract/css',
       '@vanilla-extract/dynamic',
-      '@vanilla-extract/recipes'
+      '@vanilla-extract/recipes',
+      '@floating-ui/dom',
+      '@solid-primitives/media',
     ],
     persistentCache: false,
   },
+  root: process.cwd().replace(/\\/g, '/'), // relate https://github.com/farm-fe/farm/issues/2145
   vitePlugins: [
-    () => ({
-      vitePlugin: vanillaExtractPlugin(),
-      filters: ['\\.css\\.ts$', '\\.vanilla\\.css$'],
-    }),
     () => ({
       vitePlugin: solid(),
       filters: ['\\.tsx$', '\\.jsx$'],
+    }),
+    () => ({
+      vitePlugin: vanillaExtractPlugin(),
+      filters: ['\\.css\\.ts$', '\\.vanilla\\.css$'],
     }),
   ],
   plugins: [
@@ -41,5 +44,6 @@ export default defineConfig({
       include: ['src/**/*.{ts,tsx}'],
       tsConfigPath: './tsconfig.json',
     }),
+    farmVanillaExtractBuildPlugin(),
   ],
 });

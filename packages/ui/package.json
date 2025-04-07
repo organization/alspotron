@@ -7,7 +7,7 @@
       "import": "./dist/index.js",
       "types": "./dist/types/index.d.ts"
     },
-    "./style.css": "./dist/style.css"
+    "./style.css": "./dist/vanilla-extract.css"
   },
   "scripts": {
     "postinstall": "pnpm build",
@@ -20,13 +20,12 @@
     "vite-plugin-solid": "2.11.6",
     "typescript": "5.8.3"
   },
-  "dependencies": {
-    "@solid-primitives/media": "2.3.0"
-  },
   "peerDependencies": {
     "solid-js": "*",
     "@vanilla-extract/css": "*",
     "@vanilla-extract/dynamic": "*",
-    "@vanilla-extract/recipes": "*"
+    "@vanilla-extract/recipes": "*",
+    "@floating-ui/dom": "*",
+    "@solid-primitives/media": "*"
   }
 }

@@ -20,7 +20,11 @@ export const variant = <T extends string[]>(
   [value]: value
 }), {} as { [Key in T[number]]: string });
 
-export const alpha = (color: string, alpha: number): string => `oklch(from ${color} l c h / ${alpha})`;
+export const alpha = (color: string, alpha: number): string => {
+  // TODO: disable until farmfe support relative color syntax
+  return color;
+  // return `oklch(from ${color} l c h / ${alpha})`;
+};
 
 export const layered = (
   rules: ComplexStyleRule,

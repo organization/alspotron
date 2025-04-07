@@ -3,6 +3,7 @@ import path from 'node:path';
 import { defineConfig } from '@farmfe/core';
 import farmJsPluginDts from '@farmfe/js-plugin-dts';
 
+console.log(process.cwd().replace(/\\/g, '/'))
 export default defineConfig({
   compilation: {
     input: {
@@ -10,13 +11,13 @@ export default defineConfig({
     },
     output: {
       targetEnv: 'library',
-      filename: 'style.css',
+      filename: '[name].js',
       path: 'dist',
       clean: true,
     },
-    external: ['solid-js', '@vanilla-extract/css'],
     persistentCache: false,
   },
+  root: process.cwd().replace(/\\/g, '/'), // relate https://github.com/farm-fe/farm/issues/2145
   plugins: [
     farmJsPluginDts({
       outputDir: './dist/types',

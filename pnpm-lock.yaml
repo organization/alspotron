@@ -231,6 +231,12 @@ importers:
       '@farmfe/core':
         specifier: 1.7.2
         version: 1.7.2(bufferutil@4.0.9)(supports-color@10.0.0)(utf-8-validate@6.0.5)
+      '@vanilla-extract/compiler':
+        specifier: 0.1.2
+        version: 0.1.2(@types/node@22.14.0)(jiti@1.21.7)(supports-color@10.0.0)(terser@5.39.0)(yaml@2.6.1)
+      '@vanilla-extract/integration':
+        specifier: 8.0.1
+        version: 8.0.1(supports-color@10.0.0)
     devDependencies:
       typescript:
         specifier: 5.8.3
@@ -263,8 +269,11 @@ importers:
 
   packages/ui:
     dependencies:
+      '@floating-ui/dom':
+        specifier: '*'
+        version: 1.6.13
       '@solid-primitives/media':
-        specifier: 2.3.0
+        specifier: '*'
         version: 2.3.0(solid-js@1.9.5)
       '@vanilla-extract/css':
         specifier: '*'

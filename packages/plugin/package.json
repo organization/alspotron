@@ -2,6 +2,7 @@
   "name": "@alspotron/plugin",
   "description": "A farm plugin for Alspotron",
   "main": "./dist/index.js",
+  "type": "module",
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -16,6 +17,8 @@
     "typescript": "5.8.3"
   },
   "dependencies": {
-    "@farmfe/core": "1.7.2"
+    "@farmfe/core": "1.7.2",
+    "@vanilla-extract/compiler": "0.1.2",
+    "@vanilla-extract/integration": "8.0.1"
   }
 }

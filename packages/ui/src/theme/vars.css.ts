@@ -1,4 +1,4 @@
-import { createThemeContract } from '@vanilla-extract/css';
+import { createTheme, createThemeContract } from '@vanilla-extract/css';
 
 const space = createThemeContract({
   none: '0',
@@ -270,7 +270,7 @@ const color = createThemeContract({
   },
 });
 
-export const vars = createThemeContract({
+export const [_, vars] = createTheme({
   space,
   color,
   size,
