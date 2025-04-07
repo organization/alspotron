@@ -11,7 +11,7 @@ export const LEGACY_migrator0_24_0: Migrator = {
 
       const newValue: StyleConfig = {
         ...value,
-        lyric: {
+        LYRIC: {
           ...DEFAULT_STYLE.lyric,
           ...value.lyric,
         },

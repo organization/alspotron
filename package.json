@@ -4,7 +4,9 @@
   "description": "Alspotron is a lyric viewer for YouTube Music / Spotify.",
   "main": "./dist/main/index.js",
   "scripts": {
-    "dev": "farm",
+    "dev:only": "farm",
+    "dev:tray": "pnpm --filter @alspotron/tray dev",
+    "dev": "concurrently \"pnpm dev:tray\" \"pnpm dev:only\"",
     "postinstall": "patch-package",
     "clean": "farm clean",
     "build": "farm build",
@@ -26,7 +28,11 @@
     "dist:only": "electron-builder",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
-  "keywords": ["lyric", "youtube-music", "spotify"],
+  "keywords": [
+    "lyric",
+    "youtube-music",
+    "spotify"
+  ],
   "author": "Su-Yong <simssy2205@gmail.com>",
   "contributors": [
     "JellyBrick <shlee1503@naver.com>",
@@ -37,6 +43,7 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@alspotron/plugin": "workspace:./packages/plugin",
     "@biomejs/biome": "1.9.4",
     "@farmfe/cli": "1.0.4",
     "@farmfe/js-plugin-dts": "^0.6.4",
@@ -50,6 +57,7 @@
     "@types/ws": "8.18.1",
     "@vanilla-extract/vite-plugin": "5.0.1",
     "bufferutil": "4.0.9",
+    "concurrently": "9.1.2",
     "electron": "35.1.4",
     "electron-builder": "26.0.12",
     "node-abi": "4.2.0",
@@ -114,7 +122,13 @@
     "asar": true,
     "appId": "me.suyong.alspotron",
     "extends": null,
-    "electronLanguages": ["ko", "en-US", "en-GB", "ja", "de"],
+    "electronLanguages": [
+      "ko",
+      "en-US",
+      "en-GB",
+      "ja",
+      "de"
+    ],
     "files": [
       "dist",
       "!node_modules",
@@ -150,14 +164,19 @@
       "node_modules/extract-file-icon/build/Release/addon.node",
       "node_modules/font-list/**"
     ],
-    "extraResources": ["./assets/**"],
+    "extraResources": [
+      "./assets/**"
+    ],
     "mac": {
       "icon": "build/icon.png",
       "identity": null,
       "target": [
         {
           "target": "dmg",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ],
       "category": "public.app-category.music"
@@ -171,11 +190,19 @@
       "target": [
         {
           "target": "nsis-web",
-          "arch": ["x64", "ia32", "arm64"]
+          "arch": [
+            "x64",
+            "ia32",
+            "arm64"
+          ]
         },
         {
           "target": "portable",
-          "arch": ["x64", "ia32", "arm64"]
+          "arch": [
+            "x64",
+            "ia32",
+            "arm64"
+          ]
         }
       ]
     },
@@ -195,7 +222,12 @@
     "linux": {
       "icon": "assets/icon256.png",
       "category": "Utility",
-      "target": ["AppImage", "freebsd", "deb", "rpm"]
+      "target": [
+        "AppImage",
+        "freebsd",
+        "deb",
+        "rpm"
+      ]
     },
     "directories": {
       "buildResources": "./build",

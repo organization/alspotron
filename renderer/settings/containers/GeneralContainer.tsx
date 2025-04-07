@@ -165,7 +165,7 @@ const GeneralContainer = () => {
                   setConfig({
                     providers: {
                       ...config()?.providers,
-                      lyric: {
+                      LYRIC: {
                         ...config()?.providers?.lyric,
                         config: {
                           ...config()?.providers?.lyric?.config,

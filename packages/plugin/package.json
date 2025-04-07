@@ -1,26 +1,21 @@
 {
-  "name": "@alspotron/ui",
-  "description": "A UI library for Alspotron",
+  "name": "@alspotron/plugin",
+  "description": "A farm plugin for Alspotron",
   "main": "./dist/index.js",
   "exports": {
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/types/index.d.ts"
-    },
-    "./style.css": "./dist/style.css"
+    }
   },
   "scripts": {
     "postinstall": "pnpm build",
     "build": "farm build"
   },
   "devDependencies": {
-    "@farmfe/cli": "1.0.4",
-    "@farmfe/core": "1.7.2",
     "typescript": "5.8.3"
   },
-  "dependencies": {},
-  "peerDependencies": {
-    "solid-js": "*",
-    "@vanilla-extract/css": "*"
+  "dependencies": {
+    "@farmfe/core": "1.7.2"
   }
 }

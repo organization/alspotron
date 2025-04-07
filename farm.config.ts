@@ -5,6 +5,7 @@ import electron from '@farmfe/js-plugin-electron';
 
 import solid from 'vite-plugin-solid';
 import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
+import { farmAlspotronPlugin } from '@alspotron/plugin';
 
 export default defineConfig({
   compilation: {
@@ -14,7 +15,7 @@ export default defineConfig({
       main: path.join(__dirname, './renderer/index.html'),
       settings: path.join(__dirname, './renderer/settings.html'),
       lyrics: path.join(__dirname, './renderer/lyrics.html'),
-      tray: path.join(__dirname, './renderer/tray.html'),
+      // tray: path.join(__dirname, './renderer/tray.html'),
     },
     output: {
       targetEnv: 'browser-esnext',
@@ -34,6 +35,7 @@ export default defineConfig({
     }),
   ],
   plugins: [
+    farmAlspotronPlugin(),
     electron({
       main: {
         input: './index.ts',

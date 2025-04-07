@@ -642,7 +642,7 @@ const ThemeContainer = () => {
               type={'number'}
               class={'input w-48'}
               value={theme()?.lyric.fontSize}
-              onChange={(event) => setTheme({ lyric: { fontSize: event.target.valueAsNumber } })}
+              onChange={(event) => setTheme({ LYRIC: { fontSize: event.target.valueAsNumber } })}
             />
             <span class={'suffix group-focus-within:suffix-focus-within'}>px</span>
           </label>
@@ -653,7 +653,7 @@ const ThemeContainer = () => {
           </div>
           <ColorPicker
             value={theme()?.lyric.color}
-            onColorChange={(color) => setTheme({ lyric: { color } })}
+            onColorChange={(color) => setTheme({ LYRIC: { color } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -662,7 +662,7 @@ const ThemeContainer = () => {
           </div>
           <ColorPicker
             value={theme()?.lyric.background}
-            onColorChange={(color) => setTheme({ lyric: { background: color } })}
+            onColorChange={(color) => setTheme({ LYRIC: { background: color } })}
           />
         </Card>
         <Card class={'flex flex-row justify-between items-center gap-1'}>
@@ -676,7 +676,7 @@ const ThemeContainer = () => {
               value={(theme()?.lyric.stoppedOpacity ?? 0) * 100}
               onChange={(event) =>
                 setTheme({
-                  lyric: { stoppedOpacity: event.target.valueAsNumber / 100 },
+                  LYRIC: { stoppedOpacity: event.target.valueAsNumber / 100 },
                 })
               }
             />
@@ -694,7 +694,7 @@ const ThemeContainer = () => {
               value={theme()?.lyric.containerRowGap}
               onChange={(event) =>
                 setTheme({
-                  lyric: { containerRowGap: event.target.valueAsNumber },
+                  LYRIC: { containerRowGap: event.target.valueAsNumber },
                 })
               }
             />
@@ -712,7 +712,7 @@ const ThemeContainer = () => {
               value={theme()?.lyric.multipleContainerRowGap}
               onChange={(event) =>
                 setTheme({
-                  lyric: {
+                  LYRIC: {
                     multipleContainerRowGap: event.target.valueAsNumber,
                   },
                 })
@@ -731,7 +731,7 @@ const ThemeContainer = () => {
               value === 'column' ? t('setting.position.from-top-to-bottom') : t('setting.position.from-bottom-to-top')
             }
             value={theme()?.lyric?.direction ?? 'column'}
-            onChange={(value) => setTheme({ lyric: { direction: value } })}
+            onChange={(value) => setTheme({ LYRIC: { direction: value } })}
             options={['column', 'column-reverse']}
             class={'select'}
           />
@@ -748,7 +748,7 @@ const ThemeContainer = () => {
             value={theme()?.lyric.nextLyric}
             onChange={(event) =>
               setTheme({
-                lyric: { nextLyric: Math.round(event.target.valueAsNumber) },
+                LYRIC: { nextLyric: Math.round(event.target.valueAsNumber) },
               })
             }
           />
@@ -765,7 +765,7 @@ const ThemeContainer = () => {
             value={theme()?.lyric.previousLyric}
             onChange={(event) =>
               setTheme({
-                lyric: {
+                LYRIC: {
                   previousLyric: Math.round(event.target.valueAsNumber),
                 },
               })
@@ -783,7 +783,7 @@ const ThemeContainer = () => {
               value={(theme()?.lyric.nextLyricOpacity ?? 0) * 100}
               onChange={(event) =>
                 setTheme({
-                  lyric: { nextLyricOpacity: event.target.valueAsNumber / 100 },
+                  LYRIC: { nextLyricOpacity: event.target.valueAsNumber / 100 },
                 })
               }
             />
@@ -801,7 +801,7 @@ const ThemeContainer = () => {
               value={(theme()?.lyric.previousLyricOpacity ?? 0) * 100}
               onChange={(event) =>
                 setTheme({
-                  lyric: {
+                  LYRIC: {
                     previousLyricOpacity: event.target.valueAsNumber / 100,
                   },
                 })
@@ -821,7 +821,7 @@ const ThemeContainer = () => {
               value={(theme()?.lyric.nextLyricScale ?? 0) * 100}
               onChange={(event) =>
                 setTheme({
-                  lyric: { nextLyricScale: event.target.valueAsNumber / 100 },
+                  LYRIC: { nextLyricScale: event.target.valueAsNumber / 100 },
                 })
               }
             />
@@ -839,7 +839,7 @@ const ThemeContainer = () => {
               value={(theme()?.lyric.previousLyricScale ?? 0) * 100}
               onChange={(event) =>
                 setTheme({
-                  lyric: {
+                  LYRIC: {
                     previousLyricScale: event.target.valueAsNumber / 100,
                   },
                 })
@@ -864,7 +864,7 @@ const ThemeContainer = () => {
               value={theme()?.lyric.prevNextLyricThreshold ?? -1}
               onChange={(event) =>
                 setTheme({
-                  lyric: { prevNextLyricThreshold: event.target.valueAsNumber },
+                  LYRIC: { prevNextLyricThreshold: event.target.valueAsNumber },
                 })
               }
             />
