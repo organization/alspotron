@@ -35,6 +35,7 @@ jobs:
           $NodeModulesPath = $NodeDirPath + "\node_modules\npm\node_modules\@npmcli\run-script"
           cd $NodeModulesPath
           npm install node-gyp@9.4.1
+          npm i -g pnpm@10.6.5
 
       # https://github.com/actions/runner/issues/2958#issuecomment-1793782647
       - name: Fix distutils (macOS only)
