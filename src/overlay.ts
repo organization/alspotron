@@ -106,9 +106,17 @@ export class OverlayManager extends EventEmitter {
     if (asdfOverlay) {
       try {
         this.tmp = await asdfOverlay.Overlay.attach(
-          // hack: electron asar path fix
+          // electron asar path fix
           asdfOverlay.defaultDllDir().replace('app.asar', 'app.asar.unpacked'),
           pid,
+        );
+        await this.tmp.setPosition(
+          asdfOverlay.percent(1.0),
+          asdfOverlay.percent(1.0),
+        );
+        await this.tmp.setAnchor(
+          asdfOverlay.percent(1.0),
+          asdfOverlay.percent(1.0),
         );
       } catch (e) {
         console.error('test inject error: ', e);
@@ -341,10 +349,6 @@ export class OverlayManager extends EventEmitter {
       this.overlay?.sendWindowBounds(window.id, { rect: bounds });
       this.provider?.updateWindowConfig();
 
-      if (this.tmp) {
-        this.tmp.reposition(bounds.x, bounds.y);
-      }
-
       throttle = setTimeout(() => {
         if (!isFocused) return;
 
@@ -357,9 +361,6 @@ export class OverlayManager extends EventEmitter {
         };
 
         this.overlay?.sendWindowBounds(window.id, { rect: bounds });
-        if (this.tmp) {
-          this.tmp.reposition(bounds.x, bounds.y);
-        }
 
         this.provider?.updateWindowConfig();
         throttle = null;
