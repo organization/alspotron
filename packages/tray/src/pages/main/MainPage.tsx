@@ -1,32 +1,38 @@
 import { Button, Box, Icon, TextInput } from '@alspotron/ui';
 
-// import { logoStyle } from './MainPage.css';
+import { DevtoolButton } from './components/DevtoolButton';
+import { Header } from '../../components/Header';
 
-// import MainIcon from '../../../../../assets/icon_music.png';
+import { toolContainerStyle, toolStyle } from './MainPage.css';
+import { Show } from 'solid-js';
+import { useConfig } from '../../hooks/useConfig.ts';
 
 export const MainPage = () => {
+  const [config] = useConfig();
+
   return (
     <Box h={'100%'} p={'md'} gap={'sm'}>
-      <Box direction={'row'} py={'sm'} gap={'xs'} size={'1.6rem'}>
-        {/*<img src={MainIcon} class={logoStyle} alt={'logo'} />*/}
-        Alspotron
-        <div style={{ flex: 1 }} />
-        <Icon name={'bug_report'} size={'1.8rem'} />
-        <Icon name={'power_settings_new'} size={'1.8rem'} />
-      </Box>
-      <TextInput placeholder={'search'} />
-      <Box bg={'gray.100'} r={'sm'} bc={'gray.300'} bd={'md'} p={'md'} style={{ flex: 1 }}>
+      <Header>
+        <Button variant={'icon'}>
+          <Icon name={'power_settings_new'} size={'1.8rem'}/>
+        </Button>
+      </Header>
+      <TextInput placeholder={'검색'}/>
+      <Box bg={'gray.50'} r={'sm'} bc={'gray.200'} bd={'md'} p={'md'} style={{ flex: 1 }}>
         Preview
       </Box>
-      <Box direction={'row'} gap={'sm'}>
-        <Button variant={'text'} gap={'xs'} style={{ flex: 1 }}>
-          <Icon name={'settings'} size={'1.8rem'} />
+      <Box w={'100%'} direction={'row'} gap={'sm'} wrap={'wrap'} class={toolContainerStyle}>
+        <Button variant={'text'} gap={'xs'} class={toolStyle}>
+          <Icon name={'settings'} size={'1.8rem'}/>
           설정
         </Button>
-        <Button variant={'text'} gap={'xs'} style={{ flex: 1 }}>
-          <Icon name={'search'} size={'1.8rem'} />
+        <Button variant={'text'} gap={'xs'} class={toolStyle}>
+          <Icon name={'search'} size={'1.8rem'}/>
           고급 검색
         </Button>
+        <Show when={config()?.developer}>
+          <DevtoolButton/>
+        </Show>
       </Box>
     </Box>
   );

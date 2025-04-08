@@ -221,6 +221,7 @@ export const Popover = (props: PopoverProps) => {
               [placementY]: `${position()?.placement[1] ?? 0.5}`,
               [maxWidth]: max() ? `${max()![0]}px` : undefined,
               [maxHeight]: max() ? `${max()![1]}px` : undefined,
+              height: max() ? '100%' : 'auto',
             })}
           >
             <div

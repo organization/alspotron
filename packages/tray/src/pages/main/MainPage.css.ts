@@ -1,7 +1,17 @@
 import { style } from '@vanilla-extract/css';
 
-export const logoStyle = style({
-  width: '1.8rem',
-  height: '1.8rem',
-  fontSize: '1.2rem',
+import { vars } from '@alspotron/ui/vars';
+
+export const toolContainerStyle = style({
+  display: 'flex',
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  gap: vars.space.sm,
+});
+
+export const toolStyle = style({
+  flex: 1,
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
 });
