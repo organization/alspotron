@@ -1,6 +1,6 @@
 import { ComplexStyleRule } from '@vanilla-extract/css';
 
-import { l1Layer } from './layer.css';
+import { l1Layer, alphaChannel } from './layer.css';
 
 export const map = <T extends Record<PropertyKey, unknown>, K>(
   record: T,
@@ -21,9 +21,7 @@ export const variant = <T extends string[]>(
 }), {} as { [Key in T[number]]: string });
 
 export const alpha = (color: string, alpha: number): string => {
-  // TODO: disable until farmfe support relative color syntax
-  return color;
-  // return `oklch(from ${color} l c h / ${alpha})`;
+  return `oklch(from ${color} ${alphaChannel} / ${alpha})`;
 };
 
 export const layered = (

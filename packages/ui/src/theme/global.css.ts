@@ -1,9 +1,15 @@
 import { globalStyle } from '@vanilla-extract/css';
 
-globalStyle('html, body, #root', {
+import { alphaChannel } from './layer.css';
+
+globalStyle('html, body, #app', {
   width: '100vw',
   height: '100vh',
   overflow: 'hidden',
+
+  vars: {
+    [alphaChannel]: 'l c h',
+  },
 });
 
 globalStyle('html', {

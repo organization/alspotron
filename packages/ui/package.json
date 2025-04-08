@@ -10,7 +10,8 @@
     "./style.css": "./dist/vanilla-extract.css"
   },
   "scripts": {
-    "postinstall": "pnpm build",
+    "postinstall": "farm build",
+    "dev": "farm build --watch",
     "build": "farm build"
   },
   "devDependencies": {

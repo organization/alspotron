@@ -1,7 +1,11 @@
+import { HashRouter, Route } from '@solidjs/router';
+
+import { MainPage } from './pages/main';
+
 export const App = () => {
   return (
-    <div>
-      Tray
-    </div>
+    <HashRouter>
+      <Route path={'/'} component={MainPage} />
+    </HashRouter>
   );
 };

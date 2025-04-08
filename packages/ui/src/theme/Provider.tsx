@@ -11,8 +11,6 @@ export type ThemeProviderProps = {
   children: JSX.Element;
 };
 export const ThemeProvider = (props: ThemeProviderProps) => {
-  document.body.classList.add(lightThemeClass);
-
   const matches = createMediaQuery('(prefers-color-scheme: dark)');
 
   const saved = localStorage.getItem('theme') ?? 'system';

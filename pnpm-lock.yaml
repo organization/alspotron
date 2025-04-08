@@ -250,6 +250,12 @@ importers:
       '@vanilla-extract/css':
         specifier: 1.17.1
         version: 1.17.1
+      material-symbols:
+        specifier: 0.29.3
+        version: 0.29.3
+      pretendard:
+        specifier: 1.3.9
+        version: 1.3.9
       solid-js:
         specifier: 1.9.5
         version: 1.9.5
@@ -2660,6 +2666,9 @@ packages:
     resolution: {integrity: sha512-OkeDaAZ/bQCxeFAozM55PKcKU0yJMPGifLwV4Qgjitu+5MoAfSQN4lsLJeXZ1b8w0x+/Emda6MZgXS1jvsapng==}
     engines: {node: '>=10'}
 
+  material-symbols@0.29.3:
+    resolution: {integrity: sha512-RdmBq4fblo2Hl4cu9R95tY2BT3d7OrAuVEfWQZVetr3ynRrhi5Gd/EGRhHxI9VJ9iPmVx/uEwE1fgvCrHFEsYg==}
+
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
@@ -3067,6 +3076,9 @@ packages:
     resolution: {integrity: sha512-b9Eb8h2eVqNE8edvKdwqkrY6O7kAwmI8kcnBv1NScolYJbo59XUF0noFq+lxbC1yN20bmC0WBEbDC5H/7ASb0A==}
     engines: {node: '>=14.0.0'}
     hasBin: true
+
+  pretendard@1.3.9:
+    resolution: {integrity: sha512-PaQAADyLY5v4kYFwkpSJHbSSYIkiriY/1xXw75TKoZ9UQQqeU+tvP05yTdZAWibiIYoo8ZKtRv8PM7w0IaywSw==}
 
   prettier@2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
@@ -6546,6 +6558,8 @@ snapshots:
       escape-string-regexp: 4.0.0
     optional: true
 
+  material-symbols@0.29.3: {}
+
   math-intrinsics@1.1.0: {}
 
   media-query-parser@2.0.2:
@@ -6900,6 +6914,8 @@ snapshots:
     dependencies:
       commander: 9.5.0
     optional: true
+
+  pretendard@1.3.9: {}
 
   prettier@2.8.8: {}
 

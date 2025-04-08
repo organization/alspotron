@@ -5,8 +5,7 @@
   "main": "./dist/main/index.js",
   "scripts": {
     "dev:only": "farm",
-    "dev:tray": "pnpm --filter @alspotron/tray dev",
-    "dev": "concurrently \"pnpm dev:tray\" \"pnpm dev:only\"",
+    "dev": "concurrently \"pnpm -r dev\" \"pnpm dev:only\"",
     "postinstall": "patch-package",
     "clean": "farm clean",
     "build": "farm build",
