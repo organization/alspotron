@@ -109,6 +109,7 @@ export class OverlayManager extends EventEmitter {
           // electron asar path fix
           asdfOverlay.defaultDllDir().replace('app.asar', 'app.asar.unpacked'),
           pid,
+          5000,
         );
         await this.tmp.setPosition(
           asdfOverlay.percent(1.0),
