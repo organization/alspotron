@@ -7,12 +7,18 @@
       "import": "./dist/index.js",
       "types": "./dist/types/index.d.ts"
     },
-    "./style.css": "./dist/vanilla-extract.css"
+    "./vars": {
+      "import": "./dist/vars.js",
+      "types": "./dist/types/theme/vars.css.d.ts"
+    },
+    "./vars.css": "./dist/vars.css",
+    "./style.css": "./dist/index.css"
   },
   "scripts": {
-    "postinstall": "farm build",
-    "dev": "farm build --watch",
-    "build": "farm build"
+    "postinstall": "pnpm build",
+    "build:vars": "farm build --config ./vars.farm.config.ts",
+    "build:only": "farm build",
+    "build": "pnpm build:only && pnpm build:vars"
   },
   "devDependencies": {
     "@farmfe/cli": "1.0.4",

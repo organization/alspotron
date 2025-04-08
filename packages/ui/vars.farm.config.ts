@@ -10,10 +10,10 @@ import { farmVanillaExtractBuildPlugin } from '@alspotron/plugin';
 export default defineConfig({
   compilation: {
     input: {
-      index: path.join(__dirname, './src/index.ts'),
+      vars: path.join(__dirname, './src/theme/vars.css.ts'),
     },
     output: {
-      targetEnv: 'library-browser',
+      targetEnv: 'library-node',
       path: 'dist',
       clean: false,
     },

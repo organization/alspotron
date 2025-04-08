@@ -1,24 +1,41 @@
 import type { JsPlugin } from '@farmfe/core';
 
-export const farmVanillaExtractBuildPlugin = (): JsPlugin => {
+type FarmVanillaExtractBuildPluginOptions = {
+  rename?: (name: string) => string;
+};
+export const farmVanillaExtractBuildPlugin = ({
+  rename = (name) => `${name.replace(/_.*/g, '')}.css`,
+}: FarmVanillaExtractBuildPluginOptions = {}): JsPlugin => {
   return {
     name: 'farm-vanilla-extract-build-plugin',
     finalizeResources: {
       executor(params) {
         const entries = Object.entries(params.resourcesMap);
-        const target = entries.find(([key]) => key.endsWith('.css'));
-        if (!target) return params.resourcesMap;
+        const targets = entries.filter(([key, resource]) => {
+          const isCss = key.endsWith('.css');
+          const isVanillaExtractOutput = resource.info?.moduleIds.some((moduleId) => moduleId.endsWith('.vanilla.css'));
 
-        const [name, resource] = target;
-        const isVanillaExtractOutput = resource.info?.moduleIds.some((moduleId) => moduleId.endsWith('.vanilla.css'));
-
-        if (!isVanillaExtractOutput) return params.resourcesMap;
+          return isCss && isVanillaExtractOutput;
+        });
+        if (targets.length === 0) return params.resourcesMap;
 
         return Object.fromEntries(entries.map(([key, resource]) => {
-          if (key === name) {
-            return ['vanilla-extract.css', {
+          const isMatched = targets.some(([it]) => it === key);
+          const isSourceMap = targets.some(([it]) => key === `${it}.map`);
+
+          if (isMatched) {
+            const newName = rename(key);
+            return [newName, {
               ...resource,
-              name: 'vanilla-extract.css',
+              name: newName,
+            }];
+          }
+
+          if (isSourceMap) {
+            const newName = `${rename(key)}.map`;
+            return [newName, {
+              ...resource,
+              name: newName,
             }];
           }
 
