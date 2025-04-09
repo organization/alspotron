@@ -3,17 +3,20 @@ import { Box, Button, Icon, Popover, Item, Text, createClickAway } from '@alspot
 
 import { useConfig } from '../../../../hooks/useConfig';
 
-import { popupStyle } from './DevtoolButton.css';
+import { activeButtonStyle, popupStyle } from './DevtoolButton.css';
+import { vars } from '@alspotron/ui';
 
 export const DevtoolButton = () => {
   const [open, setOpen] = createSignal(false);
   const [config] = useConfig();
 
-  const onDebug = (target: 'lyrics' | 'settings' | 'tray') => {
-    window.ipcRenderer.invoke('open-devtool', target);
+  const onDebug = async (target: 'lyrics' | 'settings' | 'tray') => {
+    await window.ipcRenderer.invoke('open-devtool', target);
+    setOpen(false);
   };
-  const onMainDebug = (index: number) => {
-    window.ipcRenderer.invoke('open-devtool', 'main', index);
+  const onMainDebug = async (index: number) => {
+    await window.ipcRenderer.invoke('open-devtool', 'main', index);
+    setOpen(false);
   };
 
   const track = createClickAway(() => setOpen(false));
@@ -22,12 +25,12 @@ export const DevtoolButton = () => {
     <Popover
       open={open()}
       placement={'top-end'}
-      offset={4}
-      size={4}
+      offset={8}
+      size={8}
       element={
         <Box
           ref={track}
-          w={'20rem'}
+          w={`calc(24rem - ${vars.space.md})`}
           r={'md'}
           shadow={'md'}
           class={popupStyle}
@@ -41,8 +44,8 @@ export const DevtoolButton = () => {
                 <Item
                   name={view.name}
                   description={`"${view.theme}" 적용중`}
-                  leftIcon={view.enabled ? 'check' : undefined}
-                  rightIcon={'chevron_right'}
+                  disabled={!view.enabled}
+                  rightIcon={view.enabled ? 'chevron_right' : undefined}
                   onClick={() => onMainDebug(index())}
                 />
               )}
@@ -73,6 +76,7 @@ export const DevtoolButton = () => {
     >
       <Button
         variant={'icon'}
+        class={open() ? activeButtonStyle : undefined}
         onClick={() => setOpen(!open())}
       >
         <Icon name={'bug_report'} size={'1.8rem'}/>

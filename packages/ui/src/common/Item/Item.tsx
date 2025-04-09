@@ -15,6 +15,7 @@ import {
   containerStyle,
   disabledStyle,
   hoverBackgroundStyle,
+  iconStyle,
   textGroupStyle,
   textStyle
 } from './Item.css';
@@ -74,22 +75,48 @@ export const Item = <T extends ValidComponent = 'li'>(props: ItemProps<T>) => {
           {itemProps.left}
         </Show>
         <Show when={itemProps.leftIcon}>
-          {(icon) => <Icon name={icon()}/>}
+          {(icon) => (
+            <Icon
+              name={icon()}
+              classList={{
+                [iconStyle]: true,
+                [disabledStyle]: rest.disabled,
+              }}
+            />
+          )}
         </Show>
         <div class={textGroupStyle}>
           <Show when={textProps.name}>
-            <div class={textStyle.default}>
+            <div
+              classList={{
+                [textStyle.default]: true,
+                [disabledStyle]: rest.disabled,
+              }}
+            >
               {textProps.name}
             </div>
           </Show>
           <Show when={textProps.description}>
-            <div class={textStyle.caption}>
+            <div
+              classList={{
+                [textStyle.caption]: true,
+                [disabledStyle]: rest.disabled,
+              }}
+            >
               {textProps.description}
             </div>
           </Show>
         </div>
         <Show when={itemProps.rightIcon}>
-          {(icon) => <Icon name={icon()}/>}
+          {(icon) => (
+            <Icon
+              name={icon()}
+              classList={{
+                [iconStyle]: true,
+                [disabledStyle]: rest.disabled,
+              }}
+            />
+          )}
         </Show>
         <Show when={itemProps.right}>
           {itemProps.right}

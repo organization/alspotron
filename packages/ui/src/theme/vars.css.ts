@@ -289,6 +289,7 @@ const defaultRole = {
   text: {
     default: defaultColor.gray[900],
     caption: defaultColor.gray[400],
+    disabled: defaultColor.gray[300],
   },
 };
 
@@ -343,6 +344,7 @@ export const defaultLightTheme = {
     text: {
       default: vars.color.gray[950],
       caption: vars.color.gray[400],
+      disabled: vars.color.gray[300],
     },
   },
 };
@@ -383,6 +385,7 @@ export const defaultDarkTheme = {
     text: {
       default: vars.color.gray[50],
       caption: vars.color.gray[600],
+      disabled: vars.color.gray[700],
     },
   },
 };

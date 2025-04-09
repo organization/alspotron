@@ -25,7 +25,7 @@ export const clickableContainerStyle = style({
 });
 
 export const disabledStyle = style({
-  color: vars.role.text.caption,
+  color: `${vars.role.text.disabled} !important`,
   cursor: 'default',
 
   ':hover': {
@@ -52,4 +52,8 @@ export const textStyle = styleVariants({
     fontSize: '1.2rem',
     color: vars.role.text.caption,
   }
+});
+
+export const iconStyle = style({
+  flexShrink: 0,
 });
