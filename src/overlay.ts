@@ -127,48 +127,50 @@ export class OverlayManager extends EventEmitter {
 
       for (const window of this.overlay.getTopWindows(true)) {
         if (
-          window.processId === pid &&
-          !this.registeredProcesses.some((it) => it.pid === pid)
+          window.processId !== pid ||
+          this.registeredProcesses.some((it) => it.pid === pid)
         ) {
-          if (asdfOverlay) {
-            try {
-              if (this.overlay2) {
-                this.overlay2.destroy();
-                this.overlay2 = null;
-              }
+          continue;
+        }
 
-              this.overlay2 = await asdfOverlay.Overlay.attach(
-                // electron asar path fix
-                asdfOverlay
-                  .defaultDllDir()
-                  .replace('app.asar', 'app.asar.unpacked'),
-                pid,
-                1000,
-              );
-              await this.overlay2.setPosition(
-                asdfOverlay.percent(1.0),
-                asdfOverlay.percent(1.0),
-              );
-              await this.overlay2.setAnchor(
-                asdfOverlay.percent(1.0),
-                asdfOverlay.percent(1.0),
-              );
-            } catch (e) {
-              console.log('[Alspotron] fallback to legacy overlay', e);
-              this.overlay.injectProcess(window);
+        if (asdfOverlay) {
+          try {
+            if (this.overlay2) {
+              this.overlay2.destroy();
+              this.overlay2 = null;
             }
-          } else {
+
+            this.overlay2 = await asdfOverlay.Overlay.attach(
+              // electron asar path fix
+              asdfOverlay
+                .defaultDllDir()
+                .replace('app.asar', 'app.asar.unpacked'),
+              pid,
+              1000,
+            );
+            await this.overlay2.setPosition(
+              asdfOverlay.percent(1.0),
+              asdfOverlay.percent(1.0),
+            );
+            await this.overlay2.setAnchor(
+              asdfOverlay.percent(1.0),
+              asdfOverlay.percent(1.0),
+            );
+          } catch (e) {
+            console.log('[Alspotron] fallback to legacy overlay', e);
             this.overlay.injectProcess(window);
           }
-
-          this.registeredProcesses.push({
-            pid,
-            path,
-          });
-          this.emit('register-process', pid);
-          this.provider?.setAttachedProcess(this.registeredProcesses[0].pid);
-          this.setGamePath(path);
+        } else {
+          this.overlay.injectProcess(window);
         }
+
+        this.registeredProcesses.push({
+          pid,
+          path,
+        });
+        this.emit('register-process', pid);
+        this.provider?.setAttachedProcess(this.registeredProcesses[0].pid);
+        this.setGamePath(path);
       }
 
       if (this.provider && isFirstRun) {
