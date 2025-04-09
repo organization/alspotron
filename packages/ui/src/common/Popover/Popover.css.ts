@@ -1,4 +1,4 @@
-import { createVar, fallbackVar, style } from '@vanilla-extract/css';
+import { createVar, fallbackVar, style, styleVariants } from '@vanilla-extract/css';
 
 import { popoverAnimation } from './animation';
 
@@ -11,10 +11,36 @@ export const popoverStyle = style({
   top: fallbackVar(y, '0'),
   left: fallbackVar(x, '0'),
 
+  display: 'flex',
+  flexDirection: 'column',
+
   maxWidth: maxWidth,
   maxHeight: maxHeight,
+  height: '100%',
 
   overflow: 'visible',
+});
+export const popoverXAlignStyle = styleVariants({
+  0: {
+    alignItems: 'flex-start',
+  },
+  0.5: {
+    alignItems: 'center',
+  },
+  1: {
+    alignItems: 'flex-end',
+  },
+});
+export const popoverYAlignStyle = styleVariants({
+  0: {
+    justifyContent: 'flex-start',
+  },
+  0.5: {
+    justifyContent: 'center',
+  },
+  1: {
+    justifyContent: 'flex-end',
+  },
 });
 
 export const placementX = createVar();
@@ -25,8 +51,6 @@ export const animationStyle = style({
 
   width: '100%',
   maxHeight: '100%',
-
-  transition: '0.6s cubic-bezier(0.16, 1, 0.3, 1)',
   transformOrigin: `calc(100% * ${fallbackVar(placementX, '0')}) calc(100% * ${fallbackVar(placementY, '0')})`,
 });
 

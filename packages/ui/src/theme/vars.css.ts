@@ -307,7 +307,8 @@ export const vars = createThemeContract({
   shadow,
   role,
 });
-export const lightThemeClass = createTheme(vars, {
+
+export const defaultLightTheme = {
   space: defaultSpace,
   color: defaultColor,
   size: defaultSize,
@@ -344,9 +345,10 @@ export const lightThemeClass = createTheme(vars, {
       caption: vars.color.gray[400],
     },
   },
-});
+};
+export const lightThemeClass = createTheme(vars, defaultLightTheme);
 
-export const darkThemeClass = createTheme(vars, {
+export const defaultDarkTheme = {
   space: defaultSpace,
   color: defaultColor,
   size: defaultSize,
@@ -383,4 +385,5 @@ export const darkThemeClass = createTheme(vars, {
       caption: vars.color.gray[600],
     },
   },
-});
+};
+export const darkThemeClass = createTheme(vars, defaultDarkTheme);

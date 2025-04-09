@@ -7,16 +7,15 @@
       "import": "./dist/index.js",
       "types": "./dist/types/index.d.ts"
     },
-    "./vars": {
-      "import": "./dist/vars.js",
-      "types": "./dist/types/theme/vars.css.d.ts"
+    "./css-runtime": {
+      "import": "./dist/runtime.js",
+      "types": "./dist/runtime-types/runtime.d.ts"
     },
-    "./vars.css": "./dist/vars.css",
     "./style.css": "./dist/index.css"
   },
   "scripts": {
     "postinstall": "pnpm build",
-    "build:vars": "farm build --config ./vars.farm.config.ts",
+    "build:vars": "farm build --config ./runtime.farm.config.ts",
     "build:only": "farm build",
     "build": "pnpm build:only && pnpm build:vars"
   },
@@ -24,15 +23,16 @@
     "@farmfe/cli": "1.0.4",
     "@farmfe/core": "1.7.2",
     "@vanilla-extract/vite-plugin": "5.0.1",
-    "vite-plugin-solid": "2.11.6",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "vite-plugin-solid": "2.11.6"
   },
   "peerDependencies": {
-    "solid-js": "*",
+    "@floating-ui/dom": "*",
+    "@solid-primitives/media": "*",
     "@vanilla-extract/css": "*",
     "@vanilla-extract/dynamic": "*",
     "@vanilla-extract/recipes": "*",
-    "@floating-ui/dom": "*",
-    "@solid-primitives/media": "*"
+    "solid-js": "*",
+    "deepmerge-ts": "*"
   }
 }

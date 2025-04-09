@@ -32,7 +32,7 @@ import {
   maxWidth,
   placementX,
   placementY,
-  popoverStyle,
+  popoverStyle, popoverXAlignStyle, popoverYAlignStyle,
   x,
   y
 } from './Popover.css';
@@ -125,9 +125,9 @@ export const Popover = (props: PopoverProps) => {
       middleware,
     };
   };
-  const getPlacementOffset = (placement: Placement): [number, number] => {
-    let x = 0.5;
-    let y = 0.5;
+  const getPlacementOffset = (placement: Placement): [0 | 0.5 | 1, 0 | 0.5 | 1] => {
+    let x: 0 | 0.5 | 1 = 0.5;
+    let y: 0 | 0.5 | 1 = 0.5;
 
     if (placement.startsWith('top')) y = 1;
     if (placement.startsWith('bottom')) y = 0;
@@ -213,6 +213,8 @@ export const Popover = (props: PopoverProps) => {
             ref={setElement}
             classList={{
               [popoverStyle]: true,
+              [popoverXAlignStyle[position()?.placement[0] ?? 0.5]]: true,
+              [popoverYAlignStyle[position()?.placement[1] ?? 0.5]]: true,
             }}
             style={assignInlineVars({
               [x]: `${position()?.position.x ?? 0}px`,
@@ -221,7 +223,6 @@ export const Popover = (props: PopoverProps) => {
               [placementY]: `${position()?.placement[1] ?? 0.5}`,
               [maxWidth]: max() ? `${max()![0]}px` : undefined,
               [maxHeight]: max() ? `${max()![1]}px` : undefined,
-              height: max() ? '100%' : 'auto',
             })}
           >
             <div
