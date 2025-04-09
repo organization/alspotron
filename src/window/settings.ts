@@ -58,10 +58,10 @@ export class SettingWindowProvider implements WindowProvider {
       return { action: 'deny' };
     });
 
-    if (app.isPackaged && !process.env.FARM_DEV_SERVER_URL) {
+    if (app.isPackaged && !process.env.FARM_SETTING_DEV_SERVER_URL) {
       this.window.loadFile(path.join(__dirname, '../settings.html'));
     } else {
-      this.window.loadURL(`${process.env.FARM_DEV_SERVER_URL}/settings.html`);
+      this.window.loadURL(`${process.env.FARM_SETTING_DEV_SERVER_URL}/index.html`);
     }
   }
 }

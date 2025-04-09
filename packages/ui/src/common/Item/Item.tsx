@@ -6,7 +6,7 @@ import { ItemGroup } from './ItemGroup';
 
 import { Icon } from '../Icon';
 import { Tooltip } from '../Tooltip';
-import { BoxProps } from '../Box';
+import { Box, BoxProps } from '../Box';
 
 import { ColorMapKey, colors } from '../../theme';
 
@@ -56,8 +56,9 @@ export const Item = <T extends ValidComponent = 'li'>(props: ItemProps<T>) => {
       enabled={typeof textProps.tooltip === 'string'}
       label={textProps.tooltip}
     >
-      <li
+      <Box
         {...rest}
+        as={rest.as ?? 'li'}
         classList={{
           ...rest.classList,
           [rest.class]: !!rest.class,
@@ -93,7 +94,7 @@ export const Item = <T extends ValidComponent = 'li'>(props: ItemProps<T>) => {
         <Show when={itemProps.right}>
           {itemProps.right}
         </Show>
-      </li>
+      </Box>
     </Tooltip>
   );
 };
