@@ -17,17 +17,18 @@ export const baseContainerStyle = style({
 
 export const containerStyle = styleVariants({
   default: [baseContainerStyle, {
-    backgroundColor: vars.color.gray[50],
-    color: 'inherit',
+    backgroundColor: vars.role.surface.default,
+    color: vars.role.surface.text,
 
     borderStyle: 'solid',
     borderWidth: vars.line.md,
-    borderColor: vars.color.gray[200],
+    borderColor: vars.role.surface.highest,
     borderRadius: vars.space.sm,
     padding: `${vars.space.sm} ${vars.space.md}`,
+    boxShadow: vars.shadow.xs,
 
     ':hover': {
-      borderColor: vars.color.gray[300],
+      borderColor: vars.role.surface.high,
     },
     ':focus-visible': {
       outlineStyle: 'solid',
@@ -49,7 +50,7 @@ export const inputStyle = style({
 
   selectors: {
     '&::placeholder': {
-      color: vars.color.gray[400],
+      color: vars.role.text.caption,
     }
   }
 });

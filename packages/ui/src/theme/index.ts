@@ -1,7 +1,5 @@
 export * from './vars.css';
 export * from './layer.css';
-export * from './light.css';
-export * from './dark.css';
 export * from './global.css';
 export * from './reset.css';
 

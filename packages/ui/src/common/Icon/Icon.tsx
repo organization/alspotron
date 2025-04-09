@@ -38,6 +38,7 @@ export const Icon = <T extends ValidComponent = 'span'>(props: IconProps<T>) => 
   return (
     <Box
       {...rest}
+      c={rest.c ?? 'surface.text'}
       as={rest.as ?? 'span'}
       class={cx(iconStyle, 'material-symbols-rounded')}
       style={sx(rest.style, assignInlineVars({

@@ -1,6 +1,8 @@
 import { createTheme, createThemeContract } from '@vanilla-extract/css';
 
-const space = createThemeContract({
+import { alpha } from './util';
+
+const defaultSpace = {
   none: '0',
   xxs: '0.2rem',
   xs: '0.4rem',
@@ -9,31 +11,27 @@ const space = createThemeContract({
   lg: '1.6rem',
   xl: '3.2rem',
   xxl: '6.4rem',
-});
-
-const line = createThemeContract({
+};
+const defaultLine = {
   'none': '0',
   'light': '0.5px',
   'md': '1px',
   'bold': '2px',
-});
-
-const size = createThemeContract({
+};
+const defaultSize = {
   none: '0',
   full: '100%',
   half: '50%',
-});
-
-const shadow = createThemeContract({
+};
+const defaultShadow = {
   none: 'none',
   xs: '0 1px 2px 0 rgba(0, 0, 0, 0.1)',
   sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
   md: '0 1px 3px 0 rgba(0, 0, 0, 0.1)',
   lg: '0 1px 5px 0 rgba(0, 0, 0, 0.1)',
   xl: '0 1px 10px 0 rgba(0, 0, 0, 0.1)',
-});
-
-const color = createThemeContract({
+};
+const defaultColor = {
   red: {
     50: 'oklch(0.971 0.013 17.38)',
     100: 'oklch(0.936 0.032 17.717)',
@@ -268,12 +266,121 @@ const color = createThemeContract({
     900: 'oklch(0.21 0.006 285.885)',
     950: 'oklch(0.141 0.005 285.823)',
   },
-});
+};
+const defaultRole = {
+  primary: {
+    default: defaultColor.blue[500],
+    text: defaultColor.gray[50],
+    container: defaultColor.blue[100],
+    hover: defaultColor.blue[600],
+  },
+  secondary: {
+    default: defaultColor.gray[200],
+    text: defaultColor.gray[900],
+    container: defaultColor.gray[50],
+    hover: defaultColor.gray[300],
+  },
+  surface: {
+    default: defaultColor.gray[50],
+    text: defaultColor.gray[950],
+    high: defaultColor.gray[100],
+    highest: defaultColor.gray[200],
+  },
+  text: {
+    default: defaultColor.gray[900],
+    caption: defaultColor.gray[400],
+  },
+};
 
-export const [_, vars] = createTheme({
+const space = createThemeContract(defaultSpace);
+const line = createThemeContract(defaultLine);
+const size = createThemeContract(defaultSize);
+const shadow = createThemeContract(defaultShadow);
+const color = createThemeContract(defaultColor);
+const role = createThemeContract(defaultRole);
+
+export const vars = createThemeContract({
   space,
   color,
   size,
   line,
   shadow,
+  role,
+});
+export const lightThemeClass = createTheme(vars, {
+  space: defaultSpace,
+  color: defaultColor,
+  size: defaultSize,
+  line: defaultLine,
+  shadow: {
+    none: 'none',
+    xs: `0 1px 1px 0 ${alpha(vars.color.gray[700], 0.1)}`,
+    sm: `0 1px 2px 0 ${alpha(vars.color.gray[900], 0.1)}`,
+    md: `0 2px 4px 0 ${alpha(vars.color.gray[900], 0.1)}`,
+    lg: `0 3px 8px 0 ${alpha(vars.color.gray[900], 0.1)}`,
+    xl: `0 4px 12px 0 ${alpha(vars.color.gray[900], 0.1)}`,
+  },
+  role: {
+    primary: {
+      default: vars.color.blue[500],
+      text: vars.color.gray[50],
+      container: vars.color.blue[100],
+      hover: vars.color.blue[600],
+    },
+    secondary: {
+      default: vars.color.gray[200],
+      text: vars.color.gray[900],
+      container: vars.color.gray[50],
+      hover: vars.color.gray[300],
+    },
+    surface: {
+      default: vars.color.gray[50],
+      text: vars.color.gray[950],
+      high: vars.color.gray[100],
+      highest: vars.color.gray[200],
+    },
+    text: {
+      default: vars.color.gray[950],
+      caption: vars.color.gray[400],
+    },
+  },
+});
+
+export const darkThemeClass = createTheme(vars, {
+  space: defaultSpace,
+  color: defaultColor,
+  size: defaultSize,
+  line: defaultLine,
+  shadow: {
+    none: 'none',
+    xs: `0 1px 1px 0 ${alpha(vars.color.gray[900], 0.3)}`,
+    sm: `0 1px 2px 0 ${alpha(vars.color.gray[950], 0.3)}`,
+    md: `0 2px 4px 0 ${alpha(vars.color.gray[950], 0.5)}`,
+    lg: `0 3px 8px 0 ${alpha(vars.color.gray[950], 0.5)}`,
+    xl: `0 4px 12px 0 ${alpha(vars.color.gray[950], 0.5)}`,
+  },
+  role: {
+    primary: {
+      default: vars.color.blue[500],
+      text: vars.color.gray[50],
+      container: vars.color.blue[900],
+      hover: vars.color.blue[400],
+    },
+    secondary: {
+      default: vars.color.gray[700],
+      text: vars.color.gray[50],
+      container: vars.color.gray[900],
+      hover: vars.color.gray[600],
+    },
+    surface: {
+      default: vars.color.gray[950],
+      text: vars.color.gray[50],
+      high: vars.color.gray[900],
+      highest: vars.color.gray[800],
+    },
+    text: {
+      default: vars.color.gray[50],
+      caption: vars.color.gray[600],
+    },
+  },
 });

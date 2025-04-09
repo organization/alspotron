@@ -23,7 +23,7 @@ export const itemGroupStyle = style({
       borderTopRightRadius: 0,
       borderTopStyle: 'solid',
       borderTopWidth: vars.line.md,
-      borderTopColor: vars.color.gray['200'],
+      borderTopColor: vars.role.surface.highest,
     }
   }
 });

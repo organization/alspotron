@@ -2,12 +2,13 @@ import { createEffect, createSignal } from 'solid-js';
 import { createMediaQuery } from '@solid-primitives/media';
 import { JSX } from 'solid-js/jsx-runtime';
 
-import { darkThemeClass } from './dark.css';
-import { lightThemeClass } from './light.css';
+import { lightThemeClass, darkThemeClass } from './vars.css';
 
 export const [themeMode, setThemeMode] = createSignal<'system' | 'light' | 'dark'>('system');
 
 export type ThemeProviderProps = {
+  light?: string;
+  dark?: string;
   children: JSX.Element;
 };
 export const ThemeProvider = (props: ThemeProviderProps) => {
@@ -18,23 +19,26 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
     setThemeMode(saved as 'system' | 'light' | 'dark');
   }
 
+  const light = () => props.light ?? lightThemeClass;
+  const dark = () => props.dark ?? darkThemeClass;
+
   createEffect(() => {
     if (themeMode() === 'system') {
       if (matches()) {
-        document.body.classList.remove(lightThemeClass);
-        document.body.classList.add(darkThemeClass);
+        document.body.classList.remove(light());
+        document.body.classList.add(dark());
       } else {
-        document.body.classList.remove(darkThemeClass);
-        document.body.classList.add(lightThemeClass);
+        document.body.classList.remove(dark());
+        document.body.classList.add(light());
       }
     } else {
       if (themeMode() === 'dark') {
-        document.body.classList.remove(lightThemeClass);
-        document.body.classList.add(darkThemeClass);
+        document.body.classList.remove(light());
+        document.body.classList.add(dark());
       }
       if (themeMode() === 'light') {
-        document.body.classList.remove(darkThemeClass);
-        document.body.classList.add(lightThemeClass);
+        document.body.classList.remove(dark());
+        document.body.classList.add(light());
       }
     }
 

@@ -1,7 +1,7 @@
 import { recipe, RecipeVariants } from '@vanilla-extract/recipes';
 import { createVar, fallbackVar, style } from '@vanilla-extract/css';
 
-import { colors, map, vars, layered } from '../../theme';
+import { colors, map, vars, layered, roles } from '../../theme';
 
 export const width = createVar();
 export const height = createVar();
@@ -54,9 +54,9 @@ export const boxStyle = recipe({
     r: map(vars.space, (borderRadius) => layered({ borderRadius })),
 
     // colors
-    bg: map(colors, (background) => layered({ background })),
-    c: map(colors, (color) => layered({ color })),
-    bc: map(colors, (borderColor) => layered({ borderColor })),
+    bg: map({ ...colors, ...roles }, (background) => layered({ background })),
+    c: map({ ...colors, ...roles }, (color) => layered({ color })),
+    bc: map({ ...colors, ...roles }, (borderColor) => layered({ borderColor })),
     shadow: map(vars.shadow, (boxShadow) => layered({ boxShadow })),
 
     // layout

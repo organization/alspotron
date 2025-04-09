@@ -1,8 +1,8 @@
 import { children, createEffect, createSignal, onCleanup, onMount } from 'solid-js';
 
 import { Popover } from '../Popover';
-import { Box } from '../Box';
 
+import { containerStyle } from './Tooltip.css';
 import type { JSX } from 'solid-js/jsx-runtime';
 
 export type TooltipProps = {
@@ -43,16 +43,9 @@ export const Tooltip = (props: TooltipProps) => {
     <Popover
       open={open()}
       element={
-        <Box
-          c={'gray.50'}
-          bg={'gray.900'}
-          px={'sm'}
-          py={'xs'}
-          r={'xs'}
-          size={'1.2rem'}
-        >
+        <div class={containerStyle}>
           {props.label}
-        </Box>
+        </div>
       }
     >
       {child()}

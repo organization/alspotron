@@ -25,21 +25,21 @@ const baseButtonStyle = style(layered({
 }, l2Layer));
 export const buttonStyle = styleVariants({
   default: [baseButtonStyle, {
-    backgroundColor: 'transparent',
-    color: 'inherit',
+    backgroundColor: vars.role.surface.default,
+    color: vars.role.surface.text,
 
     borderStyle: 'solid',
     borderWidth: vars.line.md,
-    borderColor: vars.color.gray[200],
+    borderColor: vars.role.surface.highest,
     borderRadius: vars.space.sm,
     padding: `${vars.space.sm} ${vars.space.md}`,
     boxShadow: vars.shadow.xs,
 
     ':hover': {
-      backgroundColor: alpha(vars.color.gray[900], 0.025),
+      backgroundColor: vars.role.surface.high,
     },
     ':active': {
-      backgroundColor: vars.color.gray[200],
+      backgroundColor: vars.role.surface.highest,
     }
   }],
   primary: [baseButtonStyle, {
@@ -47,21 +47,22 @@ export const buttonStyle = styleVariants({
     padding: `${vars.space.sm} ${vars.space.md}`,
     boxShadow: vars.shadow.sm,
 
-    backgroundColor: vars.color.blue[500],
-    color: vars.color.gray[50],
+    backgroundColor: vars.role.primary.default,
+    color: vars.role.primary.text,
 
     ':hover': {
       boxShadow: vars.shadow.md,
-      backgroundColor: vars.color.blue[600],
+      backgroundColor: vars.role.primary.hover,
     }
   }],
   text: [baseButtonStyle, {
+    color: vars.role.surface.text,
     backgroundColor: 'transparent',
     padding: `${vars.space.sm} ${vars.space.md}`,
     borderRadius: vars.space.sm,
 
     ':hover': {
-      backgroundColor: alpha(vars.color.gray[900], 0.05),
+      backgroundColor: alpha(vars.role.surface.text, 0.05),
     }
   }],
   icon: [baseButtonStyle, {
@@ -70,7 +71,7 @@ export const buttonStyle = styleVariants({
     borderRadius: vars.space.sm,
 
     ':hover': {
-      backgroundColor: alpha(vars.color.gray[900], 0.05),
+      backgroundColor: alpha(vars.role.surface.text, 0.05),
     }
   }],
 });

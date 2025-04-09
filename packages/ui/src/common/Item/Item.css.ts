@@ -20,12 +20,12 @@ export const clickableContainerStyle = style({
   cursor: 'pointer',
 
   ':hover': {
-    background: fallbackVar(hoverBackgroundStyle, vars.color.gray['100']),
+    background: fallbackVar(hoverBackgroundStyle, vars.role.surface.high),
   }
 });
 
 export const disabledStyle = style({
-  color: vars.color.gray['400'],
+  color: vars.role.text.caption,
   cursor: 'default',
 
   ':hover': {
@@ -46,9 +46,10 @@ export const textGroupStyle = style({
 export const textStyle = styleVariants({
   default: {
     fontSize: '1.4rem',
+    color: vars.role.surface.text,
   },
   caption: {
     fontSize: '1.2rem',
-    color: vars.color.gray['400'],
+    color: vars.role.text.caption,
   }
 });

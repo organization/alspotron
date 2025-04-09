@@ -18,11 +18,11 @@ export const textStyle = styleVariants({
   },
   placeholder: {
     fontSize: '1.4rem',
-    color: vars.color.gray['400'],
+    color: vars.role.text.caption,
   },
   group: {
     fontSize: '1.2rem',
-    color: vars.color.gray['500'],
+    color: vars.role.text.caption,
   }
 });
 export const inputStyle = style({
