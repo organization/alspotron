@@ -28,7 +28,7 @@ export class OverlayManager extends EventEmitter {
     | ((webContents: Electron.WebContents) => void)
     | null = null;
 
-  private tmp: Overlay | null = null;
+  private overlay2: Overlay | null = null;
 
   constructor() {
     super();
@@ -99,96 +99,95 @@ export class OverlayManager extends EventEmitter {
   }
 
   public async createProcess(pid: number, path: string): Promise<boolean> {
-    if (!wql || !nodeWindowManager) return Promise.resolve(false);
+    if (!wql || !nodeWindowManager) return false;
     const windowManager = nodeWindowManager.windowManager;
 
-    if (this.tmp) {
-      this.tmp.destroy();
-      this.tmp = null;
-    }
-
-    if (asdfOverlay) {
-      try {
-        this.tmp = await asdfOverlay.Overlay.attach(
-          // electron asar path fix
-          asdfOverlay.defaultDllDir().replace('app.asar', 'app.asar.unpacked'),
-          pid,
-          5000,
-        );
-        await this.tmp.setPosition(
-          asdfOverlay.percent(1.0),
-          asdfOverlay.percent(1.0),
-        );
-        await this.tmp.setAnchor(
-          asdfOverlay.percent(1.0),
-          asdfOverlay.percent(1.0),
-        );
-      } catch (e) {
-        console.error('test inject error: ', e);
+    const tryInject = async (): Promise<boolean> => {
+      const isInit = this.overlay
+        ?.getTopWindows(true)
+        .some((window) => window.processId === pid);
+      if (!isInit || !this.overlay || !nodeWindowManager) {
+        return false;
       }
+
+      console.log('[Alspotron] try to inject process:', pid);
+
+      let isFirstRun = false;
+      if (this.registeredProcesses.length === 0) {
+        const window = windowManager
+          .getWindows()
+          .find((window) => window.processId === pid);
+        if (window) this.scaleFactor = window.getMonitor().getScaleFactor();
+
+        this.provider = new OverlayWindowProvider(nodeWindowManager);
+        this.applyCorsHeader?.(this.provider.window.webContents);
+        this.overlay.start();
+        isFirstRun = true;
+      }
+
+      for (const window of this.overlay.getTopWindows(true)) {
+        if (
+          window.processId === pid &&
+          !this.registeredProcesses.some((it) => it.pid === pid)
+        ) {
+          if (asdfOverlay) {
+            try {
+              if (this.overlay2) {
+                this.overlay2.destroy();
+                this.overlay2 = null;
+              }
+
+              this.overlay2 = await asdfOverlay.Overlay.attach(
+                // electron asar path fix
+                asdfOverlay
+                  .defaultDllDir()
+                  .replace('app.asar', 'app.asar.unpacked'),
+                pid,
+                1000,
+              );
+              await this.overlay2.setPosition(
+                asdfOverlay.percent(1.0),
+                asdfOverlay.percent(1.0),
+              );
+              await this.overlay2.setAnchor(
+                asdfOverlay.percent(1.0),
+                asdfOverlay.percent(1.0),
+              );
+            } catch (e) {
+              console.log('[Alspotron] fallback to legacy overlay', e);
+              this.overlay.injectProcess(window);
+            }
+          } else {
+            this.overlay.injectProcess(window);
+          }
+
+          this.registeredProcesses.push({
+            pid,
+            path,
+          });
+          this.emit('register-process', pid);
+          this.provider?.setAttachedProcess(this.registeredProcesses[0].pid);
+          this.setGamePath(path);
+        }
+      }
+
+      if (this.provider && isFirstRun) {
+        this.addOverlayWindow('StatusBar', this.provider.window, 0, 0, true);
+      }
+
+      return true;
+    };
+
+    for (let currentTry = 0; currentTry < 20; currentTry++) {
+      if (await tryInject()) {
+        return true;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
 
-    return new Promise((resolve) => {
-      let injectCount = 0;
-
-      const tryToInject = () => {
-        if (!this.overlay || !nodeWindowManager) return;
-        const isInit = this.overlay
-          .getTopWindows(true)
-          .some((window) => window.processId === pid);
-
-        injectCount += 1;
-        if (injectCount > 20) {
-          resolve(false);
-          console.warn('[Alspotron] Failed to inject process.');
-          return;
-        }
-
-        if (!isInit) {
-          setTimeout(tryToInject, 1000);
-          return;
-        }
-
-        console.log('[Alspotron] try to inject process:', pid);
-        let isFirstRun = false;
-        if (this.registeredProcesses.length === 0) {
-          const window = windowManager
-            .getWindows()
-            .find((window) => window.processId === pid);
-          if (window) this.scaleFactor = window.getMonitor().getScaleFactor();
-
-          this.provider = new OverlayWindowProvider(nodeWindowManager);
-          this.applyCorsHeader?.(this.provider.window.webContents);
-          this.overlay.start();
-          isFirstRun = true;
-        }
-
-        for (const window of this.overlay.getTopWindows(true)) {
-          if (
-            window.processId === pid &&
-            !this.registeredProcesses.some((it) => it.pid === pid)
-          ) {
-            this.overlay.injectProcess(window);
-
-            this.registeredProcesses.push({
-              pid,
-              path,
-            });
-            this.emit('register-process', pid);
-            this.provider?.setAttachedProcess(this.registeredProcesses[0].pid);
-            this.setGamePath(path);
-          }
-        }
-
-        if (this.provider && isFirstRun) {
-          this.addOverlayWindow('StatusBar', this.provider.window, 0, 0, true);
-        }
-
-        resolve(true);
-      };
-
-      tryToInject();
-    });
+    console.warn('[Alspotron] Failed to inject process.');
+    return false;
   }
 
   public deleteProcess(pid: number) {
@@ -320,13 +319,13 @@ export class OverlayManager extends EventEmitter {
         image.getSize().height,
       );
 
-      if (this.tmp) {
-        this.tmp
+      if (this.overlay2) {
+        this.overlay2
           .updateBitmap(image.getSize().width, image.getBitmap())
           .catch(() => {
-            if (this.tmp) {
-              this.tmp.destroy();
-              this.tmp = null;
+            if (this.overlay2) {
+              this.overlay2.destroy();
+              this.overlay2 = null;
             }
           });
       }
@@ -391,9 +390,9 @@ export class OverlayManager extends EventEmitter {
     window.on('close', () => {
       config.unwatch(onUpdate);
 
-      if (this.tmp) {
-        this.tmp.destroy();
-        this.tmp = null;
+      if (this.overlay2) {
+        this.overlay2.destroy();
+        this.overlay2 = null;
       }
     });
 
