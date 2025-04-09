@@ -38,11 +38,15 @@ export class OverlayManager extends EventEmitter {
 
       // HACK: import statement is not work because Electron's threading model is different from Windows COM's
       wql =
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         require('@jellybrick/wql-process-monitor') as typeof import('@jellybrick/wql-process-monitor');
+
       nodeWindowManager =
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         require('node-window-manager') as typeof import('node-window-manager');
 
-      asdfOverlay = require('asdf-overlay-node') as typeof asdfOverlay;
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
+      asdfOverlay = require('asdf-overlay-node');
     }
 
     this.init();
