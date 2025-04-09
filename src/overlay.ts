@@ -157,7 +157,7 @@ export class OverlayManager extends EventEmitter {
               asdfOverlay.percent(1.0),
             );
           } catch (e) {
-            console.log('[Alspotron] fallback to legacy overlay', e);
+            console.warn('[Alspotron] fallback to legacy overlay', e);
             this.overlay.injectProcess(window);
           }
         } else {
