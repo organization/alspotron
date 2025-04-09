@@ -17,9 +17,28 @@ export const MainPage = () => {
           <Icon name={'power_settings_new'} size={'1.8rem'}/>
         </Button>
       </Header>
-      <TextInput placeholder={'검색'}/>
-      <Box bg={'gray.50'} r={'sm'} bc={'gray.200'} bd={'md'} p={'md'} style={{ flex: 1 }}>
+      <TextInput placeholder={'검색'} shadow={'md'}/>
+      <Box
+        c={'surface.text'}
+        bg={'surface.default'}
+        bc={'surface.highest'}
+        bd={'md'}
+        p={'md'}
+        gap={'md'}
+        r={'sm'}
+        shadow={'md'}
+        style={{ flex: 1 }}
+      >
         Preview
+        <Button>
+          default
+        </Button>
+        <Button variant={'primary'}>
+          primary
+        </Button>
+        <Button variant={'text'}>
+          text
+        </Button>
       </Box>
       <Box w={'100%'} direction={'row'} gap={'sm'} wrap={'wrap'} class={toolContainerStyle}>
         <Button variant={'text'} gap={'xs'} class={toolStyle}>
@@ -30,7 +49,7 @@ export const MainPage = () => {
           <Icon name={'search'} size={'1.8rem'}/>
           고급 검색
         </Button>
-        <Show when={config()?.developer}>
+        <Show when={config()?.developer || true}>
           <DevtoolButton/>
         </Show>
       </Box>

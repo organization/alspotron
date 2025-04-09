@@ -3,6 +3,8 @@ import { Box, Button, Icon, Popover, Item, Text, createClickAway } from '@alspot
 
 import { useConfig } from '../../../../hooks/useConfig';
 
+import { popupStyle } from './DevtoolButton.css';
+
 export const DevtoolButton = () => {
   const [open, setOpen] = createSignal(false);
   const [config] = useConfig();
@@ -20,13 +22,15 @@ export const DevtoolButton = () => {
     <Popover
       open={open()}
       placement={'top-end'}
+      offset={4}
+      size={4}
       element={
         <Box
           ref={track}
           w={'20rem'}
           r={'md'}
-          bg={'gray.50'}
           shadow={'md'}
+          class={popupStyle}
         >
           <Item.Group>
             <Text variant={'caption'} px={'sm'} py={'xs'}>

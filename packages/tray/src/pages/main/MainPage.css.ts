@@ -1,6 +1,6 @@
 import { style } from '@vanilla-extract/css';
 
-import { vars } from '@alspotron/ui/vars';
+import { vars } from '@alspotron/ui/css-runtime';
 
 export const toolContainerStyle = style({
   display: 'flex',
