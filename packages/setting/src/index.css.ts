@@ -27,10 +27,10 @@ export const {
         hover: vars.color.gray[300],
       },
       surface: {
-        default: alpha(vars.color.gray[50], 0.4),
+        default: alpha(vars.color.gray[50], 0.6),
         text: vars.color.gray[950],
-        high: alpha(vars.color.gray[100], 0.4),
-        highest: alpha(vars.color.gray[200], 0.4),
+        high: alpha(vars.color.gray[100], 0.6),
+        highest: alpha(vars.color.gray[200], 0.6),
       },
       text: {
         default: vars.color.gray[950],
@@ -61,10 +61,10 @@ export const {
         hover: vars.color.gray[600],
       },
       surface: {
-        default: alpha(vars.color.gray[950], 0.4),
+        default: alpha(vars.color.gray[950], 0.6),
         text: vars.color.gray[50],
-        high: alpha(vars.color.gray[900], 0.2),
-        highest: alpha(vars.color.gray[800], 0.2),
+        high: alpha(vars.color.gray[900], 0.6),
+        highest: alpha(vars.color.gray[800], 0.6),
       },
       text: {
         default: vars.color.gray[50],

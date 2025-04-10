@@ -105,9 +105,9 @@ export const Select = <T extends ValidComponent = 'input'>(props: SelectProps<T>
       element={(
         <Box
           ref={setElement}
-          bg={'gray.50'}
+          bg={'surface.default'}
           bd={'md'}
-          bc={'gray.200'}
+          bc={'surface.highest'}
           r={'md'}
           shadow={'md'}
           style={{

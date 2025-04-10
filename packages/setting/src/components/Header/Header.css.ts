@@ -1,21 +1,28 @@
 import { style } from '@vanilla-extract/css';
-import { vars } from '@alspotron/ui/css-runtime';
+import { alpha, vars } from '@alspotron/ui/css-runtime';
 
 export const containerStyle = style({
+  position: 'relative',
+
   width: '100%',
 
-  marginTop: '38px',
   display: 'flex',
   flexDirection: 'row',
-  justifyContent: 'flex-start',
+  justifyContent: 'flex-end',
   alignItems: 'center',
-  gap: vars.space.sm,
-
-  // marginLeft: '76px', // only in macOS
+  gap: vars.space.xs,
+  padding: vars.space.xs,
 
   WebkitUserSelect: 'none',
   // @ts-ignore: electron only rule
   WebkitAppRegion: 'drag',
+});
+
+export const titleContainerStyle = style({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
 });
 
 export const logoStyle = style({
@@ -27,5 +34,17 @@ export const logoStyle = style({
 
 export const titleStyle = style({
   userSelect: 'none',
-  flex: 1,
+});
+
+export const buttonStyle = style({
+  // @ts-ignore: electron only rule
+  WebkitAppRegion: 'no-drag',
+});
+
+export const closeButtonStyle = style({
+  selectors: {
+    '&:hover': {
+      backgroundColor: `${alpha(vars.color.red[500], 0.2)} !important`,
+    },
+  },
 });

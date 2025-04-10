@@ -61,7 +61,8 @@ export class TrayWindowProvider implements WindowProvider {
 
     if (this.window instanceof MicaBrowserWindow) {
       this.window.setAutoTheme();
-      this.window.setMicaAcrylicEffect();
+      this.window.setMicaEffect();
+      // this.window.setMicaAcrylicEffect();
     }
 
     this.window.webContents.setWindowOpenHandler(({ url }) => {
