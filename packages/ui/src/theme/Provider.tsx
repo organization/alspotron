@@ -4,6 +4,7 @@ import { JSX } from 'solid-js/jsx-runtime';
 
 import { lightThemeClass, darkThemeClass } from './vars.css';
 
+const [isDarkTheme, setIsDarkTheme] = createSignal(false);
 export const [themeMode, setThemeMode] = createSignal<'system' | 'light' | 'dark'>('system');
 
 export type ThemeProviderProps = {
@@ -27,18 +28,22 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
       if (matches()) {
         document.body.classList.remove(light());
         document.body.classList.add(dark());
+        setIsDarkTheme(true);
       } else {
         document.body.classList.remove(dark());
         document.body.classList.add(light());
+        setIsDarkTheme(false);
       }
     } else {
       if (themeMode() === 'dark') {
         document.body.classList.remove(light());
         document.body.classList.add(dark());
+        setIsDarkTheme(true);
       }
       if (themeMode() === 'light') {
         document.body.classList.remove(dark());
         document.body.classList.add(light());
+        setIsDarkTheme(false);
       }
     }
 
@@ -46,4 +51,8 @@ export const ThemeProvider = (props: ThemeProviderProps) => {
   });
 
   return props.children;
+};
+
+export {
+  isDarkTheme,
 };

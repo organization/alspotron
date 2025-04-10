@@ -9,7 +9,9 @@ import logo from '../../assets/icon_music.png';
 export type LayoutProps<T extends string> = RouteProps<T>;
 export const Layout = <T extends string>(props: LayoutProps<T>) => {
   return (
-    <Box w={'100%'} h={'100%'}>
+    <Box w={'100%'} h={'100%'} style={{
+
+    }}>
       <Header />
       <main class={containerStyle}>
         <Box w={'30rem'}>

@@ -244,6 +244,9 @@ importers:
 
   packages/setting:
     dependencies:
+      '@alspotron/shared':
+        specifier: workspace:../shared
+        version: link:../shared
       '@alspotron/ui':
         specifier: workspace:../ui
         version: link:../ui
@@ -273,8 +276,30 @@ importers:
         specifier: 5.8.3
         version: 5.8.3
 
+  packages/shared:
+    dependencies:
+      solid-js:
+        specifier: 1.9.5
+        version: 1.9.5
+    devDependencies:
+      '@farmfe/core':
+        specifier: 1.7.2
+        version: 1.7.2(bufferutil@4.0.9)(supports-color@10.0.0)(utf-8-validate@6.0.5)
+      '@farmfe/js-plugin-dts':
+        specifier: 0.6.4
+        version: 0.6.4
+      typescript:
+        specifier: 5.8.3
+        version: 5.8.3
+      vite-plugin-solid:
+        specifier: 2.11.6
+        version: 2.11.6(solid-js@1.9.5)(supports-color@10.0.0)(vite@6.2.3(@types/node@22.14.0)(jiti@1.21.7)(terser@5.39.0)(yaml@2.6.1))
+
   packages/tray:
     dependencies:
+      '@alspotron/shared':
+        specifier: workspace:../shared
+        version: link:../shared
       '@alspotron/ui':
         specifier: workspace:../ui
         version: link:../ui
