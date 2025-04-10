@@ -1,9 +1,9 @@
 import { RouteProps } from '@solidjs/router';
-import { Box, Item } from '@alspotron/ui';
+import { Box, Item, TextInput } from '@alspotron/ui';
 
 import { Header } from '../Header';
 
-import { containerStyle, logoStyle } from './Layout.css';
+import { containerStyle, contentStyle, logoStyle } from './Layout.css';
 import logo from '../../assets/icon_music.png';
 
 export type LayoutProps<T extends string> = RouteProps<T>;
@@ -15,6 +15,12 @@ export const Layout = <T extends string>(props: LayoutProps<T>) => {
       <Header />
       <main class={containerStyle}>
         <Box w={'30rem'}>
+          <Item.Group>
+            <TextInput
+              left={'search'}
+              placeholder={'검색'}
+            />
+          </Item.Group>
           <Item.Group>
             <Item
               name={'Alspotron'}
@@ -39,6 +45,7 @@ export const Layout = <T extends string>(props: LayoutProps<T>) => {
           r={'sm'}
           bg={'surface.default'}
           shadow={'sm'}
+          class={contentStyle}
         >
           {props.children}
         </Box>

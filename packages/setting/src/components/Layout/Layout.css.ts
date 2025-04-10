@@ -11,7 +11,7 @@ export const logoStyle = style({
 
 export const containerStyle = style({
   width: '100%',
-  height: '100%',
+  height: 'calc(100% - 3.6rem)',
 
   display: 'flex',
   flexDirection: 'row',
@@ -21,4 +21,14 @@ export const containerStyle = style({
   padding: vars.space.xs,
   paddingTop: 0,
   paddingLeft: 0,
+});
+
+export const contentStyle = style({
+  overflow: 'auto',
+
+  selectors: {
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
+  },
 });
