@@ -1,4 +1,4 @@
-import { RouteProps } from '@solidjs/router';
+import { A, RouteProps, useLocation } from '@solidjs/router';
 import { Box, Item, TextInput } from '@alspotron/ui';
 
 import { Header } from '../Header';
@@ -8,10 +8,13 @@ import logo from '../../assets/icon_music.png';
 
 export type LayoutProps<T extends string> = RouteProps<T>;
 export const Layout = <T extends string>(props: LayoutProps<T>) => {
-  return (
-    <Box w={'100%'} h={'100%'} style={{
+  const location = useLocation();
+  const match = <const T,>(link: string, value: T): T | undefined => (
+    location.pathname.startsWith(link) ? value : undefined
+  );
 
-    }}>
+  return (
+    <Box w={'100%'} h={'100%'}>
       <Header />
       <main class={containerStyle}>
         <Box w={'30rem'}>
@@ -23,20 +26,31 @@ export const Layout = <T extends string>(props: LayoutProps<T>) => {
           </Item.Group>
           <Item.Group>
             <Item
+              as={A}
+              clickable
               name={'Alspotron'}
               left={<img src={logo} class={logoStyle} alt={'logo'}/>}
-              shadow={'lg'}
-              bg={'surface.highest'}
+              shadow={match('/info', 'lg')}
+              bg={match('/info', 'surface.default')}
+              href={'/info'}
             />
             <Item
+              as={A}
+              clickable
               name={'일반'}
               leftIcon={'settings'}
-              clickable
+              href={'/general'}
+              shadow={match('/general', 'lg')}
+              bg={match('/general', 'surface.default')}
             />
             <Item
-              name={'뷰어'}
-              leftIcon={'grid_view'}
+              as={A}
               clickable
+              name={'Devtool'}
+              leftIcon={'bug_report'}
+              href={'/dev'}
+              shadow={match('/dev', 'lg')}
+              bg={match('/dev', 'surface.default')}
             />
           </Item.Group>
         </Box>

@@ -4,7 +4,7 @@ import { JSX, Show } from 'solid-js';
 export type SettingItemProps = {
   name: string;
   description?: string;
-  icon?: string;
+  icon?: string | JSX.Element;
 
   children?: JSX.Element;
 }
@@ -22,10 +22,11 @@ export const SettingItem = (props: SettingItemProps) => {
       justify={'space-between'}
     >
       <Box direction={'row'} gap={'md'} align={'center'}>
-        <Show when={props.icon}>
-          {(icon) => (
-            <Icon name={icon()} size={'2.0rem'} />
-          )}
+        <Show
+          when={typeof props.icon === 'string'}
+          fallback={props.icon}
+        >
+          <Icon name={props.icon as string} size={'2.0rem'} />
         </Show>
         <Box gap={'xs'}>
           <Text variant={'body'}>
