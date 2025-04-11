@@ -106,7 +106,7 @@ export const InfoPage = () => {
             {rootPackage.description}
           </Text>
         </Box>
-        <Box w={'50%'} bc={'surface.highest'} bd={'md'} r={'md'}>
+        <Box w={'100%'} bc={'surface.highest'} bd={'md'} r={'md'}>
           <Item.Group>
             <Item
               leftIcon={'verified'}

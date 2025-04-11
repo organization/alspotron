@@ -48,8 +48,7 @@ export class SettingWindowProvider implements WindowProvider {
     });
 
     if (this.window instanceof MicaBrowserWindow) {
-      // this.window.setAutoTheme();
-      this.window.setLightTheme();
+      this.window.setAutoTheme();
       this.window.setMicaTabbedEffect();
     }
 

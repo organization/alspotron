@@ -1,23 +1,26 @@
-import { Box, Icon, Text } from '@alspotron/ui';
-import { JSX, Show } from 'solid-js';
+import { Box, BoxProps, Button, Icon, Text } from '@alspotron/ui';
+import { createSignal, For, JSX, Show } from 'solid-js';
 
-export type SettingItemProps = {
+import { expandStyle, itemGroupStyle, itemStyle, withGroupStyle } from './SettingItem.css';
+
+type BaseSettingItemProps = {
   name: string;
   description?: string;
   icon?: string | JSX.Element;
 
   children?: JSX.Element;
+};
+export type SettingItemProps = BaseSettingItemProps & {
+  items?: BaseSettingItemProps[];
 }
-export const SettingItem = (props: SettingItemProps) => {
+const BaseSettingItem = (props: BoxProps<'div'> & BaseSettingItemProps) => {
   return (
     <Box
+      {...props}
       direction={'row'}
       w={'100%'}
-      r={'lg'}
       p={'lg'}
       gap={'md'}
-      bd={'md'}
-      bc={'surface.highest'}
       align={'center'}
       justify={'space-between'}
     >
@@ -26,7 +29,7 @@ export const SettingItem = (props: SettingItemProps) => {
           when={typeof props.icon === 'string'}
           fallback={props.icon}
         >
-          <Icon name={props.icon as string} size={'2.0rem'} />
+          <Icon name={props.icon as string} size={'2.0rem'}/>
         </Show>
         <Box gap={'xs'}>
           <Text variant={'body'}>
@@ -39,7 +42,69 @@ export const SettingItem = (props: SettingItemProps) => {
           </Show>
         </Box>
       </Box>
-      {props.children}
+      <Box
+        direction={'row'}
+        justify={'flex-end'}
+        align={'center'}
+        gap={'sm'}
+      >
+        {props.children}
+      </Box>
+    </Box>
+  );
+};
+
+export const SettingItem = (props: SettingItemProps) => {
+  const hasGroup = () => (props.items?.length ?? 0) > 0;
+  const [expand, setExpand] = createSignal(false);
+
+  return (
+    <Box
+      w={'100%'}
+      bd={'md'}
+      bc={'surface.highest'}
+      r={'lg'}
+    >
+      <BaseSettingItem
+        name={props.name}
+        description={props.description}
+        icon={props.icon}
+        classList={{
+          [withGroupStyle]: hasGroup() && expand(),
+        }}
+      >
+        {props.children}
+        <Show when={hasGroup()}>
+          <Button
+            variant={'icon'}
+            onClick={() => setExpand(!expand())}
+          >
+            <Icon
+              name={'expand_more'}
+              classList={{
+                [expandStyle.default]: true,
+                [expandStyle.expand]: expand(),
+              }}
+            />
+          </Button>
+        </Show>
+      </BaseSettingItem>
+      <Show when={hasGroup() && expand()}>
+        <div class={itemGroupStyle}>
+          <For each={props.items}>
+            {(item) => (
+              <BaseSettingItem
+                name={item.name}
+                description={item.description}
+                icon={item.icon}
+                class={itemStyle}
+              >
+                {item.children}
+              </BaseSettingItem>
+            )}
+          </For>
+        </div>
+      </Show>
     </Box>
   );
 };

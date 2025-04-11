@@ -15,8 +15,14 @@ export const cardStyle = style({
 });
 
 export const profileStyle = style({
-  width: '7.2rem',
-  height: '7.2rem',
+  width: '100%',
+  height: '100%',
+  minWidth: '2.4rem',
+  minHeight: '2.4rem',
+  maxWidth: '7.2rem',
+  maxHeight: '7.2rem',
+
+  aspectRatio: '1 / 1',
   borderRadius: '50%',
 });
 
