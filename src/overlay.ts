@@ -4,6 +4,7 @@ import { EventEmitter } from 'events';
 
 import { app } from 'electron';
 import { hmc } from 'hmc-win32';
+import { type Overlay } from 'asdf-overlay-node';
 
 import { config, gameList } from './config';
 import { IOverlay } from './electron-overlay';
@@ -15,6 +16,8 @@ type IOverlay = typeof IOverlay;
 let wql: typeof import('@jellybrick/wql-process-monitor') | undefined;
 let nodeWindowManager: typeof import('node-window-manager') | undefined;
 
+let asdfOverlay: typeof import('asdf-overlay-node') | undefined;
+
 export class OverlayManager extends EventEmitter {
   private overlay: IOverlay | null = null;
   private provider: OverlayWindowProvider | null = null;
@@ -25,6 +28,8 @@ export class OverlayManager extends EventEmitter {
     | ((webContents: Electron.WebContents) => void)
     | null = null;
 
+  private overlay2: Overlay | null = null;
+
   constructor() {
     super();
 
@@ -33,9 +38,15 @@ export class OverlayManager extends EventEmitter {
 
       // HACK: import statement is not work because Electron's threading model is different from Windows COM's
       wql =
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         require('@jellybrick/wql-process-monitor') as typeof import('@jellybrick/wql-process-monitor');
+
       nodeWindowManager =
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         require('node-window-manager') as typeof import('node-window-manager');
+
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-unsafe-assignment
+      asdfOverlay = require('asdf-overlay-node');
     }
 
     this.init();
@@ -88,70 +99,97 @@ export class OverlayManager extends EventEmitter {
   }
 
   public async createProcess(pid: number, path: string): Promise<boolean> {
-    if (!wql || !nodeWindowManager) return Promise.resolve(false);
+    if (!wql || !nodeWindowManager) return false;
     const windowManager = nodeWindowManager.windowManager;
 
-    return new Promise((resolve) => {
-      let injectCount = 0;
+    const tryInject = async (): Promise<boolean> => {
+      const isInit = this.overlay
+        ?.getTopWindows(true)
+        .some((window) => window.processId === pid);
+      if (!isInit || !this.overlay || !nodeWindowManager) {
+        return false;
+      }
 
-      const tryToInject = () => {
-        if (!this.overlay || !nodeWindowManager) return;
-        const isInit = this.overlay
-          .getTopWindows(true)
-          .some((window) => window.processId === pid);
+      console.log('[Alspotron] try to inject process:', pid);
 
-        injectCount += 1;
-        if (injectCount > 20) {
-          resolve(false);
-          console.warn('[Alspotron] Failed to inject process.');
-          return;
+      let isFirstRun = false;
+      if (this.registeredProcesses.length === 0) {
+        const window = windowManager
+          .getWindows()
+          .find((window) => window.processId === pid);
+        if (window) this.scaleFactor = window.getMonitor().getScaleFactor();
+
+        this.provider = new OverlayWindowProvider(nodeWindowManager);
+        this.applyCorsHeader?.(this.provider.window.webContents);
+        this.overlay.start();
+        isFirstRun = true;
+      }
+
+      for (const window of this.overlay.getTopWindows(true)) {
+        if (
+          window.processId !== pid ||
+          this.registeredProcesses.some((it) => it.pid === pid)
+        ) {
+          continue;
         }
 
-        if (!isInit) {
-          setTimeout(tryToInject, 1000);
-          return;
-        }
+        if (asdfOverlay) {
+          try {
+            if (this.overlay2) {
+              this.overlay2.destroy();
+              this.overlay2 = null;
+            }
 
-        console.log('[Alspotron] try to inject process:', pid);
-        let isFirstRun = false;
-        if (this.registeredProcesses.length === 0) {
-          const window = windowManager
-            .getWindows()
-            .find((window) => window.processId === pid);
-          if (window) this.scaleFactor = window.getMonitor().getScaleFactor();
-
-          this.provider = new OverlayWindowProvider(nodeWindowManager);
-          this.applyCorsHeader?.(this.provider.window.webContents);
-          this.overlay.start();
-          isFirstRun = true;
-        }
-
-        for (const window of this.overlay.getTopWindows(true)) {
-          if (
-            window.processId === pid &&
-            !this.registeredProcesses.some((it) => it.pid === pid)
-          ) {
-            this.overlay.injectProcess(window);
-
-            this.registeredProcesses.push({
+            this.overlay2 = await asdfOverlay.Overlay.attach(
+              // electron asar path fix
+              asdfOverlay
+                .defaultDllDir()
+                .replace('app.asar', 'app.asar.unpacked'),
               pid,
-              path,
-            });
-            this.emit('register-process', pid);
-            this.provider?.setAttachedProcess(this.registeredProcesses[0].pid);
-            this.setGamePath(path);
+              1000,
+            );
+            await this.overlay2.setPosition(
+              asdfOverlay.percent(1.0),
+              asdfOverlay.percent(1.0),
+            );
+            await this.overlay2.setAnchor(
+              asdfOverlay.percent(1.0),
+              asdfOverlay.percent(1.0),
+            );
+          } catch (e) {
+            console.warn('[Alspotron] fallback to legacy overlay', e);
+            this.overlay.injectProcess(window);
           }
+        } else {
+          this.overlay.injectProcess(window);
         }
 
-        if (this.provider && isFirstRun) {
-          this.addOverlayWindow('StatusBar', this.provider.window, 0, 0, true);
-        }
+        this.registeredProcesses.push({
+          pid,
+          path,
+        });
+        this.emit('register-process', pid);
+        this.provider?.setAttachedProcess(this.registeredProcesses[0].pid);
+        this.setGamePath(path);
+      }
 
-        resolve(true);
-      };
+      if (this.provider && isFirstRun) {
+        this.addOverlayWindow('StatusBar', this.provider.window, 0, 0, true);
+      }
 
-      tryToInject();
-    });
+      return true;
+    };
+
+    for (let currentTry = 0; currentTry < 20; currentTry++) {
+      if (await tryInject()) {
+        return true;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+
+    console.warn('[Alspotron] Failed to inject process.');
+    return false;
   }
 
   public deleteProcess(pid: number) {
@@ -282,6 +320,17 @@ export class OverlayManager extends EventEmitter {
         image.getSize().width,
         image.getSize().height,
       );
+
+      if (this.overlay2) {
+        this.overlay2
+          .updateBitmap(image.getSize().width, image.getBitmap())
+          .catch(() => {
+            if (this.overlay2) {
+              this.overlay2.destroy();
+              this.overlay2 = null;
+            }
+          });
+      }
     });
 
     let isFocused = false;
@@ -318,6 +367,7 @@ export class OverlayManager extends EventEmitter {
         };
 
         this.overlay?.sendWindowBounds(window.id, { rect: bounds });
+
         this.provider?.updateWindowConfig();
         throttle = null;
       }, 1000);
@@ -341,6 +391,11 @@ export class OverlayManager extends EventEmitter {
 
     window.on('close', () => {
       config.unwatch(onUpdate);
+
+      if (this.overlay2) {
+        this.overlay2.destroy();
+        this.overlay2 = null;
+      }
     });
 
     window.webContents.on('cursor-changed', (_, type) => {
