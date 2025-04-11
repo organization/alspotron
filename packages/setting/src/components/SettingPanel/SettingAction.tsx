@@ -39,7 +39,7 @@ export const SettingAction = (props: SettingActionProps) => {
           variant={(props as ButtonSettingItem).variant}
           onClick={(props as ButtonSettingItem).onClick}
         >
-          {(props as ButtonSettingItem).name}
+          {(props as ButtonSettingItem).buttonName}
         </Button>
       </Match>
       <Match when={props.type === 'input'}>

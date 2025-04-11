@@ -6,7 +6,7 @@ import { MaintainerCard } from './components/MaintainerCard';
 import { SettingGroup } from '../../components/SettingGroup';
 import { SettingItem } from '../../components/SettingItem';
 
-import { logoStyle, profileStyle } from './InfoPage.css';
+import { logoStyle, maintainerContainerStyle, profileStyle } from './InfoPage.css';
 import Logo from '../../assets/icon_music.png';
 
 import rootPackage from '../../../../../package.json';
@@ -133,7 +133,7 @@ export const InfoPage = () => {
         </Box>
       </Box>
       <SettingGroup name={'제작자'}>
-        <Box direction={'row'} gap={'md'}>
+        <Box direction={'row'} gap={'md'} class={maintainerContainerStyle}>
           <For each={Maintainers}>
             {(maintainer) => (
               <MaintainerCard

@@ -16,7 +16,7 @@ export const SettingPanel = (props: SettingPanelProps) => {
   return (
     <Box p={'xl'} gap={'xl'}>
       <Text variant={'h2'}>
-        일반
+        {props.name}
       </Text>
       <For each={props.groups}>
         {(group) => (

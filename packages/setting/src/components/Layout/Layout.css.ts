@@ -9,6 +9,24 @@ export const logoStyle = style({
   userSelect: 'none',
 });
 
+export const sidebarStyle = style({
+  minWidth: '25rem',
+
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'stretch',
+
+  padding: `0 ${vars.space.sm}`,
+});
+export const sideTopStyle = style({
+  paddingBottom: vars.space.xs,
+});
+export const sideBottomStyle = style({
+  marginTop: 'auto',
+  paddingBottom: vars.space.xs,
+});
+
 export const containerStyle = style({
   width: '100%',
   height: 'calc(100% - 3.6rem)',

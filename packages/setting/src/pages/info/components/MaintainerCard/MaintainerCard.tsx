@@ -1,7 +1,7 @@
 import { For, Show } from 'solid-js';
 import { Box, Button, Text, Icon} from '@alspotron/ui';
 
-import { buttonStyle, cardStyle, profileStyle } from './Maintainer.css';
+import { buttonStyle, cardStyle, profileStyle } from './MaintainerCard.css';
 
 export type MaintainerCardProps = {
   name: string;
@@ -15,8 +15,8 @@ export const MaintainerCard = (props: MaintainerCardProps) => {
       justify={'center'}
       align={'center'}
       r={'md'}
-      gap={'md'}
       bg={'surface.highest'}
+      gap={'md'}
       p={'xl'}
       class={cardStyle}
     >

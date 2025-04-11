@@ -22,7 +22,7 @@ export type SwitchSettingItem = BaseSettingItem & {
 export type ButtonSettingItem = BaseSettingItem & {
   type: 'button';
   variant?: ButtonProps['variant'];
-  name: string;
+  buttonName: string;
   onClick: () => void;
 };
 export type TextInputSettingItem = BaseSettingItem & {
