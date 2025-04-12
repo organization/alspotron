@@ -19,6 +19,7 @@ let nodeWindowManager: typeof import('node-window-manager') | undefined;
 let asdfOverlay: typeof import('asdf-overlay-node') | undefined;
 
 export class OverlayManager extends EventEmitter {
+  private newOverlay: Overlay | null = null;
   private overlay: IOverlay | null = null;
   private provider: OverlayWindowProvider | null = null;
   private registeredProcesses: { pid: number; path: string }[] = [];
@@ -27,8 +28,6 @@ export class OverlayManager extends EventEmitter {
   private applyCorsHeader:
     | ((webContents: Electron.WebContents) => void)
     | null = null;
-
-  private overlay2: Overlay | null = null;
 
   constructor() {
     super();
@@ -133,14 +132,14 @@ export class OverlayManager extends EventEmitter {
           continue;
         }
 
+        if (this.newOverlay) {
+          this.newOverlay.destroy();
+          this.newOverlay = null;
+        }
+
         if (asdfOverlay) {
           try {
-            if (this.overlay2) {
-              this.overlay2.destroy();
-              this.overlay2 = null;
-            }
-
-            this.overlay2 = await asdfOverlay.Overlay.attach(
+            this.newOverlay = await asdfOverlay.Overlay.attach(
               // electron asar path fix
               asdfOverlay
                 .defaultDllDir()
@@ -148,15 +147,17 @@ export class OverlayManager extends EventEmitter {
               pid,
               1000,
             );
-            await this.overlay2.setPosition(
+            await this.newOverlay.setPosition(
               asdfOverlay.percent(1.0),
               asdfOverlay.percent(1.0),
             );
-            await this.overlay2.setAnchor(
+            await this.newOverlay.setAnchor(
               asdfOverlay.percent(1.0),
               asdfOverlay.percent(1.0),
             );
           } catch (e) {
+            this.newOverlay?.destroy();
+            this.newOverlay = null;
             console.warn('[Alspotron] fallback to legacy overlay', e);
             this.overlay.injectProcess(window);
           }
@@ -321,13 +322,13 @@ export class OverlayManager extends EventEmitter {
         image.getSize().height,
       );
 
-      if (this.overlay2) {
-        this.overlay2
+      if (this.newOverlay) {
+        this.newOverlay
           .updateBitmap(image.getSize().width, image.getBitmap())
           .catch(() => {
-            if (this.overlay2) {
-              this.overlay2.destroy();
-              this.overlay2 = null;
+            if (this.newOverlay) {
+              this.newOverlay.destroy();
+              this.newOverlay = null;
             }
           });
       }
@@ -392,9 +393,9 @@ export class OverlayManager extends EventEmitter {
     window.on('close', () => {
       config.unwatch(onUpdate);
 
-      if (this.overlay2) {
-        this.overlay2.destroy();
-        this.overlay2 = null;
+      if (this.newOverlay) {
+        this.newOverlay.destroy();
+        this.newOverlay = null;
       }
     });
 
