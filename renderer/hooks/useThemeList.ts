@@ -1,4 +1,4 @@
-import { createSignal } from 'solid-js';
+import { createSignal, onMount } from 'solid-js';
 
 import type { PartialDeep } from 'type-fest';
 import type { StyleConfig, ThemeList } from '../../common/schema';
@@ -6,15 +6,11 @@ import type { StyleConfig, ThemeList } from '../../common/schema';
 const useThemeList = () => {
   const [themeList, setThemeList] = createSignal<Required<ThemeList>>({});
 
-  (async () => {
-    const result = (await window.ipcRenderer.invoke(
-      'get-theme-list',
-    )) as Record<string, StyleConfig>;
-
-    setThemeList(result || {});
-  })();
-
   window.ipcRenderer.on('theme-list', (_, data: ThemeList) => {
+    setRequiredList(data);
+  });
+
+  const setRequiredList = (data: ThemeList) => {
     const requiredData = Object.entries(data).reduce((prev, [key, value]) => {
       if (!value) return prev;
 
@@ -25,6 +21,14 @@ const useThemeList = () => {
     }, {});
 
     setThemeList(requiredData);
+  };
+
+  onMount(async () => {
+    const result = (await window.ipcRenderer.invoke(
+      'get-theme-list',
+    )) as Record<string, StyleConfig>;
+
+    setRequiredList(result || {});
   });
 
   const setList = async (

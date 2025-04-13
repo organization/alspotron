@@ -187,7 +187,8 @@ export class TunaObsProvider extends BaseSourceProvider {
     };
 
     if (data.data.status === 'playing' || data.data.status === 'paused') {
-      const id = `${data.data.title}:${data.data.cover_url}`;
+      const coverUrl = data.data.cover_url ?? data.data.cover;
+      const id = `${data.data.title}:${coverUrl}`;
       const lastLyric =
         this.lastUpdateData?.data.type !== 'idle' &&
         this.lastUpdateData?.data.id === id
@@ -196,12 +197,12 @@ export class TunaObsProvider extends BaseSourceProvider {
 
       result.data = {
         type: data.data.status,
-        id: `${data.data.title}:${data.data.cover_url}`,
+        id: `${data.data.title}:${coverUrl}`,
         title: data.data.title ?? '',
         artists: data.data.artists ?? [],
         progress: data.data.progress ?? 0,
         duration: data.data.duration ?? 0,
-        coverUrl: data.data.cover_url ?? '',
+        coverUrl: coverUrl ?? '',
         playerLyrics: data.data.lyrics ?? lastLyric,
         metadata: data,
       };

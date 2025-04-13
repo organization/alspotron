@@ -12,6 +12,7 @@ export const TunaOBSUpdateDataSchema = z.object({
   progress: z.number().optional(),
   duration: z.number().optional(),
   cover_url: z.string().optional(),
+  cover: z.string().optional(),
   lyrics: z.record(z.string(), z.array(z.string())).optional(),
 });
 
