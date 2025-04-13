@@ -7,9 +7,9 @@ import Modal from '../../components/Modal';
 import useConfig from '../../hooks/useConfig';
 import useThemeList from '../../hooks/useThemeList';
 
-import presetThemes from '../../../common/presets';
+import presetThemes from '../../../packages/shared/src/presets';
 import type { StyleConfig } from '../../../common/schema';
-import { DEFAULT_STYLE, PRESET_PREFIX } from '../../../common/constants';
+import { DEFAULT_STYLE, PRESET_PREFIX } from '../../../packages/shared/src/constants/constants';
 
 const ThemeListContainer = () => {
   const [config, setConfig] = useConfig();

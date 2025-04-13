@@ -8,9 +8,9 @@ import type { WindowProvider } from './types';
 
 import { config, themeList } from '../config';
 import { deepmerge } from '../../utils/merge';
-import { DEFAULT_CONFIG, DEFAULT_STYLE, PRESET_PREFIX } from '../../common/constants';
+import { DEFAULT_CONFIG, DEFAULT_STYLE, PRESET_PREFIX } from '../../packages/shared/src/constants/constants';
 import { getFile } from '../../utils/resource';
-import presetThemes from '../../common/presets';
+import presetThemes from '../../packages/shared/src/presets';
 import { isMacOS, isWin32 } from '../../utils/is';
 
 const iconPath = getFile('./assets/icon_square.png');

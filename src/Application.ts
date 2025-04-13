@@ -27,7 +27,7 @@ import type { OverlayManager } from './overlay';
 
 import { AlsongLyricProvider, LrclibLyricProvider, TunaObsProvider, WebNowPlayingProvider } from './provider';
 
-import { DEFAULT_CONFIG } from '../common/constants';
+import { DEFAULT_CONFIG } from '../packages/shared/src/constants/constants';
 import { getTranslation } from '../common/intl';
 
 import type { Config, GameList, LyricMapper, StyleConfig } from '../common/schema';
@@ -37,7 +37,7 @@ import { getFile } from '../utils/resource';
 import { isMacOS, isWin32 } from '../utils/is';
 
 import type { UpdateData } from '../common/schema';
-import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../common/plugins';
+import type { OverrideMap, OverrideParameterMap, PluginEventMap } from '../packages/shared/src/model/plugins';
 
 // Set application name for Windows 10+ notifications
 if (isWin32()) {

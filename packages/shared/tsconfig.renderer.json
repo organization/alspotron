@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.renderer",
+  "include": [
+    "renderer/"
+  ],
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./dist/renderer/types"
+  }
+}

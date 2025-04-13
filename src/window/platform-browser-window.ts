@@ -1,7 +1,7 @@
 import { IS_WINDOWS_11, MicaBrowserWindow } from 'mica-electron';
 import { BrowserWindow } from 'electron';
 
-import { BrowserWindow as GlassBrowserWindow } from 'glasstron';
+import { BrowserWindow as GlassBrowserWindow } from 'packages/core/glasstron';
 
 import { isWin32, isXfce } from '../../utils/is';
 

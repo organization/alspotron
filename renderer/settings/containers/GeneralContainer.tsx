@@ -10,10 +10,10 @@ import { getTranslation } from '../../../common/intl';
 import Modal from '../../components/Modal';
 import Switch from '../../components/Switch';
 import useServer from '../../hooks/useServer';
-import type { SettingOption } from '../../../common/plugins';
+import type { SettingOption } from '../../../packages/shared/src/model/plugins';
 import { SettingOptionRenderer } from '../components/SettingOptionRenderer';
 import { useLyricProvider } from '../../hooks/useLyricProvider';
-import { DEFAULT_CONFIG } from '../../../common/constants';
+import { DEFAULT_CONFIG } from '../../../packages/shared/src/constants/constants';
 
 const GeneralContainer = () => {
   const [t, { changeLanguage }] = useTransContext();

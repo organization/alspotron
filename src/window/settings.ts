@@ -3,7 +3,7 @@ import path from 'node:path';
 import { MicaBrowserWindow } from 'mica-electron';
 import { app, shell } from 'electron';
 
-import type { GlasstronOptions } from 'glasstron';
+import type { GlasstronOptions } from 'packages/core/glasstron';
 
 import type { WindowProvider } from './types';
 import { PlatformBrowserWindow } from './platform-browser-window';

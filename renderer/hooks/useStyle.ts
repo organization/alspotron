@@ -3,9 +3,9 @@ import { type Accessor, createMemo } from 'solid-js';
 import useThemeList from './useThemeList';
 import useCurrent from './useCurrent';
 
-import { DEFAULT_STYLE, PRESET_PREFIX } from '../../common/constants';
+import { DEFAULT_STYLE, PRESET_PREFIX } from '../../packages/shared/src/constants/constants';
 
-import presetThemes from '../../common/presets';
+import presetThemes from '../../packages/shared/src/presets';
 
 import type { StyleConfig } from '../../common/schema';
 

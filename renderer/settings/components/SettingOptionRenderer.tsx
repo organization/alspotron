@@ -4,7 +4,7 @@ import { Marquee } from '@suyongs/solid-utility';
 import Selector from '../../components/Select';
 import Switch from '../../components/Switch';
 
-import type { ButtonOption, NumberOption, SelectOption, SettingOption } from '../../../common/plugins';
+import type { ButtonOption, NumberOption, SelectOption, SettingOption } from '../../../packages/shared/src/model/plugins';
 
 export interface SettingOptionRendererProps<Type> {
   option: SettingOption;

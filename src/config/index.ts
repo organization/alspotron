@@ -9,7 +9,7 @@ import { createMigrator, migrateTable } from './migration';
 
 import type { State } from './state';
 
-import { VERSION } from '../../common/constants';
+import { VERSION } from '../../packages/shared/src/constants/constants';
 import { ConfigSchema, GameListSchema, LyricMapperSchema, ThemeListSchema } from '../../common/schema';
 
 let resolver: () => void = () => null;

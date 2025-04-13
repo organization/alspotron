@@ -1,6 +1,6 @@
 import PluginLoader, { type PluginLoaderOptions } from './plugin-loader';
 
-import type { Plugin, PluginEventMap, PluginState } from '../../common/plugins';
+import type { Plugin, PluginEventMap, PluginState } from '../../packages/shared/src/model/plugins';
 import type { Config } from '../../common/schema';
 
 import { SpiceifyIntegrationPlugin } from '../../plugins';

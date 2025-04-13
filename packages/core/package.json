@@ -1,0 +1,27 @@
+{
+  "name": "@alspotron/core",
+  "description": "A core for Alspotron",
+  "main": "./dist/main/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "farm dev",
+    "build": "farm build"
+  },
+  "devDependencies": {
+    "@farmfe/core": "1.7.2",
+    "typescript": "5.8.3"
+  },
+  "dependencies": {
+    "@alspotron/shared": "../shared",
+    "@electron-persist/core": "0.2.0",
+    "electron": "35.1.4",
+    "glasstron": "0.1.1",
+    "mica-electron": "1.5.16"
+  }
+}

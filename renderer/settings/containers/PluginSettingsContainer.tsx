@@ -5,7 +5,7 @@ import { For, Switch as SwitchFlow, Match, Show, createSignal } from 'solid-js';
 
 import { Marquee } from '@suyongs/solid-utility';
 
-import { type ButtonOption, SelectOption, type SettingOption } from '../../../common/plugins';
+import { type ButtonOption, SelectOption, type SettingOption } from '../../../packages/shared/src/model/plugins';
 import Card from '../../components/Card';
 import Switch from '../../components/Switch';
 import Selector from '../../components/Select';

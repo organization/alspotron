@@ -13,7 +13,7 @@ import {
 
 import { createLogger } from './v1/v1-logger';
 
-import type { Plugin, PluginProvider, PluginState } from '../../common/plugins';
+import type { Plugin, PluginProvider, PluginState } from '../../packages/shared/src/model/plugins';
 import { errorSync } from '../../utils/error';
 
 export interface PluginLoaderOptions {

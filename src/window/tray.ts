@@ -4,7 +4,7 @@ import { MicaBrowserWindow } from 'mica-electron';
 
 import { app, shell, type Rectangle, screen } from 'electron';
 
-import type { GlasstronOptions } from 'glasstron';
+import type { GlasstronOptions } from 'packages/core/glasstron';
 
 import type { WindowProvider } from './types';
 import { PlatformBrowserWindow } from './platform-browser-window';

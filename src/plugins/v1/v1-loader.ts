@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 import { createLogger } from './v1-logger';
 
-import type { Plugin, PluginContext, PluginProvider, SettingOption, UseSettingResult } from '../../../common/plugins';
+import type { Plugin, PluginContext, PluginProvider, SettingOption, UseSettingResult } from '../../../packages/shared/src/model/plugins';
 import type { Json } from '../../../utils/types';
 import type { VersionedPluginLoader, VersionedPluginPathLoader } from '../types';
 import { config } from '../../config';

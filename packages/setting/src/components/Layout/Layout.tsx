@@ -29,6 +29,7 @@ export const Layout = <T extends string>(props: LayoutProps<T>) => {
             as={A}
             clickable
             name={'일반'}
+
             leftIcon={'settings'}
             href={'/general'}
             shadow={match('/general', 'lg')}

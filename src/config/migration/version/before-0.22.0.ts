@@ -1,6 +1,6 @@
 import type { Migrator } from '../types';
 import type { LEGACY_Config0_22_0, LEGACY_Config0_23_1 } from '../../../../common/schema';
-import { DEFAULT_CONFIG } from '../../../../common/constants';
+import { DEFAULT_CONFIG } from '../../../../packages/shared/src/constants/constants';
 
 export const LEGACY_migrator0_22_0: Migrator = {
   config: (data: unknown) => {

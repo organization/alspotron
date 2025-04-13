@@ -4,7 +4,7 @@ import fsSync from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 
-import type { PluginProvider } from '../../common/plugins';
+import type { PluginProvider } from '../../packages/shared/src/model/plugins';
 
 const root = process.env.APPDATA ?? process.env.HOME ?? '';
 const URL = 'https://raw.githubusercontent.com/organization/alspotron/master/extensions/alspotron.js';

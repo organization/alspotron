@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.node",
+  "include": [
+    "main/"
+  ],
+  "compilerOptions": {
+    "declaration": true,
+    "outDir": "./dist/main/types"
+  }
+}

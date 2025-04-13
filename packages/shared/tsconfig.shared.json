@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.node",
+  "include": [
+    "src/"
+  ],
+  "compilerOptions": {
+    "declaration": true,
+    "outDir": "./dist/shared/types"
+  }
+}

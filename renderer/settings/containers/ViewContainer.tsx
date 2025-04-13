@@ -5,8 +5,8 @@ import { t } from 'i18next';
 
 import Card from '../../components/Card';
 import Switch from '../../components/Switch';
-import presetThemes from '../../../common/presets';
-import { DEFAULT_CONFIG, PRESET_PREFIX } from '../../../common/constants';
+import presetThemes from '../../../packages/shared/src/presets';
+import { DEFAULT_CONFIG, PRESET_PREFIX } from '../../../packages/shared/src/constants/constants';
 
 import useConfig from '../../hooks/useConfig';
 import { cx } from '../../utils/classNames';

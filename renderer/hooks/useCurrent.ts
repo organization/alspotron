@@ -3,7 +3,7 @@ import { createSignal, onMount } from 'solid-js';
 import useConfig from './useConfig';
 import useThemeList from './useThemeList';
 
-import { DEFAULT_CONFIG } from '../../common/constants';
+import { DEFAULT_CONFIG } from '../../packages/shared/src/constants/constants';
 
 const useCurrent = () => {
   const [config] = useConfig();

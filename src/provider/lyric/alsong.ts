@@ -1,7 +1,7 @@
 import type { LyricData, LyricMetadata, LyricProvider, SearchParams } from '../../../common/provider';
 
 import type { Alsong, Lyric as AlsongLyric, LyricMetadata as AlsongLyricMetadata } from 'alsong';
-import type { ButtonOption, SettingOption } from '../../../common/plugins';
+import type { ButtonOption, SettingOption } from '../../../packages/shared/src/model/plugins';
 
 const convertLyricMetadata = (metadata: AlsongLyricMetadata): LyricMetadata => {
   return {

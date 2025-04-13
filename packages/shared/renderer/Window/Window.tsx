@@ -1,6 +1,6 @@
-import { JSX } from 'solid-js';
-
 import { Platform } from '../platform';
+
+import type { JSX } from 'solid-js';
 
 export type WindowProps = {
   dark?: boolean;
@@ -21,8 +21,6 @@ export const Window = (props: WindowProps) => {
 
     return undefined;
   };
-
-  console.log(Platform.OS());
 
   return (
     <div

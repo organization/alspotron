@@ -1,4 +1,4 @@
-import type { PluginProvider } from '../common/plugins';
+import type { PluginProvider } from '../packages/shared/src/model/plugins';
 import type { PluginManifest } from '../src/plugins/types';
 
 export type PredefinedPlugin = {

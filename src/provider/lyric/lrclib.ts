@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import type { LyricProvider, LyricData, LyricMetadata, SearchParams } from '../../../common/provider';
 
-import type { ButtonOption, SettingOption } from '../../../common/plugins';
+import type { ButtonOption, SettingOption } from '../../../packages/shared/src/model/plugins';
 
 const LyricResponseSchema = z.object({
   id: z.number(),

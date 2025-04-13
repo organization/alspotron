@@ -1,27 +1,38 @@
 {
   "name": "@alspotron/shared",
   "description": "A Shared library for Alspotron",
-  "main": "./dist/index.js",
+  "main": "./dist/shared/index.js",
   "type": "module",
   "exports": {
+    ".": {
+      "import": "./dist/shared/index.js",
+      "types": "./dist/shared/types/index.d.ts"
+    },
     "./renderer": {
       "import": "./dist/renderer/index.js",
-      "types": "./dist/types/renderer/index.d.ts"
+      "types": "./dist/renderer/types/renderer/index.d.ts"
+    },
+    "./main": {
+      "import": "./dist/main/index.js",
+      "types": "./dist/main/types/main/index.d.ts"
     }
   },
   "scripts": {
     "postinstall": "pnpm build",
-    "build": "pnpm build:renderer",
-    "build:renderer": "farm build --config ./renderer.farm.config.ts"
+    "build": "pnpm build:shared && pnpm build:renderer && pnpm build:main",
+    "build:shared": "rolldown build -c ./shared.rolldown.config.ts",
+    "build:main": "rolldown build -c ./main.rolldown.config.ts",
+    "build:renderer": "rolldown build -c ./renderer.rolldown.config.ts"
   },
   "devDependencies": {
     "typescript": "5.8.3",
-    "@farmfe/core": "1.7.2",
-    "@farmfe/js-plugin-dts": "0.6.4",
+    "rolldown": "1.0.0-beta.7",
+    "@rollup/plugin-typescript": "12.1.2",
     "vite-plugin-solid": "2.11.6"
   },
   "dependencies": {},
   "peerDependencies": {
-    "solid-js": "1.9.5"
+    "solid-js": "1.9.5",
+    "zod": "3.24.2"
   }
 }

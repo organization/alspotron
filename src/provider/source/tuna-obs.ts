@@ -10,7 +10,7 @@ import { getTranslation } from '../../../common/intl';
 
 import type { Http2SecureServer, Http2Server } from 'node:http2';
 import type { Server as NodeServer } from 'node:http';
-import type { ButtonOption, SettingOption } from '../../../common/plugins';
+import type { ButtonOption, SettingOption } from '../../../packages/shared/src/model/plugins';
 
 type ServerType = NodeServer | Http2Server | Http2SecureServer;
 

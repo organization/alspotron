@@ -4,7 +4,7 @@ import { app } from 'electron';
 
 import { State } from './state';
 
-import { DEFAULT_CONFIG } from '../../common/constants';
+import { DEFAULT_CONFIG } from '../../packages/shared/src/constants/constants';
 import { type Config, ConfigSchema } from '../../common/schema';
 
 export const defaultConfigDirectory = app.getPath('userData');

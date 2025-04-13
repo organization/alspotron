@@ -1,4 +1,4 @@
-import type { Plugin, PluginLog, PluginLogType, PluginLogger } from '../../../common/plugins';
+import type { Plugin, PluginLog, PluginLogType, PluginLogger } from '../../../packages/shared/src/model/plugins';
 
 export const createLogExecutor = <Type extends PluginLogType>(plugin: Plugin, type: Type): PluginLogger[Type] => {
   return (...args) => {

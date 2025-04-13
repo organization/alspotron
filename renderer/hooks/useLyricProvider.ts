@@ -2,7 +2,7 @@ import { type Accessor, createMemo, on } from 'solid-js';
 
 import useConfig from './useConfig';
 
-import { DEFAULT_CONFIG } from '../../common/constants';
+import { DEFAULT_CONFIG } from '../../packages/shared/src/constants/constants';
 import type { LyricData, LyricMetadata, LyricProvider, SearchParams } from '../../common/provider';
 
 type RendererLyricProvider = Omit<LyricProvider, 'getOptions' | 'onOptionChange'> & {
