@@ -107,7 +107,7 @@
     "supports-color": "10.0.0",
     "tstl": "3.0.0",
     "ws": "8.18.1",
-    "zip-lib": "1.0.5",
+    "zip-lib": "1.1.2",
     "zod": "3.24.2"
   },
   "optionalDependencies": {
