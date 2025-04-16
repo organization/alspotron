@@ -112,6 +112,7 @@
   },
   "optionalDependencies": {
     "@jellybrick/wql-process-monitor": "1.4.8",
+    "asdf-overlay-node": "0.1.0",
     "extract-file-icon": "0.3.2",
     "hmc-win32": "1.4.92",
     "mica-electron": "1.5.16",
@@ -152,6 +153,7 @@
       "node_modules/@jellybrick/ref-napi/lib/*",
       "node_modules/@jellybrick/ref-napi/prebuilds/**",
       "node_modules/@jellybrick/wql-process-monitor/**",
+      "node_modules/asdf-overlay-node/**",
       "node_modules/emittery/**",
       "node_modules/hmc-win32/**",
       "node_modules/mica-electron/**",
