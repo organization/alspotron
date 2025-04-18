@@ -132,12 +132,12 @@ export class OverlayManager extends EventEmitter {
           continue;
         }
 
-        if (this.newOverlay) {
-          this.newOverlay.destroy();
-          this.newOverlay = null;
-        }
-
         if (asdfOverlay) {
+          if (this.newOverlay) {
+            this.newOverlay.destroy();
+            this.newOverlay = null;
+          }
+
           try {
             await this.injectAsdfOverlay(asdfOverlay, pid);
           } catch (e) {
