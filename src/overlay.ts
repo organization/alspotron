@@ -324,23 +324,8 @@ export class OverlayManager extends EventEmitter {
       dragBorderWidth: Math.floor(dragborder),
     });
 
-    window.webContents.on('paint', (e, __, image: Electron.NativeImage) => {
+    window.webContents.on('paint', (_, __, image: Electron.NativeImage) => {
       if (this.markQuit || !this.overlay) return;
-
-      if (e.texture) {
-        if (this.newOverlay) {
-          this.newOverlay
-            .updateShtex(e.texture.textureInfo.sharedTextureHandle)
-            .catch(() => {
-              if (this.newOverlay) {
-                this.newOverlay.destroy();
-                this.newOverlay = null;
-              }
-            });
-        }
-
-        e.texture.release();
-      }
 
       this.overlay.sendFrameBuffer(
         window.id,
