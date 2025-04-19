@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import { EventEmitter } from 'events';
 
-import { app } from 'electron';
+import { app, NativeImage, TextureInfo } from 'electron';
 import { hmc } from 'hmc-win32';
 import { type Overlay } from 'asdf-overlay-node';
 
@@ -288,6 +288,41 @@ export class OverlayManager extends EventEmitter {
     this.deleteProcess(pid);
   }
 
+  private async updateOverlaySurface(
+    bitmap: NativeImage,
+    sharedTexture?: TextureInfo,
+  ): Promise<boolean> {
+    if (!this.newOverlay) {
+      return false;
+    }
+
+    try {
+      try {
+        if (sharedTexture) {
+          await this.newOverlay?.updateShtex(sharedTexture.sharedTextureHandle);
+          return true;
+        }
+      } catch (e) {
+        console.warn(
+          '[Alspotron] failed update overlay using shared surface. ',
+          e,
+        );
+      }
+
+      await this.newOverlay.updateBitmap(
+        bitmap.getSize().width,
+        bitmap.getBitmap(),
+      );
+    } catch (e) {
+      console.error('[Alspotron] error while updating overlay', e);
+      this.newOverlay.destroy();
+      this.newOverlay = null;
+      throw e;
+    }
+
+    return true;
+  }
+
   private addOverlayWindow(
     name: string,
     window: Electron.BrowserWindow,
@@ -324,26 +359,26 @@ export class OverlayManager extends EventEmitter {
       dragBorderWidth: Math.floor(dragborder),
     });
 
-    window.webContents.on('paint', (_, __, image: Electron.NativeImage) => {
+    window.webContents.on('paint', (e, __, image: Electron.NativeImage) => {
       if (this.markQuit || !this.overlay) return;
 
-      this.overlay.sendFrameBuffer(
-        window.id,
-        image.getBitmap(),
-        image.getSize().width,
-        image.getSize().height,
-      );
-
-      if (this.newOverlay) {
-        this.newOverlay
-          .updateBitmap(image.getSize().width, image.getBitmap())
-          .catch(() => {
-            if (this.newOverlay) {
-              this.newOverlay.destroy();
-              this.newOverlay = null;
-            }
-          });
-      }
+      const oldOverlay = this.overlay;
+      (async () => {
+        try {
+          if (this.newOverlay) {
+            await this.updateOverlaySurface(image, e.texture?.textureInfo);
+          } else {
+            oldOverlay.sendFrameBuffer(
+              window.id,
+              image.getBitmap(),
+              image.getSize().width,
+              image.getSize().height,
+            );
+          }
+        } finally {
+          e.texture?.release();
+        }
+      })();
     });
 
     let isFocused = false;

@@ -10,7 +10,9 @@ export class OverlayWindowProvider extends LyricWindowProvider {
   constructor(nodeWindowManager: typeof import('node-window-manager')) {
     super(0, {
       webPreferences: {
-        offscreen: true,
+        offscreen: {
+          useSharedTexture: true,
+        },
       },
     });
 
