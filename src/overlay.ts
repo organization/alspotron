@@ -299,7 +299,7 @@ export class OverlayManager extends EventEmitter {
     try {
       try {
         if (sharedTexture) {
-          await this.newOverlay?.updateShtex(sharedTexture.sharedTextureHandle);
+          await this.newOverlay.updateShtex(sharedTexture.sharedTextureHandle);
           return true;
         }
       } catch (e) {
