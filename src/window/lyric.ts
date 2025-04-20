@@ -65,6 +65,14 @@ export class LyricWindowProvider
         skipTaskbar: !config.get().streamingMode,
       }),
     );
+    // HACK: shared texture must be released or it cannot render anymore.
+    // release texture if there are no other 'paint' event listener
+    this.window.webContents.on('paint', (e) => {
+      if (this.window.webContents.listenerCount('paint') == 1) {
+        e.texture?.release();
+      }
+    });
+
     this.window.webContents.executeJavaScript(
       `window.index = ${index};window.setIndex?.(${index});`,
     );
