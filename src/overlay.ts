@@ -360,15 +360,14 @@ export class OverlayManager extends EventEmitter {
     });
 
     window.webContents.on('paint', (e, __, image: Electron.NativeImage) => {
-      if (this.markQuit || !this.overlay) return;
-
-      const oldOverlay = this.overlay;
       (async () => {
         try {
+          if (this.markQuit) return;
+
           if (this.newOverlay) {
             await this.updateOverlaySurface(image, e.texture?.textureInfo);
           } else {
-            oldOverlay.sendFrameBuffer(
+            this.overlay?.sendFrameBuffer(
               window.id,
               image.getBitmap(),
               image.getSize().width,
