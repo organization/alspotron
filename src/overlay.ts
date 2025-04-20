@@ -379,6 +379,7 @@ export class OverlayManager extends EventEmitter {
         }
       })();
     });
+    window.webContents.invalidate();
 
     let isFocused = false;
     let throttle: NodeJS.Timeout | null = null;
