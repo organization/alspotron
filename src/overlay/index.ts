@@ -43,7 +43,7 @@ export class OverlayManager {
   readonly event: EventEmitter<EventMap> = new EventEmitter();
 
   public readonly registeredProcessList: OverlayProcessInfo[] = [];
-  private attachedMap: Map<number, AttachedOverlay> = new Map();
+  private readonly attachedMap: Map<number, AttachedOverlay> = new Map();
 
   private enabled: boolean = false;
 
