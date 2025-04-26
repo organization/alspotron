@@ -36,13 +36,30 @@ export class Win32OverlayFactory implements OverlayFactory {
 }
 
 class Win32AttachedOverlay implements AttachedOverlay {
+  private readonly provider: LyricWindowProvider;
   private readonly configWatcher: () => void;
 
   private constructor(
     private viewIndex: number,
-    private readonly provider: LyricWindowProvider,
     private readonly overlay: Overlay,
+    corsCallback?: (webContents: Electron.WebContents) => void,
   ) {
+    this.provider = new LyricWindowProvider(viewIndex, {
+      webPreferences: {
+        offscreen: {
+          useSharedTexture: true,
+        },
+      },
+    });
+    const webContents = this.provider.window.webContents;
+      webContents.on('paint', (e, __, image: Electron.NativeImage) => {
+        this.updateSurface(image, e.texture?.textureInfo).finally(() => {
+          e.texture?.release();
+        });
+      });
+    webContents.invalidate();
+    corsCallback?.(this.provider.window.webContents);
+
     this.configWatcher = () => {
       this.updatePosition();
       this.provider.updateWindowConfig();
@@ -171,26 +188,10 @@ class Win32AttachedOverlay implements AttachedOverlay {
     overlay: Overlay,
     corsCallback?: (webContents: Electron.WebContents) => void,
   ): Promise<Win32AttachedOverlay> {
-    const provider = new LyricWindowProvider(viewIndex, {
-      webPreferences: {
-        offscreen: {
-          useSharedTexture: true,
-        },
-      },
-    });
-    corsCallback?.(provider.window.webContents);
-    const instance = new Win32AttachedOverlay(viewIndex, provider, overlay);
+    const instance = new Win32AttachedOverlay(viewIndex, overlay, corsCallback);
 
     try {
       await instance.updatePosition();
-
-      const webContents = provider.window.webContents;
-      webContents.on('paint', (e, __, image: Electron.NativeImage) => {
-        instance.updateSurface(image, e.texture?.textureInfo).finally(() => {
-          e.texture?.release();
-        });
-      });
-      webContents.invalidate();
     } catch (e) {
       instance.close();
       throw e;
