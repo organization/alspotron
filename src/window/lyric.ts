@@ -68,8 +68,8 @@ export class LyricWindowProvider
     // HACK: shared texture must be released or it cannot render anymore.
     // release texture if there are no other 'paint' event listener
     this.window.webContents.on('paint', (e) => {
-      if (this.window.webContents.listenerCount('paint') == 1) {
-        e.texture?.release();
+      if (e.texture && this.window.webContents.listenerCount('paint') == 1) {
+        e.texture.release();
       }
     });
 
