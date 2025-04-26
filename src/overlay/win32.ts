@@ -36,12 +36,12 @@ export class Win32OverlayFactory implements OverlayFactory {
 }
 
 class Win32AttachedOverlay implements AttachedOverlay {
-  private configWatcher: () => void;
+  private readonly configWatcher: () => void;
 
   private constructor(
     private viewIndex: number,
-    private provider: LyricWindowProvider,
-    private overlay: Overlay,
+    private readonly provider: LyricWindowProvider,
+    private readonly overlay: Overlay,
   ) {
     this.configWatcher = () => {
       this.updatePosition();
@@ -54,11 +54,7 @@ class Win32AttachedOverlay implements AttachedOverlay {
   async updateViewIndex(index: number) {
     this.viewIndex = index;
     this.provider.setIndex(index, true);
-    try {
-      await this.updatePosition();
-    } catch (e) {
-      console.error('[Alspotron] error while updating overlay position', e);
-    }
+    await this.updatePosition();
   }
 
   private async updatePosition() {
@@ -131,7 +127,9 @@ class Win32AttachedOverlay implements AttachedOverlay {
         length(position.bottom + style.position.bottom),
         length(position.left + style.position.left),
       );
-    } catch (e) {}
+    } catch (e) {
+      console.error('[Alspotron] error while updating overlay position', e);
+    }
   }
   
   sendEvent(event: string, ...args: unknown[]) {
@@ -164,9 +162,7 @@ class Win32AttachedOverlay implements AttachedOverlay {
 
   close(): void {
     config.unwatch(this.configWatcher);
-    try {
-      this.overlay.destroy();
-    } catch (e) {}
+    this.overlay.destroy();
     this.provider.close();
   }
 
