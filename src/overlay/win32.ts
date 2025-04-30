@@ -3,13 +3,15 @@ import { PercentLength } from 'asdf-overlay-node/lib/addon';
 import { NativeImage, TextureInfo } from 'electron';
 import EventEmitter from 'events';
 import hmc from 'hmc-win32';
+import * as wql from '@jellybrick/wql-process-monitor';
 
 import { AttachedOverlay, OverlayFactory } from '.';
 import { LyricWindowProvider } from '../window/lyric';
 import { config, themeList } from '../config';
-import { ProcMonitor, ProcMonitorEventEmitter } from './monitor';
+import { ProcessInfo, ProcMonitor, ProcMonitorEventEmitter } from './monitor';
 import { DEFAULT_CONFIG, DEFAULT_STYLE, PRESET_PREFIX } from '../../common/constants';
 import presetThemes from '../../common/presets';
+import { AsyncReturnType } from 'type-fest';
 
 export class Win32OverlayFactory implements OverlayFactory {
   private corsCallback: ((webContents: Electron.WebContents) => void) | undefined;
@@ -201,30 +203,48 @@ class Win32AttachedOverlay implements AttachedOverlay {
   }
 }
 
-export async function getWin32Monitor(): Promise<ProcMonitor> {
-  const wql = await import('@jellybrick/wql-process-monitor');
-  const event: ProcMonitorEventEmitter = new EventEmitter();
-  const listener = await wql.promises
-    .subscribe({
-      creation: true,
-      deletion: true,
-      filterWindowsNoise: true,
-    });
+type MonitorEmittery = AsyncReturnType<typeof wql.promises.subscribe>;
 
-  listener.on('creation', ([name, pid, filePath]) => {
+export class Win32ProcMonitor implements ProcMonitor {
+  readonly event: ProcMonitorEventEmitter = new EventEmitter();
+
+  private readonly onCreation = ([name, pid, filePath]: [string, string, string?]) => {
     if (!filePath) return;
 
-    event.emit('creation', Number(pid), name, filePath);
-  });
-  listener.on('deletion', ([name, pid]) => {
-    event.emit('deletion', Number(pid), name);
-  });
-
-  return {
-    event,
-    getProcessList() {
-      return hmc.getDetailsProcessList();
-    },
-    async close() {},
+    this.event.emit('creation', Number(pid), name, filePath);
   };
+  private readonly onDeletion = ([name, pid]: [string, string]) => {
+    this.event.emit('deletion', Number(pid), name);
+  };
+
+  private constructor(
+    private readonly emittery: MonitorEmittery
+  ) {
+    emittery.on('creation', this.onCreation);
+    emittery.on('deletion', this.onDeletion);
+  }
+  
+  getProcessList(): ProcessInfo[] {
+    return hmc.getDetailsProcessList();
+  }
+
+  async close() {
+    this.emittery.off('creation', this.onCreation);
+    this.emittery.off('deletion', this.onDeletion);
+  }
+
+  // using multiple emittery invokes same event multiple times. so using singleton emittery
+  private static EMITTERY: MonitorEmittery | null = null;
+  static async initialize(): Promise<Win32ProcMonitor> {
+    if (!this.EMITTERY) {
+      this.EMITTERY = await wql.promises
+      .subscribe({
+        creation: true,
+        deletion: true,
+        filterWindowsNoise: true,
+      });
+    }
+
+    return new Win32ProcMonitor(this.EMITTERY);
+  } 
 }

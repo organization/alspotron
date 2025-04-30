@@ -22,7 +22,7 @@ export async function getProcMonitor(): Promise<ProcMonitor> {
   switch (process.platform) {
     case 'win32': {
       const win32Module = await import('./win32');
-      return await win32Module.getWin32Monitor();
+      return await win32Module.Win32ProcMonitor.initialize();
     }
 
     default: {
