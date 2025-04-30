@@ -204,8 +204,8 @@ export class OverlayManager {
   }
 
   /**
-   * Initialize OverlayManager2 using OverlayFactory suitable for target platform
-   * @returns OverlayManager2
+   * Initialize OverlayManager using OverlayFactory suitable for target platform
+   * @returns OverlayManager
    */
   static async initialize(): Promise<OverlayManager> {
     let factory: OverlayFactory;
