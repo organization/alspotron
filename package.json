@@ -79,7 +79,7 @@
     "@codemirror/state": "6.5.2",
     "@codemirror/view": "6.36.6",
     "@farmfe/core": "1.7.4",
-    "@floating-ui/dom": "1.6.13",
+    "@floating-ui/dom": "1.7.0",
     "@hono/node-server": "1.14.1",
     "@jellybrick/solid-i18next": "1.2.2",
     "@solid-codemirror/codemirror": "1.0.4",
