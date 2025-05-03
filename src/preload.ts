@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'node:fs';
 
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import {
+  contextBridge,
+  ipcRenderer,
+  IpcRendererEvent,
+  webUtils,
+} from 'electron';
 import { getFonts } from 'font-list';
 import { hmc } from 'hmc-win32';
 
@@ -36,3 +41,6 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 contextBridge.exposeInMainWorld('isWindows', isWin32());
 contextBridge.exposeInMainWorld('systemRoot', process.env.SystemRoot);
 contextBridge.exposeInMainWorld('hmc', hmc);
+contextBridge.exposeInMainWorld('getPathForFile', (file: File) => {
+  return webUtils.getPathForFile(file);
+});
