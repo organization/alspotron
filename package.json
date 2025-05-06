@@ -68,7 +68,7 @@
     "terser": "5.39.0",
     "type-fest": "4.40.1",
     "typescript": "5.8.3",
-    "typescript-eslint": "8.31.1",
+    "typescript-eslint": "8.32.0",
     "utf-8-validate": "6.0.5",
     "vite-plugin-solid": "2.11.6"
   },
