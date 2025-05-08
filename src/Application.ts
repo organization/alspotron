@@ -135,7 +135,10 @@ class Application {
           const gamePathList = Object.keys(gameList.get() ?? {});
 
           if (typeof filePath === 'string' && gamePathList.includes(filePath)) {
-            await this.overlayManager.createProcess(processId, filePath);
+            await this.overlayManager.createRegisteredProcess(
+              processId,
+              filePath,
+            );
           }
         },
         processId,
@@ -492,7 +495,7 @@ class Application {
 
   constructor(overlayManager: OverlayManager) {
     this.overlayManager = overlayManager;
-    this.overlayManager.setCorsHeader(this.setCorsHandler.bind(this));
+    this.overlayManager.setCorsCallback(this.setCorsHandler.bind(this));
     this.sourceProviders = [new TunaObsProvider(), new WebNowPlayingProvider()];
     this.lyricProviders = [
       new AlsongLyricProvider(alsong),
@@ -580,19 +583,20 @@ class Application {
     });
   }
 
-  initOverlay() {
-    this.overlayManager.on('register-process', () => {
+  async initOverlay() {
+    this.overlayManager.event.on('register-process', () => {
       this.broadcast(
         'registered-process-list',
         this.overlayManager.registeredProcessList,
       );
     });
-    this.overlayManager.on('unregister-process', () => {
+    this.overlayManager.event.on('unregister-process', () => {
       this.broadcast(
         'registered-process-list',
         this.overlayManager.registeredProcessList,
       );
     });
+    await this.overlayManager.startOverlay();
 
     gameList.watch(() => {
       this.overlayManager.updateGameView();
@@ -852,14 +856,7 @@ class Application {
 
       it.window.webContents.send(event, ...args);
     });
-    if (
-      this.overlayManager.windowProvider &&
-      !this.overlayManager.windowProvider.window.isDestroyed()
-    )
-      this.overlayManager.windowProvider.window.webContents.send(
-        event,
-        ...args,
-      );
+    this.overlayManager.broadcast(event, ...args);
     if (
       this.lyricSearchWindowProvider &&
       !this.lyricSearchWindowProvider.window.isDestroyed()
