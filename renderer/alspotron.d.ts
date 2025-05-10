@@ -24,5 +24,6 @@ declare global {
      */
     systemRoot: string;
     hmc: typeof hmc;
+    getPathForFile: (file: File) => string;
   }
 }

@@ -83,8 +83,11 @@ const GameListContainer = () => {
     if (!event.target.files) return;
 
     const file = event.target.files.item(0);
-    const isEXE = file?.path && /\.(exe)$/i.test(file.path);
-    if (!isEXE || !file) return;
+    if (!file) return;
+
+    const filePath = window.getPathForFile(file);
+    const isEXE = /\.(exe)$/i.test(filePath);
+    if (!isEXE) return;
 
     setFile(file);
     setTimeout(() => {
@@ -95,19 +98,20 @@ const GameListContainer = () => {
     const data = file();
 
     if (!data) return;
+    const path = window.getPathForFile(data);
 
     const list = { ...gameList() };
     if (!list[viewName]) {
       list[viewName] = [
         {
           name: data.name,
-          path: data.path,
+          path,
         },
       ];
     } else {
       list[viewName].push({
         name: data.name,
-        path: data.path,
+        path,
       });
     }
 

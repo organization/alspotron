@@ -53,7 +53,10 @@ const PluginContainer = () => {
       return;
     }
 
-    const error = await window.ipcRenderer.invoke('add-plugin', file.path);
+    const error = await window.ipcRenderer.invoke(
+      'add-plugin',
+      window.getPathForFile(file),
+    );
 
     if (error) {
       setOpen(true);
