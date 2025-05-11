@@ -54,11 +54,11 @@ class Win32AttachedOverlay implements AttachedOverlay {
       },
     });
     const webContents = this.provider.window.webContents;
-      webContents.on('paint', (e, __, image: Electron.NativeImage) => {
-        this.updateSurface(image, e.texture?.textureInfo).finally(() => {
-          e.texture?.release();
-        });
+    webContents.on('paint', (e, __, image: Electron.NativeImage) => {
+      this.updateSurface(image, e.texture?.textureInfo).finally(() => {
+        e.texture?.release();
       });
+    });
     webContents.invalidate();
     corsCallback?.(this.provider.window.webContents);
 
