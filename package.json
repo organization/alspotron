@@ -78,7 +78,7 @@
     "@codemirror/lang-sass": "6.0.2",
     "@codemirror/state": "6.5.2",
     "@codemirror/view": "6.36.7",
-    "@farmfe/core": "1.7.4",
+    "@farmfe/core": "1.7.5",
     "@floating-ui/dom": "1.7.0",
     "@hono/node-server": "1.14.1",
     "@jellybrick/solid-i18next": "1.2.2",
