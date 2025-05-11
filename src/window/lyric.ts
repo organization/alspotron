@@ -65,6 +65,7 @@ export class LyricWindowProvider
         skipTaskbar: !config.get().streamingMode,
       }),
     );
+
     this.window.webContents.executeJavaScript(
       `window.index = ${index};window.setIndex?.(${index});`,
     );
