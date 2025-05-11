@@ -1,5 +1,10 @@
-import { defaultDllDir, length, Overlay, percent } from 'asdf-overlay-node';
-import { PercentLength } from 'asdf-overlay-node/lib/addon';
+import {
+  defaultDllDir,
+  length,
+  Overlay,
+  percent,
+  PercentLength,
+} from 'asdf-overlay-node';
 import { NativeImage, TextureInfo } from 'electron';
 import EventEmitter from 'events';
 import hmc from 'hmc-win32';
