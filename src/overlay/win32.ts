@@ -60,6 +60,7 @@ class Win32AttachedOverlay implements AttachedOverlay {
     corsCallback?: (webContents: Electron.WebContents) => void,
   ) {
     this.provider = new LyricWindowProvider(viewIndex, {
+      force: true,
       webPreferences: {
         offscreen: {
           useSharedTexture: true,
