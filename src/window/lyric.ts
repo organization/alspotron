@@ -39,6 +39,9 @@ const LYRIC_WINDOW_OPTIONS = {
   icon: iconPath,
 };
 
+type LyricWindowProviderOptions = Electron.BrowserWindowConstructorOptions & {
+  force?: boolean;
+};
 export class LyricWindowProvider
   extends EventEmitter
   implements WindowProvider
@@ -54,27 +57,35 @@ export class LyricWindowProvider
 
   constructor(
     index: number,
-    options: Electron.BrowserWindowConstructorOptions = {},
+    { force, ...options }: LyricWindowProviderOptions = {},
   ) {
     super();
 
     this.index = index;
     this.window = new BrowserWindow(
-      deepmerge(LYRIC_WINDOW_OPTIONS, options, {
-        focusable: config.get().streamingMode,
-        skipTaskbar: !config.get().streamingMode,
-      }),
+      deepmerge(
+        LYRIC_WINDOW_OPTIONS,
+        options as Electron.BrowserWindowConstructorOptions,
+        {
+          focusable: config.get().streamingMode,
+          skipTaskbar: !config.get().streamingMode,
+        },
+      ),
     );
 
     this.window.webContents.executeJavaScript(
-      `window.index = ${index};window.setIndex?.(${index});`,
+      `window.index = ${index};window.setIndex?.(${index});${force ? 'window.enabled = true' : ''}`,
     );
 
     Menu.setApplicationMenu(null);
 
     this.window.setTitle(`Alspotron: ${config.get().views[index].name}`);
     if (isWin32()) this.window.setThumbnailClip(this.getWindowRect());
-    this.window.setAlwaysOnTop(true, isMacOS() ? 'screen-saver' : 'main-menu', 1);
+    this.window.setAlwaysOnTop(
+      true,
+      isMacOS() ? 'screen-saver' : 'main-menu',
+      1,
+    );
     this.window.setVisibleOnAllWorkspaces(true, {
       visibleOnFullScreen: true,
     });
