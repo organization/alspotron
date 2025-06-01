@@ -108,7 +108,7 @@
     "tstl": "3.0.0",
     "ws": "8.18.2",
     "zip-lib": "1.1.2",
-    "zod": "3.25.45"
+    "zod": "3.25.46"
   },
   "optionalDependencies": {
     "@jellybrick/wql-process-monitor": "1.4.8",
