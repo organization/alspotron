@@ -124,7 +124,8 @@
     "simple-update-notifier": "2.0.0",
     "@electron/get": "4.0.1",
     "electron": "36.4.0",
-    "http-errors": "2.0.0"
+    "http-errors": "2.0.0",
+    "node-abi": "4.9.0"
   },
   "build": {
     "productName": "Alspotron",
