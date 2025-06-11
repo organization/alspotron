@@ -2,8 +2,7 @@
 
 ### カスタマイズしやすい「Spotify」・「YouTube Music」歌詞インジケータ
 
-> `Spotify`や`YouTube Music`などの音楽プレーヤーで再生されている曲の”Alsong”の歌詞を画面に表示します。\
-> 「`Alsong`」の歌詞が存在しない場合、Spotifyの組み込み歌詞を表示します。（**Spotify専用**）
+> `Spotify`や`YouTube Music`などの音楽プレーヤーで再生されている曲の歌詞を画面に表示します。
 
 ### Screenshot
 

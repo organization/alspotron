@@ -2,8 +2,7 @@
 
 ### Fully customizable *Spotify*, and *YouTube Music* lyrics viewer
 
-> Alspotron shows lyrics of music played on music streaming platforms such as `Spotify` or `YouTube Music`. \
-> If the lyrics don't exist, `Alspotron` will display `Spotify`'s built-in lyrics. (**Only when playing with `Spotify`**)
+> Alspotron shows lyrics of music played on music streaming platforms such as `Spotify` or `YouTube Music`.
 
 ### Screenshots
 

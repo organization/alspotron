@@ -3,7 +3,6 @@
 ### Vollständig anpassbarer Songtext-Viewer für *Spotify* und *YouTube Music* 
 
 > Alspotron zeigt Texte von Songs an, die auf Musik-Streaming-Plattformen wie `Spotify` oder `YouTube Music` abgespielt werden.
-> Falls keine Songtexte gefunden werden können, zeigt Alpostron die integrierten Songtexte von Spotify an (nur bei der Wiedergabe mit `Spotify`)
 
 ### Screenshots
 
