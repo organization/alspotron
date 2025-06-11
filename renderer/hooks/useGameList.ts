@@ -1,5 +1,7 @@
 import { createSignal } from 'solid-js';
 
+import { createIpcListener } from './createIpcListener';
+
 import { GameList } from '../../common/schema';
 
 const useGameList = () => {
@@ -11,9 +13,12 @@ const useGameList = () => {
     setGameList(result || {});
   })();
 
-  window.ipcRenderer.on('game-list', (_, data: GameList) => {
-    setGameList(data);
-  });
+  createIpcListener(
+    () => 'game-list',
+    (_, data) => {
+      setGameList(data as GameList);
+    },
+  );
 
   const setList = async (newMapper: Partial<GameList>, useFallback = true) => {
     await window.ipcRenderer.invoke('set-game-list', newMapper, useFallback);

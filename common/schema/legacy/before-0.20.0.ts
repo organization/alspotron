@@ -74,7 +74,7 @@ export type LEGACY_Config0_20_0 = {
 
   streamingMode: boolean;
   hardwareAcceleration: boolean;
-  provider: 'alsong';
+  provider: string;
 };
 
 export type LEGACY_GameList0_20_0 = Record<string, string | undefined>;

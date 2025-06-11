@@ -19,6 +19,10 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     channel: string,
     listener: (event: IpcRendererEvent, ...args: any[]) => void,
   ) => ipcRenderer.on(channel, listener),
+  off: (
+    channel: string,
+    listener: (event: IpcRendererEvent, ...args: any[]) => void,
+  ) => ipcRenderer.off(channel, listener),
   once: (
     channel: string,
     listener: (event: IpcRendererEvent, ...args: any[]) => void,

@@ -58,6 +58,7 @@
 
   "setting.game.registered-game-list.description": "一覧",
   "setting.game.registered-game-list.adding-manually": "手動追加",
+  "setting.game.refreshing-process-list": "Refreshing process list...",
 
   "setting.about.version": "Alspotronのバージョン",
   "setting.about.support": "サポート",

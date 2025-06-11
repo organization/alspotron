@@ -16,7 +16,6 @@ import {
   Tray,
 } from 'electron';
 import { PartialDeep } from 'type-fest';
-import alsong from 'alsong';
 
 import PluginManager from './plugins/plugin-manager';
 import { config, gameList, lyricMapper, themeList } from './config';
@@ -31,7 +30,6 @@ import {
 import { OverlayManager } from './overlay';
 
 import {
-  AlsongLyricProvider,
   LrclibLyricProvider,
   TunaObsProvider,
   WebNowPlayingProvider,
@@ -497,10 +495,7 @@ class Application {
     this.overlayManager = overlayManager;
     this.overlayManager.setCorsCallback(this.setCorsHandler.bind(this));
     this.sourceProviders = [new TunaObsProvider(), new WebNowPlayingProvider()];
-    this.lyricProviders = [
-      new AlsongLyricProvider(alsong),
-      new LrclibLyricProvider(),
-    ];
+    this.lyricProviders = [new LrclibLyricProvider()];
   }
 
   get sourceProvider() {

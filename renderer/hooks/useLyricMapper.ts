@@ -1,5 +1,7 @@
 import { createSignal } from 'solid-js';
 
+import { createIpcListener } from './createIpcListener';
+
 import { LyricMapper } from '../../common/schema';
 
 const useLyricMapper = () => {
@@ -9,9 +11,12 @@ const useLyricMapper = () => {
     setLyricMapper(result || {});
   });
 
-  window.ipcRenderer.on('lyric-mapper', (_, data: LyricMapper) => {
-    setLyricMapper(data);
-  });
+  createIpcListener(
+    () => 'lyric-mapper',
+    (_, data: LyricMapper) => {
+      setLyricMapper(data);
+    },
+  );
 
   const setMapper = async (newMapper: Partial<LyricMapper>) => {
     await window.ipcRenderer.invoke('set-lyric-mapper', newMapper);

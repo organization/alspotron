@@ -29,7 +29,7 @@ export type LEGACY_Config0_22_0 = {
   streamingMode: boolean;
   hardwareAcceleration: boolean;
 
-  lyricProvider: 'alsong';
+  lyricProvider: string;
   playingProvider: string;
 
   plugins: {

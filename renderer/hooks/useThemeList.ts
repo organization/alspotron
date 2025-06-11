@@ -1,14 +1,19 @@
 import { createSignal, onMount } from 'solid-js';
 
+import { createIpcListener } from './createIpcListener';
+
 import type { PartialDeep } from 'type-fest';
 import type { StyleConfig, ThemeList } from '../../common/schema';
 
 const useThemeList = () => {
   const [themeList, setThemeList] = createSignal<Required<ThemeList>>({});
 
-  window.ipcRenderer.on('theme-list', (_, data: ThemeList) => {
-    setRequiredList(data);
-  });
+  createIpcListener(
+    () => 'theme-list',
+    (_, data: ThemeList) => {
+      setRequiredList(data);
+    },
+  );
 
   const setRequiredList = (data: ThemeList) => {
     const requiredData = Object.entries(data).reduce((prev, [key, value]) => {

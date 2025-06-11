@@ -62,6 +62,7 @@
 
   "setting.game.registered-game-list.description": "List",
   "setting.game.registered-game-list.adding-manually": "Add Game Manually",
+  "setting.game.refreshing-process-list": "Refreshing process list...",
 
   "setting.about.version": "Alspotron Version",
   "setting.about.support": "Support",

@@ -1,21 +1,29 @@
-import { createMemo, createSignal } from 'solid-js';
+import { createMemo, createSignal, getOwner, runWithOwner } from 'solid-js';
+
+import { createIpcListener } from './createIpcListener';
 
 const usePlayingGame = () => {
   const [gameList, setGameList] = createSignal<number[]>([]);
 
+  const owner = getOwner();
   (async () => {
     const result = await window.ipcRenderer.invoke(
       'get-registered-process-list',
     );
 
-    setGameList(result.map((it) => it.pid) || []);
+    runWithOwner(owner, () => {
+      setGameList(result.map((it) => it.pid) || []);
+    });
   })();
 
-  window.ipcRenderer.on('registered-process-list', (_, data: number[]) => {
-    setGameList(data);
-  });
+  createIpcListener(
+    () => 'registered-process-list',
+    (_, data: number[]) => {
+      setGameList(data);
+    },
+  );
 
-  return createMemo(() => {
+  const playingList = () => {
     const processList = gameList();
 
     const allProcessList = window.hmc.getDetailsProcessList();
@@ -23,7 +31,9 @@ const usePlayingGame = () => {
     return allProcessList.filter((process) =>
       processList.some((it) => Number(it) === Number(process.pid)),
     );
-  });
+  };
+
+  return playingList;
 };
 
 export default usePlayingGame;

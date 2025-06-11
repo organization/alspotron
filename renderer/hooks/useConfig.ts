@@ -1,5 +1,7 @@
 import { createSignal } from 'solid-js';
 
+import { createIpcListener } from './createIpcListener';
+
 import type { PartialDeep } from 'type-fest';
 import type { Config } from '../../common/schema';
 
@@ -15,9 +17,12 @@ const useConfig = () => {
     }
   })();
 
-  window.ipcRenderer.on('config', (_, data: Config) => {
-    setConfig(data);
-  });
+  createIpcListener(
+    () => 'config',
+    (_, data) => {
+      setConfig(data as Config);
+    },
+  );
 
   const setPublicConfig = async (newMapper: PartialDeep<Config>) => {
     await window.ipcRenderer.invoke('set-config', newMapper);

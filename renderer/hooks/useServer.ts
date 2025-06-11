@@ -1,5 +1,7 @@
 import { createSignal } from 'solid-js';
 
+import { createIpcListener } from './createIpcListener';
+
 const useServer = () => {
   const [state, setState] = createSignal<'start' | 'close'>('start');
 
@@ -9,15 +11,11 @@ const useServer = () => {
     );
   })();
 
-  window.ipcRenderer.on(
-    'current-source-provider-state',
+  createIpcListener(
+    () => 'current-source-provider-state',
     (_, state: 'start' | 'close' | 'error') => {
-      console.log('current-source-provider-state', state);
-      if (state === 'start') {
-        setState('start');
-      } else {
-        setState('close');
-      }
+      if (state === 'start') setState('start');
+      else setState('close');
     },
   );
 

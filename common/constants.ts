@@ -29,7 +29,7 @@ export const DEFAULT_STYLE = {
     stoppedOpacity: 0.5,
     containerRowGap: 0.25,
     multipleContainerRowGap: 1,
-    direction: 'column',
+    direction: 'column' as 'column' | 'column-reverse',
     nextLyric: 1,
     previousLyric: 1,
     nextLyricScale: 0.8,
@@ -49,7 +49,16 @@ export const DEFAULT_STYLE = {
       'bottom-left',
       'bottom',
       'bottom-right',
-    ],
+    ] as (
+      | 'top-left'
+      | 'top'
+      | 'top-right'
+      | 'left'
+      | 'right'
+      | 'bottom-left'
+      | 'bottom'
+      | 'bottom-right'
+    )[],
     top: -32,
     left: -32,
     bottom: -32,
@@ -84,7 +93,7 @@ export const DEFAULT_CONFIG = {
   hardwareAcceleration: true,
   streamingMode: false,
 
-  lyricProvider: 'alsong' as const,
+  lyricProvider: 'lrclib' as const,
   sourceProvider: 'tuna-obs' as const,
 
   experimental: {},

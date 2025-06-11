@@ -5,6 +5,7 @@ import {
   GameList,
   LyricMapper,
   StyleConfig,
+  ThemeList,
   UpdateData,
 } from '../schema';
 
@@ -14,6 +15,7 @@ export interface PluginEventMap {
   'update': (updateContext: UpdateData) => void;
   'config': (config: PartialDeep<Config>) => void;
   'game-list': (gameList: Partial<GameList>) => void;
+  'theme-list': (themeList: ThemeList) => void;
   'lyric-mapper': (lyricMapper: Partial<LyricMapper>) => void;
   'registered-process-list': (pidList: number[]) => void;
   'window-minimize': () => void;
@@ -34,6 +36,10 @@ export interface PluginEventMap {
   'remove-overlay-from-process': (processId: number) => void;
   'change-source-provider-state': (
     provider: string,
+    state: 'start' | 'error' | 'close',
+    arg: unknown,
+  ) => void;
+  'current-source-provider-state': (
     state: 'start' | 'error' | 'close',
     arg: unknown,
   ) => void;
