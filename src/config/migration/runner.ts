@@ -22,7 +22,7 @@ export const createMigrator = (table: MigrateTable, prevVersion: string) => {
     })
     .map(([matcher, migrator]) => {
       if (clean(matcher) !== null) {
-        console.warn('[Alspotron] You should use range in migration table.');
+        console.warn('[Lyrs] You should use range in migration table.');
         return null;
       }
 
@@ -44,12 +44,12 @@ export const createMigrator = (table: MigrateTable, prevVersion: string) => {
         const key = _key as keyof MigratorData;
 
         if (migrator[key]) {
-          console.log('[Alspotron]', 'migrate', key, ':', result[key]);
+          console.log('[Lyrs]', 'migrate', key, ':', result[key]);
 
           result[key] = migrator[key]?.(result[key], context);
         }
       }
-      console.log('[Alspotron]', 'preparing next version migration...');
+      console.log('[Lyrs]', 'preparing next version migration...');
     }
 
     return result;

@@ -21,7 +21,7 @@ export const createLogExecutor = <Type extends PluginLogType>(
       metadata: args.filter((arg) => typeof arg === 'object'),
     };
 
-    console.log('[Alspotron] [Plugin]', log);
+    console.log('[Lyrs] [Plugin]', log);
     plugin.logs.push(log);
   };
 };

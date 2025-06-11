@@ -107,14 +107,14 @@ const UserCSSEditor = (props: UserCSSEditorProps) => {
   const buildSelectorSnippet = (selector: string) => `\n${selector} {\n}`;
 
   const addUserCSSSelector = (selectorName: string) =>
-    addCodeSnippet(buildSelectorSnippet(`alspotron-${selectorName}`));
+    addCodeSnippet(buildSelectorSnippet(`lyrs-${selectorName}`));
 
   const addUserCSSTransition = (transitionName: string) => {
     const transitionClasses = [
-      `alspotron-${transitionName}-enter`,
-      `alspotron-${transitionName}-exit-to`,
-      `alspotron-${transitionName}-move`,
-      `alspotron-${transitionName}-enter-active, alspotron-${transitionName}-exit-active`,
+      `lyrs-${transitionName}-enter`,
+      `lyrs-${transitionName}-exit-to`,
+      `lyrs-${transitionName}-move`,
+      `lyrs-${transitionName}-enter-active, lyrs-${transitionName}-exit-active`,
     ];
 
     addCodeSnippet(transitionClasses.map(buildSelectorSnippet).join('\n'));

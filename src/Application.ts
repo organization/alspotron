@@ -516,7 +516,7 @@ class Application {
 
   initSourceProvider() {
     console.log(
-      `[Alspotron] init source provider "${this.sourceProvider.name}"`,
+      `[Lyrs] init source provider "${this.sourceProvider.name}"`,
     );
     this.sourceProvider.start(
       config.get().providers.source.config[this.sourceProvider.name],
@@ -563,7 +563,7 @@ class Application {
   }
 
   initPluginLoader() {
-    console.log('[Alspotron] load all plugins');
+    console.log('[Lyrs] load all plugins');
 
     this.pluginManager = new PluginManager({
       config: () => config.get().plugins,
@@ -571,10 +571,10 @@ class Application {
       set: (newConfig) => config.set({ plugins: newConfig }),
     });
     this.pluginManager.loadPredefinedPlugins().catch((e) => {
-      console.error('[Alspotron] Cannot load predefined plugins', e);
+      console.error('[Lyrs] Cannot load predefined plugins', e);
     });
     this.pluginManager.loadPluginsFromConfig().catch((e) => {
-      console.error('[Alspotron] Cannot load plugins', e);
+      console.error('[Lyrs] Cannot load plugins', e);
     });
   }
 
@@ -604,7 +604,7 @@ class Application {
     autoUpdater.autoDownload = false;
     autoUpdater.on('update-available', async (it: UpdateInfo) => {
       const downloadLink =
-        'https://github.com/organization/alspotron/releases/latest';
+        'https://github.com/organization/lyrs/releases/latest';
 
       const language = config.get().language;
       const { response } = await dialog.showMessageBox({
@@ -783,7 +783,7 @@ class Application {
     this.tray = new Tray(trayIcon.resize({ width: 16, height: 16 }));
     this.initMenu();
 
-    this.tray.setToolTip('Alspotron');
+    this.tray.setToolTip('Lyrs');
     if (!isMacOS()) this.tray.setContextMenu(this.contextMenu);
 
     this.tray.on('click', (_, bounds) => {
@@ -908,7 +908,7 @@ class Application {
         );
         if (notExist) {
           console.log(
-            `[Alspotron] Source provider "${config.sourceProvider}" is not exist`,
+            `[Lyrs] Source provider "${config.sourceProvider}" is not exist`,
           );
           return;
         }

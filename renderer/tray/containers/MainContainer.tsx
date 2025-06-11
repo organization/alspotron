@@ -43,7 +43,7 @@ export const MainContainer = () => {
             class={'w-5 h-5 object-contain'}
             alt={'Main Icon'}
           />
-          Alspotron
+          Lyrs
         </div>
         <Show when={config()?.developer}>
           <button class={'w-fit btn-icon btn-borderless'} onClick={onDebug}>

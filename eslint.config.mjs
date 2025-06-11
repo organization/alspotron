@@ -20,7 +20,7 @@ export default tsEslint.config(
       'node_modules',
       '*.config.*js',
       '*.test.*js',
-      'extensions/alspotron.js',
+      'extensions/lyrs.js',
       'example/',
     ],
   },

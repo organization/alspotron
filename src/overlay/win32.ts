@@ -35,7 +35,7 @@ export class Win32OverlayFactory implements OverlayFactory {
 
   async create(pid: number, viewIndex: number): Promise<AttachedOverlay> {
     const overlay = await Overlay.attach(
-      'alspotron-overlay',
+      'lyrs-overlay',
       // electron asar path fix
       defaultDllDir().replace('app.asar', 'app.asar.unpacked'),
       pid,
@@ -162,7 +162,7 @@ class Win32AttachedOverlay implements AttachedOverlay {
         length(position.left + style.position.left),
       );
     } catch (e) {
-      console.error('[Alspotron] error while updating overlay position', e);
+      console.error('[Lyrs] error while updating overlay position', e);
     }
   }
 
@@ -193,7 +193,7 @@ class Win32AttachedOverlay implements AttachedOverlay {
       }
       return true;
     } catch (e) {
-      console.warn('[Alspotron] failed update overlay using shared surface', e);
+      console.warn('[Lyrs] failed update overlay using shared surface', e);
     }
 
     try {
@@ -202,7 +202,7 @@ class Win32AttachedOverlay implements AttachedOverlay {
         bitmap.getBitmap(),
       );
     } catch (e) {
-      console.error('[Alspotron] error while updating overlay', e);
+      console.error('[Lyrs] error while updating overlay', e);
       throw e;
     }
   }

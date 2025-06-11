@@ -61,7 +61,7 @@ const tryMigration = () => {
         : '0.0.0';
     const nowVersion = VERSION;
     console.log(
-      '[Alspotron] prepare for migration',
+      '[Lyrs] prepare for migration',
       prevVersion,
       '->',
       nowVersion,
@@ -89,7 +89,7 @@ const tryMigration = () => {
         state.set(parsed.data as PartialDeep<O>, false);
       } else {
         isFailed = true;
-        console.warn('[Alspotron] Cannot migrate', parsed.error, parsed);
+        console.warn('[Lyrs] Cannot migrate', parsed.error, parsed);
       }
     };
 
@@ -106,7 +106,7 @@ const tryMigration = () => {
         },
       } as never);
 
-      console.log('[Alspotron] Migrating data... Done');
+      console.log('[Lyrs] Migrating data... Done');
     }
     resolver();
   }

@@ -25,7 +25,7 @@ const waitInit = waitConfigInit();
   application.initTrayWindow();
   application.initOverlay();
 
-  console.log('[Alspotron] App is ready');
+  console.log('[Lyrs] App is ready');
 })();
 
 // Auto type inference for IPC

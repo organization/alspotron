@@ -59,7 +59,7 @@ const InfoContainer = () => {
       </div>
       <Card
         class={'flex flex-row justify-start items-center gap-1'}
-        onClick={() => onLink('https://github.com/organization/alspotron')}
+        onClick={() => onLink('https://github.com/organization/lyrs')}
       >
         <img
           src={MainIcon}
@@ -67,9 +67,9 @@ const InfoContainer = () => {
           alt={'Main Icon'}
         />
         <div class={'flex flex-col justify-center items-start'}>
-          <div class={'text-md'}>Alspotron</div>
+          <div class={'text-md'}>Lyrs</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            https://github.com/organization/alspotron
+            https://github.com/organization/lyrs
           </div>
         </div>
         <div class={'flex-1'} />
@@ -89,7 +89,7 @@ const InfoContainer = () => {
       <Card
         class={'flex flex-row justify-start items-center gap-1'}
         onClick={() =>
-          onLink('https://github.com/organization/alspotron/issues/new')
+          onLink('https://github.com/organization/lyrs/issues/new')
         }
       >
         <img
@@ -102,7 +102,7 @@ const InfoContainer = () => {
             <Trans key={'setting.about.bug-report'} />
           </div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            https://github.com/organization/alspotron/issues/new
+            https://github.com/organization/lyrs/issues/new
           </div>
         </div>
         <div class={'flex-1'} />
@@ -187,7 +187,7 @@ const InfoContainer = () => {
           <div
             class={'w-full h-full flex justify-start items-center'}
             onClick={() =>
-              onLink('https://github.com/organization/alspotron/releases')
+              onLink('https://github.com/organization/lyrs/releases')
             }
           >
             <Trans key={'setting.about.visit-releases-page'} />
@@ -240,7 +240,7 @@ const InfoContainer = () => {
           <div class={''}>Khinenw</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
             <Trans key={'setting.about.alspotify-developer'} />,{' '}
-            <Trans key={'setting.about.alspotron-developer'} />
+            <Trans key={'setting.about.lyrs-developer'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -269,7 +269,7 @@ const InfoContainer = () => {
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>Su-Yong</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            <Trans key={'setting.about.alspotron-developer'} />
+            <Trans key={'setting.about.lyrs-developer'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -298,7 +298,7 @@ const InfoContainer = () => {
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>JellyBrick</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            <Trans key={'setting.about.alspotron-developer'} />
+            <Trans key={'setting.about.lyrs-developer'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -327,7 +327,7 @@ const InfoContainer = () => {
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>SeongMin Park</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            <Trans key={'setting.about.alspotron-developer'} />
+            <Trans key={'setting.about.lyrs-developer'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -356,7 +356,7 @@ const InfoContainer = () => {
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>alvin0319</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            <Trans key={'setting.about.alspotron-contributor'} />
+            <Trans key={'setting.about.lyrs-contributor'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -385,7 +385,7 @@ const InfoContainer = () => {
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>STGR</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            <Trans key={'setting.about.alspotron-contributor'} />
+            <Trans key={'setting.about.lyrs-contributor'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -417,7 +417,7 @@ const InfoContainer = () => {
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>Hyeseo Lee</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            <Trans key={'setting.about.alspotron-translator.german'} />
+            <Trans key={'setting.about.lyrs-translator.german'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -446,7 +446,7 @@ const InfoContainer = () => {
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>mocha</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            <Trans key={'setting.about.alspotron-translator.japanese'} />
+            <Trans key={'setting.about.lyrs-translator.japanese'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -475,7 +475,7 @@ const InfoContainer = () => {
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>ReturnToFirst</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            <Trans key={'setting.about.alspotron-translator.english'} />
+            <Trans key={'setting.about.lyrs-translator.english'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -504,7 +504,7 @@ const InfoContainer = () => {
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>Seungho Baik</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            <Trans key={'setting.about.alspotron-translator.english'} />
+            <Trans key={'setting.about.lyrs-translator.english'} />
           </div>
         </div>
         <div class={'flex-1'} />
@@ -533,7 +533,7 @@ const InfoContainer = () => {
         <div class={'flex flex-col justify-center items-start'}>
           <div class={''}>Aden1126</div>
           <div class={'text-xs text-black/50 dark:text-white/75'}>
-            <Trans key={'setting.about.alspotron-translator.english'} />
+            <Trans key={'setting.about.lyrs-translator.english'} />
           </div>
         </div>
         <div class={'flex-1'} />

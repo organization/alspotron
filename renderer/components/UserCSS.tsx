@@ -29,7 +29,7 @@ const userCSSMiddleware: Middleware = (element) => {
 
   const props = Array.isArray(element.props) ? element.props : [element.props];
   const mappedProps = props.map((prop) =>
-    prop.replace(/alspotron-([a-z-]+)/g, (match, selectorName: string) => {
+    prop.replace(/lyrs-([a-z-]+)/g, (match, selectorName: string) => {
       if (Object.hasOwn(userCSSSelectors, selectorName)) {
         return `.${userCSSSelectors[selectorName as keyof typeof userCSSSelectors]}`;
       }

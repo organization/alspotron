@@ -8,19 +8,19 @@ import { PluginProvider } from '../../common/plugins';
 
 const root = process.env.APPDATA ?? process.env.HOME ?? '';
 const URL =
-  'https://raw.githubusercontent.com/organization/alspotron/master/extensions/alspotron.js';
+  'https://raw.githubusercontent.com/organization/lyrs/master/extensions/lyrs.js';
 const en = {
   setting: {
     install: {
       name: 'Install Spicetify Extension',
       description:
-        'Automatically install an extension that allows Alspotron to detect Spicetify playlists.',
+        'Automatically install an extension that allows Lyrs to detect Spicetify playlists.',
       label: 'Install',
     },
     alreadyInstalled: {
       name: 'Spicetify Extension installed',
       description:
-        'The extension that allows Alspotron to detect Spicetify playlists is already installed.',
+        'The extension that allows Lyrs to detect Spicetify playlists is already installed.',
     },
     notInstalled: {
       name: 'Spicetify Extension not installed',
@@ -30,7 +30,7 @@ const en = {
     reinstall: {
       name: 'Reinstall Spicetify Extension',
       description:
-        'Reinstall the extension that allows Alspotron to detect Spicetify playlists. (Reinstall when music is not detected properly)',
+        'Reinstall the extension that allows Lyrs to detect Spicetify playlists. (Reinstall when music is not detected properly)',
       label: 'Reinstall',
     },
   },
@@ -68,13 +68,13 @@ const translation: Record<string, typeof en> = {
       install: {
         name: 'Spicetify 확장 설치',
         description:
-          'Spicetify의 재생목록을 Alspotron에서 감지할 수 있는 확장을 자동 설치합니다.',
+          'Spicetify의 재생목록을 Lyrs에서 감지할 수 있는 확장을 자동 설치합니다.',
         label: '설치',
       },
       alreadyInstalled: {
         name: 'Spicetify 확장 설치됨',
         description:
-          'Alspotron에서 Spicetify 재생목록을 감지할 수 있는 확장이 이미 설치되어 있습니다.',
+          'Lyrs에서 Spicetify 재생목록을 감지할 수 있는 확장이 이미 설치되어 있습니다.',
       },
       notInstalled: {
         name: 'Spicetify 확장 미설치됨',
@@ -84,7 +84,7 @@ const translation: Record<string, typeof en> = {
       reinstall: {
         name: 'Spicetify 확장 재설치',
         description:
-          'Spicetify의 재생목록을 Alspotron에서 감지할 수 있는 확장을 재설치합니다. (정상적으로 음악이 인식되지 않을때 재설치 해주세요)',
+          'Spicetify의 재생목록을 Lyrs에서 감지할 수 있는 확장을 재설치합니다. (정상적으로 음악이 인식되지 않을때 재설치 해주세요)',
         label: '재설치',
       },
     },
@@ -197,7 +197,7 @@ const runner: PluginProvider = ({
     const response = await fetch(URL);
     const script = await response.text();
     const result = await fs
-      .writeFile(`${spicetifyPath}/Extensions/alspotron.js`, script)
+      .writeFile(`${spicetifyPath}/Extensions/lyrs.js`, script)
       .then(() => null)
       .catch((err: Error) => err);
 
@@ -218,7 +218,7 @@ const runner: PluginProvider = ({
     const command1 = await runCommand(command, [
       'config',
       'extensions',
-      'alspotron.js',
+      'lyrs.js',
     ]).catch((code: number) => code);
     const command2 = await runCommand(command, ['apply']).catch(
       (code: number) => code,
@@ -254,7 +254,7 @@ const runner: PluginProvider = ({
     const command = await runCommand('spicetify', [
       'config',
       'extensions',
-      '-alspotron.js',
+      '-lyrs.js',
     ]).catch((code: number) => code);
     if (command !== 0) {
       logger.error('Failed to reinstall Spicetify extension:', command);
@@ -275,7 +275,7 @@ const runner: PluginProvider = ({
     const spicetifyPath = await findSpicetifyPath(false);
     if (!spicetifyPath) return false;
 
-    return fsSync.existsSync(`${spicetifyPath}/Extensions/alspotron.js`);
+    return fsSync.existsSync(`${spicetifyPath}/Extensions/lyrs.js`);
   };
 
   useSetting({

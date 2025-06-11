@@ -1,11 +1,10 @@
 {
-  "name": "alspotron",
-  "version": "0.25.1",
-  "description": "Alspotron is a lyric viewer for YouTube Music / Spotify.",
+  "name": "lyrs",
+  "version": "0.26.0",
+  "description": "Lyrs is a lyric viewer for YouTube Music / Spotify.",
   "main": "./dist/index.js",
   "scripts": {
     "dev": "farm",
-    "postinstall": "patch-package",
     "clean": "farm clean",
     "build": "farm build",
     "dist": "npm run clean && npm run build && electron-builder -p never",
@@ -127,9 +126,9 @@
     "node-abi": "4.9.0"
   },
   "build": {
-    "productName": "Alspotron",
+    "productName": "Lyrs",
     "asar": true,
-    "appId": "me.suyong.alspotron",
+    "appId": "me.suyong.lyrs",
     "extends": null,
     "electronLanguages": [
       "ko",
@@ -192,7 +191,7 @@
       "category": "public.app-category.music"
     },
     "dmg": {
-      "title": "Alspotron",
+      "title": "Lyrs",
       "icon": "build/icon.png"
     },
     "win": {

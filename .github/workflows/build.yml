@@ -1,5 +1,5 @@
 # from https://github.com/th-ch/youtube-music/blob/master/.github/workflows/build.yml
-name: Build Alspotron
+name: Build Lyrs
 
 on:
   push:
@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    name: Build Alspotron
+    name: Build Lyrs
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
@@ -48,21 +48,21 @@ jobs:
 
       # Build and release if it's the main repository
       - name: Build and release on Mac
-        if: startsWith(matrix.os, 'macOS') && github.repository == 'organization/alspotron'
+        if: startsWith(matrix.os, 'macOS') && github.repository == 'organization/lyrs'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm run release:mac
 
       - name: Build and release on Linux
-        if: startsWith(matrix.os, 'ubuntu') && github.repository == 'organization/alspotron'
+        if: startsWith(matrix.os, 'ubuntu') && github.repository == 'organization/lyrs'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm run release:linux
 
       - name: Build and release on Windows
-        if: startsWith(matrix.os, 'windows') && github.repository == 'organization/alspotron'
+        if: startsWith(matrix.os, 'windows') && github.repository == 'organization/lyrs'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -70,24 +70,24 @@ jobs:
 
       # Only build without release if it is a fork
       - name: Build on Mac
-        if: startsWith(matrix.os, 'macOS') && github.repository != 'organization/alspotron'
+        if: startsWith(matrix.os, 'macOS') && github.repository != 'organization/lyrs'
         run: |
           npm run dist:mac
 
       - name: Build on Linux
-        if: startsWith(matrix.os, 'ubuntu') && github.repository != 'organization/alspotron'
+        if: startsWith(matrix.os, 'ubuntu') && github.repository != 'organization/lyrs'
         run: |
           npm run dist:linux
 
       - name: Build on Windows
-        if: startsWith(matrix.os, 'windows') && github.repository != 'organization/alspotron'
+        if: startsWith(matrix.os, 'windows') && github.repository != 'organization/lyrs'
         run: |
           npm run dist:win
 
   release:
     runs-on: ubuntu-latest
-    name: Release Alspotron
-    if: github.repository == 'organization/alspotron' && github.ref == 'refs/heads/master'
+    name: Release Lyrs
+    if: github.repository == 'organization/lyrs' && github.ref == 'refs/heads/master'
     needs: build
     steps:
       - uses: actions/checkout@v4

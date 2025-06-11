@@ -79,7 +79,7 @@ export class LyricWindowProvider
 
     Menu.setApplicationMenu(null);
 
-    this.window.setTitle(`Alspotron: ${config.get().views[index].name}`);
+    this.window.setTitle(`Lyrs: ${config.get().views[index].name}`);
     if (isWin32()) this.window.setThumbnailClip(this.getWindowRect());
     this.window.setAlwaysOnTop(
       true,
@@ -158,7 +158,7 @@ export class LyricWindowProvider
     const { views, streamingMode, experimental } = config.get();
     const view = views[this.index];
 
-    this.window.setTitle(`Alspotron: ${view.name}`);
+    this.window.setTitle(`Lyrs: ${view.name}`);
 
     if (streamingMode) {
       this.window.setSkipTaskbar(false);

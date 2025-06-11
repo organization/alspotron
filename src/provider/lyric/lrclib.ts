@@ -59,7 +59,7 @@ export class LrclibLyricProvider implements LyricProvider {
 
     if (!parsed.success) {
       console.warn(
-        '[Alspotron] [Lrclib] Failed to parse search response',
+        '[Lyrs] [Lrclib] Failed to parse search response',
         parsed.error,
       );
       return null;
@@ -94,7 +94,7 @@ export class LrclibLyricProvider implements LyricProvider {
 
     if (!parsed.success) {
       console.warn(
-        '[Alspotron] [Lrclib] Failed to parse search response',
+        '[Lyrs] [Lrclib] Failed to parse search response',
         parsed.error,
       );
       return [];

@@ -73,7 +73,7 @@ export class OverlayManager {
   ): Promise<boolean> {
     if (!this.enabled || this.attachedMap.has(pid)) return false;
 
-    console.log('[Alspotron] try to inject process:', pid);
+    console.log('[Lyrs] try to inject process:', pid);
 
     // try injection 20 times with 1 seconds interval
     for (let attempts = 1; attempts <= 20; attempts++) {
@@ -86,14 +86,14 @@ export class OverlayManager {
         return true;
       } catch (e) {
         console.warn(
-          `[Alspotron] overlay injection failed. attempts: ${attempts}`,
+          `[Lyrs] overlay injection failed. attempts: ${attempts}`,
           e,
         );
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
 
-    console.warn('[Alspotron] Failed to inject process.');
+    console.warn('[Lyrs] Failed to inject process.');
     return false;
   }
 
@@ -108,7 +108,7 @@ export class OverlayManager {
     if (!viewName) return false;
 
     const viewIndex = views.findIndex((it) => it.name === viewName);
-    console.log('[Alspotron] set game path:', path, viewIndex);
+    console.log('[Lyrs] set game path:', path, viewIndex);
     return await this.createProcess(pid, path, viewIndex);
   }
 
@@ -187,7 +187,7 @@ export class OverlayManager {
       try {
         overlay.close();
       } catch (e) {
-        console.error(`[Alspotron] failed detach overlay of pid: ${pid}`, e);
+        console.error(`[Lyrs] failed detach overlay of pid: ${pid}`, e);
       }
     });
 

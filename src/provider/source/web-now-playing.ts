@@ -69,7 +69,7 @@ export class WebNowPlayingProvider extends BaseSourceProvider {
         }
 
         this.updateData();
-        // console.log('[Alspotron] [WebNowPlayingProvider] Received message:', e.data);
+        // console.log('[Lyrs] [WebNowPlayingProvider] Received message:', e.data);
       };
     });
     this.wss.on('close', this.close.bind(this));

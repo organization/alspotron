@@ -1,8 +1,8 @@
-// NAME: Alspotron Companion
+// NAME: Lyrs Companion
 // AUTHOR: Khinenw
-// DESCRIPTION: Get current playing information to show in Alspotron
+// DESCRIPTION: Get current playing information to show in Lyrs
 
-(function Alspotron() {
+(function Lyrs() {
   const LyricResolvers = {
     v2(uri) {
       return Spicetify.CosmosAsync.get(
