@@ -28,7 +28,7 @@ const LyricResponseSchema = z.object({
 
 export class MusixMatchLyricProvider implements LyricProvider {
   public name = 'musixmatch';
-  private usertoken = "250612c5feff65cee38c6c076b282cc2a6c58fff42b5c5fabe91ea"
+  private usertoken = ""
   private _updatingUserTokenPromise: Promise<string> | null = null;
 
   async getUserToken() {
