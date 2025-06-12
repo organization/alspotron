@@ -58,31 +58,17 @@ export class MusixMatchLyricProvider implements LyricProvider {
     query.set("selected_language", "ko");
     console.log("[LYRS] [MusixMatch] Fetching lyric by ID", id, query.toString());
 
-    const response = await cookieFetch(
-      `https://apic.musixmatch.com/ws/1.1/macro.subtitles.get?${query.toString()}`,
-    );
+    const response = await cookieFetch(`https://apic.musixmatch.com/ws/1.1/macro.subtitles.get?${query.toString()}`);
     const json = await response.json() as any;
     const success = json.message?.body?.macro_calls?.['track.lyrics.get']?.message?.header?.status_code === 200
     if(!success) {
       console.warn('[Lyrs] [MusixMatch] Failed to fetch lyrics', json);
       return null;
     }
-    const parsed = await LyricResponseSchema.spa({
-      id: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.commontrack_id,
-      name: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_name,
-      trackName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_name,
-      artistName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.artist_name,
-      albumName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.album_name,
-      duration: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_length,
-      instrumental: !!json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.instrumental,
-      plainLyrics: json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_body || '',
-      syncedLyrics: json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_body || '',
-    });
-    console.log("[LYRS] [MusixMatch] Parsed lyric response", parsed);
-
+    const parsed = await this.musixmatchMacroToLyricScheme(json);
     if (!parsed.success) return null;
 
-    const lyric = parsed.data;
+    const lyric = parsed.data[0];
     if (!lyric.syncedLyrics) return null;
 
     const convertedLyrics = this.syncedLyricsToLyric(lyric.syncedLyrics);
@@ -94,16 +80,14 @@ export class MusixMatchLyricProvider implements LyricProvider {
     if(!translationSuccess) {
       console.warn('[Lyrs] [MusixMatch] Failed to fetch translation', translationJson);
     } else {
-      const translation = translationJson.message?.body?.translations_list.map((t: any) => ({
-        source: t.translation.subtitle_matched_line,
-        target: t.translation.description
-      }));
-      if(translation) {
+      const translation = translationJson.message?.body?.translations_list;
+      if(translation && translation.length > 0) {
+        console.log("[Lyrs] [MusixMatch] Fetched translation", translation);
         for(const tr of translation) {
-          const { source, target } = tr;
+          const source = tr.translation.subtitle_matched_line;
+          const target = tr.translation.description;
           for(const [timestamp, lines] of Object.entries(convertedLyrics)) {
-            const lineIndex = lines.findIndex(line => line == source);
-            if(lineIndex !== -1) convertedLyrics[Number(timestamp)] = [...lines as any, target];
+            if(lines.includes(source)) convertedLyrics[Number(timestamp)].push(target);
           }
         }
         console.log(convertedLyrics)
@@ -122,6 +106,8 @@ export class MusixMatchLyricProvider implements LyricProvider {
     if (params.page && params.page > 1) return null;
 
     const query = new URLSearchParams();
+    // If you want to search by title and artist, you can uncomment these lines
+    // but, query is must be exactly same with MusixMatch
     // if (params.title) query.set('q_track', this.encode(params.title));
     // if (params.artist) query.set('q_artist', this.encode(params.artist));
     query.set('usertoken', this.encode(await this.getUserToken()));
@@ -132,6 +118,8 @@ export class MusixMatchLyricProvider implements LyricProvider {
       return null;
     }
     query.set('track_spotify_id', this.encode(spotifyId || ""));
+    // If you want to search by iTunes ID, you can uncomment these lines
+    // but, some music does not have iTunes ID.
     // const itunesId = await this.getItunesId(params.title || "", params.artist || "");
     // if(!itunesId) {
     //   console.warn('[Lyrs] [MusixMatch] No iTunes ID found for search', params);
@@ -140,27 +128,14 @@ export class MusixMatchLyricProvider implements LyricProvider {
     // query.set('track_itunes_id', this.encode(itunesId || ""));
     console.log("[Lyrs] [MusixMatch] Fetching lyrics with query", query.toString());
 
-    const response = await cookieFetch(
-      `https://apic.musixmatch.com/ws/1.1/macro.subtitles.get?${query.toString()}`,
-    );
+    const response = await cookieFetch(`https://apic.musixmatch.com/ws/1.1/macro.subtitles.get?${query.toString()}`);
     const json = await response.json() as any;
     const success = json.message?.body?.macro_calls?.['track.lyrics.get']?.message?.header?.status_code === 200
     if(!success) {
       console.warn('[Lyrs] [MusixMatch] Failed to fetch lyrics', json);
       return null;
     }
-    const parsed = await LyricResponseSchema.array().spa([{
-      id: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.commontrack_id,
-      name: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_name,
-      trackName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_name,
-      artistName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.artist_name,
-      albumName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.album_name,
-      duration: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_length,
-      instrumental: !!json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.instrumental,
-      plainLyrics: json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_body || '',
-      syncedLyrics: json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_body || '',
-    }]);
-
+    const parsed = await this.musixmatchMacroToLyricScheme(json);
     if (!parsed.success) {
       console.warn(
         '[Lyrs] [MusixMatch] Failed to parse search response',
@@ -186,56 +161,12 @@ export class MusixMatchLyricProvider implements LyricProvider {
   }
 
   async searchLyrics(params: SearchParams): Promise<LyricMetadata[]> {
-    if (params.page && params.page > 1) return [];
-
-    const query = new URLSearchParams();
-    // if (params.title) query.set('q_track', this.encode(params.title));
-    // if (params.artist) query.set('q_artist', this.encode(params.artist));
-    query.set('usertoken', this.encode(await this.getUserToken()));
-    query.set('app_id', this.encode("mac-ios-v2.0"));
-    const spotifyId = await this.getSpotifyId(params.title || "", params.artist || "");
-    if(!spotifyId) {
-      console.warn('[Lyrs] [MusixMatch] No Spotify ID found for search', params);
+    const lyric = await this.getLyric(params);
+    if (!lyric) {
+      console.warn('[Lyrs] [MusixMatch] No lyrics found for search', params);
       return [];
     }
-    query.set('track_spotify_id', this.encode(spotifyId || ""));
-    // const itunesId = await this.getItunesId(params.title || "", params.artist || "");
-    // if(!itunesId) {
-    //   console.warn('[Lyrs] [MusixMatch] No iTunes ID found for search', params);
-    //   return [];
-    // }
-    // query.set('track_itunes_id', this.encode(itunesId || ""));
-
-    const response = await cookieFetch(
-      `https://apic.musixmatch.com/ws/1.1/macro.subtitles.get?${query.toString()}`,
-    );
-    const json = await response.json() as any;
-    const success = json.message?.body?.macro_calls?.['track.lyrics.get']?.message?.header?.status_code === 200
-    if(!success) {
-      console.warn('[Lyrs] [MusixMatch] Failed to fetch lyrics', json);
-      return [];
-    }
-    const parsed = await LyricResponseSchema.array().spa([{
-      id: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.commontrack_id,
-      name: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_name,
-      trackName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_name,
-      artistName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.artist_name,
-      albumName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.album_name,
-      duration: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_length,
-      instrumental: !!json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.instrumental,
-      plainLyrics: json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_body || '',
-      syncedLyrics: json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_body || '',
-    }]);
-
-    if (!parsed.success) {
-      console.warn(
-        '[Lyrs] [MusixMatch] Failed to parse search response',
-        parsed.error,
-      );
-      return [];
-    }
-
-    return parsed.data.map(this.responseToMetadata.bind(this));
+    return [lyric]
   }
 
   public getOptions(language: string): Exclude<SettingOption, ButtonOption>[] {
@@ -248,6 +179,20 @@ export class MusixMatchLyricProvider implements LyricProvider {
     return encodeURIComponent(str).replace(/%20/g, '+');
   }
 
+  private async musixmatchMacroToLyricScheme(json: any) {
+    return await LyricResponseSchema.array().spa([{
+      id: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.commontrack_id,
+      name: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_name,
+      trackName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_name,
+      artistName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.artist_name,
+      albumName: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.album_name,
+      duration: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_length,
+      instrumental: !!json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.instrumental,
+      plainLyrics: json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_body || '',
+      syncedLyrics: json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_body || '',
+    }]);
+  }
+
   private async getSpotifyId(title: string, artist: string): Promise<string | null> {
     const search = await spotify.search(decodeURIComponent(title) + ' ' + decodeURIComponent(artist));
     if(!search || !search.tracksV2 || !search.tracksV2.items || search.tracksV2.items.length === 0) {
@@ -258,22 +203,22 @@ export class MusixMatchLyricProvider implements LyricProvider {
     return search.tracksV2.items[0].item.data.id;
   }
 
-  private async getItunesId(title: string, artist: string): Promise<string | null> {
-    // https://itunes.apple.com/search?term=ヨルシカ だから僕は音楽を辞めた&entity=musicTrack&limit=1
-    const query = new URLSearchParams();
-    query.set('term', artist + ' ' + title);
-    query.set('entity', 'musicTrack');
-    query.set('limit', '1');
-    console.log("[Lyrs] [MusixMatch] Fetching iTunes ID with query", query.toString());
-    const response = await fetch(`https://itunes.apple.com/search?${query.toString()}`);
-    const json = await response.json() as any;
-    if (!json || json.resultCount === 0) {
-      console.warn('[Lyrs] [MusixMatch] No results found for iTunes search', json);
-      return null;
-    }
-    console.log("[Lyrs] [MusixMatch] Fetched iTunes ID", json.results[0].trackId);
-    return json.results[0].trackId;
-  }
+  // private async getItunesId(title: string, artist: string): Promise<string | null> {
+  //   // https://itunes.apple.com/search?term=ヨルシカ だから僕は音楽を辞めた&entity=musicTrack&limit=1
+  //   const query = new URLSearchParams();
+  //   query.set('term', artist + ' ' + title);
+  //   query.set('entity', 'musicTrack');
+  //   query.set('limit', '1');
+  //   console.log("[Lyrs] [MusixMatch] Fetching iTunes ID with query", query.toString());
+  //   const response = await fetch(`https://itunes.apple.com/search?${query.toString()}`);
+  //   const json = await response.json() as any;
+  //   if (!json || json.resultCount === 0) {
+  //     console.warn('[Lyrs] [MusixMatch] No results found for iTunes search', json);
+  //     return null;
+  //   }
+  //   console.log("[Lyrs] [MusixMatch] Fetched iTunes ID", json.results[0].trackId);
+  //   return json.results[0].trackId;
+  // }
 
   private responseToMetadata(
     lyric: z.infer<typeof LyricResponseSchema>,
