@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import makeCookieFetch from 'fetch-cookie';
+import Spotify from 'searchtify';
 
 import {
   LyricProvider,
@@ -11,6 +12,7 @@ import {
 import type { ButtonOption, SettingOption } from '../../../common/plugins';
 
 const cookieFetch = makeCookieFetch(fetch);
+const spotify = new Spotify();
 
 const LyricResponseSchema = z.object({
   id: z.number(),
@@ -124,12 +126,18 @@ export class MusixMatchLyricProvider implements LyricProvider {
     // if (params.artist) query.set('q_artist', this.encode(params.artist));
     query.set('usertoken', this.encode(await this.getUserToken()));
     query.set('app_id', this.encode("mac-ios-v2.0"));
-    const itunesId = await this.getItunesId(params.title || "", params.artist || "");
-    if(!itunesId) {
-      console.warn('[Lyrs] [MusixMatch] No iTunes ID found for search', params);
+    const spotifyId = await this.getSpotifyId(params.title || "", params.artist || "");
+    if(!spotifyId) {
+      console.warn('[Lyrs] [MusixMatch] No Spotify ID found for search', params);
       return null;
     }
-    query.set('track_itunes_id', this.encode(itunesId || ""));
+    query.set('track_spotify_id', this.encode(spotifyId || ""));
+    // const itunesId = await this.getItunesId(params.title || "", params.artist || "");
+    // if(!itunesId) {
+    //   console.warn('[Lyrs] [MusixMatch] No iTunes ID found for search', params);
+    //   return null;
+    // }
+    // query.set('track_itunes_id', this.encode(itunesId || ""));
     console.log("[Lyrs] [MusixMatch] Fetching lyrics with query", query.toString());
 
     const response = await cookieFetch(
@@ -185,12 +193,18 @@ export class MusixMatchLyricProvider implements LyricProvider {
     // if (params.artist) query.set('q_artist', this.encode(params.artist));
     query.set('usertoken', this.encode(await this.getUserToken()));
     query.set('app_id', this.encode("mac-ios-v2.0"));
-    const itunesId = await this.getItunesId(params.title || "", params.artist || "");
-    if(!itunesId) {
-      console.warn('[Lyrs] [MusixMatch] No iTunes ID found for search', params);
+    const spotifyId = await this.getSpotifyId(params.title || "", params.artist || "");
+    if(!spotifyId) {
+      console.warn('[Lyrs] [MusixMatch] No Spotify ID found for search', params);
       return [];
     }
-    query.set('track_itunes_id', this.encode(itunesId || ""));
+    query.set('track_spotify_id', this.encode(spotifyId || ""));
+    // const itunesId = await this.getItunesId(params.title || "", params.artist || "");
+    // if(!itunesId) {
+    //   console.warn('[Lyrs] [MusixMatch] No iTunes ID found for search', params);
+    //   return [];
+    // }
+    // query.set('track_itunes_id', this.encode(itunesId || ""));
 
     const response = await cookieFetch(
       `https://apic.musixmatch.com/ws/1.1/macro.subtitles.get?${query.toString()}`,
@@ -232,6 +246,16 @@ export class MusixMatchLyricProvider implements LyricProvider {
 
   private encode(str: string): string {
     return encodeURIComponent(str).replace(/%20/g, '+');
+  }
+
+  private async getSpotifyId(title: string, artist: string): Promise<string | null> {
+    const search = await spotify.search(decodeURIComponent(title) + ' ' + decodeURIComponent(artist));
+    if(!search || !search.tracksV2 || !search.tracksV2.items || search.tracksV2.items.length === 0) {
+      console.warn('[Lyrs] [MusixMatch] No Spotify ID found for search', title, artist);
+      return null;
+    }
+    console.log("[Lyrs] [MusixMatch] Fetched Spotify ID", search.tracksV2.items[0].item.data.id);
+    return search.tracksV2.items[0].item.data.id;
   }
 
   private async getItunesId(title: string, artist: string): Promise<string | null> {
