@@ -98,7 +98,7 @@
     "html-parse-string": "0.0.9",
     "i18next": "25.2.1",
     "node-forge": "1.3.1",
-    "searchtify": "^1.1.1",
+    "searchtify": "git://github.com/Baw-Appie/searchtify.git#fccde0bc802599e424a424c409297022de41b3d5",
     "semver": "7.7.2",
     "solid-floating-ui": "0.3.1",
     "solid-js": "1.9.7",

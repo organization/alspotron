@@ -28,7 +28,7 @@ const LyricResponseSchema = z.object({
 
 export class MusixMatchLyricProvider implements LyricProvider {
   public name = 'musixmatch';
-  private usertoken = ""
+  private usertoken = "250612c5feff65cee38c6c076b282cc2a6c58fff42b5c5fabe91ea"
   private _updatingUserTokenPromise: Promise<string> | null = null;
 
   async getUserToken() {
@@ -80,18 +80,11 @@ export class MusixMatchLyricProvider implements LyricProvider {
     if(!translationSuccess) {
       console.warn('[Lyrs] [MusixMatch] Failed to fetch translation', translationJson);
     } else {
-      const translation = translationJson.message?.body?.translations_list;
-      if(translation && translation.length > 0) {
-        console.log("[Lyrs] [MusixMatch] Fetched translation", translation);
-        for(const tr of translation) {
-          const source = tr.translation.subtitle_matched_line;
-          const target = tr.translation.description;
-          for(const [timestamp, lines] of Object.entries(convertedLyrics)) {
-            if(lines.includes(source)) convertedLyrics[Number(timestamp)].push(target);
-          }
-        }
-        console.log(convertedLyrics)
-      }
+      const translations = translationJson.message?.body?.translations_list || [];
+      translations.forEach((tr: any) => {
+        const { subtitle_matched_line: source, description: target } = tr.translation;
+        Object.entries(convertedLyrics).forEach(([timestamp, lines]) => lines.includes(source) && convertedLyrics[Number(timestamp)].push(target));
+      });
     }
 
     return {
@@ -194,13 +187,18 @@ export class MusixMatchLyricProvider implements LyricProvider {
   }
 
   private async getSpotifyId(title: string, artist: string): Promise<string | null> {
-    const search = await spotify.search(decodeURIComponent(title) + ' ' + decodeURIComponent(artist));
-    if(!search || !search.tracksV2 || !search.tracksV2.items || search.tracksV2.items.length === 0) {
-      console.warn('[Lyrs] [MusixMatch] No Spotify ID found for search', title, artist);
+    try {
+      const search = await spotify.search(decodeURIComponent(title) + ' ' + decodeURIComponent(artist));
+      if(!search || !search.tracksV2 || !search.tracksV2.items || search.tracksV2.items.length === 0) {
+        console.warn('[Lyrs] [MusixMatch] No Spotify ID found for search', title, artist);
+        return null;
+      }
+      console.log("[Lyrs] [MusixMatch] Fetched Spotify ID", search.tracksV2.items[0].item.data.id);
+      return search.tracksV2.items[0].item.data.id;
+    } catch (error) {
+      console.error('[Lyrs] [MusixMatch] Error fetching Spotify ID', error);
       return null;
     }
-    console.log("[Lyrs] [MusixMatch] Fetched Spotify ID", search.tracksV2.items[0].item.data.id);
-    return search.tracksV2.items[0].item.data.id;
   }
 
   // private async getItunesId(title: string, artist: string): Promise<string | null> {
