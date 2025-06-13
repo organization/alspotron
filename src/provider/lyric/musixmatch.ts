@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import makeCookieFetch from 'fetch-cookie';
-import Spotify from 'searchtify';
+import { hangulize } from './hangulize';
 
 import {
   LyricProvider,
@@ -12,7 +12,6 @@ import {
 import type { ButtonOption, SettingOption } from '../../../common/plugins';
 
 const cookieFetch = makeCookieFetch(fetch);
-const spotify = new Spotify();
 
 const LyricResponseSchema = z.object({
   id: z.number(),
@@ -74,6 +73,11 @@ export class MusixMatchLyricProvider implements LyricProvider {
     const convertedLyrics = this.syncedLyricsToLyric(lyric.syncedLyrics);
     // https://apic.musixmatch.com/ws/1.1/crowd.track.translations.get?app_id=mac-ios-v2.0&usertoken=250612270d57606098b5b857dc3f0e7cf3911ea4628735df121d6a&track_itunes_id=1648877323&selected_language=ko
 
+    if(json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_language == "ja") {
+      console.log("[Lyrs] [MusixMatch] Found Japanese lyrics, converting to Korean...", await hangulize("日本語"));
+      Object.entries(convertedLyrics).forEach(async ([timestamp, lines]) => convertedLyrics[Number(timestamp)].push(await hangulize(lines[0]) as any));
+    }
+
     const translationResponse = await cookieFetch(`https://apic.musixmatch.com/ws/1.1/crowd.track.translations.get?app_id=mac-ios-v2.0&usertoken=${this.encode(await this.getUserToken())}&commontrack_id=${this.encode(lyric.id.toString())}&selected_language=ko`);
     const translationJson = await translationResponse.json() as any;
     const translationSuccess = translationJson.message?.header?.status_code === 200;
@@ -105,20 +109,12 @@ export class MusixMatchLyricProvider implements LyricProvider {
     // if (params.artist) query.set('q_artist', this.encode(params.artist));
     query.set('usertoken', this.encode(await this.getUserToken()));
     query.set('app_id', this.encode("mac-ios-v2.0"));
-    const spotifyId = await this.getSpotifyId(params.title || "", params.artist || "");
-    if(!spotifyId) {
-      console.warn('[Lyrs] [MusixMatch] No Spotify ID found for search', params);
+    const itunesId = await this.getItunesId(params.title || "", params.artist || "");
+    if(!itunesId) {
+      console.warn('[Lyrs] [MusixMatch] No iTunes ID found for search', params);
       return null;
     }
-    query.set('track_spotify_id', this.encode(spotifyId || ""));
-    // If you want to search by iTunes ID, you can uncomment these lines
-    // but, some music does not have iTunes ID.
-    // const itunesId = await this.getItunesId(params.title || "", params.artist || "");
-    // if(!itunesId) {
-    //   console.warn('[Lyrs] [MusixMatch] No iTunes ID found for search', params);
-    //   return null;
-    // }
-    // query.set('track_itunes_id', this.encode(itunesId || ""));
+    query.set('track_itunes_id', this.encode(itunesId || ""));
     console.log("[Lyrs] [MusixMatch] Fetching lyrics with query", query.toString());
 
     const response = await cookieFetch(`https://apic.musixmatch.com/ws/1.1/macro.subtitles.get?${query.toString()}`);
@@ -143,7 +139,6 @@ export class MusixMatchLyricProvider implements LyricProvider {
     console.log("[LYRS] [MusixMatch] Synced lyrics found", lyric.syncedLyrics)
 
     const convertedLyrics = this.syncedLyricsToLyric(lyric.syncedLyrics);
-    console.log(convertedLyrics)
 
     return {
       ...this.responseToMetadata(lyric),
@@ -173,6 +168,7 @@ export class MusixMatchLyricProvider implements LyricProvider {
   }
 
   private async musixmatchMacroToLyricScheme(json: any) {
+    console.log(json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list)
     return await LyricResponseSchema.array().spa([{
       id: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.commontrack_id,
       name: json.message?.body?.macro_calls?.['matcher.track.get']?.message?.body?.track?.track_name,
@@ -186,37 +182,22 @@ export class MusixMatchLyricProvider implements LyricProvider {
     }]);
   }
 
-  private async getSpotifyId(title: string, artist: string): Promise<string | null> {
-    try {
-      const search = await spotify.search(decodeURIComponent(title) + ' ' + decodeURIComponent(artist));
-      if(!search || !search.tracksV2 || !search.tracksV2.items || search.tracksV2.items.length === 0) {
-        console.warn('[Lyrs] [MusixMatch] No Spotify ID found for search', title, artist);
-        return null;
-      }
-      console.log("[Lyrs] [MusixMatch] Fetched Spotify ID", search.tracksV2.items[0].item.data.id);
-      return search.tracksV2.items[0].item.data.id;
-    } catch (error) {
-      console.error('[Lyrs] [MusixMatch] Error fetching Spotify ID', error);
+  private async getItunesId(title: string, artist: string): Promise<string | null> {
+    // https://www.shazam.com/services/amapi/v1/catalog/KR/search?types=songs&term=yorushika&limit=3
+    const query = new URLSearchParams();
+    query.set('term', artist + ' ' + title);
+    query.set('types', 'songs');
+    query.set('limit', '1');
+    console.log("[Lyrs] [MusixMatch] Fetching iTunes ID with query", query.toString());
+    const response = await fetch(`https://www.shazam.com/services/amapi/v1/catalog/KR/search?${query.toString()}`);
+    const json = await response.json() as any;
+    if (!json || json.results?.songs?.data?.length === 0) {
+      console.warn('[Lyrs] [MusixMatch] No results found for iTunes search', json);
       return null;
     }
+    console.log("[Lyrs] [MusixMatch] Fetched iTunes ID", json.results.songs.data[0].id);
+    return json.results.songs.data[0].id;
   }
-
-  // private async getItunesId(title: string, artist: string): Promise<string | null> {
-  //   // https://itunes.apple.com/search?term=ヨルシカ だから僕は音楽を辞めた&entity=musicTrack&limit=1
-  //   const query = new URLSearchParams();
-  //   query.set('term', artist + ' ' + title);
-  //   query.set('entity', 'musicTrack');
-  //   query.set('limit', '1');
-  //   console.log("[Lyrs] [MusixMatch] Fetching iTunes ID with query", query.toString());
-  //   const response = await fetch(`https://itunes.apple.com/search?${query.toString()}`);
-  //   const json = await response.json() as any;
-  //   if (!json || json.resultCount === 0) {
-  //     console.warn('[Lyrs] [MusixMatch] No results found for iTunes search', json);
-  //     return null;
-  //   }
-  //   console.log("[Lyrs] [MusixMatch] Fetched iTunes ID", json.results[0].trackId);
-  //   return json.results[0].trackId;
-  // }
 
   private responseToMetadata(
     lyric: z.infer<typeof LyricResponseSchema>,
