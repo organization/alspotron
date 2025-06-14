@@ -32,13 +32,9 @@ export class MusixMatchLyricProvider implements LyricProvider {
   private _updatingUserTokenPromise: Promise<string> | null = null;
   private targetLanguage = "ko";
 
-  constructor() {
+  async getUserToken() {
     this.targetLanguage = config.get().language
     this.usertoken = config.get().musixMatchToken
-    console.log(`[Lyrs] [MusixMatch] Initialized target language: ${this.targetLanguage} / user token: ${this.usertoken}`);
-  }
-
-  async getUserToken() {
     if(this.usertoken) return this.usertoken;
     if(!this._updatingUserTokenPromise) {
       console.log('[Lyrs] [MusixMatch] Fetching user token...');
@@ -79,7 +75,6 @@ export class MusixMatchLyricProvider implements LyricProvider {
     if (!lyric.syncedLyrics) return null;
 
     const convertedLyrics = this.syncedLyricsToLyric(lyric.syncedLyrics);
-    // https://apic.musixmatch.com/ws/1.1/crowd.track.translations.get?app_id=mac-ios-v2.0&usertoken=250612270d57606098b5b857dc3f0e7cf3911ea4628735df121d6a&track_itunes_id=1648877323&selected_language=ko
 
     if(
       this.targetLanguage == "ko" &&
@@ -120,12 +115,12 @@ export class MusixMatchLyricProvider implements LyricProvider {
     // if (params.artist) query.set('q_artist', this.encode(params.artist));
     query.set('usertoken', this.encode(await this.getUserToken()));
     query.set('app_id', this.encode("mac-ios-v2.0"));
-    const itunesId = await this.getItunesId(params.title || "", params.artist || "");
-    if(!itunesId) {
-      console.warn('[Lyrs] [MusixMatch] No iTunes ID found for search', params);
+    const isrc = await this.getIsrc(params.title || "", params.artist || "");
+    if(!isrc) {
+      console.warn('[Lyrs] [MusixMatch] No isrc ID found for search', params);
       return null;
     }
-    query.set('track_itunes_id', this.encode(itunesId || ""));
+    query.set('track_isrc', this.encode(isrc || ""));
     console.log("[Lyrs] [MusixMatch] Fetching lyrics with query", query.toString());
 
     const response = await cookieFetch(`https://apic.musixmatch.com/ws/1.1/macro.subtitles.get?${query.toString()}`);
@@ -193,21 +188,20 @@ export class MusixMatchLyricProvider implements LyricProvider {
     }]);
   }
 
-  private async getItunesId(title: string, artist: string): Promise<string | null> {
+  private async getIsrc(title: string, artist: string): Promise<string | null> {
     // https://www.shazam.com/services/amapi/v1/catalog/KR/search?types=songs&term=yorushika&limit=3
     const query = new URLSearchParams();
     query.set('term', artist + ' ' + title);
     query.set('types', 'songs');
     query.set('limit', '1');
-    console.log("[Lyrs] [MusixMatch] Fetching iTunes ID with query", query.toString());
     const response = await fetch(`https://www.shazam.com/services/amapi/v1/catalog/KR/search?${query.toString()}`);
     const json = await response.json() as any;
     if (!json || json.results?.songs?.data?.length === 0) {
-      console.warn('[Lyrs] [MusixMatch] No results found for iTunes search', json);
+      console.warn('[Lyrs] [MusixMatch] No results found for Isrc search', json);
       return null;
     }
-    console.log("[Lyrs] [MusixMatch] Fetched iTunes ID", json.results.songs.data[0].id);
-    return json.results.songs.data[0].id;
+    console.log("[Lyrs] [MusixMatch] Found Isrc ID", json.results.songs.data[0].attributes.isrc);
+    return json.results.songs.data[0].attributes.isrc;
   }
 
   private responseToMetadata(
