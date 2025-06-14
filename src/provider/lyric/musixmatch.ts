@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import makeCookieFetch from 'fetch-cookie';
 import { hangulize } from './hangulize';
+import { config } from '../../config';
 
 import {
   LyricProvider,
@@ -29,6 +30,13 @@ export class MusixMatchLyricProvider implements LyricProvider {
   public name = 'musixmatch';
   private usertoken = ""
   private _updatingUserTokenPromise: Promise<string> | null = null;
+  private targetLanguage = "ko";
+
+  constructor() {
+    this.targetLanguage = config.get().language
+    this.usertoken = config.get().musixMatchToken
+    console.log(`[Lyrs] [MusixMatch] Initialized target language: ${this.targetLanguage} / user token: ${this.usertoken}`);
+  }
 
   async getUserToken() {
     if(this.usertoken) return this.usertoken;
@@ -46,6 +54,7 @@ export class MusixMatchLyricProvider implements LyricProvider {
       throw new Error('Failed to fetch user token from MusixMatch');
     }
     this.usertoken = json.message.body.user_token;
+    config.set({ musixMatchToken: this.usertoken });
     return this.usertoken;
   }
 
@@ -54,7 +63,6 @@ export class MusixMatchLyricProvider implements LyricProvider {
     query.set('commontrack_id', this.encode(id));
     query.set('usertoken', this.encode(await this.getUserToken()));
     query.set('app_id', this.encode("mac-ios-v2.0"));
-    query.set("selected_language", "ko");
     console.log("[LYRS] [MusixMatch] Fetching lyric by ID", id, query.toString());
 
     const response = await cookieFetch(`https://apic.musixmatch.com/ws/1.1/macro.subtitles.get?${query.toString()}`);
@@ -73,12 +81,15 @@ export class MusixMatchLyricProvider implements LyricProvider {
     const convertedLyrics = this.syncedLyricsToLyric(lyric.syncedLyrics);
     // https://apic.musixmatch.com/ws/1.1/crowd.track.translations.get?app_id=mac-ios-v2.0&usertoken=250612270d57606098b5b857dc3f0e7cf3911ea4628735df121d6a&track_itunes_id=1648877323&selected_language=ko
 
-    if(json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_language == "ja") {
+    if(
+      this.targetLanguage == "ko" &&
+      json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_language == "ja"
+    ) {
       console.log("[Lyrs] [MusixMatch] Found Japanese lyrics, converting to Korean...", await hangulize("日本語"));
       Object.entries(convertedLyrics).forEach(async ([timestamp, lines]) => convertedLyrics[Number(timestamp)].push(await hangulize(lines[0]) as any));
     }
 
-    const translationResponse = await cookieFetch(`https://apic.musixmatch.com/ws/1.1/crowd.track.translations.get?app_id=mac-ios-v2.0&usertoken=${this.encode(await this.getUserToken())}&commontrack_id=${this.encode(lyric.id.toString())}&selected_language=ko`);
+    const translationResponse = await cookieFetch(`https://apic.musixmatch.com/ws/1.1/crowd.track.translations.get?app_id=mac-ios-v2.0&usertoken=${this.encode(await this.getUserToken())}&commontrack_id=${this.encode(lyric.id.toString())}&selected_language=${this.targetLanguage}`);
     const translationJson = await translationResponse.json() as any;
     const translationSuccess = translationJson.message?.header?.status_code === 200;
     if(!translationSuccess) {
