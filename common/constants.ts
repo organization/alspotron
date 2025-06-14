@@ -95,6 +95,7 @@ export const DEFAULT_CONFIG = {
 
   lyricProvider: 'lrclib' as const,
   sourceProvider: 'tuna-obs' as const,
+  musixMatchToken: '',
 
   experimental: {},
 

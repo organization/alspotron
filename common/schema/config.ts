@@ -114,6 +114,7 @@ export const ConfigSchema = z.object({
 
   lyricProvider: z.string().catch(DEFAULT_CONFIG.lyricProvider),
   sourceProvider: z.string().catch(DEFAULT_CONFIG.sourceProvider),
+  musixMatchToken: z.string().catch(""),
 
   providers: z.object({
     source: z.object({

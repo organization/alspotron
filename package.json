@@ -91,6 +91,7 @@
     "electron-progressbar": "2.2.1",
     "electron-updater": "6.6.2",
     "emittery": "0.13.1",
+    "fetch-cookie": "^3.1.0",
     "font-list": "1.5.1",
     "glasstron": "0.1.1",
     "hono": "4.7.11",
