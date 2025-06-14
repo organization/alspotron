@@ -80,8 +80,12 @@ export class MusixMatchLyricProvider implements LyricProvider {
       this.targetLanguage == "ko" &&
       json.message?.body?.macro_calls?.['track.subtitles.get']?.message?.body?.subtitle_list[0]?.subtitle?.subtitle_language == "ja"
     ) {
-      console.log("[Lyrs] [MusixMatch] Found Japanese lyrics, converting to Korean...", await hangulize("日本語"));
-      Object.entries(convertedLyrics).forEach(async ([timestamp, lines]) => convertedLyrics[Number(timestamp)].push(await hangulize(lines[0]) as any));
+      try {
+        console.log("[Lyrs] [MusixMatch] Found Japanese lyrics, converting to Korean...", await hangulize("日本語"));
+        Object.entries(convertedLyrics).forEach(async ([timestamp, lines]) => convertedLyrics[Number(timestamp)].push(await hangulize(lines[0]) as any));
+      } catch (e) {
+        console.warn("[Lyrs] [MusixMatch] Failed to convert Japanese lyrics to Korean", e);
+      }
     }
 
     const translationResponse = await cookieFetch(`https://apic.musixmatch.com/ws/1.1/crowd.track.translations.get?app_id=mac-ios-v2.0&usertoken=${this.encode(await this.getUserToken())}&commontrack_id=${this.encode(lyric.id.toString())}&selected_language=${this.targetLanguage}`);
