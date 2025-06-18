@@ -50,7 +50,7 @@
     "@types/ws": "8.18.1",
     "autoprefixer": "10.4.21",
     "bufferutil": "4.0.9",
-    "electron": "36.4.0",
+    "electron": "36.5.0",
     "electron-builder": "26.0.12",
     "eslint": "9.29.0",
     "eslint-config-prettier": "10.1.5",
@@ -121,7 +121,7 @@
     "axios": "1.10.0",
     "simple-update-notifier": "2.0.0",
     "@electron/get": "4.0.1",
-    "electron": "36.4.0",
+    "electron": "36.5.0",
     "http-errors": "2.0.0",
     "node-abi": "4.9.0"
   },
