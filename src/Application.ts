@@ -31,6 +31,7 @@ import { OverlayManager } from './overlay';
 
 import {
   LrclibLyricProvider,
+  MusixMatchLyricProvider,
   TunaObsProvider,
   WebNowPlayingProvider,
 } from './provider';
@@ -495,7 +496,10 @@ class Application {
     this.overlayManager = overlayManager;
     this.overlayManager.setCorsCallback(this.setCorsHandler.bind(this));
     this.sourceProviders = [new TunaObsProvider(), new WebNowPlayingProvider()];
-    this.lyricProviders = [new LrclibLyricProvider()];
+    this.lyricProviders = [
+      new MusixMatchLyricProvider(),
+      new LrclibLyricProvider()
+    ];
   }
 
   get sourceProvider() {
