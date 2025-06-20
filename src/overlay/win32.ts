@@ -35,7 +35,6 @@ export class Win32OverlayFactory implements OverlayFactory {
 
   async create(pid: number, viewIndex: number): Promise<AttachedOverlay> {
     const overlay = await Overlay.attach(
-      'lyrs-overlay',
       // electron asar path fix
       defaultDllDir().replace('app.asar', 'app.asar.unpacked'),
       pid,
@@ -57,6 +56,7 @@ class Win32AttachedOverlay implements AttachedOverlay {
   private constructor(
     private viewIndex: number,
     private readonly overlay: Overlay,
+    private readonly hwnd: number,
     corsCallback?: (webContents: Electron.WebContents) => void,
   ) {
     this.provider = new LyricWindowProvider(viewIndex, {
@@ -75,6 +75,22 @@ class Win32AttachedOverlay implements AttachedOverlay {
     });
     webContents.invalidate();
     corsCallback?.(this.provider.window.webContents);
+
+    overlay.event.on('cursor_input', (_, input) => {
+      if (input.kind !== 'Move') {
+        return;
+      }
+
+      webContents.sendInputEvent({
+        type: 'mouseMove',
+        x: input.clientX,
+        y: input.clientY,
+        globalX: input.windowX,
+        globalY: input.windowY,
+      });
+    });
+    // Listen mouse input
+    overlay.listenInput(hwnd, true, false);
 
     this.configWatcher = () => {
       this.updatePosition();
@@ -153,9 +169,10 @@ class Win32AttachedOverlay implements AttachedOverlay {
     }
 
     try {
-      await this.overlay.setPosition(anchor[0], anchor[1]);
-      await this.overlay.setAnchor(anchor[0], anchor[1]);
+      await this.overlay.setPosition(this.hwnd, anchor[0], anchor[1]);
+      await this.overlay.setAnchor(this.hwnd, anchor[0], anchor[1]);
       await this.overlay.setMargin(
+        this.hwnd,
         length(position.top + style.position.top),
         length(position.right + style.position.right),
         length(position.bottom + style.position.bottom),
@@ -181,6 +198,7 @@ class Win32AttachedOverlay implements AttachedOverlay {
 
         // update only changed part
         await this.overlay.updateShtex(
+          this.hwnd,
           sharedTexture.codedSize.width,
           sharedTexture.codedSize.height,
           sharedTexture.sharedTextureHandle,
@@ -198,8 +216,9 @@ class Win32AttachedOverlay implements AttachedOverlay {
 
     try {
       await this.overlay.updateBitmap(
+        this.hwnd,
         bitmap.getSize().width,
-        bitmap.getBitmap(),
+        bitmap.toBitmap(),
       );
     } catch (e) {
       console.error('[Lyrs] error while updating overlay', e);
@@ -218,7 +237,17 @@ class Win32AttachedOverlay implements AttachedOverlay {
     overlay: Overlay,
     corsCallback?: (webContents: Electron.WebContents) => void,
   ): Promise<Win32AttachedOverlay> {
-    const instance = new Win32AttachedOverlay(viewIndex, overlay, corsCallback);
+    // wait for main window
+    const hwnd = await new Promise<number>((resolve) =>
+      overlay.event.once('added', resolve),
+    );
+
+    const instance = new Win32AttachedOverlay(
+      viewIndex,
+      overlay,
+      hwnd,
+      corsCallback,
+    );
 
     try {
       await instance.updatePosition();
