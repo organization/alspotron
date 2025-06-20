@@ -110,7 +110,7 @@
   },
   "optionalDependencies": {
     "@jellybrick/wql-process-monitor": "1.4.8",
-    "asdf-overlay-node": "0.6.7",
+    "asdf-overlay-node": "0.7.1",
     "extract-file-icon": "0.3.2",
     "hmc-win32": "1.4.92",
     "mica-electron": "1.5.16",
